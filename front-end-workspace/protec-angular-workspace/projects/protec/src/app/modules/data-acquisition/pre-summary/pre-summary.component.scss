@@ -1,0 +1,62 @@
+.summary-btn-outline {
+    width: 33px;
+    height: 33px;
+    border: 1px solid var(--muted-forest);
+    border: 1px solid #4A6767;
+    border-radius: 2px;
+    opacity: 1;
+    background-color: #ffffff;
+}
+
+div .summary-btn-outline:not(:first-child) {
+    margin-left: 8px;
+}
+
+.disabled-btn {
+    opacity: 0.5;
+}
+
+.summary-content-card {
+    background: var(--light-taupe-rgba) 0% 0% no-repeat padding-box;
+    width: 100%;
+    min-height: 300px;
+    padding: 30px;
+}
+
+.summary-select-box {
+    width: 50%;
+    opacity: 0.7;
+}
+
+.summary-action-icons {
+    color: var(--chalk-mint);
+    padding: 10px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.summary-custom-plus-icon {
+    font-size: 30px;
+    padding: 0px;
+    position: relative;
+    top: 3px;
+}
+
+.summary-info-label {
+    letter-spacing: var(--unnamed-character-spacing-0);
+    color: var(--off-black);
+    text-align: left;
+    letter-spacing: 0px;
+    font-size: 18px;
+    opacity: 0.7;
+}
+
+.summary-info-value {
+    font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-bold) 18px/24px var(--unnamed-font-family-open-sans);
+    letter-spacing: var(--unnamed-character-spacing-0);
+    color: var(--off-black);
+    text-align: left;
+    font-size: 18px;
+    letter-spacing: 0px;
+    opacity: 1;
+}

@@ -25,7 +25,7 @@ export class WeAreSorryComponent implements OnInit {
       navegations: [
         {
           label: this.translationService.instant('Zurück'),
-          link: '/data-acquisition'
+          link: '/data-acquisition/additional-insurance'
         }
       ]
     }

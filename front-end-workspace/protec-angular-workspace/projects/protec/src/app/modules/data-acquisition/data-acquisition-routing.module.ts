@@ -70,6 +70,10 @@ const routes: Routes = [
     path: 'we-are-sorry',
     component: WeAreSorryComponent
   },
+  {
+    path: 'request-send',
+    component: RequestSendComponent
+  },
   //generic routes END
   {
     path: 'wizard',
@@ -96,24 +100,20 @@ const routes: Routes = [
     component: DetailsIntroComponent
   },
   {
-    path: 'die-details',//TODO: check if we really need this page
-    component: DieDetailsComponent
-  },
-  {
     path: 'work-accident',//variation one
     component: WorkAccidentComponent
   },
   {
-    path: 'illness',//variation two
+    path: 'illness-details',//variation two
     component: IllnessComponent
-  },
-  {
-    path: 'private-accident',//variation three
-    component: PrivateAccidentComponent
   },
   {
     path: 'illness-diagnostic',
     component: Illness2Component
+  },
+  {
+    path: 'private-accident',//variation three
+    component: PrivateAccidentComponent
   },
   {
     path: 'full-body',
@@ -132,6 +132,10 @@ const routes: Routes = [
     component: SummaryComponent
   },
   {
+    path: 'prospects-of-success',
+    component: ProspectsOfSuccess
+  },
+  {
     path: 'chance-of-success',
     component: ChanceOfSuccessComponent
   },
@@ -148,12 +152,12 @@ const routes: Routes = [
     component: YourDataComponent
   },
   {
-    path: 'personal-data-contact',
-    component: PersonalDataInputComponentTwo
-  },
-  {
     path: 'personal-data-person',
     component: PersonalDataInputComponent
+  },
+  {
+    path: 'personal-data-contact',
+    component: PersonalDataInputComponentTwo
   },
   {
     path: 'personal-data-summary',//TODO: check if we really need this page, because we remove in task https://radien.atlassian.net/browse/PROTE-527
@@ -161,20 +165,12 @@ const routes: Routes = [
   },
   {
     path: 'appreciation',
-    component: AppreciationComponent
+    //component: AppreciationComponent,
+    component: RequestSendComponent,
   },
   {
     path: 'pre-summary',
     component: PreSummaryComponent
-  },
-  //TODO: we need check this others routes for put in right flow
-  {
-    path: 'prospects-of-success',
-    component: ProspectsOfSuccess
-  },
-  {
-    path: 'request-send',
-    component: RequestSendComponent
   }
 ];
 

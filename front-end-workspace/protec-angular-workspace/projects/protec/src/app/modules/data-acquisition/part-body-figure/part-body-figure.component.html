@@ -21,6 +21,30 @@
                                              <p>
                                                 {{ 'Bitte wähle die zutreffende(n) Verletzung(en) aus.' | translate }}
                                              </p>
+                                             <div class="row">
+                                                 <div class="col-12">
+                                                    <div style="float:left">
+                                                        <p-multiSelect 
+                                                            [options]="options" 
+                                                            [(ngModel)]="selectedOptions" 
+                                                            defaultLabel="Select a option" 
+                                                            optionLabel="name" 
+                                                            display="chip">
+                                                        </p-multiSelect>
+                                                    </div>
+                                                 </div>
+                                                 <div class="col-12 mt-4">
+                                                    <div style="float:left">
+                                                        <p-multiSelect 
+                                                            [options]="subOptions" 
+                                                            [(ngModel)]="selectedSubOptions" 
+                                                            defaultLabel="Select a option" 
+                                                            optionLabel="name" 
+                                                            display="chip">
+                                                        </p-multiSelect>
+                                                    </div>
+                                                 </div>
+                                             </div>
                                         </div>
                                     </div>
                                 </div>

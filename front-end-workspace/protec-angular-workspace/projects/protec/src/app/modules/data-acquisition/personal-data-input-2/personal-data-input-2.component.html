@@ -9,7 +9,7 @@
                             <div class="row col-lg-12 col-md-12 col-sm-12 vertical-space-increase-top">
                                 <div class="col-lg-6 col-md-5 col-sm-12">
                                     <p class="para-text horzontal-space-left-sm"> {{'Straße / Hausnummer *'  | translate }} </p>
-                                    <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'Straße / Hausnummer *'  | translate }}" required>
+                                    <input type="text" class="input-text vertical-space-increase-bottom-2" [(ngModel)]="street.value"  (input)="verifyInput()" placeholder="{{'Straße / Hausnummer'  | translate }}" required>
                                 </div>
                                 <div class="col-lg-6 col-md-5 col-sm-12">
                                     <p class="para-text horzontal-space-left-sm"> {{'Adresszusatz'  | translate }} </p>
@@ -19,7 +19,7 @@
                             <div class="row col-lg-12 col-md-12 col-sm-12 vertical-space-increase-top">
                                 <div class="col-lg-6 col-md-5 col-sm-12">
                                     <p class="para-text horzontal-space-left-sm" > {{'Postleitzahl *'  | translate }} </p>
-                                    <input type="text" name="Vorname" id="Postleitzahl" class="input-text vertical-space-increase-bottom-2" placeholder="{{'Postleitzahl *'  | translate }}" required>
+                                    <input type="text" name="Vorname" id="Postleitzahl" class="input-text vertical-space-increase-bottom-2" [(ngModel)]="postCode.value" (input)="verifyInput()" placeholder="{{'Postleitzahl'  | translate }}" required>
                                 </div>
                                 <div class="col-lg-6 col-md-5 col-sm-12">
                                     <p class="para-text horzontal-space-left-sm" > {{'Stadt'  | translate }} </p>
@@ -27,7 +27,7 @@
                                 </div>
                             </div>
                         <div class="col-lg-12 col-md-12 col-sm-12">
-                            <p class="para-text horzontal-space-left-sm"> {{'Land'  | translate }} </p>
+                            <p class="para-text horzontal-space-left-sm vertical-space-increase-top"> {{'Land'  | translate }} </p>
                             <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'Land'  | translate }}">
                         </div>
                         <div class="row col-lg-12 col-md-12 col-sm-12 vertical-space-increase-top">
@@ -37,7 +37,7 @@
                             </div>
                             <div class="col-lg-6 col-md-5 col-sm-12">
                                 <p class="para-text horzontal-space-left-sm" required> {{'Mobilfunknummer *'  | translate }} </p>
-                                <input type="number" name="Mobilfunknummer" id="Mobilfunknummer" class="input-text vertical-space-increase-bottom-2" placeholder="{{'Mobilfunknummer'  | translate }}">
+                                <input type="number" name="Mobilfunknummer" id="Mobilfunknummer" class="input-text vertical-space-increase-bottom-2"  [(ngModel)]="mobileNumber.value"  (input)="verifyInput()" placeholder="{{'Mobilfunknummer'  | translate }}">
                             </div>
                         </div>
 

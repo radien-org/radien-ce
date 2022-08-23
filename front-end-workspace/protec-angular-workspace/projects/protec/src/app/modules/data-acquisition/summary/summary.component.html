@@ -14,8 +14,12 @@
                             <div>
                                 <select 
                                     class="input-text input-select-dropdown summary-select-box" 
-                                    placeholder="SELECT OPTION">
-                                    <option value="">ARBEITSUNFALL 1990</option>
+                                    placeholder="SELECT OPTION" 
+                                    #claim
+                                    (change)="onSelectClaim(claim.value)">
+                                    <option *ngFor='let item of claims' [value]="item.id">
+                                        {{item.title}}
+                                    </option>
                                 </select>
                                 <i class="bi-pencil-fill margin-horizontal summary-action-icons"></i>
                                 <i class="bi-trash-fill margin-horizontal summary-action-icons"></i>
@@ -27,16 +31,24 @@
                                         <div class="col-6">
                                             <div *ngFor="let item of leftInfo; let i = index">
                                                 <ng-container *ngIf="i < 4">
-                                                    <p class="summary-info-label">{{item.label}}</p>
-                                                    <p class="summary-info-value">{{item.value}}</p>
+                                                    <p class="summary-info-label">
+                                                        {{item.label | translate}}
+                                                    </p>
+                                                    <p class="summary-info-value">
+                                                        {{item.value}}
+                                                    </p>
                                                 </ng-container>
                                             </div>
                                         </div>
                                         <div class="col-6">
                                             <div *ngFor="let item of leftInfo; let i = index">
                                                 <ng-container *ngIf="i > 3">
-                                                    <p class="summary-info-label">{{item.label}}</p>
-                                                    <p class="summary-info-value">{{item.value}}</p>
+                                                    <p class="summary-info-label">
+                                                        {{item.label | translate}}
+                                                    </p>
+                                                    <p class="summary-info-value">
+                                                        {{item.value}}
+                                                    </p>
                                                 </ng-container>
                                             </div>
                                         </div>

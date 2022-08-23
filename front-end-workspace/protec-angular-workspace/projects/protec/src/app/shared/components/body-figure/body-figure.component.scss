@@ -1,0 +1,176 @@
+.body-style-full-image {
+    width: 80%;
+    cursor: pointer;
+}
+
+canvas#bodyCanvas { 
+    border: 1px solid white; 
+    width: 400px;
+    height: 450px; 
+}
+
+.bf-full-content {
+    width: 80%;
+    height: 470px;
+    max-height: 470px;
+    min-height: 470px;
+}
+
+.bf-head-comp {
+    width: 45px;
+    position: relative;
+    top: 1px;
+}
+
+.bf-torso-comp {
+    width: 69px;
+    position: relative;
+    bottom: 6px;
+    right: 0px;
+}
+
+.bf-shoulder-right-comp {
+    width: 24.9px;
+    position: relative;
+    right: 23.6px;
+    top: 0.7px;
+}
+
+.bf-shoulder-left-comp {
+    width: 24.9px;
+    position: relative;
+    left: 23.7px;
+    top: 0.7px;
+}
+
+.bf-upper-arm-right-comp {
+    width: 33px;
+    position: relative;
+    bottom: 38px;
+    right: 41.3px;
+}
+
+.bf-upper-arm-left-comp {
+    width: 33px;
+    position: relative;
+    bottom: 38px;
+    left: 41.3px;
+}
+
+.bf-elbow-right-comp {
+    width: 24px;
+    position: relative;
+    right: 67.5px;
+    bottom: 25.9px;
+}
+
+.bf-elbow-left-comp {
+    width: 24px;
+    position: relative;
+    left: 67.5px;
+    bottom: 25.9px;
+}
+
+.bf-forearm-right-comp {
+    width: 34px;
+    position: relative;
+    right: 56px;
+    bottom: 39px;
+}
+
+.bf-forearm-left-comp {
+    width: 34px;
+    position: relative;
+    left: 56px;
+    bottom: 38.5px;
+}
+
+.bf-hand-right-comp {
+    width: 37px;
+    position: relative;
+    right: 69.5px;
+    top: 1.8px;
+}
+
+.bf-hand-left-comp {
+    width: 37px;
+    position: relative;
+    left: 69.5px;
+    top: 1.8px;
+}
+
+.bf-hip-right-comp {
+    width: 45px;
+    position: relative;
+    bottom: 19px;
+    right: 2px;
+}
+
+.bf-hip-left-comp {
+    width: 45px;
+    position: relative;
+    bottom: 19px;
+    left: 2px;
+}
+
+.bf-thigh-right-comp {
+    width: 43px;
+    position: relative;
+    bottom: 27px;
+    right: 1px;
+}
+
+.bf-thigh-left-comp {
+    width: 43px;
+    position: relative;
+    bottom: 27px;
+    left: 1px;
+}
+
+.bf-knee-right-comp {
+    width: 27.6px;
+    position: relative;
+    bottom: 36px;
+}
+
+.bf-knee-left-comp {
+    width: 27.6px;
+    position: relative;
+    bottom: 36px;
+}
+
+.bf-leg-right-comp {
+    width: 25.7px;
+    position: relative;
+    bottom: 45px;
+    left: 2px;
+}
+
+.bf-leg-left-comp {
+    width: 25.7px;
+    position: relative;
+    bottom: 45px;
+    right: 2px;
+}
+
+.bf-foot-right-comp {
+    width: 40px;
+    position: relative;
+    bottom: 50px;
+    right: 0px;
+}
+
+.bf-foot-left-comp {
+    width: 40px;
+    position: relative;
+    bottom: 50px;
+    left: 0px;
+}
+
+.bf-comp {
+    cursor: pointer;
+}
+
+.bf-comp:hover {
+    filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(78deg) brightness(105%) contrast(101%);
+}

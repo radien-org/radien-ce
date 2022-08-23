@@ -1,5 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
+import {global} from "@angular/compiler/src/util";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-g-button',
@@ -9,7 +11,7 @@ import { Router } from '@angular/router';
 export class GButtonComponent implements OnInit {
 
   @Input() public data: any = {
-    label: 'no-data',
+    label: this.translationService.instant('no-data' ),
     type: 'default',
     link: '/',
     active: false,
@@ -17,7 +19,7 @@ export class GButtonComponent implements OnInit {
   };
   @Output() public linkFunction = new EventEmitter();
 
-  constructor(private readonly router: Router) { }
+  constructor(private readonly translationService: TranslateService, private readonly router: Router) { }
 
   ngOnInit(): void {}
 
@@ -45,3 +47,4 @@ export class GButtonComponent implements OnInit {
   }
 
 }
+

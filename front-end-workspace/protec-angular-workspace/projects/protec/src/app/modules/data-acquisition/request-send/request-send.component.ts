@@ -12,7 +12,7 @@ export class RequestSendComponent implements OnInit {
   dataButton = {
     label: this.translationService.instant('MEIN KONTO'),
     type: 'outline',
-    link: '/data-acquisition/accident-intro'
+    link: '/data-acquisition/pre-summary'
   }
 
   checks = {
@@ -23,12 +23,7 @@ export class RequestSendComponent implements OnInit {
   pageNav = {
     navegation: {
       type: 'navegation-buttons',
-      navegations: [
-        {
-          label: this.translationService.instant('Zurück'),
-          link: '/data-acquisition'
-        }
-      ]
+      navegations: []
     }
   }
 

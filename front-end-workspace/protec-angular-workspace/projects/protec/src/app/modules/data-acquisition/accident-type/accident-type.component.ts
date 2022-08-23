@@ -41,14 +41,14 @@ export class AccidentTypeComponent implements OnInit {
       type: 'navegation-buttons',
       navegations: [
         {
-          label: this.translationService.instant('zurück'),
+          label: this.translationService.instant('Zurück'),
           link: '/data-acquisition/accident-intro'
         }
       ]
     }
   }
 
-  showErrorMsg = true;
+  showErrorMsg = false;
   textErrorMsg = 'Lorem ipsum dolor sit amet';
 
   constructor(private readonly translationService: TranslateService, private readonly storageService: StorageService, private readonly router: Router) { }

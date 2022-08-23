@@ -14,11 +14,11 @@ export class YourDataComponent implements OnInit {
       navegations: [
         {
           label: this.translationService.instant('Zurück'),
-          link: '/data-acquisition'
+          link: '/data-acquisition/request-quote'
         },
         {
           label: this.translationService.instant('Weiter'),
-          link: '/data-acquisition/accident-type'
+          link: '/data-acquisition/personal-data-person'
         }
       ]
     }

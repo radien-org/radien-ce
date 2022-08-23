@@ -15,12 +15,8 @@ export class DetailsFigureComponent implements OnInit {
       type: 'navegation-buttons',
       navegations: [
         {
-          label: this.translationService.instant('zurück'),
-          link: '/data-acquisition/illness-diagnostic'
-        },
-        {
-          label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/part-body'
+          label: this.translationService.instant('back'),
+          link: '/'
         }
       ]
     }
@@ -36,17 +32,28 @@ export class DetailsFigureComponent implements OnInit {
   }
 
   verifyAccidentType() {
-    if(this.accidentType === 'work-accident') {
-      this.pageNav.navegation.navegations = [
+    this.pageNav.navegation.navegations.splice(0, 1);
+    if(this.accidentType === 'recreational-accident') {
+      this.pageNav.navegation.navegations.push(
         {
-          label: this.translationService.instant('zurück'),
-          link: '/data-acquisition/work-accident'
-        },
-        {
-          label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/part-body'
+          label: this.translationService.instant('back'),
+          link: '/data-acquisition/illness-details'
         }
-      ];
+      );
+    } else if(this.accidentType === 'disease') {
+      this.pageNav.navegation.navegations.push(
+        {
+          label: this.translationService.instant('back'),
+          link: '/data-acquisition/work-accident'
+        }
+      );
+    } else {
+      this.pageNav.navegation.navegations.push(
+        {
+          label: this.translationService.instant('back'),
+          link: '/data-acquisition/work-accident'
+        }
+      );
     }
   }
 

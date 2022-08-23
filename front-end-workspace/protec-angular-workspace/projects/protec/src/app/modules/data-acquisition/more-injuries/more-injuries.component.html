@@ -4,15 +4,15 @@
             <app-stepper></app-stepper>
         </div>
         <div>
-            <div class="generic-box-content">
-                <div class="row base-min-height-45">
+            <div class="generic-box-content align-content-center">
+                <div class="row base-min-height-45 justify-content-center ">
                     <div class="col-lg-12 col-md-12 col-sm-12 ">
-                        <p class="content-text vertical-space-increase-top-lg">
+                        <p class="content-text vertical-space-increase-top-lg justify-content-center ">
                             {{ 'Ergab sich eine weitere Verletzung aus diesem Unfall?' | translate }}
                         </p>
                     </div>
                     <div class="col-lg-12 col-md-12 col-sm-12 mt-4 vertical-space-reducer-top-10">
-                        <div class="row mt-4 justify-content-center">
+                        <div class="row mt-4 justify-content-center horzontal-space-left-md ">
                             <div class="col-lg-3 col-md-6 col-sm-9 mt-3 btn-more-injuries" *ngFor="let item of buttons">
                                 <app-g-button [data]="item"></app-g-button>
                             </div>

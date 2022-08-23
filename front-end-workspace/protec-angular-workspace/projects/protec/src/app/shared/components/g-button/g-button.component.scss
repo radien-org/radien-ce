@@ -187,17 +187,15 @@
     font-family: var(--unnamed-font-family-dosis);
 }
 
-
-/*
-.arrow:hover{
-    border-color: var(--deep-forest);
+.selected{
+    background-color: var(--muted-forest);
+    color: #FFFFFF;
 }
 
-.button-arrow:hover {
-    border-radius: 2px;
-    color: var(--deep-forest);
+.not-selected{
+    background-color:#FFFFFF;
+    color: var(--muted-forest);
 }
-*/
 
 .btn-arrow{
     color: var(--muted-forest);

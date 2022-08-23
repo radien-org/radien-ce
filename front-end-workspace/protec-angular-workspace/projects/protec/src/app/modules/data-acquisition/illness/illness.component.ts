@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { StorageService } from '../../../shared/services/storage/storage.service';
+import { LOCAL } from '../../../shared/services/storage/local.enum';
 
 @Component({
   selector: 'app-illness',
@@ -13,20 +15,46 @@ export class IllnessComponent implements OnInit {
       type: 'navegation-buttons',
       navegations: [
         {
-          label: this.translationService.instant('zurück'),
+          label: this.translationService.instant('Zurück'),
           link: '/data-acquisition/details-intro'
-        },
-        {
-          label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/full-body'
         }
       ]
     }
   }
 
-  constructor(private readonly translationService: TranslateService) { }
+  accidentType: string = '';
+
+  constructor(private readonly translationService: TranslateService, private readonly storageService: StorageService) { }
 
   ngOnInit(): void {
+    this.accidentType = this.storageService.getItem(LOCAL.ACCIDENT_TYPE);
+    this.verifyAccidentType();
+  }
+
+  verifyAccidentType() {
+    this.pageNav.navegation.navegations.splice(1, 1);
+    if(this.accidentType === 'recreational-accident') {
+      this.pageNav.navegation.navegations.push(
+        {
+          label: this.translationService.instant('weiter'),
+          link: '/data-acquisition/full-body'
+        }
+      );
+    } else if(this.accidentType === 'disease') {
+      this.pageNav.navegation.navegations.push(
+        {
+          label: this.translationService.instant('weiter'),
+          link: '/data-acquisition/summary'
+        }
+      );
+    } else {
+      this.pageNav.navegation.navegations.push(
+        {
+          label: this.translationService.instant('weiter'),
+          link: '/data-acquisition/illness-diagnostic'
+        }
+      );
+    }
   }
 
   option_class = 'hide';
