@@ -93,11 +93,11 @@ export class PartBodyFigureComponent implements OnInit {
     //this.bodyPart = this.storageService.getItem(LOCAL.BODY_PART);
     switch (this.bodyPart) {
       case 'head':
-        result = 'ProTec_Software_Figure_pa-head.svg';
+        result = 'ProTec_Software_Bodyparts_Head.svg';
         this.bodyPartSimple = 'head';
         break;
       case 'elbow-left':
-        result = 'ProTec_Software_Figure_pa-elbow-left.svg';
+        result = 'ProTec_Software_Bodyparts_Elbow-left.svg';
         this.bodyPartSimple = 'elbow';
         break;    
       case 'upper-arm-left':
@@ -113,23 +113,23 @@ export class PartBodyFigureComponent implements OnInit {
         this.bodyPartSimple = 'torso';
         break;    
       case 'shoulder-right':
-        result = 'ProTec_Software_Figure_pa-shoulder-right.svg';
+        result = 'ProTec_Software_Bodyparts_Shoulder-right.svg';
         this.bodyPartSimple = 'shoulder';
         break;    
       case 'upper-arm-right':
-        result = 'ProTec_Software_Figure_pa-upper-arm-right.svg';
+        result = 'ProTec_Software_Bodyparts_Bicep-left.svg';
         this.bodyPartSimple = 'arm';
         break;    
       case 'elbow-right':
-        result = 'ProTec_Software_Figure_pa-elbow-right.svg';
+        result = 'ProTec_Software_Bodyparts_Elbow-right.svg';
         this.bodyPartSimple = 'elbow';
         break;    
       case 'hand-left':
-        result = 'ProTec_Software_Figure_pa-hand-left.svg';
+        result = 'ProTec_Software_Bodyparts_Hand-left.svg';
         this.bodyPartSimple = 'hand';
         break;    
       case 'forearm-left':
-        result = 'ProTec_Software_Figure_pa-forearm-left.svg';
+        result = 'ProTec_Software_Bodyparts_Forearm-left.svg';
         this.bodyPartSimple = 'forearm';
         break;    
       case 'hip-left':
@@ -137,7 +137,7 @@ export class PartBodyFigureComponent implements OnInit {
         this.bodyPartSimple = 'hip';
         break;    
       case 'hip-right':
-        result = 'ProTec_Software_Figure_pa-hip-right.svg';
+        result = 'ProTec_Software_Bodyparts_Pelvis-right.svg';
         this.bodyPartSimple = 'hip';
         break;    
       case 'forearm-right':
@@ -145,7 +145,7 @@ export class PartBodyFigureComponent implements OnInit {
         this.bodyPartSimple = 'forearm';
         break;    
       case 'hand-right':
-        result = 'ProTec_Software_Figure_pa-hand-right.svg';
+        result = 'ProTec_Software_Bodyparts_Hand-right.svg';
         this.bodyPartSimple = 'hand';
         break;    
       case 'thigh-left':
@@ -153,15 +153,15 @@ export class PartBodyFigureComponent implements OnInit {
         this.bodyPartSimple = 'thigh';
         break;    
       case 'thigh-right':
-        result = 'ProTec_Software_Figure_pa-thigh-right.svg';
+        result = 'ProTec_Software_Bodyparts_Thigh-right.svg';
         this.bodyPartSimple = 'thigh';
         break;    
       case 'knee-left':
-        result = 'ProTec_Software_Figure_pa-knee-left.svg';
+        result = 'ProTec_Software_Bodyparts_Knee-left.svg';
         this.bodyPartSimple = 'knee';
         break;    
       case 'knee-right':
-        result = 'ProTec_Software_Figure_pa-knee-right.svg';
+        result = 'ProTec_Software_Bodyparts-Knee-right.svg';
         this.bodyPartSimple = 'knee';
         break;    
       case 'leg-left':
@@ -173,7 +173,7 @@ export class PartBodyFigureComponent implements OnInit {
         this.bodyPartSimple = 'leg';
         break;    
       case 'foot-left':
-        result = 'ProTec_Software_Figure_pa-foot-left.svg';
+        result = 'ProTec_Software_Bodyparts_Foot-left.svg';
         this.bodyPartSimple = 'foot';
         break;    
       case 'foot-right':
