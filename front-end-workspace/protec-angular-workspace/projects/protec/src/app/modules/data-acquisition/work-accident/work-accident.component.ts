@@ -40,12 +40,18 @@ export class WorkAccidentComponent implements OnInit {
       private readonly storageService: StorageService,
   ) {
     this.options = [];
-    this.postCode = {
-      value: this.storageService.getItem(LOCAL.WORK_ACCIDENT_FORM).postCode || '', error : ''
+    try {
+      this.postCode = {
+        value: this.storageService.getItem(LOCAL.WORK_ACCIDENT_FORM).postCode || '', error : ''
+      }
+      this.occupation = {
+        value: this.storageService.getItem(LOCAL.WORK_ACCIDENT_FORM).occupation || '', error: ''
+      }
+    } catch (err) {
+      this.postCode = {value: '', error: ''}
+      this.occupation = {value: '', error: ''}
     }
-    this.occupation = {
-      value: this.storageService.getItem(LOCAL.WORK_ACCIDENT_FORM).occupation || '', error: ''
-    }
+
     this.verifyInput()
   }
 

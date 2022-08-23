@@ -12,4 +12,5 @@ export enum LOCAL {
   BODY_PART = 'PH__bp',
   WORK_ACCIDENT_FORM = 'PH_work_acc',
   ACCIDENT_DATE_FORM = 'PH__acc_date',
+  PERSONAL_DATA_INPUT_FORM = 'PH__data'
 }

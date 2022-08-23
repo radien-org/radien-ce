@@ -98,19 +98,24 @@ export class AccidentDateComponent implements OnInit {
       private readonly dataService : DataAcquisitionService,
       private readonly storageService: StorageService,
   ) {
-    this.accidentDate = {
-      value: this.storageService.getItem(LOCAL.ACCIDENT_DATE_FORM).date || '', error : ''
+    try {
+      this.accidentDate = {
+        value: this.storageService.getItem(LOCAL.ACCIDENT_DATE_FORM).date || '', error : ''
+      }
+      this.accidentIsOnSickLeave = {
+        value: this.storageService.getItem(LOCAL.ACCIDENT_DATE_FORM).isOnSickLeave || '', error: ''
+      }
+    } catch (err) {
+      this.accidentDate = {value: '', error: ''}
+      this.accidentIsOnSickLeave = {value: '', error: ''}
     }
-    this.accidentIsOnSickLeave = {
-      value: this.storageService.getItem(LOCAL.ACCIDENT_DATE_FORM).isOnSickLeave || '', error: ''
-    }
+
 
     if (this.accidentDate.value){
       let date: String[] =  this.accidentDate.value.split('.')
       this.selectYear(+date[0]);
       this.selectMonth(+date[1]);
       this.selectDay(+date[2])
-
     }
     if (this.accidentIsOnSickLeave.value == "yes") {
       this.buttons[0].active = true
