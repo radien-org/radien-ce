@@ -71,10 +71,12 @@
 </div>
 
 <div *ngIf="data.type === 'footer-nav'">
-    <div class="footer-nav-link bt-action" (click)="goToLink(data.link)">
-        <span class="no-overflow-text">
-            {{data.label | translate}}
-        </span>
+    <div class = "font-weight-bolder">
+        <div class="footer-nav-link bt-action" (click)="goToLink(data.link)">
+            <span class="no-overflow-text">
+                {{data.label | translate}}
+            </span>
+        </div>
     </div>
 </div>
 
