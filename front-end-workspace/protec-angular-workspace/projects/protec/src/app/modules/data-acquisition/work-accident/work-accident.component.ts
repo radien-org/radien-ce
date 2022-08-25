@@ -13,7 +13,7 @@ export class WorkAccidentComponent implements OnInit {
 
   initNavigation = [{
     label: this.translationService.instant('back'),
-    link: '/data-acquisition/full-body'
+    link: '/data-acquisition/details-intro'
   }]
 
   pageNav = {
@@ -70,7 +70,6 @@ export class WorkAccidentComponent implements OnInit {
   saveInputs(): void {
     this.storageService.setItem(LOCAL.WORK_ACCIDENT_FORM, {postCode: `${this.postCode.value}`, occupation: `${this.occupation.value}`})
   }
-
 
   ngOnInit(): void {
     this.getEmploymentResponsibleOptions();

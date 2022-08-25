@@ -1,12 +1,14 @@
 <div class="container-fluid zero-margin zero-padding global-container">
-  <div>
-    <div>
+  <div class="app-container">
+    <div class="app-header-container">
       <app-header></app-header>
     </div>
-    <div>
-      <router-outlet></router-outlet>
+    <div class="app-main-container">
+      <div class="app-main-content">
+        <router-outlet></router-outlet>
+      </div>
     </div>
-    <div>
+    <div class="app-footer-container">
       <app-footer></app-footer>
     </div>
   </div>

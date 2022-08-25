@@ -100,7 +100,7 @@
                 (click)="goToLink(navegation.link)" 
                 [ngClass]="{'text-right': i > 0}">
                 <span *ngIf="i == 0 && navegation.link != 'disabled'" class="arrow arrow-left " [ngClass]="btn_arrow" (mouseenter)="btnOnMouseEnter()" (mouseleave)="btnOnMouseLeave()"></span>
-                <span class="no-overflow-text button-arrow"  [ngClass]="btn_arrow" (mouseenter)="btnOnMouseEnter()" (mouseleave)="btnOnMouseLeave()">
+                <span class="no-overflow-text button-arrow btn-step-text"  [ngClass]="btn_arrow" (mouseenter)="btnOnMouseEnter()" (mouseleave)="btnOnMouseLeave()">
                     {{navegation.label | translate}}
                 </span>
                 <span *ngIf="i > 0 && navegation.link != 'disabled'" class="arrow arrow-right" [ngClass]="btn_arrow" (mouseenter)="btnOnMouseEnter()" (mouseleave)="btnOnMouseLeave()"></span>

@@ -61,8 +61,12 @@ export class AdditionalInsuranceComponent implements OnInit {
 
   items = [];
   item: string = '';
-  selectedOptions: string[] = [];
-  options: any[];
+  selectedOptions: {
+    name: string,
+    code: string
+  } [] = [];
+  options: any[] = [];
+  placeholder: string = ''
 
   buttonsStatus = {
     firstStatus: 'no',
@@ -79,14 +83,23 @@ export class AdditionalInsuranceComponent implements OnInit {
     private readonly dataService : DataAcquisitionService,
     private readonly storageService: StorageService
   ) {
-    this.options = [];
   }
 
   ngOnInit(): void {
     this.primengConfig.ripple = true;
     this.getAdditionalInsuranceOptions();
     this.accidentType = this.storageService.getItem(LOCAL.ACCIDENT_TYPE);
+
+    try {
+      this.storageService.getItem(LOCAL.ADDITIONAL_INSURANCE_FORM).choices.map((item: { name: string; code: string; }) => this.selectedOptions.push(item))
+      this.selectNoBtn({var: 'firstStatus', value: 'yes'}, this.storageService.getItem(LOCAL.ADDITIONAL_INSURANCE_FORM).choices)
+    } catch {
+      this.selectedOptions = []
+    }
+
+    this.noButton.selected = this.selectedOptions.length <= 0;
     this.verifyAccidentType();
+    this.placeholder = 'Ja un zwar:'
   }
 
   verifyAccidentType() {
@@ -136,9 +149,15 @@ export class AdditionalInsuranceComponent implements OnInit {
       this.noButton.selected = false;
     } else {
       this.noButton.selected = true;
+      this.selectedOptions = [];
     }
 
     this.verifyAccidentType();
+    this.saveInputs();
+  }
+
+  saveInputs(): void {
+    this.storageService.setItem(LOCAL.ADDITIONAL_INSURANCE_FORM, {choices:this.selectedOptions})
   }
 
   getAdditionalInsuranceOptions() {
