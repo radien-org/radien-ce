@@ -13,6 +13,7 @@ export enum LOCAL {
   OCCUPATION_POSTCODE = 'PH__occ_plz',
   OCCUPATION = 'PH__occ',
   CLAIMS_LIST = 'PH_cl',
+  ADDITIONAL_INSURANCE_FORM = 'PH__add_info',
   WORK_ACCIDENT_FORM = 'PH_work_acc',
   ACCIDENT_DATE_FORM = 'PH__acc_date',
   PERSONAL_DATA_PERSON = 'PH__data_person',
