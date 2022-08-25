@@ -48,11 +48,10 @@ export class PartBodyFigureComponent implements OnInit {
     ) {
         this.options = [];
         this.subOptions = [];
-        this.bodyPart = this.storageService.getItem(LOCAL.BODY_PART);
     }
 
     ngOnInit(): void {
-        this.selectBodyPart();
+      this.selectBodyPart(this.storageService.getItem(LOCAL.BODY_PART));
     }
 
     getInjuriesOptions() {
@@ -88,9 +87,10 @@ export class PartBodyFigureComponent implements OnInit {
         }
     }
 
-    selectBodyPart() {
+    selectBodyPart(bodyPart: string) {
         let result = '';
-        //this.bodyPart = this.storageService.getItem(LOCAL.BODY_PART);
+        this.bodyPart = bodyPart;
+        console.log('debug bodyPart:', this.bodyPart);
         switch (this.bodyPart) {
             case 'head':
                 result = 'ProTec_Software_Bodyparts_Head.svg';
@@ -185,11 +185,13 @@ export class PartBodyFigureComponent implements OnInit {
                 this.bodyPartSimple = '';
                 break;
         }
-        this.bodyPartImage = '../../../../assets/images/body/' + result;
+        this.bodyPartImage = '../../../../assets/images/body-2/' + result;
+        console.log('debug bodyPart result:', this.bodyPart, this.bodyPartImage);
         this.getInjuriesOptions();
     }
 
     getBodyPartImage() {
+      console.log('debug bodyPartImage:', this.bodyPartImage);
         return this.bodyPartImage;
     }
 

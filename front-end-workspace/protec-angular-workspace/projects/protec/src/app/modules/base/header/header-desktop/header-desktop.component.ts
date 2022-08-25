@@ -27,7 +27,7 @@ export class HeaderDesktopComponent implements OnInit {
   }
 
   login() {
-    window.location.href='https://idp-test.protec.help/auth/admin';
+    window.location.href='https://idp-test.protec.help/auth/realms/protec/account';
     //window.open('https://idp-test.protec.help/auth/admin');
     //window.open('https://idp-test.protec.help/auth/admin', '_blank');
   }
