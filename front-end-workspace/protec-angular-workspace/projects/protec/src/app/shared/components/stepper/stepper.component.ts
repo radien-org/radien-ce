@@ -15,22 +15,30 @@ export class StepperComponent implements OnInit {
     {
       label: this.translationService.instant('step1'),
       type: 'arrow-right-first',
-      link: '/data-acquisition/accident-intro'
+      link: '/data-acquisition/accident-intro',
+      status: 'untouched',
+      step: 1
     },
     {
       label: this.translationService.instant('step2'),
       type: 'arrow-right',
-      link: '/data-acquisition/die-details'
+      link: '/data-acquisition/die-details',
+      status: 'untouched',
+      step: 2
     },
     {
       label: this.translationService.instant('step3'),
       type: 'arrow-right',
-      link: '/'
+      link: '/',
+      status: 'untouched',
+      step: 3
     },
     {
       label: this.translationService.instant('step4'),
       type: 'arrow-right',
-      link: '/'
+      link: '/',
+      status: 'untouched',
+      step: 4
     }
   ]
 

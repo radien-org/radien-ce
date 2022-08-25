@@ -7,18 +7,20 @@
 </div>
 
 <div *ngIf="data.type === 'arrow-right'">
-    <div class="btn-version btn-arrow-right" [ngClass]="{'btn-generic-focus-color': checkCurrentRoute(data.link)}">
-        <span class="no-overflow-text">
+    <div class="btn-version btn-arrow-right" [ngClass]="{'btn-generic-focus-color': data.status === 'in-progress', 'btn-generic-completed-color': data.status === 'completed' }">
+        <span class="no-overflow-text" *ngIf="data.status && data.status !== 'completed'">
             {{data.label | translate}}
         </span>
+        <mat-icon style="color: white" *ngIf="data.status && data.status === 'completed'">check</mat-icon>
     </div>
 </div>
 
 <div *ngIf="data.type === 'arrow-right-first'">
-    <div class="btn-version btn-arrow-right-first" [ngClass]="{'btn-generic-focus-color': checkCurrentRoute(data.link)}">
-        <span class="no-overflow-text">
+    <div class="btn-version btn-arrow-right-first" [ngClass]="{'btn-generic-focus-color': data.status === 'in-progress', 'btn-generic-completed-color': data.status === 'completed'}">
+        <span class="no-overflow-text" *ngIf="data.status && data.status !== 'completed'">
             {{data.label | translate}}
         </span>
+        <mat-icon style="color: white" *ngIf="data.status && data.status === 'completed'">check</mat-icon>
     </div>
 </div>
 

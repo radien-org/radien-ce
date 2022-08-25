@@ -1,7 +1,10 @@
 <div class="row mt-4 mb-4 zero-margin">
     <div class="col-lg-9 col-md-12 col-sm-12">
         <div class="row">
-            <div class="col-lg-3 col-md-12 col-sm-12 zero-padding horzontal-space-reducer-right-5px" *ngFor="let step of steps">
+            <div class="col-lg-3 col-md-12 col-sm-12 zero-padding">
+                <app-g-button [data]="steps[0]"></app-g-button>
+            </div>
+            <div class="col-lg-3 col-md-12 col-sm-12 zero-padding horzontal-space-reducer-right-5px " *ngFor="let step of steps.slice(1)">
                 <app-g-button [data]="step"></app-g-button>
             </div>
         </div>
@@ -16,52 +19,3 @@
         </div>
     </div>
 </div>
-
-<mat-stepper [linear]="false" #stepper *ngIf="false">
-    
-    <mat-step [stepControl]="firstFormGroup">
-        <form [formGroup]="firstFormGroup">
-            <ng-template matStepLabel>{{'step1' | translate}}</ng-template>
-            <mat-form-field appearance="fill">
-                <mat-label>{{'Name' | translate}}</mat-label>
-                <input matInput placeholder="Last name, First name" formControlName="firstCtrl" required>
-            </mat-form-field>
-            <div>
-                <button mat-button matStepperNext>Next</button>
-            </div>
-        </form>
-    </mat-step>
-    
-    <mat-step [stepControl]="secondFormGroup" [translate]="'step2'">
-        <form [formGroup]="secondFormGroup">
-            <mat-form-field appearance="fill">
-                <mat-label>{{'Address' | translate}}</mat-label>
-                <input matInput formControlName="secondCtrl" placeholder="Ex. 1 Main St, New York, NY"
-                required>
-            </mat-form-field>
-            <div>
-                <button mat-button matStepperPrevious>{{'Zurück' | translate}}</button>
-                <button mat-button matStepperNext>{{'Weiter' | translate}}</button>
-            </div>
-        </form>
-    </mat-step>
-    
-    <mat-step>
-        <ng-template matStepLabel>{{'step3' | translate}}</ng-template>
-        <p>{{'Step.' | translate}}</p>
-        <div>
-            <button mat-button matStepperPrevious>{{'Zurück' | translate}}</button>
-            <button mat-button matStepperNext>{{'Weiter' | translate}}</button>
-        </div>
-    </mat-step>
-    
-    <mat-step  class="horzontal-space-reducer-left-sm">
-        <ng-template matStepLabel>{{'step4' | translate}}</ng-template>
-        <p>{{'You are now done.' | translate}}</p>
-        <div>
-            <button mat-button matStepperPrevious>{{'Zurück' | translate}}</button>
-            <button mat-button (click)="stepper.reset()">{{'Reset' | translate}}</button>
-        </div>
-    </mat-step>
-
-</mat-stepper>
