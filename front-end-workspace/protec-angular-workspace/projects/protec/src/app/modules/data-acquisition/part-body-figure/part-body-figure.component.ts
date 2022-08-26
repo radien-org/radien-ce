@@ -140,7 +140,7 @@ export class PartBodyFigureComponent implements OnInit {
                 this.bodyPartSimple = 'hip';
                 break;
             case 'forearm-right':
-                result = 'ProTec_Software_Figure_pa-forearm-right.svg';
+                result = 'ProTec_Software_Bodyparts_Forearm-right.svg';
                 this.bodyPartSimple = 'forearm';
                 break;
             case 'hand-right':
