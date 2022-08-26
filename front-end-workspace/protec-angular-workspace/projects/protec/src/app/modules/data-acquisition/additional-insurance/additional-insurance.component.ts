@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { PrimeNGConfig } from "primeng/api";
 import { CookieService } from '../../../shared/services/cookie/cookie.service';
@@ -82,7 +82,12 @@ export class AdditionalInsuranceComponent implements OnInit {
     private primengConfig: PrimeNGConfig, 
     private readonly dataService : DataAcquisitionService,
     private readonly storageService: StorageService
-  ) {
+  ) {}
+
+  ngOnInit(): void {
+    this.primengConfig.ripple = true;
+    this.getAdditionalInsuranceOptions();
+    this.accidentType = this.storageService.getItem(LOCAL.ACCIDENT_TYPE);
     try {
       this.storageService.getItem(LOCAL.ADDITIONAL_INSURANCE_FORM).choices.map((item: { 
         name: string; 
@@ -90,27 +95,15 @@ export class AdditionalInsuranceComponent implements OnInit {
       }) => this.selectedOptions.push(item));
       this.selectNoBtn({
         var: 'firstStatus', 
-        value: 'yes'
+        value: 'no'
       }, this.storageService.getItem(LOCAL.ADDITIONAL_INSURANCE_FORM).choices);
     } catch {
       this.selectedOptions = [];
     }
-
-    console.log('debug:', this.selectedOptions)
-  }
-
-  ngOnInit(): void {
-    this.primengConfig.ripple = true;
-    this.getAdditionalInsuranceOptions();
-    this.accidentType = this.storageService.getItem(LOCAL.ACCIDENT_TYPE);
-
+    console.log('debug (selectedOptions):', this.selectedOptions)
     this.noButton.selected = this.selectedOptions.length <= 0;
     this.verifyAccidentType();
     this.placeholder = 'Ja un zwar:';
-  }
-
-  ngAfterContentInit() {
-    
   }
 
   verifyAccidentType() {
@@ -140,30 +133,17 @@ export class AdditionalInsuranceComponent implements OnInit {
   }
 
   selectNoBtn(data: any = false, selectedItems: any = '') {
-    console.log(data);
-    console.log(selectedItems);
-
     if(data){
       if(data.var === 'firstStatus'){
-        this.buttonsStatus.firstStatus = data.value;
-        this.noButton.selected = data.value === 'yes' ? false : true;
-        if(data.value === 'no'){
+        if(selectedItems.length > 0) {
+          this.noButton.selected = false;
+          this.buttonsStatus.firstStatus = 'yes';
+        } else {
+          this.noButton.selected = true;
+          this.buttonsStatus.firstStatus = 'no';
           this.selectedOptions = [];
         }
       }
-      if(data.var === 'secondStatus'){
-        this.buttonsStatus.secondStatus = data.value;
-        this.secondOptionButtons.forEach(item => {
-          item.selected = item.funcParams.value === data.value ? true : false;
-        });
-      }
-    }
-
-    if(selectedItems.length > 0) {
-      this.noButton.selected = false;
-    } else {
-      this.noButton.selected = true;
-      this.selectedOptions = [];
     }
 
     this.verifyAccidentType();
@@ -171,8 +151,6 @@ export class AdditionalInsuranceComponent implements OnInit {
   }
 
   selectSecondNoBtn(data: any = false, selectedItems: any = '') {
-    console.log(data);
-    console.log(selectedItems);
     if(data){
       if(data.var === 'secondStatus'){
         this.buttonsStatus.secondStatus = data.value;

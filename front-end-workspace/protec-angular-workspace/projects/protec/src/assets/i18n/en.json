@@ -147,10 +147,12 @@
   "Weiter": "Next",
   "KRANKHEIT": "DISEASE",
   "ARBEITSUNFALL": "WORK ACCIDENT",
-  "FREIZEITUNFALL": "RECREATIONAL ACCIDENT",
+  "FREIZEITUNFALL": "PRIVATE ACCIDENT",
   "request-quote": {
     "../../../../assets/images/ProTec_Software_Graphic_envelope.svg": "../../../../assets/images/ProTec_Software_Graphics_envelope-EN.svg"
   },
   "ERFASSTE SCHADENSFÄLLE": "RECORDED CLAIMS",
-  "ANGABEN ZUR VERLETZUNG": "INFRINGEMENT INFORMATION"
+  "ANGABEN ZUR VERLETZUNG": "INFRINGEMENT INFORMATION",
+  "form yes": "Yes",
+  "form no": "No"
 }

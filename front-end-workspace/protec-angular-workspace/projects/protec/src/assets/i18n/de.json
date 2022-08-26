@@ -15,7 +15,7 @@
     "cookies_only_necessary": "OPTIONALE COOKIES ABLEHNEN",
     "confirm_cookies_selection": "MEINE AUSWAHL BESTÄTIGEN",
     "home": "HOME",
-    "back": "Züruck",
+    "back": "Zurück",
     "proceed": "Weiter",
     "step1_title": "SCHRITT 1",
 
@@ -154,5 +154,6 @@
         "../../../../assets/images/ProTec_Software_Graphic_envelope.svg": "../../../../assets/images/ProTec_Software_Graphic_envelope.svg"
     },
     "ERFASSTE SCHADENSFÄLLE": "ERFASSTE SCHADENSFÄLLE",
-    "ANGABEN ZUR VERLETZUNG": "ANGABEN ZUR VERLETZUNG"
+    "form yes": "Ja",
+    "form no": "Nein"
 }
