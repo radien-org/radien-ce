@@ -541,6 +541,20 @@ b {
   margin-left: -4em;
 }
 
+.horzontal-space-reducer-right-8{
+  margin-right: -8em;
+}
+
+.horzontal-space-reducer-right-6{
+  margin-right: -6em;
+}
+
+margin-left-8{
+  margin-left: 8em !important;
+}
+
+
+
 .bold-text{
   font-weight: bold;
 }
@@ -749,4 +763,10 @@ b {
 .p-multiselect-trigger {
   width: auto !important;
   margin-left: 2rem;
+}
+
+.mat-drawer-container {
+  width: 100vw !important;
+  height: 100vh !important;
+  display: initial !important;
 }
