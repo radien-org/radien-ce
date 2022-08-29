@@ -25,6 +25,9 @@
   "MEIN KONTO": "MY ACCOUNT",
 
   "EINSTELLUNGEN": "SETTINGS",
+  "DATENSCHUTZ": "DATA POLICY",
+  "IMPRESSUM": "IMPRINT",
+  "AGB": "CONDITIONS OF USE",
 
   "DIE DETAILS": "THE DETAILS",
   "DAS SCHADENSEREIGNIS": "DAMAGE STORY",
@@ -38,7 +41,6 @@
   "TOLLE ÜBERSCHRIFT": "GREAT HEADLINE",
   "Herzlich Willkommen beim digitalen Rentenanspruchsprüfer!": "Welcome to the digital pension entitlement checker!",
   "Du hast nun die Möglichkeit in 4 Schritten kostenlos und unverbindlich Deine Rentenansprüche zu prüfen. Bei Rückfragen stehen wir Dir jederzeit gerne zur Verfügung. Wähle in diesem Fall bitte die „Hilfe & Kontakt“ Option.": "You now have the opportunity to check your pension entitlements in 4 steps free of charge and without obligation. If you have any questions, we are always at your disposal. In this case, please select the Contact option.",
-  "AGB": "AGB",
   "Präambel": "Preamble",
   "Pro:Tec bietet Prozessfinanzierungsleistungen mit IT-gestützten Leistungselementen bei der Durchsetzung sozialversicherungsrechtlicher Ansprüche an. Die folgenden Nutzungsbedingungen gelten dabei für die Informationswebseite („protec-solutions.de“) sowie die Registrierung zur und Durchführung einer unverbindlichen Vorprüfung („protec.help“).": "Pro:Tec offers litigation financing services with IT-supported service elements in the Enforcement of claims under social security law. The following terms of use apply to the information website (\"protec-solutions.de\") as well as the registration for and implementation of a non-binding preliminary test (\"protec.help\").",
   "1. Geltungsbereich": "1. Scope",
@@ -54,7 +56,7 @@
     "Dein Unfalldatum": "Your accident date",
     "Bist bzw. warst Du krankgeschrieben? *": "Are or were you on sick leave? *",
     "JAHR *": "YEAR *",
-    "MONATE": "MONTH",
+    "MONAT": "MONTH",
     "TAG": "DAY"
   },
   "accident-type": {

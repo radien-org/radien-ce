@@ -103,7 +103,7 @@ export class AdditionalInsuranceComponent implements OnInit {
     console.log('debug (selectedOptions):', this.selectedOptions)
     this.noButton.selected = this.selectedOptions.length <= 0;
     this.verifyAccidentType();
-    this.placeholder = 'Ja un zwar:';
+    this.placeholder = 'Ja und zwar:';
   }
 
   verifyAccidentType() {
