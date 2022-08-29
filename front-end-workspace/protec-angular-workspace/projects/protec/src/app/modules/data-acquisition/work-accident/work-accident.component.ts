@@ -12,7 +12,7 @@ import {StorageService} from "../../../shared/services/storage/storage.service";
 export class WorkAccidentComponent implements OnInit {
 
   initNavigation = [{
-    label: this.translationService.instant('back'),
+    label: this.translationService.instant('ZURÜCK'),
     link: '/data-acquisition/details-intro'
   }]
 
@@ -58,7 +58,7 @@ export class WorkAccidentComponent implements OnInit {
   verifyInput(): void {
     if (this.postCode.value && this.occupation.value) {
       this.pageNav.navegation.navegations = [...this.initNavigation, {
-        label: this.translationService.instant('next'),
+        label: this.translationService.instant('WEITER'),
         link: '/data-acquisition/full-body'
       }]
       this.saveInputs();

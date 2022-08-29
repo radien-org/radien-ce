@@ -15,8 +15,8 @@
     "cookies_only_necessary": "OPTIONALE COOKIES ABLEHNEN",
     "confirm_cookies_selection": "MEINE AUSWAHL BESTÄTIGEN",
     "home": "HOME",
-    "back": "Zurück",
-    "proceed": "Weiter",
+    "ZURÜCK": "ZURÜCK",
+    "WEITER": "WEITER",
     "step1_title": "SCHRITT 1",
 
 
@@ -146,8 +146,6 @@
     "JA": "JA",
     "NEIN": "NEIN",
     "JETZT STARTEN": "JETZT STARTEN",
-    "Zurück": "Zurück",
-    "Weiter": "Weiter",
     "KRANKHEIT": "KRANKHEIT",
     "ARBEITSUNFALL": "ARBEITSUNFALL",
     "FREIZEITUNFALL": "FREIZEITUNFALL",
