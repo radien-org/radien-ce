@@ -1,30 +1,26 @@
 .header-logo {
     width: 150px;
-    padding-top: 10px;
-    margin-left: 20px;
     cursor: pointer;
+    margin-left: -10px;
+    margin-right: 100px;
 }
 
 .header-title {
     color: var(--light-taupe);
-    text-align: left;
-    font-weight: bold;
     font-size: 16px;
+    font-weight: bold;
     letter-spacing: 6.6px;
     text-transform: uppercase;
     opacity: 1;
-    padding-top: 35px;
 }
 
 .header-title-menu {
     color: var(--light-taupe);
     text-align: left;
-    font-weight: bold;
     font-size: 10px;
     letter-spacing: 6.6px;
     text-transform: uppercase;
     opacity: 1;
-    padding-top: 32px;
     cursor: pointer;
 }
 
@@ -40,15 +36,12 @@
     clip-path: polygon(48% 46%, 0% 100%, 100% 100%);
     background-color: var(--deep-forest) ;
     margin-top: 2px;
-    height: 1em;
-    width: 1em;
 }
 
 .menu-button-contact{
     background-color: var(--deep-forest);
     outline: none;
     border: none;
-
 }
 
 .dropdown:hover>.dropdown-menu {
@@ -100,6 +93,9 @@
     font-family: "Open sans", sans-serif;
     font-weight: lighter;
     font-size: small;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 .dropdown-item:hover{
@@ -115,4 +111,49 @@
     margin-top: 0em;
     margin-bottom: 0em;
     width: 90%;
+}
+
+.navigation {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
+    justify-content: space-between;
+    padding: 0 53px;
+}
+
+.nav-buttons {
+    justify-self: flex-end;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 85%;
+}
+
+.nav-button {
+    display: flex;
+    height: 100%;
+    margin-left: 50px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-left {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.lang-active {
+    font-weight: 800;
+}
+
+.seperator {
+    height: 20px;
+    background-color: var(--light-taupe);
+    margin: 0 2px;
+    margin-right: 6.5px;
+    width: 2px;
 }

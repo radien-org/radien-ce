@@ -1,4 +1,4 @@
 export const SUPPORTED_LANGUAGES = {
-  EN: { locale: 'en', key: 'EN' },
   PT: { locale: 'de', key: 'DE' },
+  EN: { locale: 'en', key: 'EN' },
 };
