@@ -26,6 +26,10 @@ export class HeaderDesktopComponent implements OnInit {
     this.translationService.setLocale(locale.locale);
   }
 
+  public getTranslationLocale() : string {
+    return this.translationService.currentTranslationLocale
+  }
+
   login() {
     window.location.href='https://idp-test.protec.help/auth/realms/protec/account';
     //window.open('https://idp-test.protec.help/auth/admin');
