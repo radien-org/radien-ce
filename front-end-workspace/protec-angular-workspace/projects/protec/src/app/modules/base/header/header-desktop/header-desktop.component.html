@@ -1,37 +1,35 @@
-<div class="row zero-margin zero-padding">
-    <div class="col-lg-2">
+<div class="navigation">
+    <div class="nav-left">
         <img src="../../../../assets/images/protec_logo.png" class="header-logo" (click)="backToBegin()">
+        <div >
+            <span class="header-title">
+                {{ 'UNFALLRENTEN-CHECKER' | translate }}
+            </span>
+        </div>
     </div>
-    <div class="col-lg-5">
-        <h6 class="header-title">
-            {{ 'UNFALLRENTEN-CHECKER' | translate }}
-        </h6>
-    </div>
-    <div class="col-lg-2 dropdown">
-        <button class="menu-button-contact dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <h6 class="header-title-menu">
+    <div class="nav-buttons">
+        <div class="nav-button dropdown" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="header-title-menu header-link">
                 {{ 'KONTAKT' | translate }}
-            </h6>
-        </button>
-        <div class="dropdown-bg-arrow"></div>
-        <div class="dropdown-menu dropdown-bg" aria-labelledby="dropdownMenuButton">
+            </span>
+            <div class="dropdown-bg-arrow"></div>
+            <div class="dropdown-menu dropdown-bg" aria-labelledby="dropdownMenuButton">
                 <a class="dropdown-item dropdown-bg" href="mailto:{{'info@protec-solutions.de' | translate}}">info@protec-solutions.de <i class="bi-envelope margin-horizontal float-right"></i></a>
                 <hr class="submenu-hr">
                 <a class="dropdown-item dropdown-bg" href="tel:{{'+49 (0)531 618 990 18' | translate}}">+49 (0) 531 618 990 18 <i class="bi-telephone-fill margin-horizontal float-right"></i></a>
                 <hr class="submenu-hr">
                 <a class="dropdown-item dropdown-bg" href="https://wa.me/4917672107052">+49 (0) 176 721 070 52 <i class="bi-whatsapp margin-horizontal float-right"></i></a>
+            </div>
         </div>
-    </div>
-    <div class="col-lg-2">
-        <h6 class="header-title-menu" (click)="login()">
-            {{ 'MEIN KONTO' | translate }}
-        </h6>
-    </div>
-    <div class="col-lg-1">
-        <h6 class="header-title-menu">
+        <div class="nav-button">
+            <span class="header-title-menu header-link" (click)="login()">
+                {{ 'MEIN KONTO' | translate }}
+            </span>
+        </div>
+        <div class="nav-button">
             <ng-container *ngFor="let locale of availableTranslationLocales;let last = last">
-                <span (click)="onClickTranslationLocale(locale)">{{ locale.key }}</span> <span *ngIf="!last">|</span> 
+                <span (click)="onClickTranslationLocale(locale)" class="header-title-menu header-link" [ngClass]="getTranslationLocale().toLocaleLowerCase() === locale.key.toLocaleLowerCase() ? 'lang-active' : 'lang-inactive'">{{ locale.key }}</span> <div *ngIf="!last" class="seperator"></div>
             </ng-container>
-        </h6>
+        </div>
     </div>
 </div>
