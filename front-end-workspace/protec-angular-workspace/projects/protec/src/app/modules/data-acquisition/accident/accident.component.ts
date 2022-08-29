@@ -13,11 +13,11 @@ export class AccidentComponent implements OnInit {
       type: 'navegation-buttons',
       navegations: [
         {
-          label: this.translationService.instant('back'),
+          label: this.translationService.instant('ZURÜCK'),
           link: '/data-acquisition'
         },
         {
-          label: this.translationService.instant('proceed'),
+          label: this.translationService.instant('WEITER'),
           link: '/data-acquisition/accident-type'
         }
       ]

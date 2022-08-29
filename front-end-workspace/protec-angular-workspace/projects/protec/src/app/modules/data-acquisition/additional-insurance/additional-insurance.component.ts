@@ -18,7 +18,7 @@ export class AdditionalInsuranceComponent implements OnInit {
       type: 'navegation-buttons',
       navegations: [
         {
-          label: this.translationService.instant('zurück'),
+          label: this.translationService.instant('ZURÜCK'),
           link: '/data-acquisition/accident-type'
         }
       ]
@@ -103,7 +103,7 @@ export class AdditionalInsuranceComponent implements OnInit {
     console.log('debug (selectedOptions):', this.selectedOptions)
     this.noButton.selected = this.selectedOptions.length <= 0;
     this.verifyAccidentType();
-    this.placeholder = 'Ja un zwar:';
+    this.placeholder = 'Ja und zwar:';
   }
 
   verifyAccidentType() {
@@ -125,7 +125,7 @@ export class AdditionalInsuranceComponent implements OnInit {
     } else {
       this.pageNav.navegation.navegations.push(
         {
-          label: this.translationService.instant('weiter'),
+          label: this.translationService.instant('WEITER'),
           link: '/data-acquisition/accident-date'
         }
       );

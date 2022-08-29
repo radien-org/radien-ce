@@ -24,7 +24,7 @@ export class MoreInjuriesComponent implements OnInit {
       type: 'navegation-buttons',
       navegations: [
         {
-          label: this.translationService.instant('back'),
+          label: this.translationService.instant('ZURÜCK'),
           link: '/data-acquisition/part-body'
         }
       ]
