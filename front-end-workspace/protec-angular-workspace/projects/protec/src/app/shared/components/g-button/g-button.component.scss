@@ -31,6 +31,15 @@
     background: var(--muted-forest) 0% 0% no-repeat padding-box;
 }
 
+.final-step{
+    border-radius: 2px;
+    width: 80%;
+    margin-left: 4.5em;
+}
+.btn-center{
+    padding-top: 5px !important;
+}
+
 .btn-item{
     font: var(--unnamed-font-style-normal) normal 600 var(--unnamed-font-size-14)/var(--unnamed-line-spacing-17) var(--unnamed-font-family-dosis);
     color: var(--muted-forest);
@@ -125,6 +134,7 @@
 .btn-arrow-right-first {
     clip-path: polygon(96% 0%, 100% 50%, 96% 100%, 0% 100%, 0% 50%, 0% 0%);
     margin-left: 0 !important;
+    border-radius: 2px;
 }
 
 .no-overflow-text {

@@ -387,6 +387,7 @@ b {
   font-family: var(--unnamed-font-family-open-sans);
   font-size: 18px;
   letter-spacing: 0px;
+  line-height: 24px;
 }
 
 .addScroll{
@@ -620,6 +621,10 @@ margin-left-8{
   .horzontal-space-left-md{
     margin-left: 2em !important;
   }
+
+.horzontal-space-left-sd{
+  margin-left: 1.5em !important;
+}
   
   .input-text{
     border: 1px solid var(--muted-forest);

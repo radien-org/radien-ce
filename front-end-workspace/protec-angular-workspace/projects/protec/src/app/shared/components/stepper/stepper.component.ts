@@ -44,7 +44,7 @@ export class StepperComponent implements OnInit {
 
   lastStep = {
     label: this.translationService.instant('step_final'),
-    type: 'default',
+    type: 'final-step',
     link: '/'
   }
 
