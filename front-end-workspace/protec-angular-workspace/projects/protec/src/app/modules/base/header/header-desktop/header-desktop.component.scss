@@ -21,6 +21,7 @@
     letter-spacing: 6.6px;
     text-transform: uppercase;
     opacity: 1;
+    font-weight: 400;
     cursor: pointer;
 }
 
@@ -147,7 +148,7 @@
 }
 
 .lang-active {
-    font-weight: 800;
+    font-weight: 900 !important;
 }
 
 .seperator {

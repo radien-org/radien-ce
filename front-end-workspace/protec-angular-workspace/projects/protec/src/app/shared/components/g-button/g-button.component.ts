@@ -31,6 +31,7 @@ export class GButtonComponent implements OnInit {
       '/data-acquisition/additional-insurance': 1,
       '/data-acquisition/accident-date': 1,
       '/data-acquisition/details-intro': 2,
+      '/data-acquisition/illness-details': 2,
       '/data-acquisition/full-body': 2,
       '/data-acquisition/work-accident': 2,
       '/data-acquisition/part-body': 2,
@@ -66,11 +67,6 @@ export class GButtonComponent implements OnInit {
         link ? this.router.navigate([link]) : this.router.navigate(['not-found']);
       }
     }
-  }
-
-  checkCurrentRoute(link:string) {
-    const currentRouter  = this.router.url;
-    return link === currentRouter ? true : false;
   }
 
   btn_arrow = "btn-arrow"
