@@ -140,9 +140,8 @@
         "Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *": "Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *",
         "Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *": "Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *"
     },
-    "full-body": {
-        "Bitte klicke die von der Verletzung betroffene Körperregion an. Im nächsten Schritt gibst Du die Verletzung(en) und Verletzungsfolge(n) für diese Körperregion an. Wenn mehrere Körperregionen betroffen sind kannst Du weitere Verletzungen im Anschluss hinzufügen.": "Bitte klicke die von der Verletzung betroffene Körperregion an. Im nächsten Schritt gibst Du die Verletzung(en) und Verletzungsfolge(n) für diese Körperregion an. Wenn mehrere Körperregionen betroffen sind kannst Du weitere Verletzungen im Anschluss hinzufügen."
-    },
+    "Bitte wähle die zutreffende(n) Verletzung(en) aus.":"Bitte wähle die zutreffende(n) Verletzung(en) aus.",
+    "Bitte klicke die von der Verletzung betroffene Körperregion an. Im nächsten Schritt gibst Du die Verletzung(en) und Verletzungsfolge(n) für diese Körperregion an. Wenn mehrere Körperregionen betroffen sind kannst Du weitere Verletzungen im Anschluss hinzufügen.": "Bitte klicke die von der Verletzung betroffene Körperregion an. Im nächsten Schritt gibst Du die Verletzung(en) und Verletzungsfolge(n) für diese Körperregion an. Wenn mehrere Körperregionen betroffen sind kannst Du weitere Verletzungen im Anschluss hinzufügen.",
     "Ja": "Ja",
     "Nein": "Nein",
     "JETZT STARTEN": "JETZT STARTEN",
