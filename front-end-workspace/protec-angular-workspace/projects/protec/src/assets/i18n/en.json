@@ -152,5 +152,17 @@
   "ERFASSTE SCHADENSFÄLLE": "RECORDED CLAIMS",
   "ANGABEN ZUR VERLETZUNG": "INFRINGEMENT INFORMATION",
   "form yes": "Yes",
-  "form no": "No"
+  "form no": "No",
+
+  "private-accident": {
+    "Wie kam es zu dem Unfall? *": "How did the accident happen? *" ,
+    "Text eingeben": "Insert text" ,
+    "Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *": "What was your last job occupation? *" ,
+    "Arbeitgeber": "Employer",
+    "Arbeitgeber zum Zeitpunkt des Unfalls": "Employer at time of accident" ,
+    "Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *":"Has said occupation been undertaken longer than 12 months? *" ,
+    "Welche berufliche Tätigkeit hast Du zuvor ausgeübt?": "What was your previous job occupation?",
+    "Berufliche Tätigkeit": "Job occupation" ,
+    "Vorheriger Arbeitgeber": "Previous Employer"
+  }
 }
