@@ -139,9 +139,8 @@
     "Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *": "What was your last professional activity? *",
     "Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *": "Was the professional activity performed for more than 12 months? *"
   },
-  "full-body": {
-    "Bitte klicke die von der Verletzung betroffene Körperregion an. Im nächsten Schritt gibst Du die Verletzung(en) und Verletzungsfolge(n) für diese Körperregion an. Wenn mehrere Körperregionen betroffen sind kannst Du weitere Verletzungen im Anschluss hinzufügen.": "Please click on the body region affected by the injury. In the next step you enter the injury(ies) and injury consequence(s) for this body region. If more than one body region is affected, you can add further injuries afterwards."
-  },
+  "Bitte wähle die zutreffende(n) Verletzung(en) aus.":"Please select injured part(s)",
+  "Bitte klicke die von der Verletzung betroffene Körperregion an. Im nächsten Schritt gibst Du die Verletzung(en) und Verletzungsfolge(n) für diese Körperregion an. Wenn mehrere Körperregionen betroffen sind kannst Du weitere Verletzungen im Anschluss hinzufügen.": "Please click on the body region affected by the injury. In the next step you enter the injury(ies) and injury consequence(s) for this body region. If more than one body region is affected, you can add further injuries afterwards.",
   "Ja": "Yes",
   "Nein": "No",
   "JETZT STARTEN": "START NOW",
