@@ -15,8 +15,8 @@
     "cookies_only_necessary": "OPTIONALE COOKIES ABLEHNEN",
     "confirm_cookies_selection": "MEINE AUSWAHL BESTÄTIGEN",
     "home": "HOME",
-    "back": "Zurück",
-    "proceed": "Weiter",
+    "ZURÜCK": "ZURÜCK",
+    "WEITER": "WEITER",
     "step1_title": "SCHRITT 1",
 
 
@@ -25,8 +25,9 @@
     "UNFALLRENTEN-CHECKER": "UNFALLRENTEN-CHECKER",
     "KONTAKT": "KONTAKT",
     "MEIN KONTO": "MEIN KONTO",
-
+    "IMPRESSUM": "IMPRESSUM",
     "EINSTELLUNGEN": "EINSTELLUNGEN",
+    "AGB": "AGB",
 
     "DIE DETAILS": "DIE DETAILS",
     "DAS SCHADENSEREIGNIS": "DAS SCHADENSEREIGNIS",
@@ -40,7 +41,7 @@
     "Herzlich Willkommen beim digitalen Rentenanspruchsprüfer!": "Herzlich Willkommen beim digitalen Rentenanspruchsprüfer!",
 
     "Du hast nun die Möglichkeit in 4 Schritten kostenlos und unverbindlich Deine Rentenansprüche zu prüfen. Bei Rückfragen stehen wir Dir jederzeit gerne zur Verfügung. Wähle in diesem Fall bitte die „Hilfe & Kontakt“ Option.": "Du hast nun die Möglichkeit in 4 Schritten kostenlos und unverbindlich Deine Rentenansprüche zu prüfen. Bei Rückfragen stehen wir Dir jederzeit gerne zur Verfügung. Wähle in diesem Fall bitte die „Hilfe & Kontakt“ Option.",
-    "AGB": "AGB",
+    "DATENSCHUTZ": "DATENSCHUTZ",
     "Präambel": "Präambel",
     "Pro:Tec bietet Prozessfinanzierungsleistungen mit IT-gestützten Leistungselementen bei der Durchsetzung sozialversicherungsrechtlicher Ansprüche an. Die folgenden Nutzungsbedingungen gelten dabei für die Informationswebseite („protec-solutions.de“) sowie die Registrierung zur und Durchführung einer unverbindlichen Vorprüfung („protec.help“).": "Pro:Tec bietet Prozessfinanzierungsleistungen mit IT-gestützten Leistungselementen bei der Durchsetzung sozialversicherungsrechtlicher Ansprüche an. Die folgenden Nutzungsbedingungen gelten dabei für die Informationswebseite („protec-solutions.de“) sowie die Registrierung zur und Durchführung einer unverbindlichen Vorprüfung („protec.help“).",
     "1. Geltungsbereich": "1. Geltungsbereich",
@@ -142,11 +143,9 @@
     "full-body": {
         "Bitte klicke die von der Verletzung betroffene Körperregion an. Im nächsten Schritt gibst Du die Verletzung(en) und Verletzungsfolge(n) für diese Körperregion an. Wenn mehrere Körperregionen betroffen sind kannst Du weitere Verletzungen im Anschluss hinzufügen.": "Bitte klicke die von der Verletzung betroffene Körperregion an. Im nächsten Schritt gibst Du die Verletzung(en) und Verletzungsfolge(n) für diese Körperregion an. Wenn mehrere Körperregionen betroffen sind kannst Du weitere Verletzungen im Anschluss hinzufügen."
     },
-    "JA": "JA",
-    "NEIN": "NEIN",
+    "Ja": "Ja",
+    "Nein": "Nein",
     "JETZT STARTEN": "JETZT STARTEN",
-    "Zurück": "Zurück",
-    "Weiter": "Weiter",
     "KRANKHEIT": "KRANKHEIT",
     "ARBEITSUNFALL": "ARBEITSUNFALL",
     "FREIZEITUNFALL": "FREIZEITUNFALL",
@@ -155,5 +154,17 @@
     },
     "ERFASSTE SCHADENSFÄLLE": "ERFASSTE SCHADENSFÄLLE",
     "form yes": "Ja",
-    "form no": "Nein"
+    "form no": "Nein",
+
+    "private-accident": {
+        "Wie kam es zu dem Unfall? *": "Wie kam es zu dem Unfall? *" ,
+        "Text eingeben": "Text eingeben" ,
+        "Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *": "Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *" ,
+        "Arbeitgeber": "Arbeitgeber",
+        "Arbeitgeber zum Zeitpunkt des Unfalls": "Arbeitgeber zum Zeitpunkt des Unfalls" ,
+        "Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *":"Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *" ,
+        "Welche berufliche Tätigkeit hast Du zuvor ausgeübt?": "Welche berufliche Tätigkeit hast Du zuvor ausgeübt?",
+        "Berufliche Tätigkeit": "Berufliche Tätigkeit" ,
+        "Vorheriger Arbeitgeber": "Vorheriger Arbeitgeber"
+    }
 }

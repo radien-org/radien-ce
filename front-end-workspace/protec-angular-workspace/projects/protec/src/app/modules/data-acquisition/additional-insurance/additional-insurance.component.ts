@@ -18,7 +18,7 @@ export class AdditionalInsuranceComponent implements OnInit {
       type: 'navegation-buttons',
       navegations: [
         {
-          label: this.translationService.instant('zurück'),
+          label: this.translationService.instant('ZURÜCK'),
           link: '/data-acquisition/accident-type'
         }
       ]
@@ -89,21 +89,19 @@ export class AdditionalInsuranceComponent implements OnInit {
     this.getAdditionalInsuranceOptions();
     this.accidentType = this.storageService.getItem(LOCAL.ACCIDENT_TYPE);
     try {
-      this.storageService.getItem(LOCAL.ADDITIONAL_INSURANCE_FORM).choices.map((item: { 
-        name: string; 
-        code: string; 
-      }) => this.selectedOptions.push(item));
-      this.selectNoBtn({
-        var: 'firstStatus', 
-        value: 'no'
-      }, this.storageService.getItem(LOCAL.ADDITIONAL_INSURANCE_FORM).choices);
+      this.storageService.getItem(LOCAL.ADDITIONAL_INSURANCE_FORM).choices.map((item: { name: string; code: string; }) => this.selectedOptions.push(item));
+      //this.selectNoBtn({var: 'firstStatus', value: 'no'}, this.storageService.getItem(LOCAL.ADDITIONAL_INSURANCE_FORM).choices);
+      this.buttonsStatus.firstStatus = this.selectedOptions.length > 0 ? 'yes' : 'no';
+      this.buttonsStatus.secondStatus = this.storageService.getItem(LOCAL.ADDITIONAL_INSURANCE_FORM_SECOND).button;
+      this.selectSecondNoBtn({var:'secondStatus', value:this.buttonsStatus.secondStatus});
     } catch {
       this.selectedOptions = [];
     }
-    console.log('debug (selectedOptions):', this.selectedOptions)
+    console.log('debug (selectedOptions):', this.selectedOptions);
+    console.log('debug (buttonsStatus):', this.buttonsStatus);
     this.noButton.selected = this.selectedOptions.length <= 0;
     this.verifyAccidentType();
-    this.placeholder = 'Ja un zwar:';
+    this.placeholder = 'Ja und zwar:';
   }
 
   verifyAccidentType() {
@@ -125,7 +123,7 @@ export class AdditionalInsuranceComponent implements OnInit {
     } else {
       this.pageNav.navegation.navegations.push(
         {
-          label: this.translationService.instant('weiter'),
+          label: this.translationService.instant('WEITER'),
           link: '/data-acquisition/accident-date'
         }
       );
@@ -142,6 +140,8 @@ export class AdditionalInsuranceComponent implements OnInit {
           this.noButton.selected = true;
           this.buttonsStatus.firstStatus = 'no';
           this.selectedOptions = [];
+          this.buttonsStatus.secondStatus = 'no';
+          this.selectSecondNoBtn({var:'secondStatus', value:this.buttonsStatus.secondStatus});
         }
       }
     }
@@ -159,10 +159,12 @@ export class AdditionalInsuranceComponent implements OnInit {
         });
       }
     }
+    this.saveInputs();
   }
 
   saveInputs(): void {
-    this.storageService.setItem(LOCAL.ADDITIONAL_INSURANCE_FORM, {choices:this.selectedOptions})
+    this.storageService.setItem(LOCAL.ADDITIONAL_INSURANCE_FORM, {choices:this.selectedOptions});
+    this.storageService.setItem(LOCAL.ADDITIONAL_INSURANCE_FORM_SECOND, {button:this.buttonsStatus.secondStatus});
   }
 
   getAdditionalInsuranceOptions() {

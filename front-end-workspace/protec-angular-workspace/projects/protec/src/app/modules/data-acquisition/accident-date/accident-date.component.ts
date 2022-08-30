@@ -21,7 +21,7 @@ interface IChoice {
 export class AccidentDateComponent implements OnInit {
 
   initNavigation = [{
-    label: this.translationService.instant('back'),
+    label: this.translationService.instant('ZURÜCK'),
     link: '/data-acquisition/additional-insurance'
   }]
 
@@ -101,7 +101,7 @@ export class AccidentDateComponent implements OnInit {
   verifyInput(): void {
     if (this.accidentDate.value && this.accidentIsOnSickLeave.value) {
       this.pageNav.navegation.navegations = [...this.initNavigation, {
-        label: this.translationService.instant('next'),
+        label: this.translationService.instant('WEITER'),
         link: '/data-acquisition/details-intro'
       }]
       this.saveInputs();

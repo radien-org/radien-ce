@@ -15,8 +15,8 @@
   "cookies_only_necessary": "REJECT OPTIONAL COOKIES",
   "confirm_cookies_selection": "CONFIRM MY SELECTION",
   "home": "HOME",
-  "back": "back",
-  "proceed": "Next",
+  "ZURÜCK": "BACK",
+  "WEITER": "NEXT",
   "step1_title": "step 1",
 
   "accident_description":  "In the first step, check whether your accident at work, your leisure-time accident or your illness meets the basic requirements for any pension entitlements from statutory and private insurance providers. In order to save you unnecessary effort, you will receive immediate feedback in the event of a negative test. Otherwise, the detailed query takes place in step two",
@@ -25,6 +25,9 @@
   "MEIN KONTO": "MY ACCOUNT",
 
   "EINSTELLUNGEN": "SETTINGS",
+  "DATENSCHUTZ": "DATA POLICY",
+  "IMPRESSUM": "IMPRINT",
+  "AGB": "CONDITIONS OF USE",
 
   "DIE DETAILS": "THE DETAILS",
   "DAS SCHADENSEREIGNIS": "DAMAGE STORY",
@@ -38,7 +41,6 @@
   "TOLLE ÜBERSCHRIFT": "GREAT HEADLINE",
   "Herzlich Willkommen beim digitalen Rentenanspruchsprüfer!": "Welcome to the digital pension entitlement checker!",
   "Du hast nun die Möglichkeit in 4 Schritten kostenlos und unverbindlich Deine Rentenansprüche zu prüfen. Bei Rückfragen stehen wir Dir jederzeit gerne zur Verfügung. Wähle in diesem Fall bitte die „Hilfe & Kontakt“ Option.": "You now have the opportunity to check your pension entitlements in 4 steps free of charge and without obligation. If you have any questions, we are always at your disposal. In this case, please select the Contact option.",
-  "AGB": "AGB",
   "Präambel": "Preamble",
   "Pro:Tec bietet Prozessfinanzierungsleistungen mit IT-gestützten Leistungselementen bei der Durchsetzung sozialversicherungsrechtlicher Ansprüche an. Die folgenden Nutzungsbedingungen gelten dabei für die Informationswebseite („protec-solutions.de“) sowie die Registrierung zur und Durchführung einer unverbindlichen Vorprüfung („protec.help“).": "Pro:Tec offers litigation financing services with IT-supported service elements in the Enforcement of claims under social security law. The following terms of use apply to the information website (\"protec-solutions.de\") as well as the registration for and implementation of a non-binding preliminary test (\"protec.help\").",
   "1. Geltungsbereich": "1. Scope",
@@ -54,7 +56,7 @@
     "Dein Unfalldatum": "Your accident date",
     "Bist bzw. warst Du krankgeschrieben? *": "Are or were you on sick leave? *",
     "JAHR *": "YEAR *",
-    "MONATE": "MONTH",
+    "MONAT": "MONTH",
     "TAG": "DAY"
   },
   "accident-type": {
@@ -140,11 +142,9 @@
   "full-body": {
     "Bitte klicke die von der Verletzung betroffene Körperregion an. Im nächsten Schritt gibst Du die Verletzung(en) und Verletzungsfolge(n) für diese Körperregion an. Wenn mehrere Körperregionen betroffen sind kannst Du weitere Verletzungen im Anschluss hinzufügen.": "Please click on the body region affected by the injury. In the next step you enter the injury(ies) and injury consequence(s) for this body region. If more than one body region is affected, you can add further injuries afterwards."
   },
-  "JA": "YES",
-  "NEIN": "NO",
+  "Ja": "Yes",
+  "Nein": "No",
   "JETZT STARTEN": "START NOW",
-  "Zurück": "Back",
-  "Weiter": "Next",
   "KRANKHEIT": "DISEASE",
   "ARBEITSUNFALL": "WORK ACCIDENT",
   "FREIZEITUNFALL": "PRIVATE ACCIDENT",
@@ -154,5 +154,17 @@
   "ERFASSTE SCHADENSFÄLLE": "RECORDED CLAIMS",
   "ANGABEN ZUR VERLETZUNG": "INFRINGEMENT INFORMATION",
   "form yes": "Yes",
-  "form no": "No"
+  "form no": "No",
+
+  "private-accident": {
+    "Wie kam es zu dem Unfall? *": "How did the accident happen? *" ,
+    "Text eingeben": "Insert text" ,
+    "Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *": "What was your last job occupation? *" ,
+    "Arbeitgeber": "Employer",
+    "Arbeitgeber zum Zeitpunkt des Unfalls": "Employer at time of accident" ,
+    "Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *":"Has said occupation been undertaken longer than 12 months? *" ,
+    "Welche berufliche Tätigkeit hast Du zuvor ausgeübt?": "What was your previous job occupation?",
+    "Berufliche Tätigkeit": "Job occupation" ,
+    "Vorheriger Arbeitgeber": "Previous Employer"
+  }
 }

@@ -41,7 +41,7 @@ export class AccidentTypeComponent implements OnInit {
       type: 'navegation-buttons',
       navegations: [
         {
-          label: this.translationService.instant('Zurück'),
+          label: this.translationService.instant('ZURÜCK'),
           link: '/data-acquisition/accident-intro'
         }
       ]
