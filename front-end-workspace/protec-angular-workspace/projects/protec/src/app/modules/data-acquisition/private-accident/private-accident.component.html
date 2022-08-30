@@ -8,16 +8,31 @@
                     <div class="row horzontal-space-left-sm">
                             <div class="col-lg-12 col-md-12 col-sm-12">
                                 <p class="para-text horzontal-space-left-sm"> {{'Wie kam es zu dem Unfall? *'  | translate }} </p>
-                                <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'Text eingeben'  | translate }}">
+                                <input 
+                                    type="text" 
+                                    class="input-text vertical-space-increase-bottom-2" 
+                                    placeholder="{{'Text eingeben'  | translate }}" 
+                                    [(ngModel)]="howHappen" 
+                                    (change)="save()">
                             </div>
                             <div class="row col-lg-12 col-md-12 col-sm-12 vertical-space-increase-top">
                                 <div class="col-lg-6 col-md-5 col-sm-12">
                                     <p class="para-text horzontal-space-left-sm"> {{'Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *'  | translate }} </p>
-                                    <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'Berufliche Tätigkeit'  | translate }}">
+                                    <input 
+                                        type="text" 
+                                        class="input-text vertical-space-increase-bottom-2" 
+                                        placeholder="{{'Berufliche Tätigkeit'  | translate }}" 
+                                        [(ngModel)]="professionalActivity" 
+                                        (change)="save()">
                                 </div>
                                 <div class="col-lg-6 col-md-5 col-sm-12">
                                     <p class="para-text horzontal-space-left-sm"> {{'Arbeitgeber'  | translate }} </p>
-                                    <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'Arbeitgeber zum Zeitpunkt des Unfalls'  | translate }}">
+                                    <input 
+                                        type="text" 
+                                        class="input-text vertical-space-increase-bottom-2" 
+                                        placeholder="{{'Arbeitgeber zum Zeitpunkt des Unfalls'  | translate }}" 
+                                        [(ngModel)]="employer" 
+                                        (change)="save()">
                                 </div>
                             </div>
                             <div class="row col-lg-12 col-md-12 col-sm-12">
@@ -25,27 +40,37 @@
                                     <p class="para-text horzontal-space-left-sm"> {{'Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *'  | translate }} </p>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 vertical-space-increase-bottom-2">
-                                    <mat-radio-button name="group1" class="para-text radio-button" (click)="hideOptions()"> {{ 'form yes' | translate }} </mat-radio-button>
-                                    <mat-radio-button name="group1" class="para-text horzontal-space-left-md radio-button" (click)="showOptions()"> {{ 'form no' | translate }} </mat-radio-button>
+                                    <mat-radio-button name="group1" class="para-text radio-button" (click)="hideOptions()" [checked]="longerThanTwelveMonths"> {{ 'form yes' | translate }} </mat-radio-button>
+                                    <mat-radio-button name="group1" class="para-text horzontal-space-left-md radio-button" (click)="showOptions()" [checked]="!longerThanTwelveMonths"> {{ 'form no' | translate }} </mat-radio-button>
                                 </div>
                             </div>
-                            <div class="row col-lg-12 col-md-12 col-sm-12" [ngClass]="option_class">
+                            <div class="row col-lg-12 col-md-12 col-sm-12" [hidden]="longerThanTwelveMonths">
                                 <div class="col-lg-6 col-md-6 col-sm-12">
                                     <p class="para-text horzontal-space-left-sm"> {{'Welche berufliche Tätigkeit hast Du zuvor ausgeübt?'  | translate }} </p>
-                                    <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'Berufliche Tätigkeit'  | translate }}">
+                                    <input 
+                                        type="text" 
+                                        class="input-text vertical-space-increase-bottom-2" 
+                                        placeholder="{{'Berufliche Tätigkeit'  | translate }}" 
+                                        [(ngModel)]="youDoBefore" 
+                                        (change)="save()">
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12">
                                     <p class="para-text horzontal-space-left-sm"> {{'Vorheriger Arbeitgeber'  | translate }} </p>
-                                    <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'Vorheriger Arbeitgeber'  | translate }}">
+                                    <input 
+                                        type="text" 
+                                        class="input-text vertical-space-increase-bottom-2" 
+                                        placeholder="{{'Vorheriger Arbeitgeber'  | translate }}"
+                                        [(ngModel)]="previousEmployer" 
+                                        (change)="save()">
                                 </div>
                             </div>
-                            <div class="row col-lg-12 col-md-12 col-sm-12" [ngClass]="option_class">
+                            <div class="row col-lg-12 col-md-12 col-sm-12" [hidden]="longerThanTwelveMonths">
                                 <div class="col-lg-6 col-md-6 col-sm-12">
                                     <p class="para-text horzontal-space-left-sm"> {{'Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *'  | translate }} </p>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 vertical-space-increase-bottom-2">
-                                    <mat-radio-button name="group2" class="para-text radio-button"> {{ 'form yes' | translate }} </mat-radio-button>
-                                    <mat-radio-button name="group2" class="para-text horzontal-space-left-md radio-button"> {{ 'form no' | translate }} </mat-radio-button>
+                                    <mat-radio-button name="group2" class="para-text radio-button" [checked]="longerThanTwelveMonthsSecond"> {{ 'form yes' | translate }} </mat-radio-button>
+                                    <mat-radio-button name="group2" class="para-text horzontal-space-left-md radio-button" [checked]="!longerThanTwelveMonthsSecond"> {{ 'form no' | translate }} </mat-radio-button>
                                 </div>
                             </div>
 
