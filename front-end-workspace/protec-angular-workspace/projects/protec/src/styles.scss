@@ -387,6 +387,7 @@ b {
   font-family: var(--unnamed-font-family-open-sans);
   font-size: 18px;
   letter-spacing: 0px;
+  line-height: 24px;
 }
 
 .addScroll{
@@ -481,6 +482,9 @@ b {
 .vertical-space-reducer-bottom{
   margin-bottom: -0.5em !important;
 }
+.vertical-space-reducer-bottom-10{
+  margin-bottom: -10em !important;
+}
 
 .vertical-space-increase-bottom{
   margin-bottom: 1em !important;
@@ -488,6 +492,9 @@ b {
 
 .vertical-space-increase-bottom-2{
   margin-bottom: 2em !important;
+}
+.vertical-space-increase-bottom-16{
+  margin-bottom: 16em !important;
 }
 
 .vertical-space-increase-top{
@@ -556,7 +563,7 @@ margin-left-8{
 
 
 .bold-text{
-  font-weight: bold;
+  font-weight: var(--unnamed-font-weight-bold);
 }
 
 .text-weight-600{
@@ -567,7 +574,7 @@ margin-left-8{
   display: inline;
   float: left;
   margin-right: 4em;
-  font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-bold) 12px/15px var(--unnamed-font-family-dosis);
+  font:  var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-bold) 12px/15px var(--unnamed-font-family-dosis);
   color: var(--light-mint);
   text-align: center;
   letter-spacing: 3.6px;
@@ -620,6 +627,10 @@ margin-left-8{
   .horzontal-space-left-md{
     margin-left: 2em !important;
   }
+
+.horzontal-space-left-sd{
+  margin-left: 1.5em !important;
+}
   
   .input-text{
     border: 1px solid var(--muted-forest);

@@ -1,5 +1,13 @@
 <div *ngIf="data.type === 'default'">
-    <div class="bt-action btn-version btn-default">
+    <div class="bt-action btn-version btn-default ">
+        <span class="no-overflow-text">
+            {{data.label | translate}}
+        </span>
+    </div>
+</div>
+
+<div *ngIf="data.type === 'final-step'">
+    <div class=" btn-version btn-default final-step btn-center">
         <span class="no-overflow-text">
             {{data.label | translate}}
         </span>
@@ -7,8 +15,8 @@
 </div>
 
 <div *ngIf="data.type === 'arrow-right'">
-    <div class="btn-version btn-arrow-right" [ngClass]="{'btn-generic-focus-color': data.status === 'in-progress', 'btn-generic-completed-color': data.status === 'completed' }">
-        <span class="no-overflow-text" *ngIf="data.status && data.status !== 'completed'">
+    <div class="btn-version btn-arrow-right btn-center" [ngClass]="{'btn-generic-focus-color': data.status === 'in-progress', 'btn-generic-completed-color': data.status === 'completed' }">
+        <span class="no-overflow-text " *ngIf="data.status && data.status !== 'completed'">
             {{data.label | translate}}
         </span>
         <mat-icon style="color: white" *ngIf="data.status && data.status === 'completed'">check</mat-icon>
@@ -16,7 +24,7 @@
 </div>
 
 <div *ngIf="data.type === 'arrow-right-first'">
-    <div class="btn-version btn-arrow-right-first" [ngClass]="{'btn-generic-focus-color': data.status === 'in-progress', 'btn-generic-completed-color': data.status === 'completed'}">
+    <div class="btn-version btn-arrow-right-first btn-center" [ngClass]="{'btn-generic-focus-color': data.status === 'in-progress', 'btn-generic-completed-color': data.status === 'completed'}">
         <span class="no-overflow-text" *ngIf="data.status && data.status !== 'completed'">
             {{data.label | translate}}
         </span>
