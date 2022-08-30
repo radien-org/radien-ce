@@ -148,6 +148,7 @@
     "KRANKHEIT": "KRANKHEIT",
     "ARBEITSUNFALL": "ARBEITSUNFALL",
     "FREIZEITUNFALL": "FREIZEITUNFALL",
+    "DER KOPF" : "DER KOPF",
     "request-quote": {
         "../../../../assets/images/ProTec_Software_Graphic_envelope.svg": "../../../../assets/images/ProTec_Software_Graphic_envelope.svg"
     },
