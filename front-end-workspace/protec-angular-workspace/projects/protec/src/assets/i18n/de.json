@@ -154,5 +154,17 @@
     },
     "ERFASSTE SCHADENSFÄLLE": "ERFASSTE SCHADENSFÄLLE",
     "form yes": "Ja",
-    "form no": "Nein"
+    "form no": "Nein",
+
+    "private-accident": {
+        "Wie kam es zu dem Unfall? *": "Wie kam es zu dem Unfall? *" ,
+        "Text eingeben": "Text eingeben" ,
+        "Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *": "Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *" ,
+        "Arbeitgeber": "Arbeitgeber",
+        "Arbeitgeber zum Zeitpunkt des Unfalls": "Arbeitgeber zum Zeitpunkt des Unfalls" ,
+        "Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *":"Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *" ,
+        "Welche berufliche Tätigkeit hast Du zuvor ausgeübt?": "Welche berufliche Tätigkeit hast Du zuvor ausgeübt?",
+        "Berufliche Tätigkeit": "Berufliche Tätigkeit" ,
+        "Vorheriger Arbeitgeber": "Vorheriger Arbeitgeber"
+    }
 }
