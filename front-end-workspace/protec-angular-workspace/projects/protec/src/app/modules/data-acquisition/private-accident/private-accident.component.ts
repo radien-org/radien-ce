@@ -17,10 +17,6 @@ export class PrivateAccidentComponent implements OnInit {
         {
           label: this.translationService.instant('zurück'),
           link: '/data-acquisition/details-intro'
-        },
-        {
-          label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/full-body'
         }
       ]
     }

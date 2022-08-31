@@ -33,6 +33,14 @@ export class WorkAccidentComponent implements OnInit {
     value: String,
     error: String,
   }
+  employer: {
+    value: String,
+    error: String,
+  }
+  fileNumber: {
+    value: String,
+    error: String,
+  }
 
   constructor(
       private readonly translationService: TranslateService,
@@ -41,15 +49,23 @@ export class WorkAccidentComponent implements OnInit {
   ) {
     this.options = [];
     try {
+      this.employer = {
+        value: this.storageService.getItem(LOCAL.WORK_ACCIDENT_FORM).employer || '', error: ''
+      }
       this.postCode = {
         value: this.storageService.getItem(LOCAL.WORK_ACCIDENT_FORM).postCode || '', error : ''
       }
       this.occupation = {
         value: this.storageService.getItem(LOCAL.WORK_ACCIDENT_FORM).occupation || '', error: ''
       }
+      this.fileNumber = {
+        value: this.storageService.getItem(LOCAL.WORK_ACCIDENT_FORM).fileNumber || '', error: ''
+      }
     } catch (err) {
+      this.employer = {value: '', error: ''}
       this.postCode = {value: '', error: ''}
       this.occupation = {value: '', error: ''}
+      this.fileNumber = {value: '', error: ''}
     }
 
     this.verifyInput()
@@ -68,7 +84,12 @@ export class WorkAccidentComponent implements OnInit {
   }
 
   saveInputs(): void {
-    this.storageService.setItem(LOCAL.WORK_ACCIDENT_FORM, {postCode: `${this.postCode.value}`, occupation: `${this.occupation.value}`})
+    this.storageService.setItem(LOCAL.WORK_ACCIDENT_FORM, {
+      employer: `${this.employer.value}`,
+      postCode: `${this.postCode.value}`, 
+      occupation: `${this.occupation.value}`,
+      fileNumber: `${this.fileNumber.value}`
+    })
   }
 
   ngOnInit(): void {

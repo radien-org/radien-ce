@@ -14,12 +14,17 @@
                             <div>
                                 <select 
                                     class="input-text input-select-dropdown summary-select-box" 
-                                    placeholder="SELECT OPTION">
-                                    <option value="">ARBEITSUNFALL 1990</option>
+                                    placeholder="SELECT OPTION" 
+                                    #claim
+                                    (change)="onSelectClaim(claim.value)">
+                                    <option value="">Select option</option>
+                                    <option *ngFor='let item of claims' [value]="item.id">
+                                        {{item.title}}
+                                    </option>
                                 </select>
-                                <i class="bi-pencil-fill margin-horizontal summary-action-icons"></i>
-                                <i class="bi-trash-fill margin-horizontal summary-action-icons"></i>
-                                <i class="bi-plus margin-horizontal summary-action-icons summary-custom-plus-icon"></i>
+                                <i class="bi-pencil-fill margin-horizontal summary-action-icons" (click)="edit()"></i>
+                                <i class="bi-trash-fill margin-horizontal summary-action-icons" (click)="delete()"></i>
+                                <i class="bi-plus margin-horizontal summary-action-icons summary-custom-plus-icon" (click)="add()"></i>
                             </div>
                             <div class="mt-3">
                                 <div class="summary-content-card">
@@ -27,16 +32,20 @@
                                         <div class="col-6">
                                             <div *ngFor="let item of leftInfo; let i = index">
                                                 <ng-container *ngIf="i < 4">
-                                                    <p class="summary-info-label">{{item.label}}</p>
-                                                    <p class="summary-info-value">{{item.value}}</p>
+                                                    <p class="summary-info-label">
+                                                        {{item.label | translate}}
+                                                    </p>
+                                                    <input class="input-text vertical-space-increase-bottom-2 summary-info-value"  value="{{item.value}}" [disabled]="editMode"/>
                                                 </ng-container>
                                             </div>
                                         </div>
                                         <div class="col-6">
                                             <div *ngFor="let item of leftInfo; let i = index">
                                                 <ng-container *ngIf="i > 3">
-                                                    <p class="summary-info-label">{{item.label}}</p>
-                                                    <p class="summary-info-value">{{item.value}}</p>
+                                                    <p class="summary-info-label">
+                                                        {{item.label | translate}}
+                                                    </p>
+                                                    <input class="input-text vertical-space-increase-bottom-2 summary-info-value"  value="{{item.value}}" [disabled]="editMode"/>
                                                 </ng-container>
                                             </div>
                                         </div>
@@ -51,18 +60,19 @@
                                 {{ 'ANGABEN ZUR VERLETZUNG' | translate }}
                             </h2>
                             <div class="mb-4">
-                                <button class="summary-btn-outline">1</button>
-                                <button class="summary-btn-outline disabled-btn">2</button>
-                                <button class="summary-btn-outline disabled-btn">3</button>
+                                <button [ngClass]="currentTab == 1 ? 'summary-btn-outline' : 'summary-btn-outline disabled-btn'" (click)="changeTab(1)">1</button>
+                                <button [ngClass]="currentTab == 2 ? 'summary-btn-outline' : 'summary-btn-outline disabled-btn'" (click)="changeTab(2)">2</button>
+                                <button [ngClass]="currentTab == 3 ? 'summary-btn-outline' : 'summary-btn-outline disabled-btn'" (click)="changeTab(3)">3</button>
                             </div>
-                            <div class="mt-4">
+                            
+                            <div class="mt-4" *ngIf="currentTab == 1">
                                 <div class="summary-content-card">
                                     <div class="row">
                                         <div class="col-6">
                                             <div *ngFor="let item of leftInfo; let i = index">
                                                 <ng-container *ngIf="i < 4">
                                                     <p class="summary-info-label">{{item.label}}</p>
-                                                    <p class="summary-info-value">{{item.value}}</p>
+                                                    <input class="input-text vertical-space-increase-bottom-2 summary-info-value"  value="{{item.value}}" [disabled]="editMode"/>
                                                 </ng-container>
                                             </div>
                                         </div>
@@ -70,13 +80,40 @@
                                             <div *ngFor="let item of leftInfo; let i = index">
                                                 <ng-container *ngIf="i > 3">
                                                     <p class="summary-info-label">{{item.label}}</p>
-                                                    <p class="summary-info-value">{{item.value}}</p>
+                                                    <input class="input-text vertical-space-increase-bottom-2 summary-info-value"  value="{{item.value}}" [disabled]="editMode"/>
                                                 </ng-container>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="mt-4" *ngIf="currentTab == 2">
+                                <div class="summary-content-card">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            
+                                        </div>
+                                        <div class="col-6">
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4" *ngIf="currentTab == 3">
+                                <div class="summary-content-card">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            
+                                        </div>
+                                        <div class="col-6">
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>

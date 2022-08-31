@@ -37,6 +37,16 @@ export class PersonalDataInputComponent implements OnInit {
     error: String
   }
 
+  title: {
+    value: String,
+    error: String
+  }
+  
+  salutation: {
+    value: String,
+    error: String
+  }
+
 
   constructor(
       private readonly translationService: TranslateService,
@@ -53,10 +63,18 @@ export class PersonalDataInputComponent implements OnInit {
       this.birthDate = {
         value: this.storageService.getItem(LOCAL.PERSONAL_DATA_PERSON).birthDate || '', error: ''
       }
+      this.title = {
+        value: this.storageService.getItem(LOCAL.PERSONAL_DATA_PERSON).title || '', error: ''
+      }
+      this.salutation = {
+        value: this.storageService.getItem(LOCAL.PERSONAL_DATA_PERSON).salutation || '', error: ''
+      }
     } catch (err) {
       this.firstName = {value: '', error: ''}
       this.lastName = {value: '', error: ''}
       this.birthDate = {value: '', error: ''}
+      this.title = {value: '', error: ''},
+      this.salutation = {value: '', error: ''}
     }
 
 
@@ -74,16 +92,21 @@ export class PersonalDataInputComponent implements OnInit {
       this.pageNav.navegation.navegations = [...this.initNavigation]
     }
   }
-  saveInputs(): void {
-    this.storageService.setItem(LOCAL.PERSONAL_DATA_PERSON, {birthDate: `${this.birthDate.value}`, firstName:`${this.firstName.value}`, lastName: `${this.lastName.value}` })
-  }
 
+  saveInputs(): void {
+    this.storageService.setItem(LOCAL.PERSONAL_DATA_PERSON, {
+      birthDate: `${this.birthDate.value}`, 
+      firstName:`${this.firstName.value}`, 
+      lastName: `${this.lastName.value}`,
+      title: `${this.title.value}`,
+      salutation: `${this.salutation.value}`
+    })
+  }
 
   setDate (value: String): void {
     this.birthDate.value = value;
     this.verifyInput()
   }
-
 
   ngOnInit(): void {
   }
@@ -92,6 +115,7 @@ export class PersonalDataInputComponent implements OnInit {
   public showOptions(){
     this.option_class = 'show-flex'
   }
+
   public hideOptions(){
     this.option_class = 'hide'
   }
