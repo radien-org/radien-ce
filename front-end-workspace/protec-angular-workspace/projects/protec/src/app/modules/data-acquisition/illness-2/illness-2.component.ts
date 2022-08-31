@@ -17,10 +17,6 @@ export class Illness2Component implements OnInit {
         {
           label: this.translationService.instant('back'),
           link: '/data-acquisition/private-accident'
-        },
-        {
-          label: this.translationService.instant('next'),
-          link: '/data-acquisition/full-body'
         }
       ]
     }
@@ -117,7 +113,7 @@ export class Illness2Component implements OnInit {
       this.pageNav.navegation.navegations.push(
         {
           label: this.translationService.instant('WEITER'),
-          link: '/data-acquisition/summary'
+          link: '/data-acquisition/more-injuries'
         }
       );
     }
