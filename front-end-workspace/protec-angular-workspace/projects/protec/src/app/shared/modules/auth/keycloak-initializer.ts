@@ -6,7 +6,7 @@ export function initializer(keycloak: KeycloakService): () => Promise<boolean> {
     config: environment.keycloak,
     loadUserProfileAtStartUp: true,
     initOptions: {
-      onLoad: 'check-sso',
+      //onLoad: 'check-sso',
       checkLoginIframe: false
     },
     bearerExcludedUrls: []
