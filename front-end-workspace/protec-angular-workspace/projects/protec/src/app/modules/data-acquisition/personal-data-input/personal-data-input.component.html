@@ -15,10 +15,10 @@
                                         class="input-text vertical-space-increase-bottom-2 input-select-dropdown" 
                                         [(ngModel)]="salutation.value" 
                                         (change)="verifyInput()">
-                                        <option value="">Select option</option>
-                                        <option value="Herr">Herr</option>
-                                        <option value="Frau">Frau</option>
-                                        <option value="Divers">Divers</option>
+                                        <option value="">{{'Option auswählen' | translate }}</option>
+                                        <option value="Herr">{{'Herr' | translate }}</option>
+                                        <option value="Frau">{{'Frau' | translate }}</option>
+                                        <option value="Divers">{{'Diverse' | translate }}</option>
                                     </select>
                                 </div>
                                 <div class="col-lg-6 col-md-5 col-sm-12">
