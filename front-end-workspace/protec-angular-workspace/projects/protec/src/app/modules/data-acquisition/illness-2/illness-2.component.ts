@@ -16,11 +16,7 @@ export class Illness2Component implements OnInit {
       navegations: [
         {
           label: this.translationService.instant('back'),
-          link: '/data-acquisition/illness-details'
-        },
-        {
-          label: this.translationService.instant('next'),
-          link: '/data-acquisition/full-body'
+          link: '/data-acquisition/private-accident'
         }
       ]
     }
@@ -83,14 +79,43 @@ export class Illness2Component implements OnInit {
   whatWasDiagnosed: any;
   currentlySickLeave: any;
 
+  accidentType: string = '';
+
   constructor(private readonly translationService: TranslateService, private readonly storageService: StorageService) { }
   
   ngOnInit(): void {
+    this.accidentType = this.storageService.getItem(LOCAL.ACCIDENT_TYPE);
+    this.verifyAccidentType();
     const savedData = this.storageService.getItem(LOCAL.ILLNESS_DIAGNOSTIC_FORM)?.data;
     console.log('debug (savedData):', savedData);
     if(savedData) {
       this.whatWasDiagnosed = savedData.whatWasDiagnosed;
       this.currentlySickLeave = savedData.currentlySickLeave;
+    }
+  }
+
+  verifyAccidentType() {
+    if(this.accidentType === 'work-accident') {
+      this.pageNav.navegation.navegations.push(
+        {
+          label: this.translationService.instant('next'),
+          link: '/data-acquisition/full-body'
+        }
+      );
+    } else if(this.accidentType === 'recreational-accident') {
+      this.pageNav.navegation.navegations.push(
+        {
+          label: this.translationService.instant('next'),
+          link: '/data-acquisition/full-body'
+        }
+      );
+    } else {
+      this.pageNav.navegation.navegations.push(
+        {
+          label: this.translationService.instant('WEITER'),
+          link: '/data-acquisition/summary'
+        }
+      );
     }
   }
 

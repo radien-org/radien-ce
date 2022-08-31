@@ -44,7 +44,8 @@ export class GButtonComponent implements OnInit {
       '/data-acquisition/personal-data-person': 4,
       '/data-acquisition/personal-data-contact': 4,
       '/data-acquisition/appreciation': 5,
-      '/data-acquisition/pre-summary': 5
+      '/data-acquisition/pre-summary': 5,
+      '/data-acquisition/illness-diagnostic': 2
     }
     if (this.data.step > 0) {
       // @ts-ignore

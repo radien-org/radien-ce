@@ -104,7 +104,7 @@ const routes: Routes = [
     component: WorkAccidentComponent
   },
   {
-    path: 'illness-details',//variation two
+    path: 'illness-details',//variation two TODO: check for remove
     component: IllnessComponent
   },
   {

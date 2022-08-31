@@ -43,14 +43,14 @@ export class DetailsIntroComponent implements OnInit {
       this.pageNav.navegation.navegations.push(
         {
           label: this.translationService.instant('WEITER'),
-          link: '/data-acquisition/illness-details'
+          link: '/data-acquisition/private-accident'
         }
       );
     } else {
       this.pageNav.navegation.navegations.push(
         {
           label: this.translationService.instant('WEITER'),
-          link: '/data-acquisition/private-accident'
+          link: '/data-acquisition/illness-diagnostic'
         }
       );
     }

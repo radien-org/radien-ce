@@ -40,6 +40,8 @@ export class PartBodyFigureComponent implements OnInit {
     selectedSubOptions: string[] = [];
     subOptions: any[];
 
+    titleBodyPart = '';
+
     constructor(
         private readonly translationService: TranslateService,
         private readonly storageService: StorageService,
@@ -93,10 +95,12 @@ export class PartBodyFigureComponent implements OnInit {
         switch (this.bodyPart) {
             case 'head':
                 result = 'ProTec_Software_Bodyparts_Head.svg';
+                this.titleBodyPart = 'head';
                 this.bodyPartSimple = 'head';
                 break;
             case 'elbow-left':
                 result = 'ProTec_Software_Bodyparts_Elbow-left.svg';
+                this.titleBodyPart = 'elbow';
                 this.bodyPartSimple = 'elbow';
                 break;
             case 'upper-arm-left':

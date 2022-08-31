@@ -17,6 +17,7 @@
                                     placeholder="SELECT OPTION" 
                                     #claim
                                     (change)="onSelectClaim(claim.value)">
+                                    <option value="">Select option</option>
                                     <option *ngFor='let item of claims' [value]="item.id">
                                         {{item.title}}
                                     </option>

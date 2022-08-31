@@ -125,6 +125,10 @@ export class MoreInjuriesComponent implements OnInit {
 
     console.log('debug (obj):', obj);
 
+    if(typeof CLAIMS_LIST === 'object'){
+      CLAIMS_LIST = [];
+    }
+
     CLAIMS_LIST.push(obj);
 
     this.storageService.setItem(LOCAL.CLAIMS_LIST, CLAIMS_LIST);

@@ -37,17 +37,10 @@ export class DetailsFigureComponent implements OnInit {
       this.pageNav.navegation.navegations.push(
         {
           label: this.translationService.instant('ZURÜCK'),
-          link: '/data-acquisition/illness-details'
+          link: '/data-acquisition/private-accident'
         }
       );
-    } else if(this.accidentType === 'disease') {
-      this.pageNav.navegation.navegations.push(
-        {
-          label: this.translationService.instant('ZURÜCK'),
-          link: '/data-acquisition/work-accident'
-        }
-      );
-    } else {
+    } else if(this.accidentType === 'work-accident') {
       this.pageNav.navegation.navegations.push(
         {
           label: this.translationService.instant('ZURÜCK'),
