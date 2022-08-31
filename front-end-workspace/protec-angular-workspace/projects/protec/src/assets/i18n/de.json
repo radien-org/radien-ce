@@ -18,8 +18,18 @@
     "ZURÜCK": "ZURÜCK",
     "WEITER": "WEITER",
     "step1_title": "SCHRITT 1",
-
-
+    "Arbeitgeber": "Arbeitgeber",
+    "PLZ Arbeitgeber *":  "PLZ Arbeitgeber *",
+    "Was ist Deine berufliche Tatigkeit?*" :  "Was ist Deine berufliche Tatigkeit?*",
+    "Zustandige BG / UV" : "Zustandige BG / UV",
+    "Aktenzeichen" : "Aktenzeichen",
+    "Optional falls bekannt" : "Optional falls bekannt",
+    "work-accident" :{
+        "(damaliger) Beruf": "(damaliger) Beruf",
+        "(damaliger) Arbeitgeber": "(damaliger Arbeitgeber)",
+        "option auswählen": "option auswählen",
+        "PLZ des Arbeitgebers": "PLZ des Arbeitgebers"
+    },
     "accident_description": "Prüfe im ersten Schritt, ob Dein Arbeitsunfall, Dein Freizeitunfall oder Deine Krankheit die Grundvoraussetzungen für etwaige Rentenansprüche gegenüber den gesetzlichen und privatwirtschaftlichen Versicherungsträgern erfüllen. Um Dir unnötige Aufwände zu ersparen, erhältst Du im Falle einer negativen Prüfung unmittelbar Feedback. Anderfalls erfolgt in Schritt zwei die Detailabfrage",
 
     "UNFALLRENTEN-CHECKER": "UNFALLRENTEN-CHECKER",
