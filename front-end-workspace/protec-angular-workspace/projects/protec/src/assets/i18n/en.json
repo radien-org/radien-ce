@@ -24,13 +24,10 @@
   "Zustandige BG / UV": "Responsible BG/UV",
   "Aktenzeichen": "Document Number",
   "Optional falls bekannt": "Optional if known",
-  "work-accident": {
-    "(damaliger) Beruf": "(previous) Occupation",
-    "(damaliger) Arbeitgeber": "(previous) Employer)",
-    "option auswählen": "choose option",
-    "PLZ des Arbeitgebers": "Employer Postcode",
-    "accident_description": "Prüfe im ersten Schritt, ob Dein Arbeitsunfall, Dein Freizeitunfall oder Deine Krankheit die Grundvoraussetzungen für etwaige Rentenansprüche gegenüber den gesetzlichen und privatwirtschaftlichen Versicherungsträgern erfüllen. Um Dir unnötige Aufwände zu ersparen, erhältst Du im Falle einer negativen Prüfung unmittelbar Feedback. Anderfalls erfolgt in Schritt zwei die Detailabfrage"
-  },
+  "(damaliger) Beruf": "(previous) Occupation",
+  "(damaliger) Arbeitgeber": "(previous) Employer)",
+  "PLZ des Arbeitgebers": "Employer Postcode",
+  "Option auswählen": "Choose option",
   "accident_description": "In the first step, check whether your accident at work, your leisure-time accident or your illness meets the basic requirements for any pension entitlements from statutory and private insurance providers. In order to save you unnecessary effort, you will receive immediate feedback in the event of a negative test. Otherwise, the detailed query takes place in step two",
   "UNFALLRENTEN-CHECKER": "ACCIDENT PENSION CHECKER",
   "KONTAKT": "CONTACT",
@@ -172,4 +169,4 @@
     "Berufliche Tätigkeit": "Job occupation",
     "Vorheriger Arbeitgeber": "Previous Employer"
   }
-},
+}
