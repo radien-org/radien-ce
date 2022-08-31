@@ -35,35 +35,35 @@
                                 <div class="col-lg-6 col-md-5 col-sm-12">
                                     <p class="para-text horzontal-space-left-sm" > {{'Vorname *'  | translate }} </p>
                                     <input 
-                                    type="text" 
-                                    name="Vorname" 
-                                    id="Vorname" 
-                                    class="input-text vertical-space-increase-bottom-2" 
-                                    [(ngModel)]="firstName.value" 
-                                    (input)="verifyInput()" 
-                                    placeholder="{{'Vorname'  | translate }}" 
-                                    required>
+                                        type="text" 
+                                        name="Vorname" 
+                                        id="Vorname" 
+                                        class="input-text vertical-space-increase-bottom-2" 
+                                        [(ngModel)]="firstName.value" 
+                                        (input)="verifyInput()" 
+                                        placeholder="{{'Vorname'  | translate }}" 
+                                        required>
                                 </div>
                                 <div class="col-lg-6 col-md-5 col-sm-12">
                                     <p class="para-text horzontal-space-left-sm" > {{'Nachname *'  | translate }} </p>
                                     <input 
-                                    type="text" 
-                                    name="Nachname" 
-                                    id="Nachname" 
-                                    class="input-text vertical-space-increase-bottom-2" 
-                                    [(ngModel)]="lastName.value" 
-                                    (input)="verifyInput()" 
-                                    placeholder="{{'Nachname'  | translate }}" 
-                                    required>
+                                        type="text" 
+                                        name="Nachname" 
+                                        id="Nachname" 
+                                        class="input-text vertical-space-increase-bottom-2" 
+                                        [(ngModel)]="lastName.value" 
+                                        (input)="verifyInput()" 
+                                        placeholder="{{'Nachname'  | translate }}" 
+                                        required>
                                 </div>
                             </div>
                             <div class="row col-lg-12 col-md-12 col-sm-12">
                                 <div class="calendar-container">
                                     <p class="para-text horzontal-space-left-sm"> {{'Geburtsdatum *'  | translate }} </p>
                                     <app-calendar 
-                                    required 
-                                    (dateSet)="setDate($event)" 
-                                    [initialDate]="this.birthDate.value"></app-calendar>
+                                        required 
+                                        (dateSet)="setDate($event)" 
+                                        [initialDate]="this.birthDate.value"></app-calendar>
                                 </div>
                             </div>
                     </div>
