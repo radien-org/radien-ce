@@ -100,14 +100,14 @@
 </div>
 
 <div *ngIf="data.type === 'navegation-buttons'">
-    <div class="row " [ngClass]="{'d-flex': data.navegations.length > 0}" style="align-items: flex-end;">
-        <div 
-            *ngFor="let navegation of data.navegations;let i = index;" 
-            class="col-lg-6 text-dark vertical-space-reducer-bottom-4 bold-text" 
-            [ngClass]="{'ml-auto': i > 0}">
+    <div class="form-nav-buttons">
+        <div
+            *ngFor="let navegation of data.navegations;let i = index;"
+            class="text-dark bold-text"
+           >
             <div
                 class="home-button-link bt-action link-button"
-                (click)="goToLink(navegation.link)" 
+                (click)="goToLink(navegation.link)"
                 [ngClass]="{'text-right': i > 0}">
                 <span *ngIf="i == 0 && navegation.link != 'disabled'" class="arrow arrow-left " [ngClass]="btn_arrow" (mouseenter)="btnOnMouseEnter()" (mouseleave)="btnOnMouseLeave()"></span>
                 <span class="no-overflow-text button-arrow btn-step-text"  [ngClass]="btn_arrow" (mouseenter)="btnOnMouseEnter()" (mouseleave)="btnOnMouseLeave()">
