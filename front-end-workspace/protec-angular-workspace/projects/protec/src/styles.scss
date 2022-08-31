@@ -239,6 +239,7 @@ body {
   opacity: 1;
   min-height: 68vh;
   padding: 100px;
+  position: relative;
 }
 
 .alig-left {
@@ -780,4 +781,18 @@ margin-left-8{
   width: 100vw !important;
   height: 100vh !important;
   display: initial !important;
+}
+
+.bottom-nav-buttons {
+  position: absolute;
+  bottom: 60px;
+  left: 100px;
+  right: 100px;
+}
+
+.form-nav-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
