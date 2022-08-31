@@ -67,12 +67,12 @@
     "DAS SCHADENSEREIGNIS": "THE DAMAGE EVENT",
     "Prüfe im ersten Schritt, ob Dein Arbeitsunfall, Dein Freizeitunfall oder Deine Krankheit die Grundvoraussetzungen für etwaige Rentenansprüche gegenüber den gesetzlichen und privatwirtschaftlichen Versicherungsträgern erfüllen. Um Dir unnötige Aufwände zu ersparen, erhältst Du im Falle einer negativen Prüfung unmittelbar Feedback. Anderfalls erfolgt in Schritt zwei die Detailabfrage.": "In the first step, check whether your accident at work, your leisure-time accident or your illness meets the basic requirements for any pension entitlements from statutory and private insurance providers. In order to save you unnecessary effort, you will receive immediate feedback in the event of a negative test. Otherwise, the detailed query takes place in step two."
   },
+  "JAHR *": "YEAR *",
+  "MONAT": "MONTH",
+  "TAG": "DAY",
   "accident-date": {
     "Dein Unfalldatum": "Your accident date",
-    "Bist bzw. warst Du krankgeschrieben? *": "Are or were you on sick leave? *",
-    "JAHR *": "YEAR *",
-    "MONAT": "MONTH",
-    "TAG": "DAY"
+    "Bist bzw. warst Du krankgeschrieben? *": "Are or were you on sick leave? *"
   },
   "accident-type": {
     "Hattest Du einen Arbeitsunfall, einen Freizeitunfall oder eine Krankheit?": "Have you had an accident at work, a leisure accident or an illness?"

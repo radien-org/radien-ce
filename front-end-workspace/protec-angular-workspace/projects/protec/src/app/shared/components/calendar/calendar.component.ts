@@ -27,13 +27,12 @@ export class CalendarComponent implements OnInit {
   }
 
   constructor(private translate: TranslateService) {
-    this.date = {
-      value: '', error: ""
-    }
-
     this.translate.get('accident-date').subscribe((data:any) => {
       console.log(data)
     })
+    this.date = {
+      value: '', error: ""
+    }
   }
 
 
@@ -55,9 +54,9 @@ export class CalendarComponent implements OnInit {
   year_head_class = ""
   month_head_class = ""
   day_head_class = ""
-  year_head_label = "JAHR"
-  month_head_label="MONAT"
-  day_head_label="TAG"
+  year_head_label = "JAHR *"
+  month_head_label= "MONAT"
+  day_head_label= "TAG"
 
 
 
@@ -124,9 +123,9 @@ export class CalendarComponent implements OnInit {
       this.year_head_class = "";
       this.month_head_class = "";
       this.day_head_class = "";
-      this.year_head_label = this.translate.instant('accident-date.JAHR *');
-      this.month_head_label=this.translate.instant('accident-date.MONAT');
-      this.day_head_label=this.translate.instant('accident-date.TAG');
+      this.year_head_label = "JAHR *"
+      this.month_head_label="MONAT"
+      this.day_head_label="TAG"
       this.selectedYear = 1;
       this.setDate()
     }
@@ -137,8 +136,8 @@ export class CalendarComponent implements OnInit {
       this.month_selector_class = 'show';
       this.month_head_class = "";
       this.day_head_class = "";
-      this.month_head_label=this.translate.instant('accident-date.MONAT');
-      this.day_head_label=this.translate.instant('accident-date.TAG');
+      this.month_head_label="MONAT"
+      this.day_head_label="TAG"
       this.setDate()
     }
   }
@@ -147,7 +146,7 @@ export class CalendarComponent implements OnInit {
     if(this.day_selector_class == 'hide') {
       this.day_selector_class = 'show';
       this.day_head_class = "";
-      this.day_head_label=this.translate.instant('accident-date.TAG');
+      this.day_head_label="TAG"
       this.setDate()
     }
   }
