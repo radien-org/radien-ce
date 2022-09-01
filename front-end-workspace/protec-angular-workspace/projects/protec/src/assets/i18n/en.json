@@ -1,7 +1,7 @@
 ﻿{
   "salutation": "Hello! {{value}}",
   "hello": "Hello! {{value}}",
-  "welcome_exclamation":  "Olá!",
+  "welcome_exclamation": "Olá!",
   "welcome_message1": "Welcome to the digital pension entitlement checker!",
   "welcome_message2": "You now have the opportunity to check your pension entitlements in 4 steps free of charge and without obligation. If you have any questions, we are always at your disposal. In this case, please select the Contact option.",
   "great_headline_mock": "GREAT HEADLINE",
@@ -18,24 +18,29 @@
   "ZURÜCK": "BACK",
   "WEITER": "NEXT",
   "step1_title": "step 1",
-
-  "accident_description":  "In the first step, check whether your accident at work, your leisure-time accident or your illness meets the basic requirements for any pension entitlements from statutory and private insurance providers. In order to save you unnecessary effort, you will receive immediate feedback in the event of a negative test. Otherwise, the detailed query takes place in step two",
+  "Arbeitgeber": "Employer",
+  "PLZ Arbeitgeber *": "Employer Postcode",
+  "Was ist Deine berufliche Tatigkeit?*": "What is your occupation",
+  "Zustandige BG / UV": "Responsible BG/UV",
+  "Aktenzeichen": "Document Number",
+  "Optional falls bekannt": "Optional if known",
+  "(damaliger) Beruf": "(previous) Occupation",
+  "(damaliger) Arbeitgeber": "(previous) Employer)",
+  "PLZ des Arbeitgebers": "Employer Postcode",
+  "Option auswählen": "Choose option",
+  "accident_description": "In the first step, check whether your accident at work, your leisure-time accident or your illness meets the basic requirements for any pension entitlements from statutory and private insurance providers. In order to save you unnecessary effort, you will receive immediate feedback in the event of a negative test. Otherwise, the detailed query takes place in step two",
   "UNFALLRENTEN-CHECKER": "ACCIDENT PENSION CHECKER",
   "KONTAKT": "CONTACT",
   "MEIN KONTO": "MY ACCOUNT",
-
   "EINSTELLUNGEN": "SETTINGS",
   "DATENSCHUTZ": "DATA POLICY",
   "IMPRESSUM": "IMPRINT",
   "AGB": "CONDITIONS OF USE",
-
   "DIE DETAILS": "THE DETAILS",
   "DAS SCHADENSEREIGNIS": "DAMAGE STORY",
   "DEINE DATEN": "YOUR DATA",
   "ERFOLGSAUSSICHTEN": "SUCCESS STORIES",
   "ANGEBOT ANFORDERN": "REQUEST OFFER",
-
-
   "hello": "Hello! {{value}}",
   "OH WOW": "Olá!",
   "TOLLE ÜBERSCHRIFT": "GREAT HEADLINE",
@@ -118,18 +123,16 @@
     "3. Nutzung von WhatsApp.": "3. Use of WhatsApp."
   },
   "wizard": {
-
   },
   "additional-insurance": {
     "Bestanden zum Zeitpunkt des Unfalls eine oder mehrere Versicherungen?": "Did you have one or more insurance policies in effect at the time of the accident?",
     "Hast Du in diesem konkreten Fall bereits Leistungen bei Deiner Versicherung beantragt?": "Have you already applied for benefits from your insurance company in this specific case?"
   },
   "illness": {
-    "Was wurde diagnostiziert? *" : "What was the diagnostic? *",
+    "Was wurde diagnostiziert? *": "What was the diagnostic? *",
     "Dauer der Krankschreibung:": "Duration of sick leave:",
     "Ich bin derzeit noch krankgeschrieben.": "I am currently on sick leave.",
     "Beginn": "Start",
-
     "Berufliche Tätigkeit": "Professional activity",
     "Arbeitgeber zum Zeitpunkt des Unfalls": "Employer at the time of the accident",
     "Vorheriger Arbeitgeber": "Previous employer",
@@ -139,7 +142,7 @@
     "Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *": "What was your last professional activity? *",
     "Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *": "Was the professional activity performed for more than 12 months? *"
   },
-  "Bitte wähle die zutreffende(n) Verletzung(en) aus.":"Please select injured part(s)",
+  "Bitte wähle die zutreffende(n) Verletzung(en) aus.": "Please select injured part(s)",
   "Bitte klicke die von der Verletzung betroffene Körperregion an. Im nächsten Schritt gibst Du die Verletzung(en) und Verletzungsfolge(n) für diese Körperregion an. Wenn mehrere Körperregionen betroffen sind kannst Du weitere Verletzungen im Anschluss hinzufügen.": "Please click on the body region affected by the injury. In the next step you enter the injury(ies) and injury consequence(s) for this body region. If more than one body region is affected, you can add further injuries afterwards.",
   "Ja": "Yes",
   "Nein": "No",
@@ -147,7 +150,7 @@
   "KRANKHEIT": "DISEASE",
   "ARBEITSUNFALL": "WORK ACCIDENT",
   "FREIZEITUNFALL": "PRIVATE ACCIDENT",
-  "DER KOPF" : "THE HEAD",
+  "DER KOPF": "THE HEAD",
   "request-quote": {
     "../../../../assets/images/ProTec_Software_Graphic_envelope.svg": "../../../../assets/images/ProTec_Software_Graphics_envelope-EN.svg"
   },
@@ -155,17 +158,15 @@
   "ANGABEN ZUR VERLETZUNG": "INFRINGEMENT INFORMATION",
   "form yes": "Yes",
   "form no": "No",
-
   "private-accident": {
-    "Wie kam es zu dem Unfall? *": "How did the accident happen? *" ,
-    "Text eingeben": "Insert text" ,
-    "Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *": "What was your last job occupation? *" ,
+    "Wie kam es zu dem Unfall? *": "How did the accident happen? *",
+    "Text eingeben": "Insert text",
+    "Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *": "What was your last job occupation? *",
     "Arbeitgeber": "Employer",
-    "Arbeitgeber zum Zeitpunkt des Unfalls": "Employer at time of accident" ,
-    "Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *":"Has said occupation been undertaken longer than 12 months? *" ,
+    "Arbeitgeber zum Zeitpunkt des Unfalls": "Employer at time of accident",
+    "Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *": "Has said occupation been undertaken longer than 12 months? *",
     "Welche berufliche Tätigkeit hast Du zuvor ausgeübt?": "What was your previous job occupation?",
-    "Berufliche Tätigkeit": "Job occupation" ,
+    "Berufliche Tätigkeit": "Job occupation",
     "Vorheriger Arbeitgeber": "Previous Employer"
-  },
-  "head": "Head"
+  }
 }
