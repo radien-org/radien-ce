@@ -74,15 +74,16 @@
     "Dein Unfalldatum": "Your accident date",
     "Bist bzw. warst Du krankgeschrieben? *": "Are or were you on sick leave? *"
   },
-  "Straße / Hausnummer": "Street / House Nr.",
-  "Straße / Hausnummer *": "Street / House Nr. *",
+  "Straße / Hausnummer": "Street / House No.",
+  "Straße / Hausnummer *": "Street / House No. *",
   "Adresszusatz": "Address Suffix",
-  "Postleitzahl": "Postcode",
-  "Postleitzahl *": "Postcode *",
+  "Postleitzahl": "Zip Code",
+  "Postleitzahl *": "Zip Code *",
   "E-Mail-Adressen": "E-Mail",
   "Mobilfunknummer *": "Mobile Number *",
   "Mobilfunknummer": "Mobile Number",
   "Stadt": "City",
+  "Land": "Country",
   "accident-type": {
     "Hattest Du einen Arbeitsunfall, einen Freizeitunfall oder eine Krankheit?": "Have you had an accident at work, a leisure accident or an illness?"
   },
