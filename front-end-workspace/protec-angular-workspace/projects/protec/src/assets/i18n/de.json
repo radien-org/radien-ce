@@ -67,12 +67,12 @@
     "DAS SCHADENSEREIGNIS": "DAS SCHADENSEREIGNIS",
     "Prüfe im ersten Schritt, ob Dein Arbeitsunfall, Dein Freizeitunfall oder Deine Krankheit die Grundvoraussetzungen für etwaige Rentenansprüche gegenüber den gesetzlichen und privatwirtschaftlichen Versicherungsträgern erfüllen. Um Dir unnötige Aufwände zu ersparen, erhältst Du im Falle einer negativen Prüfung unmittelbar Feedback. Anderfalls erfolgt in Schritt zwei die Detailabfrage.": "Prüfe im ersten Schritt, ob Dein Arbeitsunfall, Dein Freizeitunfall oder Deine Krankheit die Grundvoraussetzungen für etwaige Rentenansprüche gegenüber den gesetzlichen und privatwirtschaftlichen Versicherungsträgern erfüllen. Um Dir unnötige Aufwände zu ersparen, erhältst Du im Falle einer negativen Prüfung unmittelbar Feedback. Anderfalls erfolgt in Schritt zwei die Detailabfrage."
   },
+  "JAHR *": "JAHR *",
+  "MONAT": "MONAT",
+  "TAG": "TAG",
   "accident-date": {
     "Dein Unfalldatum": "Dein Unfalldatum",
-    "Bist bzw. warst Du krankgeschrieben? *": "Bist bzw. warst Du krankgeschrieben? *",
-    "JAHR *": "JAHR *",
-    "MONAT": "MONAT",
-    "TAG": "TAG"
+    "Bist bzw. warst Du krankgeschrieben? *": "Bist bzw. warst Du krankgeschrieben? *"
   },
   "accident-type": {
     "Hattest Du einen Arbeitsunfall, einen Freizeitunfall oder eine Krankheit?": "Hattest Du einen Arbeitsunfall, einen Freizeitunfall oder eine Krankheit?"

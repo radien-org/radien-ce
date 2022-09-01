@@ -1,13 +1,13 @@
 <div class="calendar-container">
   <div class="toggle-container">
     <div class="toggle-button margin-horizontal-right bt-action"  (click)='enableSelectYear()' [ngClass]="year_head_class">
-      {{year_head_label}}
+      {{year_head_label | translate }}
     </div>
     <div class="toggle-button margin-horizontal-right bt-action" (click)='enableSelectMonth()' [ngClass]="month_head_class">
-      {{month_head_label}}
+      {{month_head_label | translate}}
     </div>
     <div class="toggle-button bt-action" (click)='enableSelectDay()' [ngClass]="day_head_class">
-      {{day_head_label}}
+      {{day_head_label | translate}}
     </div>
   </div>
   <div class="options-container scrollbar-primary" [ngClass]="year_selector_class">
