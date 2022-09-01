@@ -44,6 +44,7 @@ public class UserFactoryTest {
         builder.add("firstname", "testFirstName");
         builder.add("lastname", "testLastname");
         builder.add("delegatedCreation", false);
+        builder.add("mobileNumber", "951");
         builder.add("enabled", true);
 
         json = builder.build();
