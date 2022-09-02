@@ -17,6 +17,8 @@
   "home": "HOME",
   "ZURÜCK": "BACK",
   "WEITER": "NEXT",
+  "weiter": "next",
+  "zurück": "back",
   "step1_title": "step 1",
   "Arbeitgeber": "Employer",
   "PLZ Arbeitgeber *": "Employer Postcode *",
@@ -84,6 +86,7 @@
   "Mobilfunknummer": "Mobile Number",
   "Stadt": "City",
   "Land": "Country",
+  "E-Mail-Adresse":  "E-Mail",
   "accident-type": {
     "Hattest Du einen Arbeitsunfall, einen Freizeitunfall oder eine Krankheit?": "Have you had an accident at work, a leisure accident or an illness?"
   },
@@ -182,6 +185,7 @@
     "Wie kam es zu dem Unfall? *": "How did the accident happen? *",
     "Text eingeben": "Insert text",
     "Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *": "What was your last job occupation? *",
+    "Was war Deine berufliche Tätigkeit zum Zeitpunkt des Unfalls? *": "What was your job occupation at the time of the accident? *",
     "Arbeitgeber": "Employer",
     "Arbeitgeber zum Zeitpunkt des Unfalls": "Employer at time of accident",
     "Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *": "Has said occupation been undertaken longer than 12 months? *",

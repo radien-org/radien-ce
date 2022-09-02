@@ -17,6 +17,8 @@
   "home": "HOME",
   "ZURÜCK": "ZURÜCK",
   "WEITER": "WEITER",
+  "weiter": "weiter",
+  "zurück": "zurück",
   "step1_title": "SCHRITT 1",
   "Arbeitgeber": "Arbeitgeber",
   "PLZ Arbeitgeber *": "PLZ Arbeitgeber *",
@@ -84,6 +86,7 @@
   "Mobilfunknummer": "Mobilfunknummer ",
   "Stadt": "Stadt",
   "Land": "Land",
+  "E-Mail-Adresse":  "E-Mail-Adresse",
   "accident-type": {
     "Hattest Du einen Arbeitsunfall, einen Freizeitunfall oder eine Krankheit?": "Hattest Du einen Arbeitsunfall, einen Freizeitunfall oder eine Krankheit?"
   },
@@ -181,6 +184,7 @@
     "Wie kam es zu dem Unfall? *": "Wie kam es zu dem Unfall? *",
     "Text eingeben": "Text eingeben",
     "Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *": "Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *",
+    "Was war Deine berufliche Tätigkeit zum Zeitpunkt des Unfalls? *": "Was war Deine berufliche Tätigkeit zum Zeitpunkt des Unfalls? *",
     "Arbeitgeber": "Arbeitgeber",
     "Arbeitgeber zum Zeitpunkt des Unfalls": "Arbeitgeber zum Zeitpunkt des Unfalls",
     "Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *": "Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *",
