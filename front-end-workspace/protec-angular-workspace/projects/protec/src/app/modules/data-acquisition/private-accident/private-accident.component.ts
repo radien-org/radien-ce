@@ -15,7 +15,7 @@ export class PrivateAccidentComponent implements OnInit {
       type: 'navegation-buttons',
       navegations: [
         {
-          label: this.translationService.instant('zurück'),
+          label: this.translationService.instant('ZURÜCK'),
           link: '/data-acquisition/details-intro'
         }
       ]
