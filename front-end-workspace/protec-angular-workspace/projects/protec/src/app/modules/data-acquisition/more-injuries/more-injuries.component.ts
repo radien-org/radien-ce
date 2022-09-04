@@ -123,9 +123,9 @@ export class MoreInjuriesComponent implements OnInit {
       ]
     }
 
-    console.log('debug (obj):', obj);
+    console.log('debug (obj):', obj, CLAIMS_LIST);
 
-    if(typeof CLAIMS_LIST !== 'object'){
+    if(!CLAIMS_LIST){
       CLAIMS_LIST = [];
     }
 
