@@ -66,6 +66,8 @@
   "step-3": "SCHRITT 3",
   "step-3-text": "Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met.",
   "Vielen Dank für Dein Vertrauen!": "Vielen Dank für Dein Vertrauen!",
+  "Beginn": "Beginn",
+  "Enddatum": "Enddatum",
   "accident": {
     "SCHRITT 1": "SCHRITT 1",
     "DAS SCHADENSEREIGNIS": "DAS SCHADENSEREIGNIS",
@@ -191,5 +193,6 @@
     "Berufliche Tätigkeit": "Berufliche Tätigkeit",
     "Vorheriger Arbeitgeber": "Vorheriger Arbeitgeber"
   },
-  "head": "Kopf"
+  "head": "Kopf",
+  "Welche berufliche Tätigkeit hast Du zuvor ausgeübt?": "Welche berufliche Tätigkeit hast Du zuvor ausgeübt?"
 }
