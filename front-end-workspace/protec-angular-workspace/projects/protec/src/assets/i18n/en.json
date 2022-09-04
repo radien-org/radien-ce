@@ -51,7 +51,6 @@
   "DEINE DATEN": "YOUR DATA",
   "ERFOLGSAUSSICHTEN": "SUCCESS STORIES",
   "ANGEBOT ANFORDERN": "REQUEST OFFER",
-  "hello": "Hello! {{value}}",
   "OH WOW": "Olá!",
   "TOLLE ÜBERSCHRIFT": "GREAT HEADLINE",
   "Herzlich Willkommen beim digitalen Rentenanspruchsprüfer!": "Welcome to the digital pension entitlement checker!",
@@ -62,6 +61,8 @@
   "Die vorliegenden Nutzungsbedingungen finden Anwendung auf das Informationsangebot der Firma Pro:Tec Solutions GmbH, Sophienstraße 40, 38118 Braunschweig (AG Braunschweig HRB 209067, Umsatzsteuer-ID: DE338227682) vertreten durch den Geschäftsführer Alexander Naumann (im Folgenden „Pro:Tec“ oder „wir“) auf dieser Webseite (protec-solutions.de) sowie für den Prozess einer kostenlosen und unverbindlichen Vorprüfung (unter der Domain: protec.help). Die Prozessfinanzierung selbst ist Gegenstand einer individualisierten vertraglichen Regelung und nicht von diesen Nutzungsbedingungen erfasst.": "The present terms of use apply to the information offered by the company Pro:Tec Solutions GmbH, Sophienstraße 40, 38118 Braunschweig (AG Braunschweig HRB 209067, VAT ID: DE338227682) represented by the managing director Alexander Naumann (hereinafter \"Pro:Tec\" or \"we \") on this website (protec-solutions.de) and for the process of a free and non-binding preliminary check (under the domain: protec.help). The litigation funding itself is the subject of an individualized contractual arrangement and is not covered by these Terms of Use.",
   "2. Regelungen für die Registrierung und Vorprüfung": "2. Regulations for registration and preliminary examination",
   "(1) Um Ihren Sachverhalt auf die Abgabe eines etwaigen Prozessfinanzierungsangebots prüfen zu können, benötigen wir von": "(1) In order to be able to check your facts for the submission of a possible litigation financing offer, we need from",
+  "step-4": "STEP 4",
+  "step-4-text": "In order to send you a non-binding offer, we ask you to provide your contact details. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met.",
   "accident": {
     "SCHRITT 1": "STEP 1",
     "DAS SCHADENSEREIGNIS": "THE DAMAGE EVENT",

@@ -50,7 +50,6 @@
   "DEINE DATEN": "DEINE DATEN",
   "ERFOLGSAUSSICHTEN": "ERFOLGSAUSSICHTEN",
   "ANGEBOT ANFORDERN": "ANGEBOT ANFORDERN",
-  "hello": "Hallo! {{value}}",
   "OH WOW": "OH WOW",
   "TOLLE ÜBERSCHRIFT": "TOLLE ÜBERSCHRIFT",
   "Herzlich Willkommen beim digitalen Rentenanspruchsprüfer!": "Herzlich Willkommen beim digitalen Rentenanspruchsprüfer!",
@@ -62,6 +61,8 @@
   "Die vorliegenden Nutzungsbedingungen finden Anwendung auf das Informationsangebot der Firma Pro:Tec Solutions GmbH, Sophienstraße 40, 38118 Braunschweig (AG Braunschweig HRB 209067, Umsatzsteuer-ID: DE338227682) vertreten durch den Geschäftsführer Alexander Naumann (im Folgenden „Pro:Tec“ oder „wir“) auf dieser Webseite (protec-solutions.de) sowie für den Prozess einer kostenlosen und unverbindlichen Vorprüfung (unter der Domain: protec.help). Die Prozessfinanzierung selbst ist Gegenstand einer individualisierten vertraglichen Regelung und nicht von diesen Nutzungsbedingungen erfasst.": "Die vorliegenden Nutzungsbedingungen finden Anwendung auf das Informationsangebot der Firma Pro:Tec Solutions GmbH, Sophienstraße 40, 38118 Braunschweig (AG Braunschweig HRB 209067, Umsatzsteuer-ID: DE338227682) vertreten durch den Geschäftsführer Alexander Naumann (im Folgenden „Pro:Tec“ oder „wir“) auf dieser Webseite (protec-solutions.de) sowie für den Prozess einer kostenlosen und unverbindlichen Vorprüfung (unter der Domain: protec.help). Die Prozessfinanzierung selbst ist Gegenstand einer individualisierten vertraglichen Regelung und nicht von diesen Nutzungsbedingungen erfasst.",
   "2. Regelungen für die Registrierung und Vorprüfung": "2. Regelungen für die Registrierung und Vorprüfung",
   "(1) Um Ihren Sachverhalt auf die Abgabe eines etwaigen Prozessfinanzierungsangebots prüfen zu können, benötigen wir von": "(1) Um Ihren Sachverhalt auf die Abgabe eines etwaigen Prozessfinanzierungsangebots prüfen zu können, benötigen wir von",
+  "step-4": "SCHRITT 4",
+  "step-4-text": "Für die Zusendung eines unverbindlichen Angebots bitten wir Dich nun um die Angabe Deiner Kontaktdaten. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met.",
   "accident": {
     "SCHRITT 1": "SCHRITT 1",
     "DAS SCHADENSEREIGNIS": "DAS SCHADENSEREIGNIS",
