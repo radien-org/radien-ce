@@ -9,6 +9,7 @@ import { AuthService } from '../../../../shared/services/auth/auth.service';
 })
 export class HeaderDesktopComponent implements OnInit {
 
+
   constructor(private readonly translationService: TranslationService, private readonly auth: AuthService) { }
 
   ngOnInit(): void {
