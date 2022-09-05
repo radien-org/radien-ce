@@ -1,9 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {StorageService} from '../../../shared/services/storage/storage.service';
 import {LOCAL} from '../../../shared/services/storage/local.enum';
 import {PrimeNGConfig} from "primeng/api";
 import {DataAcquisitionService} from '../../../shared/services/data-acquisition/data-acquisition.service';
+import {MultiSelectComponent} from "../../../shared/components/multi-select/multi-select.component";
 
 @Component({
     selector: 'app-part-body-figure',
@@ -33,13 +34,24 @@ export class PartBodyFigureComponent implements OnInit {
     bodyPartSimple: string = '';
     bodyPartImage: string = '';
 
+    primaryOptions : {
+        id: 'primary_multi_select',
+        title: string,
+        options: any[],
+    }
+
+    secondaryOptions : {
+        id: 'secondary_multi_select',
+        title: string,
+        options: any[],
+    }
+
+    @ViewChild('primary_multi_select') selectPrimaryComp: MultiSelectComponent | undefined;
+    @ViewChild('secondary_multi_select') selectSecondaryComp: MultiSelectComponent | undefined;
+
     items = [];
     item: string = '';
-    selectedOptions: string[] = [];
-    options: any[];
 
-    selectedSubOptions: string[] = [];
-    subOptions: any[];
 
     constructor(
         private readonly translationService: TranslateService,
@@ -47,8 +59,26 @@ export class PartBodyFigureComponent implements OnInit {
         private primengConfig: PrimeNGConfig,
         private readonly dataService: DataAcquisitionService
     ) {
-        this.options = [];
-        this.subOptions = [];
+        this.primaryOptions = {
+            id: 'primary_multi_select',
+            title: 'Verletzung(en)',
+            options: [],
+        }
+        this.secondaryOptions = {
+            id: "secondary_multi_select",
+            title: 'Verletzungsfolge(n)',
+            options: [],
+        }
+    }
+
+    handleOpen(id: string) {
+        if (id === 'primary_multi_select' ) {
+            console.log(id)
+            console.log(this.selectSecondaryComp)
+            if (this.selectSecondaryComp) this.selectSecondaryComp.toggleOff()
+        } else {
+            if (this.selectPrimaryComp) this.selectPrimaryComp.toggleOff()
+        }
     }
 
     ngOnInit(): void {
@@ -60,9 +90,7 @@ export class PartBodyFigureComponent implements OnInit {
             if (data) {
                 data.forEach((item: any) => {
                     if (this.bodyPartSimple == item.bodyPart) {
-                        this.options.push(
-                            {name: item.text, code: item.id}
-                        );
+                        this.primaryOptions.options.push( {name: item.text, code: item.id})
                     }
                 });
             }
@@ -74,9 +102,7 @@ export class PartBodyFigureComponent implements OnInit {
         this.dataService.getConsequencesOptions().then((data: any) => {
             if (data) {
                 data.forEach((item: any) => {
-                    this.subOptions.push(
-                        {name: item.text, code: item.id}
-                    );
+                    this.secondaryOptions.options.push( {name: item.text, code: item.id})
                 });
             }
         });
@@ -110,7 +136,7 @@ export class PartBodyFigureComponent implements OnInit {
             case 'torso':
                 result = 'ProTec_Software_Bodyparts_Torso.svg';
                 this.bodyPartTitle = 'torso'
-                this.bodyPartSimple = 'torso';
+                this.bodyPartSimple = 'chest';
                 break;
             case 'shoulder-right':
                 result = 'ProTec_Software_Bodyparts_Shoulder-right.svg';
@@ -164,13 +190,13 @@ export class PartBodyFigureComponent implements OnInit {
                 break;
             case 'thigh-left':
                 result = 'ProTec_Software_Bodyparts_Thigh-left.svg';
-                this.bodyPartTitle = 'left thigh'
-                this.bodyPartSimple = 'thigh';
+                this.bodyPartTitle = 'left tight'
+                this.bodyPartSimple = 'tight';
                 break;
             case 'thigh-right':
                 result = 'ProTec_Software_Bodyparts_Thigh-right.svg';
-                this.bodyPartTitle = 'right thigh'
-                this.bodyPartSimple = 'thigh';
+                this.bodyPartTitle = 'right tight'
+                this.bodyPartSimple = 'tight';
                 break;
             case 'knee-left':
                 result = 'ProTec_Software_Bodyparts_Knee-left.svg';
@@ -185,12 +211,12 @@ export class PartBodyFigureComponent implements OnInit {
             case 'leg-left':
                 result = 'ProTec_Software_Bodyparts_Tibia-left.svg';
                 this.bodyPartTitle = 'left tibia'
-                this.bodyPartSimple = 'leg';
+                this.bodyPartSimple = 'tibia';
                 break;
             case 'leg-right':
                 result = 'ProTec_Software_Bodyparts_Tibia-right.svg';
                 this.bodyPartTitle = 'right tibia'
-                this.bodyPartSimple = 'leg';
+                this.bodyPartSimple = 'tibia';
                 break;
             case 'foot-left':
                 result = 'ProTec_Software_Bodyparts_Foot-left.svg';
