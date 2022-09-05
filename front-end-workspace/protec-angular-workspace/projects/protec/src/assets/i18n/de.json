@@ -86,7 +86,7 @@
   "Mobilfunknummer": "Mobilfunknummer ",
   "Stadt": "Stadt",
   "Land": "Land",
-  "E-Mail-Adresse":  "E-Mail-Adresse",
+  "E-Mail-Adresse": "E-Mail-Adresse",
   "accident-type": {
     "Hattest Du einen Arbeitsunfall, einen Freizeitunfall oder eine Krankheit?": "Hattest Du einen Arbeitsunfall, einen Freizeitunfall oder eine Krankheit?"
   },
@@ -190,7 +190,19 @@
     "Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *": "Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *",
     "Welche berufliche Tätigkeit hast Du zuvor ausgeübt?": "Welche berufliche Tätigkeit hast Du zuvor ausgeübt?",
     "Berufliche Tätigkeit": "Berufliche Tätigkeit",
-    "Vorheriger Arbeitgeber": "Vorheriger Arbeitgeber"
+    "Vorheriger Arbeitgeber": "Vorheriger Arbeitgeber",
+    "Berufliche Tätigkeit zum Zeitpunkt des Unfalls *": "Berufliche Tätigkeit zum Zeitpunkt des Unfalls *",
+    "Übst Du diesen Beruf heute noch aus? *": "Übst Du diesen Beruf heute noch aus? *",
+    "Berufliche Tätigkeit heute": "Berufliche Tätigkeit heute",
+    "Berufliche Tätigkeit": "Berufliche Tätigkeit",
+    "Jetziger Arbeitgeber": "Jetziger Arbeitgeber"
   },
+  "OH NO!": "OH NO!",
+  "ES TUT UNS LEID…": "ES TUT UNS LEID…",
+  "we-are-sorry":{
+    "Leider erfüllen die von Dir angegebenen Ereignisse nicht die notwendigen Vorraussetzungen für einen legitimen Rentenanspruch. Die Datenerfassung wird daher an dieser Stelle nicht weitergeführt. ": "Leider erfüllen die von Dir angegebenen Ereignisse nicht die notwendigen Vorraussetzungen für einen legitimen Rentenanspruch. Die Datenerfassung wird daher an dieser Stelle nicht weitergeführt. "
+  },
+  "Klicke auf den Button um weitere Versicherungsfälle zu prüfen.": "Klicke auf den Button um weitere Versicherungsfälle zu prüfen.",
+  "WEITEREN FALL PRÜFEN": "WEITEREN FALL PRÜFEN",
   "head": "Kopf"
 }
