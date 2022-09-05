@@ -28,6 +28,7 @@ export class PartBodyFigureComponent implements OnInit {
 
     bodyPart: string = '';
     bodyPartTitle: string = '';
+    bodyPartSide: string = '';
     bodyPartSimple: string = '';
     bodyPartImage: string = '';
 
@@ -62,13 +63,13 @@ export class PartBodyFigureComponent implements OnInit {
     ) {
         this.primaryOptions = {
             id: 'primary_multi_select',
-            title: 'Verletzung(en)',
+            title: 'primary_accident_options',
             options: [],
             error: ''
         }
         this.secondaryOptions = {
             id: "secondary_multi_select",
-            title: 'Verletzungsfolge(n)',
+            title: 'secondary_accident_options',
             options: [],
             error: ''
         }
@@ -168,107 +169,127 @@ export class PartBodyFigureComponent implements OnInit {
                 break;
             case 'elbow-left':
                 result = 'ProTec_Software_Bodyparts_Elbow-left.svg';
-                this.bodyPartTitle = 'left elbow'
+                this.bodyPartSide = 'left';
+                this.bodyPartTitle = 'elbow';
                 this.bodyPartSimple = 'elbow';
                 break;
             case 'shoulder-left':
                 result = 'ProTec_Software_Bodyparts_Shoulder-left.svg';
-                this.bodyPartTitle = 'left shoulder'
+                this.bodyPartSide = 'left';
+                this.bodyPartTitle = 'shoulder'
                 this.bodyPartSimple = 'shoulder';
                 break;
             case 'torso':
                 result = 'ProTec_Software_Bodyparts_Torso.svg';
-                this.bodyPartTitle = 'torso'
+                this.bodyPartTitle = 'chest'
                 this.bodyPartSimple = 'chest';
                 break;
             case 'shoulder-right':
                 result = 'ProTec_Software_Bodyparts_Shoulder-right.svg';
-                this.bodyPartTitle = 'right shoulder'
+                this.bodyPartSide = 'right';
+                this.bodyPartTitle = 'shoulder'
                 this.bodyPartSimple = 'shoulder';
                 break;
             case 'upper-arm-right':
                 result = 'ProTec_Software_Bodyparts_Bicep-right.svg';
-                this.bodyPartTitle = 'right bicep'
+                this.bodyPartSide = 'right';
+                this.bodyPartTitle = 'arm'
                 this.bodyPartSimple = 'arm';
                 break;
             case 'upper-arm-left':
                 result = 'ProTec_Software_Bodyparts_Bicep-left.svg';
-                this.bodyPartTitle = 'left bicep'
+                this.bodyPartSide = 'left';
+                this.bodyPartTitle = 'arm'
                 this.bodyPartSimple = 'arm';
                 break;
             case 'elbow-right':
                 result = 'ProTec_Software_Bodyparts_Elbow-right.svg';
-                this.bodyPartTitle = 'right elbow'
+                this.bodyPartSide = 'right';
+                this.bodyPartTitle = 'elbow'
                 this.bodyPartSimple = 'elbow';
                 break;
             case 'hand-left':
                 result = 'ProTec_Software_Bodyparts_Hand-left.svg';
-                this.bodyPartTitle = 'left hand'
+                this.bodyPartSide = 'left';
+                this.bodyPartTitle = 'hand'
                 this.bodyPartSimple = 'hand';
                 break;
             case 'forearm-left':
                 result = 'ProTec_Software_Bodyparts_Forearm-left.svg';
-                this.bodyPartTitle = 'left forearm'
+                this.bodyPartSide = 'left';
+                this.bodyPartTitle = 'forearm'
                 this.bodyPartSimple = 'forearm';
                 break;
             case 'hip-left':
                 result = 'ProTec_Software_Bodyparts_Pelvis-left.svg';
-                this.bodyPartTitle = 'left pelvis'
+                this.bodyPartSide = 'left';
+                this.bodyPartTitle = 'hip'
                 this.bodyPartSimple = 'hip';
                 break;
             case 'hip-right':
                 result = 'ProTec_Software_Bodyparts_Pelvis-right.svg';
-                this.bodyPartTitle = 'right pelvis'
+                this.bodyPartSide = 'right';
+                this.bodyPartTitle = 'hip'
                 this.bodyPartSimple = 'hip';
                 break;
             case 'forearm-right':
                 result = 'ProTec_Software_Bodyparts_Forearm-right.svg';
-                this.bodyPartTitle = 'right forearm'
+                this.bodyPartSide = 'right';
+                this.bodyPartTitle = 'forearm'
                 this.bodyPartSimple = 'forearm';
                 break;
             case 'hand-right':
                 result = 'ProTec_Software_Bodyparts_Hand-right.svg';
-                this.bodyPartTitle = 'right hand'
+                this.bodyPartSide = 'right';
+                this.bodyPartTitle = 'hand'
                 this.bodyPartSimple = 'hand';
                 break;
             case 'thigh-left':
                 result = 'ProTec_Software_Bodyparts_Thigh-left.svg';
-                this.bodyPartTitle = 'left tight'
+                this.bodyPartSide = 'left';
+                this.bodyPartTitle = 'tight'
                 this.bodyPartSimple = 'tight';
                 break;
             case 'thigh-right':
                 result = 'ProTec_Software_Bodyparts_Thigh-right.svg';
-                this.bodyPartTitle = 'right tight'
+                this.bodyPartSide = 'right';
+                this.bodyPartTitle = 'tight'
                 this.bodyPartSimple = 'tight';
                 break;
             case 'knee-left':
                 result = 'ProTec_Software_Bodyparts_Knee-left.svg';
-                this.bodyPartTitle = 'left knee'
+                this.bodyPartSide = 'left';
+                this.bodyPartTitle = 'knee'
                 this.bodyPartSimple = 'knee';
                 break;
             case 'knee-right':
                 result = 'ProTec_Software_Bodyparts-Knee-right.svg';
-                this.bodyPartTitle = 'right knee'
+                this.bodyPartSide = 'right';
+                this.bodyPartTitle = 'knee'
                 this.bodyPartSimple = 'knee';
                 break;
             case 'leg-left':
                 result = 'ProTec_Software_Bodyparts_Tibia-left.svg';
-                this.bodyPartTitle = 'left tibia'
+                this.bodyPartSide = 'left';
+                this.bodyPartTitle = 'tibia'
                 this.bodyPartSimple = 'tibia';
                 break;
             case 'leg-right':
                 result = 'ProTec_Software_Bodyparts_Tibia-right.svg';
-                this.bodyPartTitle = 'right tibia'
+                this.bodyPartSide = 'right';
+                this.bodyPartTitle = 'tibia'
                 this.bodyPartSimple = 'tibia';
                 break;
             case 'foot-left':
                 result = 'ProTec_Software_Bodyparts_Foot-left.svg';
-                this.bodyPartTitle = 'left foot'
+                this.bodyPartSide = 'left';
+                this.bodyPartTitle = 'foot'
                 this.bodyPartSimple = 'foot';
                 break;
             case 'foot-right':
                 result = 'ProTec_Software_Bodyparts_Foot-right.svg';
-                this.bodyPartTitle = 'right foot'
+                this.bodyPartSide = 'right';
+                this.bodyPartTitle = 'foot'
                 this.bodyPartSimple = 'foot';
                 break;
             default:

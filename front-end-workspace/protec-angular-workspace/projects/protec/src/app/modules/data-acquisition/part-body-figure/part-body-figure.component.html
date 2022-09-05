@@ -16,7 +16,7 @@
                                     <div class="col-lg-7 col-md-6 col-sm-12">
                                         <div class="vertical-space-increase-bottom">
                                              <h1 class="mt-0 mb-4 title-text vertical-space-reducer-top">
-                                                 {{ bodyPartTitle | translate }}
+                                                 {{ bodyPartSide | translate }} {{ bodyPartTitle | translate }}
                                              </h1>
                                              <p>{{ 'Bitte wähle die zutreffende(n) Verletzung(en) aus.' | translate }}</p>
                                              <div class="row">
@@ -28,15 +28,6 @@
                                                              (handleOpen)="handleOpen($event)"
                                                              (handleChoices)="handleSelectOptions($event)">
                                                      </app-multi-select>
-<!--                                                    <div style="float:left">-->
-<!--                                                        <p-multiSelect-->
-<!--                                                            [options]="options"-->
-<!--                                                            [(ngModel)]="selectedOptions"-->
-<!--                                                            defaultLabel="Select a option"-->
-<!--                                                            optionLabel="name"-->
-<!--                                                            display="chip">-->
-<!--                                                        </p-multiSelect>-->
-<!--                                                    </div>-->
                                                  </div>
                                                  <div class="col-12">
                                                      <app-multi-select
@@ -46,16 +37,6 @@
                                                              (handleOpen)="handleOpen($event)"
                                                              (handleChoices)="handleSelectSubOptions($event)">
                                                      </app-multi-select>
-
-                                                     <!-- <div style="float:left">-->
-<!--                                                        <p-multiSelect -->
-<!--                                                            [options]="subOptions" -->
-<!--                                                            [(ngModel)]="selectedSubOptions" -->
-<!--                                                            defaultLabel="Select a option" -->
-<!--                                                            optionLabel="name" -->
-<!--                                                            display="chip">-->
-<!--                                                        </p-multiSelect>-->
-<!--                                                    </div>-->
                                                  </div>
                                              </div>
                                         </div>
