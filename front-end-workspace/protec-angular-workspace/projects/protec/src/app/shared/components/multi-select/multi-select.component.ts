@@ -12,27 +12,27 @@ export class MultiSelectComponent implements OnInit {
     id: '',
     title: '',
     options: [],
-    initSelectedOptions: [],
   }
-
-  isToggled : boolean;
-  selectedOptions: Set<{name: string, code: string}>;
-  shownOptions : any[];
+  @Input() public selected: Set<any> = new Set<any>();
+  isToggled : boolean = false;
+  selectedOptions: Set<{name: string, code: string}>  = new Set<any> ();
+  shownOptions : any[] = [];
 
   @Output() public handleOpen = new EventEmitter();
+  @Output() public handleChoices = new EventEmitter();
 
   constructor() {
+  }
+
+
+  ngOnInit(): void {
     this.isToggled = false;
-    this.selectedOptions = new Set(this.data.initSelectedOptions);
+    this.selectedOptions = this.selected;
     if (this.data.isToggled) {
       this.shownOptions = [...this.data.options]
     } else {
       this.shownOptions = Array.from(this.selectedOptions)
     }
-  }
-
-
-  ngOnInit(): void {
   }
 
   handleToggle () : void {
@@ -57,6 +57,7 @@ export class MultiSelectComponent implements OnInit {
     } else {
       this.selectedOptions.add(option)
     }
+    this.handleChoices.emit(this.selectedOptions);
   }
 
   isOptionSelected (option: {name: string, code: string}) : boolean {
