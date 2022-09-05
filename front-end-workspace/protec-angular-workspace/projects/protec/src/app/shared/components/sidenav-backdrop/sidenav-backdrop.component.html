@@ -36,9 +36,10 @@
         <div class="mt-2 mb-2">
             <app-g-button [data]="cookieWindowButton.dataButtonOptionTwo" (click)='closeModal()'></app-g-button>
         </div>
-        <div class="mt-2 mb-2">
-            <app-g-button [data]="cookieWindowButton.dataButtonOptionThree"></app-g-button>
+        <div class="mt-2 mb-2 ">
+            <app-g-button [data]="cookieWindowButton.dataButtonOptionThree" (click)='getAcceptedCookie("selected")'></app-g-button>
         </div>
+
     </div>
 </div>
 
@@ -61,11 +62,11 @@
     <p class="mt-2 mb-2 side-window-text vertical-space-increase-top">
         {{ '  Einige Services verarbeiten deine Daten in den USA. Mit Deiner Einwilligung zur Nutzung dieser Services stimmst Du auch der Verarbeitung Deiner Daten in den USA gemäß Art. 49 (1) lit. a DSGVO zu. Das EuGH stuft die USA als Land mit unzureichendem nach EU-Standards ein. So besteht etwa das Risiko, dass US-Behörden personenbezogene Daten in Überwachungs-programmen verarbeiten, ohne bestehende Klagemöglichkeiten für Europäer.' | translate }}
     </p>
-    <a class="side-window-link" (click)="goTo(cookieGuideLink)">
+    <a class="side-window-link " (click)="goTo(cookieGuideLink)">
         {{ 'Weitere Informationen' | translate }}
     </a>
 
-    <div class="mt-4 vertical-space-increase-top-lg-14 align-content-center justify-content-center width-100">
+    <div class="mt-4 vertical-space-increase-top-lg-14 align-content-center justify-content-center width-100  vertical-space-reducer-top-10">
         <div class="mt-2 mb-2 width-100">
             <app-g-button [data]="cookieWindowButtonDefault.dataButtonOptionOne" (click)='getAcceptedCookie("all")'></app-g-button>
         </div>

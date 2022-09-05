@@ -9,18 +9,34 @@
                     <div class="row col-lg-12 col-md-12 col-sm-12 vertical-space-increase-top">
                         <div class="col-lg-6 col-md-5 col-sm-12">
                             <p class="para-text horzontal-space-left-sm"> {{'Arbeitgeber'  | translate }} </p>
-                            <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'(damaliger) Arbeitgeber'  | translate }}" required>
+                            <input 
+                                type="text" 
+                                class="input-text vertical-space-increase-bottom-2" 
+                                placeholder="{{'(damaliger) Arbeitgeber'  | translate }}" 
+                                [(ngModel)]="employer.value" 
+                                (input)="verifyInput()" 
+                                required>
                         </div>
                         <div class="col-lg-6 col-md-5 col-sm-12">
                             <p class="para-text horzontal-space-left-sm"> {{'PLZ Arbeitgeber *'  | translate }} </p>
                             <p *ngIf="postCode.error">{{postCode.error}}</p>
-                            <input type="text" class="input-text vertical-space-increase-bottom-2" [(ngModel)]="postCode.value" (input)="verifyInput()" placeholder="{{'PLZ des Arbeitgebers'  | translate }}" >
+                            <input 
+                                type="text" 
+                                class="input-text vertical-space-increase-bottom-2" 
+                                [(ngModel)]="postCode.value" 
+                                (input)="verifyInput()" 
+                                placeholder="{{'PLZ des Arbeitgebers'  | translate }}">
                         </div>
                     </div>
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <p class="para-text horzontal-space-left-sm"> {{'Was ist Deine berufliche Tatigkeit?*'  | translate }} </p>
                         <p *ngIf="occupation.error">{{occupation.error}}</p>
-                        <input type="text" class="input-text vertical-space-increase-bottom-2" [(ngModel)]="occupation.value" (input)="verifyInput()" placeholder="{{'(damaliger) Beruf'  | translate }}">
+                        <input 
+                            type="text" 
+                            class="input-text vertical-space-increase-bottom-2" 
+                            [(ngModel)]="occupation.value" 
+                            (input)="verifyInput()" 
+                            placeholder="{{'(damaliger) Beruf'  | translate }}">
                     </div>
                     <div class="row col-lg-12 col-md-12 col-sm-12 vertical-space-increase-top">
                         <div class="col-lg-6 col-md-5 col-sm-12">
@@ -28,7 +44,7 @@
                             <select
                                     class="input-text vertical-space-increase-bottom-2"
                                     class="input-text vertical-space-increase-bottom-2 input-select-dropdown">
-                                <option value="">Option auswahlen</option>
+                                <option value="">{{'Option auswählen' | translate }}</option>
                                 <option
                                         *ngFor="let item of options"
                                         value="{{item.code}}">
@@ -43,11 +59,13 @@
                                     name="Mobilfunknummer"
                                     id="Mobilfunknummer"
                                     class="input-text vertical-space-increase-bottom-2"
-                                    placeholder="{{'Optional falls bekannt'  | translate }}">
+                                    placeholder="{{'Optional falls bekannt'  | translate }}" 
+                                    [(ngModel)]="fileNumber.value" 
+                                    (input)="verifyInput()">
                         </div>
                     </div>
                 </div>
-                <div class="container-fluid">
+                <div class="bottom-nav-buttons">
                     <app-g-button [data]="pageNav.navegation"></app-g-button>
                 </div>
             </div>

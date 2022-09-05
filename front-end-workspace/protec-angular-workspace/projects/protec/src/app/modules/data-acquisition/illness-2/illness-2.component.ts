@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { StorageService } from '../../../shared/services/storage/storage.service';
+import { LOCAL } from '../../../shared/services/storage/local.enum';
 
 @Component({
   selector: 'app-illness-2',//TODO: change this name component probably to illness-diagnostic
@@ -14,11 +16,7 @@ export class Illness2Component implements OnInit {
       navegations: [
         {
           label: this.translationService.instant('back'),
-          link: '/data-acquisition/illness-details'
-        },
-        {
-          label: this.translationService.instant('next'),
-          link: '/data-acquisition/full-body'
+          link: '/data-acquisition/private-accident'
         }
       ]
     }
@@ -77,8 +75,51 @@ export class Illness2Component implements OnInit {
   counter(i: number) {
     return new Array(i);
   }
-  constructor(private readonly translationService: TranslateService) { }
-  selectYear(i: number){
+
+  whatWasDiagnosed: any;
+  currentlySickLeave: any;
+
+  accidentType: string = '';
+
+  constructor(private readonly translationService: TranslateService, private readonly storageService: StorageService) { }
+  
+  ngOnInit(): void {
+    this.accidentType = this.storageService.getItem(LOCAL.ACCIDENT_TYPE);
+    this.verifyAccidentType();
+    const savedData = this.storageService.getItem(LOCAL.ILLNESS_DIAGNOSTIC_FORM)?.data;
+    console.log('debug (savedData):', savedData);
+    if(savedData) {
+      this.whatWasDiagnosed = savedData.whatWasDiagnosed;
+      this.currentlySickLeave = savedData.currentlySickLeave;
+    }
+  }
+
+  verifyAccidentType() {
+    if(this.accidentType === 'work-accident') {
+      this.pageNav.navegation.navegations.push(
+        {
+          label: this.translationService.instant('next'),
+          link: '/data-acquisition/full-body'
+        }
+      );
+    } else if(this.accidentType === 'recreational-accident') {
+      this.pageNav.navegation.navegations.push(
+        {
+          label: this.translationService.instant('next'),
+          link: '/data-acquisition/full-body'
+        }
+      );
+    } else {
+      this.pageNav.navegation.navegations.push(
+        {
+          label: this.translationService.instant('WEITER'),
+          link: '/data-acquisition/more-injuries'
+        }
+      );
+    }
+  }
+
+  public selectYear(i: number){
     if(this.current_selector == "Beginning"){
       this.selectedBeginningYear = i;
       this.year_selector_class_Beginning = "hide";
@@ -109,7 +150,8 @@ export class Illness2Component implements OnInit {
       this.year_head_label_end= i.toString();
     }
   }
-  selectMonth(i: number){
+  
+  public selectMonth(i: number){
     if(this.current_selector == "Beginning"){
       this.selectedBeginningMonth = i;
       this.month_selector_class_Beginning = "hide";
@@ -126,7 +168,7 @@ export class Illness2Component implements OnInit {
     }
   }
 
-  getDaylist(){
+  public getDaylist(){
     switch (this.selectedBeginningMonth){
       case 0: this.monthdays = 31; break;
       case 1: if(this.selectedBeginningYear%4==0){this.monthdays = 29} else {this.monthdays = 28} break;
@@ -160,7 +202,7 @@ export class Illness2Component implements OnInit {
     return this.monthdays;
   }
   
-  selectDay(i:number){
+  public selectDay(i:number){
     
     if(this.current_selector == "Beginning"){
       this.selectedBeginningDay=i;
@@ -180,13 +222,22 @@ export class Illness2Component implements OnInit {
     }
     
   }
-  ngOnInit(): void {
-  }
   
   public showOptions(){
     this.end_date = 'show-flex'
   }
+
   public hideOptions(){
-    this.end_date = 'hide'
+    this.currentlySickLeave = !this.currentlySickLeave;
+    this.save();
+  }
+
+  save() {
+    const data = {data: {
+      whatWasDiagnosed: this.whatWasDiagnosed,
+      currentlySickLeave: this.currentlySickLeave
+    }};
+    console.log('debug (save):', data);
+    this.storageService.setItem(LOCAL.ILLNESS_DIAGNOSTIC_FORM, data);
   }
 }

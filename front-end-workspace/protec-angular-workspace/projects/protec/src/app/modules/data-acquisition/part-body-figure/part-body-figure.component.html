@@ -11,16 +11,14 @@
                             <div class="">
                                 <div class="row">
                                     <div class="col-lg-5 col-md-6 col-sm-12">
-                                        <img src="../../../../assets/images/body/ProTec_Software_Figure_pa-head.svg" class="body-part-style-image">
+                                        <img [src]="getBodyPartImage()" class="body-part-style-image">
                                     </div>
                                     <div class="col-lg-7 col-md-6 col-sm-12">
                                         <div class="vertical-space-increase-bottom">
                                              <h1 class="mt-0 mb-4 title-text vertical-space-reducer-top">
-                                                 {{ 'DER KOPF' | translate }}
+                                                 {{ bodyPartTitle | translate }}
                                              </h1>
-                                             <p>
-                                                {{ 'Bitte wähle die zutreffende(n) Verletzung(en) aus.' | translate }}
-                                             </p>
+                                             <p>{{ 'Bitte wähle die zutreffende(n) Verletzung(en) aus.' | translate }}</p>
                                              <div class="row">
                                                  <div class="col-12">
                                                     <div style="float:left">
@@ -52,7 +50,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="container-fluid">
+                <div class="bottom-nav-buttons">
                     <app-g-button [data]="pageNav.navegation"></app-g-button>
                 </div>
             </div>

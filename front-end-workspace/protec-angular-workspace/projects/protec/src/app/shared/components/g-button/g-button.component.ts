@@ -15,13 +15,50 @@ export class GButtonComponent implements OnInit {
     type: 'default',
     link: '/',
     active: false,
-    navegations: []
+    navegations: [],
+    status: null,
+    step: -1,
   };
   @Output() public linkFunction = new EventEmitter();
 
   constructor(private readonly translationService: TranslateService, private readonly router: Router) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    let stepsMap  = {
+      '/data-acquisition': 1,
+      '/data-acquisition/accident-intro': 1,
+      '/data-acquisition/accident-type': 1,
+      '/data-acquisition/additional-insurance': 1,
+      '/data-acquisition/accident-date': 1,
+      '/data-acquisition/details-intro': 2,
+      '/data-acquisition/illness-details': 2,
+      '/data-acquisition/full-body': 2,
+      '/data-acquisition/work-accident': 2,
+      '/data-acquisition/part-body': 2,
+      '/data-acquisition/more-injuries': 2,
+      '/data-acquisition/summary': 2,
+      '/data-acquisition/prospects-of-success': 3,
+      '/data-acquisition/chance-of-success': 3,
+      '/data-acquisition/request-quote': 3,
+      '/data-acquisition/your-data': 4,
+      '/data-acquisition/personal-data-person': 4,
+      '/data-acquisition/personal-data-contact': 4,
+      '/data-acquisition/appreciation': 5,
+      '/data-acquisition/pre-summary': 5,
+      '/data-acquisition/illness-diagnostic': 2
+    }
+    if (this.data.step > 0) {
+      // @ts-ignore
+      const routeStep = stepsMap[`${this.router.url}`]
+      if (routeStep === this.data.step) {
+        this.data.status = 'in-progress'
+      } else if (routeStep > this.data.step) {
+        this.data.status = 'completed'
+      } else {
+        this.data.status = 'untouched'
+      }
+    }
+  }
 
   goToLink(link:string, funcParams:object={}) {
     if(link !== 'disabled'){
@@ -31,11 +68,6 @@ export class GButtonComponent implements OnInit {
         link ? this.router.navigate([link]) : this.router.navigate(['not-found']);
       }
     }
-  }
-
-  checkCurrentRoute(link:string) {
-    const currentRouter  = this.router.url;
-    return link === currentRouter ? true : false;
   }
 
   btn_arrow = "btn-arrow"

@@ -36,6 +36,22 @@ export class PersonalDataInputComponentTwo implements OnInit {
     value: String,
     error: String
   }
+  addressSupplement: {
+    value: String,
+    error: String
+  }
+  city: {
+    value: String,
+    error: String
+  }
+  country: {
+    value: String,
+    error: String
+  }
+  email: {
+    value: String,
+    error: String
+  }
 
   constructor(
       private readonly translationService: TranslateService,
@@ -52,14 +68,32 @@ export class PersonalDataInputComponentTwo implements OnInit {
       this.mobileNumber = {
         value: this.storageService.getItem(LOCAL.PERSONAL_DATA_CONTACT).mobileNumber || '', error: ''
       }
+      this.addressSupplement = {
+        value: this.storageService.getItem(LOCAL.PERSONAL_DATA_CONTACT).addressSupplement || '', error: ''
+      }
+      this.city = {
+        value: this.storageService.getItem(LOCAL.PERSONAL_DATA_CONTACT).city || '', error: ''
+      }
+      this.country = {
+        value: this.storageService.getItem(LOCAL.PERSONAL_DATA_CONTACT).country || '', error: ''
+      }
+      this.email = {
+        value: this.storageService.getItem(LOCAL.PERSONAL_DATA_CONTACT).email || '', error: ''
+      }
     } catch (err) {
-      this.postCode = {value: '', error: ''}
-      this.street = {value: '', error: ''}
-      this.mobileNumber = {value: '', error: ''}
+      this.postCode = {value: '', error: ''};
+      this.street = {value: '', error: ''};
+      this.mobileNumber = {value: '', error: ''};
+      this.addressSupplement = {value: '', error: ''};
+      this.city = {value: '', error: ''};
+      this.country = {value: '', error: ''};
+      this.email = {value: '', error: ''};
     }
 
     this.verifyInput()
   }
+
+  ngOnInit(): void {}
 
   verifyInput(): void {
     if (this.postCode.value && this.street.value && this.mobileNumber.value) {
@@ -74,10 +108,14 @@ export class PersonalDataInputComponentTwo implements OnInit {
   }
 
   saveInputs(): void {
-    this.storageService.setItem(LOCAL.PERSONAL_DATA_CONTACT, {postCode: `${this.postCode.value}`, street: `${this.street.value}`, mobileNumber: `${this.mobileNumber.value}`})
-  }
-
-
-  ngOnInit(): void {
+    this.storageService.setItem(LOCAL.PERSONAL_DATA_CONTACT, {
+      postCode: `${this.postCode.value}`, 
+      street: `${this.street.value}`, 
+      mobileNumber: `${this.mobileNumber.value}`,
+      addressSupplement: `${this.addressSupplement.value}`,
+      city: `${this.city.value}`,
+      country: `${this.city.value}`,
+      email: `${this.city.value}`
+    })
   }
 }

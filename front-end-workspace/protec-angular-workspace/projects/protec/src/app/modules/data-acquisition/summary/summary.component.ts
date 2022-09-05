@@ -42,6 +42,10 @@ export class SummaryComponent implements OnInit {
 
   claims: Array<Claims>;
 
+  editMode = true;
+
+  currentTab = 1;
+
   constructor(
     private readonly translationService: TranslateService, 
     private readonly router: Router, 
@@ -50,7 +54,7 @@ export class SummaryComponent implements OnInit {
     private readonly storageService: StorageService
   ) {
     this.claims = [];
-    this.storageService.setItem(LOCAL.CLAIMS_LIST, this.buildMock());
+    //this.storageService.setItem(LOCAL.CLAIMS_LIST, this.buildMock());
   }
 
   ngOnInit(): void {
@@ -60,10 +64,54 @@ export class SummaryComponent implements OnInit {
   }
 
   onSelectClaim(id: any) {
-    console.log('id:', id);
-    this.claims.forEach(data => {
-      if(data.id === id) {
-        this.leftInfo = data.mainData;
+    this.leftInfo = [];
+    this.claims.reverse().forEach(data => {
+      //this.leftInfo = data.mainData.filter(mainData => mainData.id == "ADDITIONAL_INSURANCE_FORM");
+      if(data.id == id) {
+        const title = data.title;
+        this.leftInfo.push({
+          id: 'title',
+          label: 'Title',
+          value: title
+        });
+        const ACCIDENT_DATE_FORM: any = data.mainData.filter(mainData => mainData.id == "ACCIDENT_DATE_FORM")[0]?.value;
+        this.leftInfo.push({
+          id: 'diagnosis-date',
+          label: 'Diagnosis date',
+          value: ACCIDENT_DATE_FORM?.date
+        });
+        const PRIVATE_ACCIDENT_FORM: any = data.mainData.filter(mainData => mainData.id == "PRIVATE_ACCIDENT_FORM")[0]?.value;
+        this.leftInfo.push({
+          id: 'insurance-name',
+          label: 'Insurance name',
+          value: PRIVATE_ACCIDENT_FORM?.data?.howHappen
+        });
+        this.leftInfo.push({
+          id: 'employer',
+          label: 'Employer',
+          value: PRIVATE_ACCIDENT_FORM?.data?.employer
+        });
+        this.leftInfo.push({
+          id: 'last-job',
+          label: 'Last Job',
+          value: PRIVATE_ACCIDENT_FORM?.data?.previousEmployer
+        });
+        this.leftInfo.push({
+          id: 'longer-than-twelve-months',
+          label: '12 months held',
+          value: PRIVATE_ACCIDENT_FORM?.data?.longerThanTwelveMonths ? 'Yes' : 'No'
+        });
+        this.leftInfo.push({
+          id: 'you-do-before',
+          label: 'Work before',
+          value: PRIVATE_ACCIDENT_FORM?.data?.professionalActivity
+        });
+        this.leftInfo.push({
+          id: 'you-do-before',
+          label: 'Other jobs',
+          value: PRIVATE_ACCIDENT_FORM?.data?.youDoBefore
+        });
+        console.log('debug (leftInfo):', this.leftInfo);
       }
     });
   }
@@ -132,19 +180,24 @@ export class SummaryComponent implements OnInit {
   }
 
   edit() {
-    
+    this.editMode = !this.editMode
   }
 
   confirm() {
+    console.log('here')
     this.confirmationService.confirm({
         message: 'Are you sure that you want to perform this action?',
         accept: () => {
-            //Actual logic to perform a confirmation
+          console.log('yes');
         },
         reject: () => {
-          //
+          console.log('no');
         }
     });
+  }
+
+  changeTab(tab:number) {
+    this.currentTab = tab;
   }
 
 }

@@ -7,7 +7,6 @@ import { BeginComponent } from './begin/begin.component';
 import { AccidentComponent } from './accident/accident.component';
 import { AccidentTypeComponent } from './accident-type/accident-type.component';
 import { LegalDataPolicyComponent } from './legal-data-policy/legal-data-policy.component';
-import { DieDetailsComponent } from './die-details/die-details.component';
 import { AccidentDateComponent } from './accident-date/accident-date.component';
 import { TermsOfUseComponent } from './terms-of-use/terms-of-use.component';
 import { AGBComponent } from "./AGB/AGB.component";
@@ -31,8 +30,9 @@ import { SummaryComponent } from './summary/summary.component';
 import { ChanceOfSuccessComponent } from './chance-of-success/chance-of-success.component';
 import { PersonalDataInformationComponent } from './personal-data-information/personal-data-information.component';
 import { PersonalDataSummaryComponent } from './personal-data-summary/personal-data-summary.component';
-import { AppreciationComponent } from './appreciation/appreciation.component';
 import { PreSummaryComponent } from './pre-summary/pre-summary.component';
+import { DieDetailsComponent } from './die-details/die-details.component';
+import { AppreciationComponent } from './appreciation/appreciation.component';
 
 const routes: Routes = [
   {
@@ -104,7 +104,7 @@ const routes: Routes = [
     component: WorkAccidentComponent
   },
   {
-    path: 'illness-details',//variation two
+    path: 'illness-details',//variation two TODO: check for remove
     component: IllnessComponent
   },
   {

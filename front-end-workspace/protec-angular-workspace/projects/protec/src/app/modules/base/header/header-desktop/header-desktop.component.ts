@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslationService } from '../../../../shared/services/translation/translation.service';
+import { AuthService } from '../../../../shared/services/auth/auth.service';
 
 @Component({
   selector: 'app-header-desktop',
@@ -8,7 +9,7 @@ import { TranslationService } from '../../../../shared/services/translation/tran
 })
 export class HeaderDesktopComponent implements OnInit {
 
-  constructor(private readonly translationService: TranslationService) { }
+  constructor(private readonly translationService: TranslationService, private readonly auth: AuthService) { }
 
   ngOnInit(): void {
   }
@@ -26,10 +27,12 @@ export class HeaderDesktopComponent implements OnInit {
     this.translationService.setLocale(locale.locale);
   }
 
+  public getTranslationLocale() : string {
+    return this.translationService.currentTranslationLocale
+  }
+
   login() {
-    window.location.href='https://idp-test.protec.help/auth/admin';
-    //window.open('https://idp-test.protec.help/auth/admin');
-    //window.open('https://idp-test.protec.help/auth/admin', '_blank');
+    this.auth.login();
   }
 
 }

@@ -17,10 +17,6 @@ export class PrivateAccidentComponent implements OnInit {
         {
           label: this.translationService.instant('zurück'),
           link: '/data-acquisition/details-intro'
-        },
-        {
-          label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/full-body'
         }
       ]
     }
@@ -28,21 +24,40 @@ export class PrivateAccidentComponent implements OnInit {
 
   accidentType: string = '';
 
-  option_class = 'hide';
+  howHappen: any;
+  professionalActivity: any;
+  employer: any;
+  longerThanTwelveMonths: any;
+  youDoBefore: any;
+  previousEmployer: any;
+  longerThanTwelveMonthsSecond: any;
 
   constructor(private readonly translationService: TranslateService, private readonly storageService: StorageService) {}
 
   ngOnInit(): void {
     this.accidentType = this.storageService.getItem(LOCAL.ACCIDENT_TYPE);
+    const savedData = this.storageService.getItem(LOCAL.PRIVATE_ACCIDENT_FORM)?.data;
+    console.log('debug (savedData):', savedData);
+    if(savedData) {
+      this.howHappen = savedData.howHappen;
+      this.professionalActivity = savedData.professionalActivity;
+      this.employer = savedData.employer;
+      this.longerThanTwelveMonths = savedData.longerThanTwelveMonths;
+      this.youDoBefore = savedData.youDoBefore;
+      this.previousEmployer = savedData.previousEmployer;
+      this.longerThanTwelveMonthsSecond = savedData.longerThanTwelveMonthsSecond;
+    }
     this.verifyAccidentType();
   }
 
   public showOptions(){
-    this.option_class = 'show-flex'
+    this.longerThanTwelveMonths = false;
+    this.save();
   }
   
   public hideOptions(){
-    this.option_class = 'hide'
+    this.longerThanTwelveMonths = true;
+    this.save();
   }
 
   verifyAccidentType() {
@@ -61,5 +76,19 @@ export class PrivateAccidentComponent implements OnInit {
         }
       );
     }
+  }
+
+  save() {
+    const data = {data: {
+      howHappen: this.howHappen,
+      professionalActivity: this.professionalActivity,
+      employer: this.employer,
+      longerThanTwelveMonths: this.longerThanTwelveMonths,
+      youDoBefore: this.youDoBefore,
+      previousEmployer: this.previousEmployer,
+      longerThanTwelveMonthsSecond: this.longerThanTwelveMonthsSecond
+    }};
+    console.log('debug (save):', data);
+    this.storageService.setItem(LOCAL.PRIVATE_ACCIDENT_FORM, data);
   }
 }

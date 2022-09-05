@@ -25,8 +25,8 @@
                                     <p class="para-text horzontal-space-left-sm"> {{'illness.Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *'  | translate }} </p>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 vertical-space-increase-bottom-2">
-                                    <mat-radio-button name="group1" class="para-text radio-button" (click)="showOptions()"> {{ 'JA' | translate | lowercase }} </mat-radio-button>
-                                    <mat-radio-button name="group1" class="para-text horzontal-space-left-md radio-button" (click)="hideOptions()"> {{ 'NEIN' | translate | lowercase}} </mat-radio-button>
+                                    <mat-radio-button name="group1" class="para-text radio-button" (click)="showOptions()"> {{ 'Ja' | translate  }} </mat-radio-button>
+                                    <mat-radio-button name="group1" class="para-text horzontal-space-left-md radio-button" (click)="hideOptions()"> {{ 'Nein' | translate }} </mat-radio-button>
                                 </div>
                             </div>
                             <div class="row col-lg-12 col-md-12 col-sm-12" [ngClass]="option_class">
@@ -44,13 +44,13 @@
                                     <p class="para-text horzontal-space-left-sm"> {{'illness.Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *'  | translate }} </p>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 vertical-space-increase-bottom-2">
-                                    <mat-radio-button name="group2" class="para-text radio-button"> {{ 'JA' | translate }} </mat-radio-button>
-                                    <mat-radio-button name="group2" class="para-text horzontal-space-left-md radio-button"> {{ 'NEIN' | translate }} </mat-radio-button>
+                                    <mat-radio-button name="group2" class="para-text radio-button"> {{ 'Ja' | translate }} </mat-radio-button>
+                                    <mat-radio-button name="group2" class="para-text horzontal-space-left-md radio-button"> {{ 'Nein' | translate }} </mat-radio-button>
                                 </div>
                             </div>
 
                     </div>
-                <div class="container-fluid vertical-space-increase-top-lg-8">
+                <div class="bottom-nav-buttons">
                     <app-g-button [data]="pageNav.navegation"></app-g-button>
                 </div>
             </div>

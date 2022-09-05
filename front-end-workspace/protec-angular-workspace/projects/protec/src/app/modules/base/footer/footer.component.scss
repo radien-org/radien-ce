@@ -1,5 +1,8 @@
-.footer-location{
-  position: fixed;
-  top: 90%;
-  left: 32%;
+
+
+.footer-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }

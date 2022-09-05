@@ -8,19 +8,27 @@
                     <div class="row horzontal-space-left-sm">
                             <div class="col-lg-12 col-md-12 col-sm-12">
                                 <p class="para-text horzontal-space-left-sm"> {{'illness.Was wurde diagnostiziert? *'  | translate }} </p>
-                                <input type="text" class="input-text vertical-space-increase-bottom-2" placeholder="{{'Text eingeben'  | translate }}">
+                                <input 
+                                    type="text" 
+                                    class="input-text vertical-space-increase-bottom-2" 
+                                    placeholder="{{'Text eingeben'  | translate }}"
+                                    [(ngModel)]="whatWasDiagnosed" 
+                                    (change)="save()">
                             </div>
                             <div class="row col-lg-12 col-md-12 col-sm-12 vertical-space-increase-top">
                                 <div class="col-lg-6 col-md-5 col-sm-12">
                                     <p class="para-text horzontal-space-left-sm"> {{'illness.Dauer der Krankschreibung:'  | translate }} </p>
                                 </div>
                                 <div class="col-lg-6 col-md-5 col-sm-12">
-                                    <mat-radio-button name="krankgeschrieben" class="para-text radio-button" (click)="hideOptions()"> {{ 'illness.Ich bin derzeit noch krankgeschrieben.' | translate }} </mat-radio-button></div>
+                                    <mat-radio-button 
+                                        name="krankgeschrieben" 
+                                        class="para-text radio-button" 
+                                        (click)="hideOptions()" 
+                                        [checked]="currentlySickLeave"> {{ 'illness.Ich bin derzeit noch krankgeschrieben.' | translate }} </mat-radio-button></div>
                                 </div>
                             <div class="row col-lg-12 col-md-12 col-sm-12 vertical-space-increase-top-lg">
                                 <div class="col-lg-6 col-md-6 col-sm-12 ">
                                     <p class="para-text horzontal-space-left-sm"> {{'illnesss.Beginn'  | translate }} </p>
-
 
                                     <div class="calendar-container">
                                         <div class="toggle-container">
@@ -57,14 +65,11 @@
                                         </div>
                                     </div>
 
-
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 vertical-space-increase-bottom-2" >
-                                    <p class="para-text horzontal-space-left-sm" [ngClass]="end_date"> {{'Enddatum'  | translate }}</p>
+                                    <p class="para-text horzontal-space-left-sm" [hidden]="currentlySickLeave"> {{'Enddatum'  | translate }}</p>
 
-
-
-                                    <div class="calendar-container" [ngClass]="end_date">
+                                    <div class="calendar-container" [hidden]="currentlySickLeave">
                                         <div class="toggle-container">
                                             <div class="toggle-button margin-horizontal-right" [ngClass]="year_head_class_end">
                                                 {{year_head_label_end}}
@@ -99,14 +104,11 @@
                                         </div>
                                     </div>
 
-
-
                                 </div>
                             </div>
 
-
                     </div>
-                <div class="container-fluid vertical-space-increase-top-lg-8 vertical-space-reducer-top-2">
+                <div class="bottom-nav-buttons">
                     <app-g-button [data]="pageNav.navegation"></app-g-button>
                 </div>
             </div>

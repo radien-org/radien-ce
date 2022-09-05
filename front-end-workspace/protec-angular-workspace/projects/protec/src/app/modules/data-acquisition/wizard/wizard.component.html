@@ -1,23 +1,4 @@
-<div class="base-content zero-margin" *ngIf="showCookieWindow">
-    <mat-drawer-container class="side-window-container" hasBackdrop="true">
-    
-        <mat-drawer #drawer mode="over" position="end" [opened]="showCookieWindow">
-            <div class="side-window-content">
-                <div class="side-window-close-content mb-3">
-                    <span mat-raised-button (click)="drawer.toggle();changeVarCookieWindow()" class="side-window-close-icon">X</span>
-                </div>
-                <app-sidenav-backdrop (closeModalFunc)="drawer.toggle()" (changeVarCookieWindow)="changeVarCookieWindow()"></app-sidenav-backdrop>
-            </div>
-        </mat-drawer>
-        
-        <mat-drawer-content>
-    
-            <div></div>
-    
-        </mat-drawer-content>
-    
-    </mat-drawer-container>
-</div>
+
 
 <div class="base-content">
     <div>
@@ -26,7 +7,7 @@
     <div>
         <div class="generic-box-content">
             <div class="row">
-                <div class="col-lg-8 col-md-6 col-sm-12">
+                <div class="col-lg-7 col-md-6 col-sm-12">
                    <div class="vertical-space-increase-bottom">
                         <h2 class="h2-title">
                             {{ 'welcome_exclamation' | translate }}
@@ -48,7 +29,7 @@
                         <app-g-button [data]="dataButton"></app-g-button>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6 col-sm-12">
+                <div class="col-lg-5 col-md-6 col-sm-12">
                     <img src="../../../../assets/images/human.png" class="generic-img"/>
                 </div>
             </div>

@@ -1,5 +1,13 @@
 <div *ngIf="data.type === 'default'">
-    <div class="bt-action btn-version btn-default">
+    <div class="bt-action btn-version btn-default ">
+        <span class="no-overflow-text">
+            {{data.label | translate}}
+        </span>
+    </div>
+</div>
+
+<div *ngIf="data.type === 'final-step'">
+    <div class=" btn-version btn-default final-step btn-center">
         <span class="no-overflow-text">
             {{data.label | translate}}
         </span>
@@ -7,18 +15,20 @@
 </div>
 
 <div *ngIf="data.type === 'arrow-right'">
-    <div class="btn-version btn-arrow-right" [ngClass]="{'btn-generic-focus-color': checkCurrentRoute(data.link)}">
-        <span class="no-overflow-text">
+    <div class="btn-version btn-arrow-right btn-center" [ngClass]="{'btn-generic-focus-color': data.status === 'in-progress', 'btn-generic-completed-color': data.status === 'completed' }">
+        <span class="no-overflow-text " *ngIf="data.status && data.status !== 'completed'">
             {{data.label | translate}}
         </span>
+        <mat-icon style="color: white" *ngIf="data.status && data.status === 'completed'">check</mat-icon>
     </div>
 </div>
 
 <div *ngIf="data.type === 'arrow-right-first'">
-    <div class="btn-version btn-arrow-right-first" [ngClass]="{'btn-generic-focus-color': checkCurrentRoute(data.link)}">
-        <span class="no-overflow-text">
+    <div class="btn-version btn-arrow-right-first btn-center" [ngClass]="{'btn-generic-focus-color': data.status === 'in-progress', 'btn-generic-completed-color': data.status === 'completed'}">
+        <span class="no-overflow-text" *ngIf="data.status && data.status !== 'completed'">
             {{data.label | translate}}
         </span>
+        <mat-icon style="color: white" *ngIf="data.status && data.status === 'completed'">check</mat-icon>
     </div>
 </div>
 
@@ -71,10 +81,12 @@
 </div>
 
 <div *ngIf="data.type === 'footer-nav'">
-    <div class="footer-nav-link bt-action" (click)="goToLink(data.link)">
-        <span class="no-overflow-text">
-            {{data.label | translate}}
-        </span>
+    <div class = "font-weight-bolder">
+        <div class="footer-nav-link bt-action" (click)="goToLink(data.link)">
+            <span class="no-overflow-text">
+                {{data.label | translate}}
+            </span>
+        </div>
     </div>
 </div>
 
@@ -88,17 +100,17 @@
 </div>
 
 <div *ngIf="data.type === 'navegation-buttons'">
-    <div class="row " [ngClass]="{'d-flex': data.navegations.length > 0}" style="align-items: flex-end;">
-        <div 
-            *ngFor="let navegation of data.navegations;let i = index;" 
-            class="col-lg-6 text-dark vertical-space-reducer-bottom-4 bold-text" 
-            [ngClass]="{'ml-auto': i > 0}">
+    <div class="form-nav-buttons">
+        <div
+            *ngFor="let navegation of data.navegations;let i = index;"
+            class="text-dark bold-text"
+           >
             <div
                 class="home-button-link bt-action link-button"
-                (click)="goToLink(navegation.link)" 
+                (click)="goToLink(navegation.link)"
                 [ngClass]="{'text-right': i > 0}">
                 <span *ngIf="i == 0 && navegation.link != 'disabled'" class="arrow arrow-left " [ngClass]="btn_arrow" (mouseenter)="btnOnMouseEnter()" (mouseleave)="btnOnMouseLeave()"></span>
-                <span class="no-overflow-text button-arrow"  [ngClass]="btn_arrow" (mouseenter)="btnOnMouseEnter()" (mouseleave)="btnOnMouseLeave()">
+                <span class="no-overflow-text button-arrow btn-step-text"  [ngClass]="btn_arrow" (mouseenter)="btnOnMouseEnter()" (mouseleave)="btnOnMouseLeave()">
                     {{navegation.label | translate}}
                 </span>
                 <span *ngIf="i > 0 && navegation.link != 'disabled'" class="arrow arrow-right" [ngClass]="btn_arrow" (mouseenter)="btnOnMouseEnter()" (mouseleave)="btnOnMouseLeave()"></span>

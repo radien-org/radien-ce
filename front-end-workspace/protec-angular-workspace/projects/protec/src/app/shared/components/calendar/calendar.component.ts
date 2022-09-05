@@ -26,6 +26,15 @@ export class CalendarComponent implements OnInit {
     this.dateSet.emit(this.date.value);
   }
 
+  constructor(private translate: TranslateService) {
+    this.translate.get('accident-date').subscribe((data:any) => {
+      console.log(data)
+    })
+    this.date = {
+      value: '', error: ""
+    }
+  }
+
 
   months = 0
   days = 0
@@ -46,15 +55,11 @@ export class CalendarComponent implements OnInit {
   month_head_class = ""
   day_head_class = ""
   year_head_label = "JAHR *"
-  month_head_label="MONAT"
-  day_head_label="TAG"
+  month_head_label= "MONAT"
+  day_head_label= "TAG"
 
 
-  constructor(private readonly translationService: TranslateService) {
-    this.date = {
-      value: '', error: ""
-    }
-  }
+
 
   counter(i: number) {
     return new Array(i);
@@ -118,9 +123,11 @@ export class CalendarComponent implements OnInit {
       this.year_head_class = "";
       this.month_head_class = "";
       this.day_head_class = "";
-      this.year_head_label = "JAHR *";
-      this.month_head_label="MONAT";
-      this.day_head_label="TAG";
+      this.year_head_label = "JAHR *"
+      this.month_head_label="MONAT"
+      this.day_head_label="TAG"
+      this.selectedYear = 1;
+      this.setDate()
     }
   }
 
@@ -129,8 +136,9 @@ export class CalendarComponent implements OnInit {
       this.month_selector_class = 'show';
       this.month_head_class = "";
       this.day_head_class = "";
-      this.month_head_label="MONAT";
-      this.day_head_label="TAG";
+      this.month_head_label="MONAT"
+      this.day_head_label="TAG"
+      this.setDate()
     }
   }
 
@@ -138,7 +146,8 @@ export class CalendarComponent implements OnInit {
     if(this.day_selector_class == 'hide') {
       this.day_selector_class = 'show';
       this.day_head_class = "";
-      this.day_head_label="TAG";
+      this.day_head_label="TAG"
+      this.setDate()
     }
   }
   // Required info is stored in var:

@@ -1,0 +1,58 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.app-header-container {
+  width: 100%;
+}
+
+.app-footer-container {
+}
+
+.app-main-container {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-main-content {
+ width: 75%;
+  @media only screen and (max-width: 1200px) {
+    width: 80%;
+  }
+  @media only screen and (max-width: 1000px) {
+    width: 85%;
+  }
+  @media only screen and (max-width: 900px) {
+    width: 90%;
+  }
+}
+
+.cookie-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 2;
+}
+
+.side-window-container {
+  min-height: 100vh;
+  width: 100%;
+  top: 0px;
+  background: transparent;
+}
+
+.step-one-btn-content {
+  margin-top: 50px;
+  width: 211px;
+}
+

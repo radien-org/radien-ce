@@ -13,11 +13,11 @@ export class AppreciationComponent implements OnInit {
       type: 'navegation-buttons',
       navegations: [
         {
-          label: this.translationService.instant('zurück'),
+          label: this.translationService.instant('ZURÜCK'),
           link: '/data-acquisition/personal-data-person'
         },
         {
-          label: this.translationService.instant('weiter'),
+          label: this.translationService.instant('WEITER'),
           link: '/data-acquisition/pre-summary'
         }
       ]

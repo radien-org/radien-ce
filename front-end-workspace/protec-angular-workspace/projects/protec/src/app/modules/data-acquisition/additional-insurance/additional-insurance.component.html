@@ -11,25 +11,25 @@
                             <div class="bf-content">
                                 <div class="row" style="width:650px;">
                                     <div class="col-lg-12 col-md-6 col-sm-12">
-                                        <p style="text-align: left" class="mb-4">
+                                        <p style="text-align: center" class="mb-4 para-text">
                                             {{ 'additional-insurance.Bestanden zum Zeitpunkt des Unfalls eine oder mehrere Versicherungen?' | translate }}
                                         </p>
                                     </div>
-                                    <div class="col-lg-6 col-md-6 col-sm-12">
+                                    <div class="col-lg-8 col-md-8 col-sm-12">
                                         <div style="float:left">
-                                            <p-multiSelect 
+                                            <p-multiSelect
                                                 [filter]="false" 
-                                                [showHeader]="false"
+                                                [showHeader]="false" 
                                                 [options]="options" 
                                                 [(ngModel)]="selectedOptions" 
-                                                defaultLabel="Select a option" 
+                                                [placeholder]="placeholder" 
                                                 optionLabel="name" 
                                                 display="chip" 
                                                 (onChange)="selectNoBtn({var: 'firstStatus', value: 'yes'}, selectedOptions)">
                                             </p-multiSelect>
                                         </div>
                                     </div>
-                                    <div class="col-lg-6 col-md-6 col-sm-12">
+                                    <div class="col-lg-4 col-md-4 col-sm-12">
                                         <div  style="float:right; width: 150px;">
                                             <app-g-button 
                                                 [data]="noButton" 
@@ -37,7 +37,7 @@
                                             </app-g-button>
                                         </div>
                                     </div>
-                                    <ng-container *ngIf="secondButtons">
+                                    <ng-container *ngIf="selectedOptions.length > 0">
                                       <div class="col-lg-12 col-md-6 col-sm-12">
                                           <p style="text-align: left" class="mt-4 mb-4">
                                               {{ 'additional-insurance.Hast Du in diesem konkreten Fall bereits Leistungen bei Deiner Versicherung beantragt?' | translate }}
@@ -45,19 +45,7 @@
                                       </div>
                                       <div *ngFor="let item of secondOptionButtons;let i = index" class="col-lg-6 col-md-6 col-sm-12">
                                           <div style="width: 150px;" [style]="i == 0 ? 'float: left' : 'float: right'">
-                                              <app-g-button [data]="item" (linkFunction)="selectNoBtn($event)"></app-g-button>
-                                          </div>
-                                          <div 
-                                              *ngFor="let item of secondOptionButtons;let i = index" 
-                                              class="col-lg-6 col-md-6 col-sm-12">
-                                              <div 
-                                                  style="width: 150px;" 
-                                                  [style]="i == 0 ? 'float: left' : 'float: right'">
-                                                  <app-g-button 
-                                                      [data]="item" 
-                                                      (linkFunction)="selectNoBtn($event)">
-                                                  </app-g-button>
-                                              </div>
+                                              <app-g-button [data]="item" (linkFunction)="selectSecondNoBtn($event)"></app-g-button>
                                           </div>
                                       </div>
                                     </ng-container>
@@ -66,7 +54,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="container-fluid">
+                <div class="bottom-nav-buttons">
                     <app-g-button [data]="pageNav.navegation"></app-g-button>
                 </div>
             </div>

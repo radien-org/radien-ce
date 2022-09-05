@@ -60,3 +60,11 @@ div .summary-btn-outline:not(:first-child) {
     letter-spacing: 0px;
     opacity: 1;
 }
+
+.summary-info-value:disabled {
+    border: none;
+    background-color: transparent;
+    height: 10px;
+    margin-bottom: 1em !important;
+    padding-left: 0px;
+}

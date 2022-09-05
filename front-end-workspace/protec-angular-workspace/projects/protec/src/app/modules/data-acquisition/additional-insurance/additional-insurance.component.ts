@@ -18,7 +18,7 @@ export class AdditionalInsuranceComponent implements OnInit {
       type: 'navegation-buttons',
       navegations: [
         {
-          label: this.translationService.instant('zurück'),
+          label: this.translationService.instant('ZURÜCK'),
           link: '/data-acquisition/accident-type'
         }
       ]
@@ -61,8 +61,12 @@ export class AdditionalInsuranceComponent implements OnInit {
 
   items = [];
   item: string = '';
-  selectedOptions: string[] = [];
-  options: any[];
+  selectedOptions: {
+    name: string,
+    code: string
+  } [] = [];
+  options: any[] = [];
+  placeholder: string = ''
 
   buttonsStatus = {
     firstStatus: 'no',
@@ -78,15 +82,26 @@ export class AdditionalInsuranceComponent implements OnInit {
     private primengConfig: PrimeNGConfig, 
     private readonly dataService : DataAcquisitionService,
     private readonly storageService: StorageService
-  ) {
-    this.options = [];
-  }
+  ) {}
 
   ngOnInit(): void {
     this.primengConfig.ripple = true;
     this.getAdditionalInsuranceOptions();
     this.accidentType = this.storageService.getItem(LOCAL.ACCIDENT_TYPE);
+    try {
+      this.storageService.getItem(LOCAL.ADDITIONAL_INSURANCE_FORM).choices.map((item: { name: string; code: string; }) => this.selectedOptions.push(item));
+      //this.selectNoBtn({var: 'firstStatus', value: 'no'}, this.storageService.getItem(LOCAL.ADDITIONAL_INSURANCE_FORM).choices);
+      this.buttonsStatus.firstStatus = this.selectedOptions.length > 0 ? 'yes' : 'no';
+      this.buttonsStatus.secondStatus = this.storageService.getItem(LOCAL.ADDITIONAL_INSURANCE_FORM_SECOND).button;
+      this.selectSecondNoBtn({var:'secondStatus', value:this.buttonsStatus.secondStatus});
+    } catch {
+      this.selectedOptions = [];
+    }
+    console.log('debug (selectedOptions):', this.selectedOptions);
+    console.log('debug (buttonsStatus):', this.buttonsStatus);
+    this.noButton.selected = this.selectedOptions.length <= 0;
     this.verifyAccidentType();
+    this.placeholder = 'Ja und zwar:';
   }
 
   verifyAccidentType() {
@@ -108,7 +123,7 @@ export class AdditionalInsuranceComponent implements OnInit {
     } else {
       this.pageNav.navegation.navegations.push(
         {
-          label: this.translationService.instant('weiter'),
+          label: this.translationService.instant('WEITER'),
           link: '/data-acquisition/accident-date'
         }
       );
@@ -116,14 +131,27 @@ export class AdditionalInsuranceComponent implements OnInit {
   }
 
   selectNoBtn(data: any = false, selectedItems: any = '') {
-    console.log(data);
-    console.log(selectedItems);
-
     if(data){
       if(data.var === 'firstStatus'){
-        this.buttonsStatus.firstStatus = data.value;
-        this.noButton.selected = data.value === 'yes' ? false : true;
+        if(selectedItems.length > 0) {
+          this.noButton.selected = false;
+          this.buttonsStatus.firstStatus = 'yes';
+        } else {
+          this.noButton.selected = true;
+          this.buttonsStatus.firstStatus = 'no';
+          this.selectedOptions = [];
+          this.buttonsStatus.secondStatus = 'no';
+          this.selectSecondNoBtn({var:'secondStatus', value:this.buttonsStatus.secondStatus});
+        }
       }
+    }
+
+    this.verifyAccidentType();
+    this.saveInputs();
+  }
+
+  selectSecondNoBtn(data: any = false, selectedItems: any = '') {
+    if(data){
       if(data.var === 'secondStatus'){
         this.buttonsStatus.secondStatus = data.value;
         this.secondOptionButtons.forEach(item => {
@@ -131,14 +159,12 @@ export class AdditionalInsuranceComponent implements OnInit {
         });
       }
     }
+    this.saveInputs();
+  }
 
-    if(selectedItems.length > 0) {
-      this.noButton.selected = false;
-    } else {
-      this.noButton.selected = true;
-    }
-
-    this.verifyAccidentType();
+  saveInputs(): void {
+    this.storageService.setItem(LOCAL.ADDITIONAL_INSURANCE_FORM, {choices:this.selectedOptions});
+    this.storageService.setItem(LOCAL.ADDITIONAL_INSURANCE_FORM_SECOND, {button:this.buttonsStatus.secondStatus});
   }
 
   getAdditionalInsuranceOptions() {
