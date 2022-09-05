@@ -1,8 +1,8 @@
 <div class="multi-select">
     <div class="multi-select__header" (click)="handleToggle()">
-        <p class="multi-select__title">{{data.title}}</p>
+        <p class="multi-select__title">{{data.title | translate}}</p>
         <div [ngClass]="isToggled ? 'multi-select__dropdown--rotate-0' : 'multi-select__dropdown--rotate-90'" class="multi-select__dropdown">
-            <mat-icon >keyboard_arrow_down</mat-icon>
+            <mat-icon style="font-size: 38px">keyboard_arrow_down</mat-icon>
         </div>
     </div>
 

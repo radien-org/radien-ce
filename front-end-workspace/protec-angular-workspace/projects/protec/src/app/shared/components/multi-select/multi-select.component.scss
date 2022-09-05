@@ -23,6 +23,7 @@
     padding: 8px 0px;
     border-bottom: 2px solid var(--deep-mint);
     cursor: pointer;
+    color: var(--muted-forest);
   }
 
   &__dropdown {
@@ -30,7 +31,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    transition: .3s ease-in-out;
+    transition: .2s ease-in-out;
 
     &--rotate-0 {
       rotate: -180deg;
@@ -48,6 +49,7 @@
     flex-wrap: wrap;
     margin-left: -8px;
     margin-top: 10px;
+    transition: .3s ease-in-out;
   }
 
   &__option {
