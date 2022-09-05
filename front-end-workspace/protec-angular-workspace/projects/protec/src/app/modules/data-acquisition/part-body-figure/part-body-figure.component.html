@@ -23,7 +23,10 @@
                                                  <div class="col-12" style="margin-bottom: 30px;">
                                                      <app-multi-select
                                                              #primary_multi_select
-                                                             [data]="primaryOptions" (handleOpen)="handleOpen($event)">
+                                                             [data]="primaryOptions"
+                                                             [selected]="selectedOptions"
+                                                             (handleOpen)="handleOpen($event)"
+                                                             (handleChoices)="handleSelectOptions($event)">
                                                      </app-multi-select>
 <!--                                                    <div style="float:left">-->
 <!--                                                        <p-multiSelect-->
@@ -38,7 +41,10 @@
                                                  <div class="col-12">
                                                      <app-multi-select
                                                              #secondary_multi_select
-                                                             [data]="secondaryOptions" (handleOpen)="handleOpen($event)">
+                                                             [data]="secondaryOptions"
+                                                             [selected]="selectedSubOptions"
+                                                             (handleOpen)="handleOpen($event)"
+                                                             (handleChoices)="handleSelectSubOptions($event)">
                                                      </app-multi-select>
 
                                                      <!-- <div style="float:left">-->
@@ -60,7 +66,7 @@
                     </div>
                 </div>
                 <div class="bottom-nav-buttons">
-                    <app-g-button [data]="pageNav.navegation"></app-g-button>
+                    <app-g-button [data]="pageNav.navegation" (linkFunction)="clearSavedData()"></app-g-button>
                 </div>
             </div>
         </div>

@@ -13,19 +13,16 @@ import {MultiSelectComponent} from "../../../shared/components/multi-select/mult
 })
 export class PartBodyFigureComponent implements OnInit {
 
+    initNavigation = [{
+        label: this.translationService.instant('zurück'),
+        runPreNavHook: true,
+        link: '/data-acquisition/full-body'//TODO we need put variation for work-accident
+    }]
+
     pageNav = {
         navegation: {
             type: 'navegation-buttons',
-            navegations: [
-                {
-                    label: this.translationService.instant('zurück'),
-                    link: '/data-acquisition/full-body'//TODO we need put variation for work-accident
-                },
-                {
-                    label: this.translationService.instant('weiter'),
-                    link: '/data-acquisition/more-injuries'
-                }
-            ]
+            navegations: [...this.initNavigation]
         }
     }
 
@@ -38,13 +35,17 @@ export class PartBodyFigureComponent implements OnInit {
         id: 'primary_multi_select',
         title: string,
         options: any[],
+        error: ''
     }
 
     secondaryOptions : {
         id: 'secondary_multi_select',
         title: string,
         options: any[],
+        error: ''
     }
+    selectedOptions: Set<any> = new Set<any>();
+    selectedSubOptions: Set<any> = new Set<any>();
 
     @ViewChild('primary_multi_select') selectPrimaryComp: MultiSelectComponent | undefined;
     @ViewChild('secondary_multi_select') selectSecondaryComp: MultiSelectComponent | undefined;
@@ -63,27 +64,67 @@ export class PartBodyFigureComponent implements OnInit {
             id: 'primary_multi_select',
             title: 'Verletzung(en)',
             options: [],
+            error: ''
         }
         this.secondaryOptions = {
             id: "secondary_multi_select",
             title: 'Verletzungsfolge(n)',
             options: [],
+            error: ''
         }
+    }
+    ngOnInit(): void {
+        this.selectBodyPart(this.storageService.getItem(LOCAL.BODY_PART));
+        try {
+            this.selectedOptions = new Set(this.storageService.getItem(LOCAL.PART_BODY_FIGURE_FORM).selectedOptions) || new Set<any>();
+            this.primaryOptions.error = ''
+            this.selectedSubOptions = new Set(this.storageService.getItem(LOCAL.PART_BODY_FIGURE_FORM).selectedSubOptions) || new Set<any>();
+            this.secondaryOptions.error = ''
+        } catch (err) {
+            this.selectedOptions = new Set<any>();
+            this.selectedSubOptions = new Set<any>();
+        }
+        this.verifyInput();
     }
 
     handleOpen(id: string) {
         if (id === 'primary_multi_select' ) {
-            console.log(id)
-            console.log(this.selectSecondaryComp)
             if (this.selectSecondaryComp) this.selectSecondaryComp.toggleOff()
         } else {
             if (this.selectPrimaryComp) this.selectPrimaryComp.toggleOff()
         }
     }
 
-    ngOnInit(): void {
-      this.selectBodyPart(this.storageService.getItem(LOCAL.BODY_PART));
+   handleSelectOptions(options: Set<any>): void {
+        this.selectedOptions = options;
+        this.verifyInput();
+   }
+   handleSelectSubOptions(options: Set<any>) : void {
+        this.selectedSubOptions = options;
+        this.verifyInput();
+   }
+
+    verifyInput(): void {
+        if (this.selectedOptions.size > 0 && this.selectedSubOptions.size > 0) {
+            this.pageNav.navegation.navegations = [...this.initNavigation, {
+                label: this.translationService.instant('weiter'),
+                link: '/data-acquisition/more-injuries',
+                runPreNavHook: false,
+            }]
+            this.saveInputs();
+        } else {
+            this.pageNav.navegation.navegations = [...this.initNavigation]
+        }
     }
+    saveInputs(): void {
+        this.storageService.setItem(LOCAL.PART_BODY_FIGURE_FORM, {selectedOptions: Array.from(this.selectedOptions), selectedSubOptions: Array.from(this.selectedSubOptions) })
+    }
+
+    clearSavedData() : void {
+        console.log('called pre nav hook')
+        this.storageService.setItem(LOCAL.PART_BODY_FIGURE_FORM, {selectedOptions: [], selectedSubOptions: [] })
+    }
+
 
     getInjuriesOptions() {
         this.dataService.getInjuriesOptions().then((data: any) => {
