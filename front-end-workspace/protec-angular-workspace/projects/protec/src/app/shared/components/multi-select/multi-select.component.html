@@ -1,0 +1,17 @@
+<div class="multi-select">
+    <div class="multi-select__header" (click)="handleToggle()">
+        <p class="multi-select__title">{{data.title}}</p>
+        <div [ngClass]="isToggled ? 'multi-select__dropdown--rotate-0' : 'multi-select__dropdown--rotate-90'" class="multi-select__dropdown">
+            <mat-icon >keyboard_arrow_down</mat-icon>
+        </div>
+    </div>
+
+    <div class="multi-select__options">
+        <div class="multi-select__option" *ngFor="let option of shownOptions" (click)="handleOptionSelect(option)">
+            <div class="multi-select__option--toggle" [ngClass]="isOptionSelected(option) ? 'multi-select__option--toggle-active' : ''">
+                <mat-icon style="color: white; font-size: 16px" *ngIf="isOptionSelected(option)">check</mat-icon>
+            </div>
+            <p class="multi-select__option--label">{{option.name}}</p>
+        </div>
+    </div>
+</div>
