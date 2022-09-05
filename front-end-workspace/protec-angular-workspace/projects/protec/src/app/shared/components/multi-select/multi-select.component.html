@@ -6,12 +6,14 @@
         </div>
     </div>
 
-    <div class="multi-select__options">
-        <div class="multi-select__option" *ngFor="let option of shownOptions" (click)="handleOptionSelect(option)">
-            <div class="multi-select__option--toggle" [ngClass]="isOptionSelected(option) ? 'multi-select__option--toggle-active' : ''">
-                <mat-icon style="color: white; font-size: 16px" *ngIf="isOptionSelected(option)">check</mat-icon>
+    <div class="multi-select__options--container">
+        <div class="multi-select__options">
+            <div class="multi-select__option" *ngFor="let option of shownOptions" (click)="handleOptionSelect(option)">
+                <div class="multi-select__option--toggle" [ngClass]="isOptionSelected(option) ? 'multi-select__option--toggle-active' : ''">
+                    <mat-icon style="color: white; font-size: 16px" *ngIf="isOptionSelected(option)">check</mat-icon>
+                </div>
+                <p class="multi-select__option--label">{{option | translate }}</p>
             </div>
-            <p class="multi-select__option--label">{{option.name | translate }}</p>
         </div>
     </div>
 </div>
