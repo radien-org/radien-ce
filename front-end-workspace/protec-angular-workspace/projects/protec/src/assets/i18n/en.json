@@ -191,6 +191,10 @@
     "Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *": "Has said occupation been undertaken longer than 12 months? *",
     "Welche berufliche Tätigkeit hast Du zuvor ausgeübt?": "What was your previous job occupation?",
     "Berufliche Tätigkeit": "Job occupation",
-    "Vorheriger Arbeitgeber": "Previous Employer"
+    "Vorheriger Arbeitgeber": "Previous Employer",
+    "Berufliche Tätigkeit zum Zeitpunkt des Unfalls *": "Occupation at time of accident",
+    "Übst du diese Tätigkeit heute noch aus? *": "Do you still do this job today? *",
+    "Welche berufliche Tätigkeit übst heute aus? *": "What job do you do today *",
+    "Jetziger Arbeitgeber": "Current employer"
   }
 }
