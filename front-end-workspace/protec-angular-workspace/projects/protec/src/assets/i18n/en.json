@@ -92,7 +92,7 @@
   "Mobilfunknummer": "Mobile Number",
   "Stadt": "City",
   "Land": "Country",
-  "E-Mail-Adresse":  "E-Mail",
+  "E-Mail-Adresse": "E-Mail",
   "accident-type": {
     "Hattest Du einen Arbeitsunfall, einen Freizeitunfall oder eine Krankheit?": "Have you had an accident at work, a leisure accident or an illness?"
   },
@@ -203,5 +203,12 @@
     "Welche berufliche Tätigkeit übst heute aus? *": "What job do you do today *",
     "Jetziger Arbeitgeber": "Current employer"
   },
+  "OH NO!": "OH NO!",
+  "ES TUT UNS LEID…": "WE ARE SORRY…",
+  "we-are-sorry": {
+    "Leider erfüllen die von Dir angegebenen Ereignisse nicht die notwendigen Vorraussetzungen für einen legitimen Rentenanspruch. Die Datenerfassung wird daher an dieser Stelle nicht weitergeführt. ": "Unfortunately, the events you have specified do not meet the necessary requirements for a legitimate pension claim. The data collection will therefore not be continued at this point. "
+  },
+  "Klicke auf den Button um weitere Versicherungsfälle zu prüfen.": "Click on the button below to check other Insurance cases",
+  "WEITEREN FALL PRÜFEN": "CHECK ANOTHER CASE",
   "head": "Head"
 }
