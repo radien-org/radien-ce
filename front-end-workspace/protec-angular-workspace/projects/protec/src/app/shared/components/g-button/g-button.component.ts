@@ -62,9 +62,15 @@ export class GButtonComponent implements OnInit {
   }
 
   goToLink(link:string, funcParams:object={}) {
+    // @ts-ignore
+    const {runPreNavHook} = funcParams;
+
     if(link !== 'disabled'){
       if(link === 'function'){
         this.linkFunction.emit(funcParams);
+      } else if (runPreNavHook) {
+        this.linkFunction.emit(funcParams);
+        link ? this.router.navigate([link]) : this.router.navigate(['not-found']);
       } else {
         link ? this.router.navigate([link]) : this.router.navigate(['not-found']);
       }

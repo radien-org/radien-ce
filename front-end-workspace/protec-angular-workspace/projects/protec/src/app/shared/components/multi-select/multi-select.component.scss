@@ -1,0 +1,100 @@
+.multi-select {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+
+  &__title {
+    font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-bold) var(--unnamed-font-size-20)/var(--unnamed-line-spacing-26) var(--unnamed-font-family-dosis);
+    letter-spacing: var(--unnamed-character-spacing-6);
+    color: var(--muted-forest);
+    text-align: left;
+    text-transform: uppercase;
+    opacity: 1;
+    margin-bottom: 0;
+    font-weight: 900;
+  }
+
+  &__header {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0px;
+    border-bottom: 2px solid var(--deep-mint);
+    cursor: pointer;
+    color: var(--muted-forest);
+  }
+
+  &__dropdown {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    transition: .2s ease-in-out;
+
+    &--rotate-0 {
+      rotate: -180deg;
+    }
+    &--rotate-90 {
+      rotate: 0deg
+    }
+  }
+
+  &__options {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    flex-wrap: wrap;
+    margin-left: -8px;
+    margin-top: 10px;
+  }
+
+  &__option {
+    margin: 4px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 40px;
+    border-radius: 40px;
+    padding: 0 8px;
+    border:  2px solid var(--chalk-mint);
+    cursor: pointer;
+
+    &--label {
+      font: var(--unnamed-font-style-normal);
+      letter-spacing: var(--unnamed-character-spacing-0);
+      color: var(--off-black);
+      text-align: left;
+      opacity: 1;
+      margin-bottom: 0;
+      font-weight: 400;
+      font-size: 17px;
+    }
+
+    &--toggle {
+      height: 20px;
+      width: 20px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      justify-content: center;
+      margin-right: 12px;
+      border:  2px solid var(--chalk-mint);
+    }
+    &--toggle-active {
+      background-color: var(--chalk-mint);
+    }
+  }
+}
+
+.mat-icon {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
