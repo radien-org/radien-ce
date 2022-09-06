@@ -137,5 +137,11 @@
 			<groupId>org.primefaces.extensions</groupId>
 			<artifactId>primefaces-extensions</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>cn.apiclub.tool</groupId>
+			<artifactId>simplecaptcha</artifactId>
+			<version>1.2.2</version>
+		</dependency>
 	</dependencies>
 </project>

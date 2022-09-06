@@ -19,7 +19,7 @@ export class RequestQuoteComponent implements OnInit {
       type: 'navegation-buttons',
       navegations: [
         {
-          label: this.translationService.instant('zurück'),
+          label: this.translationService.instant('ZURÜCK'),
           link: '/data-acquisition/chance-of-success'
         }
       ]

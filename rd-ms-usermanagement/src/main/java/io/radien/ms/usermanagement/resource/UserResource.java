@@ -76,6 +76,15 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 		return Response.ok(id).build();
 	}
 
+	@Override
+	public Response getUserInSession() {
+		return Response.ok(
+				userBusinessService.get(
+						userBusinessService.getUserId(getInvokerUser().getSub())
+				)
+		).build();
+	}
+
 	/**
 	 * Will request the service to retrieve all the users into a paginated response.
 	 *

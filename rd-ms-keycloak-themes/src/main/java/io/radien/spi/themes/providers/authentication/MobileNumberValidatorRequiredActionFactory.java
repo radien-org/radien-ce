@@ -13,41 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.spi.themes.providers.themes;
+
+package io.radien.spi.themes.providers.authentication;
 
 import org.keycloak.Config;
+import org.keycloak.authentication.RequiredActionFactory;
+import org.keycloak.authentication.RequiredActionProvider;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
-import org.keycloak.theme.ThemeResourceProvider;
-import org.keycloak.theme.ThemeResourceProviderFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class SPIThemesResourceProviderFactory implements ThemeResourceProviderFactory {
-    private static final String PROVIDER_ID = "custom-theme-resource-provider";
+public class MobileNumberValidatorRequiredActionFactory implements RequiredActionFactory {
+    private static final MobileNumberValidatorRequiredAction SINGLETON = new MobileNumberValidatorRequiredAction();
 
     @Override
-    public ThemeResourceProvider create(KeycloakSession keycloakSession) {
-        return new SPIThemesResourceProvider(keycloakSession);
+    public String getDisplayText() {
+        return "Mobile Number 2FA Validator";
     }
 
     @Override
-    public void init(Config.Scope scope) {
-        //reads configs from the server
+    public RequiredActionProvider create(KeycloakSession session) {
+        return SINGLETON;
     }
 
     @Override
-    public void postInit(KeycloakSessionFactory keycloakSessionFactory) {
-        // Post factory calls
+    public void init(Config.Scope config) {
+
+    }
+
+    @Override
+    public void postInit(KeycloakSessionFactory factory) {
+
     }
 
     @Override
     public void close() {
-        // Calls when server shut down
+
     }
 
     @Override
     public String getId() {
-        return PROVIDER_ID;
+        return MobileNumberValidatorRequiredAction.PROVIDER_ID;
     }
 }

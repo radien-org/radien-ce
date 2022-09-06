@@ -16,10 +16,16 @@
 
 package io.radien.spi.themes.providers.validation;
 
+import java.io.IOException;
+import java.net.HttpCookie;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import kong.unirest.Unirest;
+import org.jboss.logging.Logger;
 import org.keycloak.Config;
 import org.keycloak.authentication.FormAction;
 import org.keycloak.authentication.FormActionFactory;
@@ -34,13 +40,16 @@ import org.keycloak.models.UserModel;
 import org.keycloak.models.utils.FormMessage;
 import org.keycloak.provider.ProviderConfigProperty;
 
-public class TermsAndConditionsValidator implements FormAction, FormActionFactory {
+public class CaptchaValidator implements FormAction, FormActionFactory {
+    private static final Logger log = Logger.getLogger(CaptchaValidator.class);
 
-    private static final String PROVIDER_ID = "terms-field-validation-action";
+    private static final String PROVIDER_ID = "captcha-field-validation-action";
     private static AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = { AuthenticationExecutionModel.Requirement.REQUIRED, AuthenticationExecutionModel.Requirement.DISABLED };
 
-    public static final String FIELD_ACCEPTED_TERMS = "terms";
-    public static final String MISSING_ACCEPTANCE = "terms_not_accepted";
+    public static final String CAPTCHA = "captcha_valuer";
+    public static final String MISSING_CAPTCHA = "missing_captcha";
+    public static final String INVALID_CAPTCHA = "invalid_captcha";
+
     @Override
     public void close() {
     }
@@ -65,7 +74,7 @@ public class TermsAndConditionsValidator implements FormAction, FormActionFactor
 
     @Override
     public String getDisplayType() {
-        return "Terms Acceptance Validation";
+        return "Captcha Validator";
     }
 
     @Override
@@ -90,12 +99,12 @@ public class TermsAndConditionsValidator implements FormAction, FormActionFactor
 
     @Override
     public List<ProviderConfigProperty> getConfigProperties() {
-        return Collections.emptyList();
+        return new ArrayList<>();
     }
 
     @Override
     public String getHelpText() {
-        return "Asserts that user accepted the terms and conditions before proceeding.";
+        return "Captcha.";
     }
 
     @Override
@@ -124,12 +133,21 @@ public class TermsAndConditionsValidator implements FormAction, FormActionFactor
     public void validate(ValidationContext validationContext) {
         MultivaluedMap<String, String> formData = validationContext.getHttpRequest().getDecodedFormParameters();
         List<FormMessage> errors = new ArrayList<>();
+        log.info("CAPTCHA VALUE " + formData.getFirst("captcha_value"));
+        String targetURL = System.getenv("RAD_SESSION_SERVLET") == null ? "https://int.radien.io/web/public/session" : System.getenv("RAD_SESSION_SERVLET");
 
-        String accepted = formData.getFirst(FIELD_ACCEPTED_TERMS);
-        if(accepted != null) {
+        int responseCode = Unirest
+                .get(targetURL)
+                .queryString("captchaAnswer", formData.getFirst("captcha_value"))
+                .queryString("uuid", formData.getFirst("captcha_uuid_value"))
+                .asString().getStatus();
+        log.info(responseCode);
+
+        boolean success = responseCode == Response.Status.ACCEPTED.getStatusCode();
+        if(success) {
             validationContext.success();
         } else {
-            errors.add(new FormMessage(FIELD_ACCEPTED_TERMS, MISSING_ACCEPTANCE));
+            errors.add(new FormMessage("captcha_value", "Invalid Captcha"));
             validationContext.validationError(formData, errors);
         }
     }

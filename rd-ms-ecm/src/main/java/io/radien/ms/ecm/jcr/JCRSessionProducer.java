@@ -57,9 +57,6 @@ public @RequestScoped class JCRSessionProducer implements Serializable {
 		} finally {
 			if (!error) {
 				initCount++;
-				log.debug("{} |ACTION: -createJCRSession | INITCOUNT: {}", this, initCount);
-			} else {
-				log.error("{} | ACTION: -createJCRSession FAILED!", this.getClass());
 			}
 		}
 		return null;

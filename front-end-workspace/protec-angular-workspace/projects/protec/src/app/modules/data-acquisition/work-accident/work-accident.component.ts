@@ -41,6 +41,10 @@ export class WorkAccidentComponent implements OnInit {
     value: String,
     error: String,
   }
+  responsible: {
+    value: String,
+    error: String,
+  }
 
   constructor(
       private readonly translationService: TranslateService,
@@ -61,17 +65,22 @@ export class WorkAccidentComponent implements OnInit {
       this.fileNumber = {
         value: this.storageService.getItem(LOCAL.WORK_ACCIDENT_FORM).fileNumber || '', error: ''
       }
+      this.responsible = {
+        value: this.storageService.getItem(LOCAL.WORK_ACCIDENT_FORM).responsible || '', error: ''
+      }
     } catch (err) {
-      this.employer = {value: '', error: ''}
-      this.postCode = {value: '', error: ''}
-      this.occupation = {value: '', error: ''}
-      this.fileNumber = {value: '', error: ''}
+      this.employer = {value: '', error: ''};
+      this.postCode = {value: '', error: ''};
+      this.occupation = {value: '', error: ''};
+      this.fileNumber = {value: '', error: ''};
+      this.responsible = {value: '', error: ''};
     }
 
     this.verifyInput()
   }
 
   verifyInput(): void {
+    console.log('saving...');
     if (this.postCode.value && this.occupation.value) {
       this.pageNav.navegation.navegations = [...this.initNavigation, {
         label: this.translationService.instant('WEITER'),
@@ -88,7 +97,8 @@ export class WorkAccidentComponent implements OnInit {
       employer: `${this.employer.value}`,
       postCode: `${this.postCode.value}`, 
       occupation: `${this.occupation.value}`,
-      fileNumber: `${this.fileNumber.value}`
+      fileNumber: `${this.fileNumber.value}`,
+      responsible: `${this.responsible.value}`
     })
   }
 

@@ -51,6 +51,18 @@ public interface SystemUser extends Model {
 	public void setUserEmail(String userEmail);
 
 	/**
+	 * System user mobile number getter
+	 * @return System user mobile number
+	 */
+	public String getMobileNumber();
+
+	/**
+	 * System user mobile number setter
+	 * @param mobileNumber to be set
+	 */
+	public void setMobileNumber(String mobileNumber);
+
+	/**
 	 * System user termination date getter
 	 * @return System user termination date
 	 */

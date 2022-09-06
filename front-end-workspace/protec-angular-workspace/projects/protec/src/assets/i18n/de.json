@@ -17,6 +17,8 @@
   "home": "HOME",
   "ZURÜCK": "ZURÜCK",
   "WEITER": "WEITER",
+  "weiter": "weiter",
+  "zurück": "zurück",
   "step1_title": "SCHRITT 1",
   "Arbeitgeber": "Arbeitgeber",
   "PLZ Arbeitgeber *": "PLZ Arbeitgeber *",
@@ -25,7 +27,7 @@
   "Aktenzeichen": "Aktenzeichen",
   "Optional falls bekannt": "Optional falls bekannt",
   "(damaliger) Beruf": "(damaliger) Beruf",
-  "(damaliger) Arbeitgeber": "(damaliger Arbeitgeber)",
+  "(damaliger) Arbeitgeber": "(damaliger) Arbeitgeber",
   "PLZ des Arbeitgebers": "PLZ des Arbeitgebers",
   "Option auswählen": "Option auswählen",
   "accident_description": "Prüfe im ersten Schritt, ob Dein Arbeitsunfall, Dein Freizeitunfall oder Deine Krankheit die Grundvoraussetzungen für etwaige Rentenansprüche gegenüber den gesetzlichen und privatwirtschaftlichen Versicherungsträgern erfüllen. Um Dir unnötige Aufwände zu ersparen, erhältst Du im Falle einer negativen Prüfung unmittelbar Feedback. Anderfalls erfolgt in Schritt zwei die Detailabfrage",
@@ -50,7 +52,6 @@
   "DEINE DATEN": "DEINE DATEN",
   "ERFOLGSAUSSICHTEN": "ERFOLGSAUSSICHTEN",
   "ANGEBOT ANFORDERN": "ANGEBOT ANFORDERN",
-  "hello": "Hallo! {{value}}",
   "OH WOW": "OH WOW",
   "TOLLE ÜBERSCHRIFT": "TOLLE ÜBERSCHRIFT",
   "Herzlich Willkommen beim digitalen Rentenanspruchsprüfer!": "Herzlich Willkommen beim digitalen Rentenanspruchsprüfer!",
@@ -62,6 +63,13 @@
   "Die vorliegenden Nutzungsbedingungen finden Anwendung auf das Informationsangebot der Firma Pro:Tec Solutions GmbH, Sophienstraße 40, 38118 Braunschweig (AG Braunschweig HRB 209067, Umsatzsteuer-ID: DE338227682) vertreten durch den Geschäftsführer Alexander Naumann (im Folgenden „Pro:Tec“ oder „wir“) auf dieser Webseite (protec-solutions.de) sowie für den Prozess einer kostenlosen und unverbindlichen Vorprüfung (unter der Domain: protec.help). Die Prozessfinanzierung selbst ist Gegenstand einer individualisierten vertraglichen Regelung und nicht von diesen Nutzungsbedingungen erfasst.": "Die vorliegenden Nutzungsbedingungen finden Anwendung auf das Informationsangebot der Firma Pro:Tec Solutions GmbH, Sophienstraße 40, 38118 Braunschweig (AG Braunschweig HRB 209067, Umsatzsteuer-ID: DE338227682) vertreten durch den Geschäftsführer Alexander Naumann (im Folgenden „Pro:Tec“ oder „wir“) auf dieser Webseite (protec-solutions.de) sowie für den Prozess einer kostenlosen und unverbindlichen Vorprüfung (unter der Domain: protec.help). Die Prozessfinanzierung selbst ist Gegenstand einer individualisierten vertraglichen Regelung und nicht von diesen Nutzungsbedingungen erfasst.",
   "2. Regelungen für die Registrierung und Vorprüfung": "2. Regelungen für die Registrierung und Vorprüfung",
   "(1) Um Ihren Sachverhalt auf die Abgabe eines etwaigen Prozessfinanzierungsangebots prüfen zu können, benötigen wir von": "(1) Um Ihren Sachverhalt auf die Abgabe eines etwaigen Prozessfinanzierungsangebots prüfen zu können, benötigen wir von",
+  "step-4": "SCHRITT 4",
+  "step-4-text": "Für die Zusendung eines unverbindlichen Angebots bitten wir Dich nun um die Angabe Deiner Kontaktdaten. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met.",
+  "step-3": "SCHRITT 3",
+  "step-3-text": "Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met. Lorem Ipsum dolor sit met.",
+  "Vielen Dank für Dein Vertrauen!": "Vielen Dank für Dein Vertrauen!",
+  "Beginn": "Beginn",
+  "Enddatum": "Enddatum",
   "accident": {
     "SCHRITT 1": "SCHRITT 1",
     "DAS SCHADENSEREIGNIS": "DAS SCHADENSEREIGNIS",
@@ -83,6 +91,8 @@
   "Mobilfunknummer *": "Mobilfunknummer *",
   "Mobilfunknummer": "Mobilfunknummer ",
   "Stadt": "Stadt",
+  "Land": "Land",
+  "E-Mail-Adresse": "E-Mail-Adresse",
   "accident-type": {
     "Hattest Du einen Arbeitsunfall, einen Freizeitunfall oder eine Krankheit?": "Hattest Du einen Arbeitsunfall, einen Freizeitunfall oder eine Krankheit?"
   },
@@ -180,12 +190,24 @@
     "Wie kam es zu dem Unfall? *": "Wie kam es zu dem Unfall? *",
     "Text eingeben": "Text eingeben",
     "Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *": "Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *",
+    "Was war Deine berufliche Tätigkeit zum Zeitpunkt des Unfalls? *": "Was war Deine berufliche Tätigkeit zum Zeitpunkt des Unfalls? *",
     "Arbeitgeber": "Arbeitgeber",
     "Arbeitgeber zum Zeitpunkt des Unfalls": "Arbeitgeber zum Zeitpunkt des Unfalls",
     "Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *": "Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *",
     "Welche berufliche Tätigkeit hast Du zuvor ausgeübt?": "Welche berufliche Tätigkeit hast Du zuvor ausgeübt?",
     "Berufliche Tätigkeit": "Berufliche Tätigkeit",
-    "Vorheriger Arbeitgeber": "Vorheriger Arbeitgeber"
+    "Vorheriger Arbeitgeber": "Vorheriger Arbeitgeber",
+    "Berufliche Tätigkeit zum Zeitpunkt des Unfalls *": "Berufliche Tätigkeit zum Zeitpunkt des Unfalls *",
+    "Übst du diese Tätigkeit heute noch aus? *": "Übst du diese Tätigkeit heute noch aus? *",
+    "Welche berufliche Tätigkeit übst heute aus? *": "Welche berufliche Tätigkeit übst heute aus? *",
+    "Jetziger Arbeitgeber": "Jetziger Arbeitgeber"
   },
+  "OH NO!": "OH NO!",
+  "ES TUT UNS LEID…": "ES TUT UNS LEID…",
+  "we-are-sorry":{
+    "Leider erfüllen die von Dir angegebenen Ereignisse nicht die notwendigen Vorraussetzungen für einen legitimen Rentenanspruch. Die Datenerfassung wird daher an dieser Stelle nicht weitergeführt. ": "Leider erfüllen die von Dir angegebenen Ereignisse nicht die notwendigen Vorraussetzungen für einen legitimen Rentenanspruch. Die Datenerfassung wird daher an dieser Stelle nicht weitergeführt. "
+  },
+  "Klicke auf den Button um weitere Versicherungsfälle zu prüfen.": "Klicke auf den Button um weitere Versicherungsfälle zu prüfen.",
+  "WEITEREN FALL PRÜFEN": "WEITEREN FALL PRÜFEN",
   "head": "Kopf"
 }

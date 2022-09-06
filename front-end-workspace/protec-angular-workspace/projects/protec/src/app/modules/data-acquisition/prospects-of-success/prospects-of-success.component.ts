@@ -13,11 +13,11 @@ export class ProspectsOfSuccess implements OnInit {
       type: 'navegation-buttons',
       navegations: [
         {
-          label: this.translationService.instant('Zurück'),
+          label: this.translationService.instant('ZURÜCK'),
           link: '/data-acquisition/summary'
         },
         {
-          label: this.translationService.instant('Weiter'),
+          label: this.translationService.instant('WEITER'),
           link: '/data-acquisition/chance-of-success'
         }
       ]

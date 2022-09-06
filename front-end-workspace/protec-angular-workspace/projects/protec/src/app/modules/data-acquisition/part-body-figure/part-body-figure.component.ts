@@ -17,11 +17,11 @@ export class PartBodyFigureComponent implements OnInit {
             type: 'navegation-buttons',
             navegations: [
                 {
-                    label: this.translationService.instant('zurück'),
+                    label: this.translationService.instant('ZURÜCK'),
                     link: '/data-acquisition/full-body'//TODO we need put variation for work-accident
                 },
                 {
-                    label: this.translationService.instant('weiter'),
+                    label: this.translationService.instant('WEITER'),
                     link: '/data-acquisition/more-injuries'
                 }
             ]
