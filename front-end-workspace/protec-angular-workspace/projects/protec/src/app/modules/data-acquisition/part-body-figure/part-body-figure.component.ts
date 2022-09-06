@@ -14,7 +14,7 @@ import {MultiSelectComponent} from "../../../shared/components/multi-select/mult
 export class PartBodyFigureComponent implements OnInit {
 
     initNavigation = [{
-        label: this.translationService.instant('zurück'),
+        label: this.translationService.instant('ZURÜCK'),
         runPreNavHook: true,
         link: '/data-acquisition/full-body'//TODO we need put variation for work-accident
     }]
@@ -108,7 +108,7 @@ export class PartBodyFigureComponent implements OnInit {
     verifyInput(): void {
         if (this.selectedOptions.size > 0 && this.selectedSubOptions.size > 0) {
             this.pageNav.navegation.navegations = [...this.initNavigation, {
-                label: this.translationService.instant('weiter'),
+                label: this.translationService.instant('WEITER'),
                 link: '/data-acquisition/more-injuries',
                 runPreNavHook: false,
             }]
