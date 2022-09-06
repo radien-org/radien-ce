@@ -10,27 +10,48 @@ import { LOCAL } from '../../../shared/services/storage/local.enum';
 })
 export class PrivateAccidentComponent implements OnInit {
 
+  initNavigation = [{
+    label: this.translationService.instant('ZURÜCK'),
+    link: '/data-acquisition/details-intro'
+  }]
+
   pageNav = {
     navegation: {
       type: 'navegation-buttons',
-      navegations: [
-        {
-          label: this.translationService.instant('zurück'),
-          link: '/data-acquisition/details-intro'
-        }
-      ]
+      navegations: [...this.initNavigation]
     }
   }
 
   accidentType: string = '';
 
-  howHappen: any;
-  professionalActivity: any;
-  employer: any;
-  longerThanTwelveMonths: any;
-  youDoBefore: any;
-  previousEmployer: any;
-  longerThanTwelveMonthsSecond: any;
+  howHappen: {
+    value: string,
+    error: string
+  } = { value : '', error: ''};
+  professionalActivity: {
+    value: string,
+    error: string,
+  } = { value : '', error: ''};
+  employer: {
+    value: string,
+    error: string
+  } = { value : '', error: ''};
+  longerThanTwelveMonths: {
+    value: boolean,
+    error: string
+  } = { value : false, error: ''};
+  youDoBefore: {
+    value: string,
+    error: string
+  } = { value : '', error: ''};
+  previousEmployer: {
+    value: string,
+    error: string
+  } = { value : '', error: ''};
+  longerThanTwelveMonthsSecond: {
+    value: boolean,
+    error: string
+  } = { value : false, error: ''};
 
   constructor(private readonly translationService: TranslateService, private readonly storageService: StorageService) {}
 
@@ -47,38 +68,63 @@ export class PrivateAccidentComponent implements OnInit {
       this.previousEmployer = savedData.previousEmployer;
       this.longerThanTwelveMonthsSecond = savedData.longerThanTwelveMonthsSecond;
     }
-    this.verifyAccidentType();
+    this.verifyInput();
   }
 
   public showOptions(){
-    this.longerThanTwelveMonths = false;
-    this.save();
+    this.longerThanTwelveMonths.value = false;
+    this.verifyInput();
   }
   
   public hideOptions(){
-    this.longerThanTwelveMonths = true;
-    this.save();
+    this.longerThanTwelveMonths.value = true;
+    this.longerThanTwelveMonthsSecond.value = false;
+    this.youDoBefore.value = '';
+    this.previousEmployer.value = '';
+    this.verifyInput();
   }
 
-  verifyAccidentType() {
+  addNextButton (): void {
+    this.pageNav.navegation.navegations = [...this.initNavigation, {
+      label: this.translationService.instant('WEITER'),
+      link: '/data-acquisition/full-body'
+    }]
+
     if(this.accidentType === 'recreational-accident') {
-      this.pageNav.navegation.navegations.push(
-        {
-          label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/full-body'
-        }
-      );
+      this.pageNav.navegation.navegations = [...this.initNavigation, {
+        label: this.translationService.instant('WEITER'),
+        link: '/data-acquisition/full-body'
+      }]
     } else if(this.accidentType === 'disease') {
-      this.pageNav.navegation.navegations.push(
-        {
-          label: this.translationService.instant('weiter'),
-          link: '/data-acquisition/illness-diagnostic'
-        }
-      );
+      this.pageNav.navegation.navegations = [...this.initNavigation, {
+        label: this.translationService.instant('WEITER'),
+        link: '/data-acquisition/illness-diagnostic'
+      }]
     }
   }
 
-  save() {
+  verifyInput(): void {
+    if (this.howHappen.value && this.professionalActivity.value) {
+      if (!this.longerThanTwelveMonths.value) {
+        if (this.longerThanTwelveMonthsSecond.value) {
+          this.pageNav.navegation.navegations = [...this.initNavigation]
+          if (this.youDoBefore.value) {
+            console.log('verifications ooooo 11111')
+            this.addNextButton();
+          }
+        } else {
+          this.addNextButton();
+        }
+      } else {
+        this.addNextButton();
+      }
+    } else {
+      this.pageNav.navegation.navegations = [...this.initNavigation]
+    }
+    this.saveInputs();
+  }
+
+  saveInputs() {
     const data = {data: {
       howHappen: this.howHappen,
       professionalActivity: this.professionalActivity,
@@ -88,7 +134,6 @@ export class PrivateAccidentComponent implements OnInit {
       previousEmployer: this.previousEmployer,
       longerThanTwelveMonthsSecond: this.longerThanTwelveMonthsSecond
     }};
-    console.log('debug (save):', data);
     this.storageService.setItem(LOCAL.PRIVATE_ACCIDENT_FORM, data);
   }
 }

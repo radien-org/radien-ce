@@ -8,3 +8,35 @@
   font-weight: lighter;
 }
 
+.input-text {
+  width: 100%;
+}
+
+.grid-form-group {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  &__separator {
+    width: 20px;
+  }
+
+  &__item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+   &--row {
+     flex-direction: row;
+     align-items: center;
+   }
+  }
+}
+
+.generic-box-content {
+  padding-left: 120px;
+  padding-right: 120px;
+}
+

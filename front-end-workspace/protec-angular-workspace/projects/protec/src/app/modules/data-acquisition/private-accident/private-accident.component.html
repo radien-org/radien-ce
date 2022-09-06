@@ -5,75 +5,87 @@
         </div>
         <div>
             <div class="generic-box-content">
-                    <div class="row horzontal-space-left-sm">
-                            <div class="col-lg-12 col-md-12 col-sm-12">
-                                <p class="para-text horzontal-space-left-sm"> {{'private-accident.Wie kam es zu dem Unfall? *'  | translate }} </p>
-                                <input 
-                                    type="text" 
-                                    class="input-text vertical-space-increase-bottom-2" 
-                                    placeholder="{{'private-accident.Text eingeben'  | translate }}" 
-                                    [(ngModel)]="howHappen" 
-                                    (change)="save()">
+                    <div class="row">
+                            <div class="grid-form-group">
+                                <div class="grid-form-group__item">
+                                    <p class="para-text"> {{'private-accident.Wie kam es zu dem Unfall? *'  | translate }} </p>
+                                    <input
+                                        type="text"
+                                        class="input-text vertical-space-increase-bottom-2"
+                                        placeholder="{{'private-accident.Text eingeben'  | translate }}"
+                                        [(ngModel)]="howHappen.value"
+                                        (change)="saveInputs()"
+                                        (input)="verifyInput()">
+                                </div>
                             </div>
-                            <div class="row col-lg-12 col-md-12 col-sm-12 vertical-space-increase-top">
-                                <div class="col-lg-6 col-md-5 col-sm-12">
-                                    <p class="para-text horzontal-space-left-sm"> {{'private-accident.Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *'  | translate }} </p>
+                            <div class="grid-form-group">
+                                <div class="grid-form-group__item">
+                                    <p class="para-text"> {{'private-accident.Was war Deine zuletzt ausgeübte berufliche Tätigkeit? *'  | translate }} </p>
                                     <input 
                                         type="text" 
                                         class="input-text vertical-space-increase-bottom-2" 
                                         placeholder="{{'private-accident.Vorheriger Arbeitgeber'  | translate }}" 
-                                        [(ngModel)]="professionalActivity" 
-                                        (change)="save()">
+                                        [(ngModel)]="professionalActivity.value"
+                                        (change)="saveInputs()"
+                                        (input)="verifyInput()">
                                 </div>
-                                <div class="col-lg-6 col-md-5 col-sm-12">
-                                    <p class="para-text horzontal-space-left-sm"> {{'private-accident.Arbeitgeber'  | translate }} </p>
+                                <div class="grid-form-group__separator"></div>
+                                <div class="grid-form-group__item">
+                                    <p class="para-text"> {{'private-accident.Arbeitgeber'  | translate }} </p>
                                     <input 
                                         type="text" 
                                         class="input-text vertical-space-increase-bottom-2" 
                                         placeholder="{{'private-accident.Arbeitgeber zum Zeitpunkt des Unfalls'  | translate }}"
-                                        [(ngModel)]="employer" 
-                                        (change)="save()">
+                                        [(ngModel)]="employer.value"
+                                        (change)="saveInputs()"
+                                        (input)="verifyInput()">
                                 </div>
                             </div>
-                            <div class="row col-lg-12 col-md-12 col-sm-12">
-                                <div class="col-lg-6 col-md-6 col-sm-12">
-                                    <p class="para-text horzontal-space-left-sm"> {{'private-accident.Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *'  | translate }} </p>
+                            <div class="grid-form-group">
+                                <div class="grid-form-group__item">
+                                    <p class="para-text"> {{'private-accident.Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *'  | translate }} </p>
                                 </div>
-                                <div class="col-lg-6 col-md-6 col-sm-12 vertical-space-increase-bottom-2">
-                                    <mat-radio-button name="group1" class="para-text radio-button" (click)="hideOptions()" [checked]="longerThanTwelveMonths"> {{ 'form yes' | translate }} </mat-radio-button>
-                                    <mat-radio-button name="group1" class="para-text horzontal-space-left-md radio-button" (click)="showOptions()" [checked]="!longerThanTwelveMonths"> {{ 'form no' | translate }} </mat-radio-button>
+                                <div class="grid-form-group__separator"></div>
+                                <div class="grid-form-group__item grid-form-group__item--row">
+                                    <mat-radio-button name="group1" class="para-text radio-button" (click)="hideOptions()" [checked]="longerThanTwelveMonths.value"> {{ 'form yes' | translate }} </mat-radio-button>
+                                    <mat-radio-button name="group1" class="para-text horzontal-space-left-md radio-button" (click)="showOptions()" [checked]="!longerThanTwelveMonths.value"> {{ 'form no' | translate }} </mat-radio-button>
                                 </div>
                             </div>
-                            <div class="row col-lg-12 col-md-12 col-sm-12" [hidden]="longerThanTwelveMonths">
-                                <div class="col-lg-6 col-md-6 col-sm-12">
-                                    <p class="para-text horzontal-space-left-sm"> {{'private-accident.Welche berufliche Tätigkeit hast Du zuvor ausgeübt?'  | translate }} </p>
+                            <div style="margin-bottom: 40px; width: 100%"></div>
+                            <div class="grid-form-group" [hidden]="longerThanTwelveMonths.value">
+                                <div class="grid-form-group__item">
+                                    <p class="para-text"> {{'private-accident.Welche berufliche Tätigkeit hast Du zuvor ausgeübt?'  | translate }} </p>
                                     <input 
                                         type="text" 
                                         class="input-text vertical-space-increase-bottom-2" 
                                         placeholder="{{'private-accident.Berufliche Tätigkeit'  | translate }}"
-                                        [(ngModel)]="youDoBefore" 
-                                        (change)="save()">
+                                        [(ngModel)]="youDoBefore.value"
+                                        (change)="saveInputs()"
+                                        (input)="verifyInput()">
                                 </div>
-                                <div class="col-lg-6 col-md-6 col-sm-12">
-                                    <p class="para-text horzontal-space-left-sm"> {{'private-accident.Vorheriger Arbeitgeber'  | translate }} </p>
+                                <div class="grid-form-group__separator"></div>
+                                <div class="grid-form-group__item">
+                                    <p class="para-text"> {{'private-accident.Vorheriger Arbeitgeber'  | translate }} </p>
                                     <input 
                                         type="text" 
                                         class="input-text vertical-space-increase-bottom-2" 
                                         placeholder="{{'private-accident.Vorheriger Arbeitgeber'  | translate }}"
-                                        [(ngModel)]="previousEmployer" 
-                                        (change)="save()">
+                                        [(ngModel)]="previousEmployer.value"
+                                        (change)="saveInputs()"
+                                        (input)="verifyInput()">
                                 </div>
                             </div>
-                            <div class="row col-lg-12 col-md-12 col-sm-12" [hidden]="longerThanTwelveMonths">
-                                <div class="col-lg-6 col-md-6 col-sm-12">
-                                    <p class="para-text horzontal-space-left-sm"> {{'private-accident.Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *'  | translate }} </p>
+                            <div class="grid-form-group" [hidden]="longerThanTwelveMonths.value">
+                                <div class="grid-form-group__item">
+                                    <p class="para-text"> {{'private-accident.Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *'  | translate }} </p>
                                 </div>
-                                <div class="col-lg-6 col-md-6 col-sm-12 vertical-space-increase-bottom-2">
-                                    <mat-radio-button name="group2" class="para-text radio-button" [checked]="longerThanTwelveMonthsSecond"> {{ 'form yes' | translate }} </mat-radio-button>
-                                    <mat-radio-button name="group2" class="para-text horzontal-space-left-md radio-button" [checked]="!longerThanTwelveMonthsSecond"> {{ 'form no' | translate }} </mat-radio-button>
+                                <div class="grid-form-group__separator"></div>
+                                <div class="grid-form-group__item grid-form-group__item--row">
+                                    <mat-radio-button name="group2" class="para-text radio-button" [checked]="longerThanTwelveMonthsSecond.value" (change)="this.longerThanTwelveMonthsSecond.value = true; verifyInput()"> {{ 'form yes' | translate }} </mat-radio-button>
+                                    <mat-radio-button name="group2" class="para-text horzontal-space-left-md radio-button" [checked]="!longerThanTwelveMonthsSecond.value" (change)="this.longerThanTwelveMonthsSecond.value = false; verifyInput()"> {{ 'form no' | translate }} </mat-radio-button>
                                 </div>
                             </div>
-
+                        <div style="margin-bottom: 32px; width: 100%"></div>
                     </div>
                 <div class="bottom-nav-buttons">
                     <app-g-button [data]="pageNav.navegation"></app-g-button>
