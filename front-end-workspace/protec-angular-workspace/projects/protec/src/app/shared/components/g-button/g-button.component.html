@@ -107,7 +107,7 @@
            >
             <div
                 class="home-button-link bt-action link-button"
-                (click)="goToLink(navegation.link)"
+                (click)="goToLink(navegation.link, {runPreNavHook: navegation.runPreNavHook || false})"
                 [ngClass]="{'text-right': i > 0}">
                 <span *ngIf="i == 0 && navegation.link != 'disabled'" class="arrow arrow-left " [ngClass]="btn_arrow" (mouseenter)="btnOnMouseEnter()" (mouseleave)="btnOnMouseLeave()"></span>
                 <span class="no-overflow-text button-arrow btn-step-text"  [ngClass]="btn_arrow" (mouseenter)="btnOnMouseEnter()" (mouseleave)="btnOnMouseLeave()">
