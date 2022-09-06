@@ -16,7 +16,7 @@ export class PartBodyFigureComponent implements OnInit {
     initNavigation = [{
         label: this.translationService.instant('ZURÜCK'),
         runPreNavHook: true,
-        link: '/data-acquisition/full-body'//TODO we need put variation for work-accident
+        link: '/data-acquisition/full-body'
     }]
 
     pageNav = {
