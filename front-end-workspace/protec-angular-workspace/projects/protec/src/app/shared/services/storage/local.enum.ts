@@ -16,6 +16,7 @@ export enum LOCAL {
   ADDITIONAL_INSURANCE_FORM = 'PH__add_info',
   ADDITIONAL_INSURANCE_FORM_SECOND = 'PH__add_info_second',
   PRIVATE_ACCIDENT_FORM = 'PH__data_private_acc',
+  ILLNESS_DETAIL_FORM = 'PH__data_detail_diag',
   ILLNESS_DIAGNOSTIC_FORM = 'PH__data_illness_diag',
   WORK_ACCIDENT_FORM = 'PH_work_acc',
   ACCIDENT_DATE_FORM = 'PH__acc_date',

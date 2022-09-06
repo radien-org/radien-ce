@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { StorageService } from '../../../shared/services/storage/storage.service';
 import { LOCAL } from '../../../shared/services/storage/local.enum';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-illness-2',//TODO: change this name component probably to illness-diagnostic
@@ -9,16 +10,17 @@ import { LOCAL } from '../../../shared/services/storage/local.enum';
   styleUrls: ['./illness-2.component.scss']
 })
 export class Illness2Component implements OnInit {
-  
+
+  initNavigation = [{
+    label: this.translationService.instant('ZURÜCK'),
+    link: '/data-acquisition/illness-details',
+    funcParams: {}
+  }]
+
   pageNav = {
     navegation: {
       type: 'navegation-buttons',
-      navegations: [
-        {
-          label: this.translationService.instant('back'),
-          link: '/data-acquisition/private-accident'
-        }
-      ]
+      navegations: [...this.initNavigation]
     }
   }
   
@@ -81,7 +83,7 @@ export class Illness2Component implements OnInit {
 
   accidentType: string = '';
 
-  constructor(private readonly translationService: TranslateService, private readonly storageService: StorageService) { }
+  constructor(private readonly translationService: TranslateService, private readonly storageService: StorageService, private readonly router: Router) { }
   
   ngOnInit(): void {
     this.accidentType = this.storageService.getItem(LOCAL.ACCIDENT_TYPE);
@@ -92,30 +94,40 @@ export class Illness2Component implements OnInit {
       this.whatWasDiagnosed = savedData.whatWasDiagnosed;
       this.currentlySickLeave = savedData.currentlySickLeave;
     }
+    this.verifyInput();
   }
 
   verifyAccidentType() {
     if(this.accidentType === 'work-accident') {
       this.pageNav.navegation.navegations.push(
         {
-          label: this.translationService.instant('next'),
-          link: '/data-acquisition/full-body'
+          label: this.translationService.instant('WEITER'),
+          link: '/data-acquisition/full-body',
+          funcParams: {}
         }
       );
     } else if(this.accidentType === 'recreational-accident') {
       this.pageNav.navegation.navegations.push(
         {
-          label: this.translationService.instant('next'),
-          link: '/data-acquisition/full-body'
-        }
-      );
-    } else {
-      this.pageNav.navegation.navegations.push(
-        {
           label: this.translationService.instant('WEITER'),
-          link: '/data-acquisition/more-injuries'
+          link: '/data-acquisition/full-body',
+          funcParams: {}
         }
       );
+    }
+  }
+
+  verifyInput(): void {
+    console.log('saving...');
+    if (this.whatWasDiagnosed) {
+      this.pageNav.navegation.navegations = [...this.initNavigation, {
+        label: this.translationService.instant('WEITER'),
+        link: '/data-acquisition/summary',
+        funcParams: {}
+      }]
+      this.save();
+    } else {
+      this.pageNav.navegation.navegations = [...this.initNavigation]
     }
   }
 
@@ -224,7 +236,8 @@ export class Illness2Component implements OnInit {
   }
   
   public showOptions(){
-    this.end_date = 'show-flex'
+    this.end_date = 'show-flex';
+    this.save();
   }
 
   public hideOptions(){
@@ -239,5 +252,10 @@ export class Illness2Component implements OnInit {
     }};
     console.log('debug (save):', data);
     this.storageService.setItem(LOCAL.ILLNESS_DIAGNOSTIC_FORM, data);
+  }
+
+  saveAll(data:any) {
+    this.storageService.saveDataAcquisition();
+    this.router.navigate(['/data-acquisition/summary']);
   }
 }
