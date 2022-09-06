@@ -13,11 +13,11 @@ export class YourDataComponent implements OnInit {
       type: 'navegation-buttons',
       navegations: [
         {
-          label: this.translationService.instant('Zurück'),
+          label: this.translationService.instant('ZURÜCK'),
           link: '/data-acquisition/request-quote'
         },
         {
-          label: this.translationService.instant('Weiter'),
+          label: this.translationService.instant('WEITER'),
           link: '/data-acquisition/personal-data-person'
         }
       ]

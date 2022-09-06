@@ -15,7 +15,7 @@ export class PrivateAccidentComponent implements OnInit {
       type: 'navegation-buttons',
       navegations: [
         {
-          label: this.translationService.instant('zurück'),
+          label: this.translationService.instant('ZURÜCK'),
           link: '/data-acquisition/details-intro'
         }
       ]
@@ -64,14 +64,14 @@ export class PrivateAccidentComponent implements OnInit {
     if(this.accidentType === 'recreational-accident') {
       this.pageNav.navegation.navegations.push(
         {
-          label: this.translationService.instant('weiter'),
+          label: this.translationService.instant('WEITER'),
           link: '/data-acquisition/full-body'
         }
       );
     } else if(this.accidentType === 'disease') {
       this.pageNav.navegation.navegations.push(
         {
-          label: this.translationService.instant('weiter'),
+          label: this.translationService.instant('WEITER'),
           link: '/data-acquisition/illness-diagnostic'
         }
       );

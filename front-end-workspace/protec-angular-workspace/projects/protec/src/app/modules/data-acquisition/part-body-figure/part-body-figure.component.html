@@ -11,36 +11,34 @@
                             <div class="">
                                 <div class="row">
                                     <div class="col-lg-5 col-md-6 col-sm-12">
-                                        <img [src]="getBodyPartImage()" class="body-part-style-image">
+                                        <div class="body-part-image__container">
+                                            <img [src]="getBodyPartImage()" class="body-part-style-image">
+                                        </div>
                                     </div>
                                     <div class="col-lg-7 col-md-6 col-sm-12">
                                         <div class="vertical-space-increase-bottom">
                                              <h1 class="mt-0 mb-4 title-text vertical-space-reducer-top">
-                                                 {{ bodyPartTitle | translate }}
+                                                 {{ bodyPartSide | translate }} {{ bodyPartTitle | translate }}
                                              </h1>
                                              <p>{{ 'Bitte wähle die zutreffende(n) Verletzung(en) aus.' | translate }}</p>
                                              <div class="row">
-                                                 <div class="col-12">
-                                                    <div style="float:left">
-                                                        <p-multiSelect 
-                                                            [options]="options" 
-                                                            [(ngModel)]="selectedOptions" 
-                                                            defaultLabel="Select a option" 
-                                                            optionLabel="name" 
-                                                            display="chip">
-                                                        </p-multiSelect>
-                                                    </div>
+                                                 <div class="col-12" style="margin-bottom: 30px;">
+                                                     <app-multi-select
+                                                             #primary_multi_select
+                                                             [data]="primaryOptions"
+                                                             [selected]="selectedOptions"
+                                                             (handleOpen)="handleOpen($event)"
+                                                             (handleChoices)="handleSelectOptions($event)">
+                                                     </app-multi-select>
                                                  </div>
-                                                 <div class="col-12 mt-4">
-                                                    <div style="float:left">
-                                                        <p-multiSelect 
-                                                            [options]="subOptions" 
-                                                            [(ngModel)]="selectedSubOptions" 
-                                                            defaultLabel="Select a option" 
-                                                            optionLabel="name" 
-                                                            display="chip">
-                                                        </p-multiSelect>
-                                                    </div>
+                                                 <div class="col-12">
+                                                     <app-multi-select
+                                                             #secondary_multi_select
+                                                             [data]="secondaryOptions"
+                                                             [selected]="selectedSubOptions"
+                                                             (handleOpen)="handleOpen($event)"
+                                                             (handleChoices)="handleSelectSubOptions($event)">
+                                                     </app-multi-select>
                                                  </div>
                                              </div>
                                         </div>
@@ -51,7 +49,7 @@
                     </div>
                 </div>
                 <div class="bottom-nav-buttons">
-                    <app-g-button [data]="pageNav.navegation"></app-g-button>
+                    <app-g-button [data]="pageNav.navegation" (linkFunction)="clearSavedData()"></app-g-button>
                 </div>
             </div>
         </div>
