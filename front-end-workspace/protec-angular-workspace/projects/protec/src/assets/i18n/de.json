@@ -24,6 +24,8 @@
   "Zustandige BG / UV": "Zustandige BG / UV",
   "Aktenzeichen": "Aktenzeichen",
   "Optional falls bekannt": "Optional falls bekannt",
+  "input_current_occupation": "Beruf",
+  "input_current_employer": "Arbeitgeber",
   "(damaliger) Beruf": "(damaliger) Beruf",
   "(damaliger) Arbeitgeber": "(damaliger Arbeitgeber)",
   "PLZ des Arbeitgebers": "PLZ des Arbeitgebers",
