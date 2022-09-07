@@ -124,24 +124,9 @@
 		<view-id value="/module/i18n/property.oaf" />
 	</url-mapping>
 
-	<url-mapping id="content_public">
-		<pattern
-			value="/public/content/display/#{contentViewManager.viewId}" />
-		<view-id value="/public/content.oaf" />
-	</url-mapping>
 	<url-mapping id="captcha">
 		<pattern value="/public/captcha" />
 		<view-id value="/captcha" />
-	</url-mapping>
-	<url-mapping id="index">
-		<pattern value="/public/#{index : contentViewManager.viewId}" />
-		<view-id value="/public/index.oaf" />
-	</url-mapping>
-
-	<url-mapping id="content">
-		<pattern
-			value="/module/content/display/#{contentViewManager.viewId}" />
-		<view-id value="/module/content.oaf" />
 	</url-mapping>
 
 <!-- DocTypeManagement service -->

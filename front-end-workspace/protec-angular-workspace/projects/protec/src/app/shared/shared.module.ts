@@ -17,6 +17,7 @@ import { WarningComponent } from './components/warning/warning.component';
 import { BodyFigureComponent } from './components/body-figure/body-figure.component';
 import {HttpClient} from "@angular/common/http";
 import {HttpLoaderFactory} from "../app.module";
+import { MultiSelectComponent } from './components/multi-select/multi-select.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import {HttpLoaderFactory} from "../app.module";
     InternalFooterComponent,
     SidenavBackdropComponentEssenziell,
     WarningComponent,
-    BodyFigureComponent
+    BodyFigureComponent,
+    MultiSelectComponent
     //FieldFormatterPipe,
   ],
   imports: [
@@ -40,23 +42,24 @@ import {HttpLoaderFactory} from "../app.module";
     ConfirmDialogModule,
     TranslateModule.forChild(),
   ],
-  exports: [
-    CommonModule,
-    ReactiveFormsModule,
-    FormsModule,
-    MaterialModule,
-    CalendarModule,
-    StepperComponent,
-    GButtonComponent,
-    TranslateModule,
-    SidenavBackdropComponent,
-    InternalFooterComponent,
-    SidenavBackdropComponentEssenziell,
-    CalendarComponent,
-    WarningComponent,
-    MultiSelectModule,
-    ConfirmDialogModule,
-    BodyFigureComponent
-  ],
+    exports: [
+        CommonModule,
+        ReactiveFormsModule,
+        FormsModule,
+        MaterialModule,
+        CalendarModule,
+        StepperComponent,
+        GButtonComponent,
+        TranslateModule,
+        SidenavBackdropComponent,
+        InternalFooterComponent,
+        SidenavBackdropComponentEssenziell,
+        CalendarComponent,
+        WarningComponent,
+        MultiSelectModule,
+        ConfirmDialogModule,
+        BodyFigureComponent,
+        MultiSelectComponent
+    ],
 })
 export class SharedModule {}

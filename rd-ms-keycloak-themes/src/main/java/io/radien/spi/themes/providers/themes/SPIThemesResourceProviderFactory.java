@@ -24,13 +24,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SPIThemesResourceProviderFactory implements ThemeResourceProviderFactory {
-    private static final Logger log = LoggerFactory.getLogger(SPIThemesResourceProviderFactory.class);
-
     private static final String PROVIDER_ID = "custom-theme-resource-provider";
 
     @Override
     public ThemeResourceProvider create(KeycloakSession keycloakSession) {
-        log.info("Initialized:: Custom theme resource provider service");
         return new SPIThemesResourceProvider(keycloakSession);
     }
 

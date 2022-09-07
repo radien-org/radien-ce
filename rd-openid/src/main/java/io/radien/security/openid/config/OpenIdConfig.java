@@ -38,8 +38,7 @@ public class OpenIdConfig {
         clientSecret = oafAccess.getProperty(KeycloakConfigs.RADIEN_SECRET);
         accessTokenUri = oafAccess.getProperty(OpenIdProperties.AUTH_ACCESS_TOKEN_URI);
         userAuthorizationUri = oafAccess.getProperty(OpenIdProperties.AUTH_USER_AUTHORIZATION_URI);
-        redirectUri = "https://localhost:8443/web/login";
-        //oafAccess.getProperty(OpenIdProperties.AUTH_REDIRECT_URI);
+        redirectUri = oafAccess.getProperty(OpenIdProperties.AUTH_REDIRECT_URI);
         authPrivateContexts = oafAccess.getProperty(OpenIdProperties.AUTH_PRIVATE_CONTEXTS,"/module");
         issuer = oafAccess.getProperty(OpenIdProperties.AUTH_ISSUER);
         jwkUrl = oafAccess.getProperty(OpenIdProperties.AUTH_JWKURL);

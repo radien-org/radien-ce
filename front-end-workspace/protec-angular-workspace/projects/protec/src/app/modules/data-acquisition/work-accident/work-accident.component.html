@@ -43,7 +43,9 @@
                             <p class="para-text horzontal-space-left-sm" > {{'Zustandige BG / UV'  | translate }} </p>
                             <select
                                     class="input-text vertical-space-increase-bottom-2"
-                                    class="input-text vertical-space-increase-bottom-2 input-select-dropdown">
+                                    class="input-text vertical-space-increase-bottom-2 input-select-dropdown" 
+                                    (change)="verifyInput()" 
+                                    [(ngModel)]="responsible.value">
                                 <option value="">{{'Option auswählen' | translate }}</option>
                                 <option
                                         *ngFor="let item of options"
@@ -55,13 +57,13 @@
                         <div class="col-lg-6 col-md-5 col-sm-12">
                             <p class="para-text horzontal-space-left-sm" required> {{'Aktenzeichen'  | translate }} </p>
                             <input
-                                    type="number"
-                                    name="Mobilfunknummer"
-                                    id="Mobilfunknummer"
-                                    class="input-text vertical-space-increase-bottom-2"
-                                    placeholder="{{'Optional falls bekannt'  | translate }}" 
-                                    [(ngModel)]="fileNumber.value" 
-                                    (input)="verifyInput()">
+                                type="number"
+                                name="Mobilfunknummer"
+                                id="Mobilfunknummer"
+                                class="input-text vertical-space-increase-bottom-2"
+                                placeholder="{{'Optional falls bekannt'  | translate }}" 
+                                [(ngModel)]="fileNumber.value" 
+                                (input)="verifyInput()">
                         </div>
                     </div>
                 </div>

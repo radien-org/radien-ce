@@ -50,7 +50,7 @@ export class DetailsIntroComponent implements OnInit {
       this.pageNav.navegation.navegations.push(
         {
           label: this.translationService.instant('WEITER'),
-          link: '/data-acquisition/illness-diagnostic'
+          link: '/data-acquisition/illness-details'
         }
       );
     }

@@ -19,7 +19,6 @@ package io.radien.spi.themes.providers.validation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 import javax.ws.rs.core.MultivaluedMap;
 import org.keycloak.Config;
 import org.keycloak.authentication.FormAction;
@@ -28,19 +27,14 @@ import org.keycloak.authentication.FormContext;
 import org.keycloak.authentication.ValidationContext;
 import org.keycloak.forms.login.LoginFormsProvider;
 import org.keycloak.models.AuthenticationExecutionModel;
-import org.keycloak.models.AuthenticatorConfigModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.utils.FormMessage;
 import org.keycloak.provider.ProviderConfigProperty;
-import org.keycloak.services.validation.Validation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TermsAndConditionsValidator implements FormAction, FormActionFactory {
-    private static final Logger log = LoggerFactory.getLogger(TermsAndConditionsValidator.class);
 
     private static final String PROVIDER_ID = "terms-field-validation-action";
     private static AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = { AuthenticationExecutionModel.Requirement.REQUIRED, AuthenticationExecutionModel.Requirement.DISABLED };
@@ -132,7 +126,6 @@ public class TermsAndConditionsValidator implements FormAction, FormActionFactor
         List<FormMessage> errors = new ArrayList<>();
 
         String accepted = formData.getFirst(FIELD_ACCEPTED_TERMS);
-        log.info("ACCEPTED VALUE {}", accepted);
         if(accepted != null) {
             validationContext.success();
         } else {

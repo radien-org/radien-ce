@@ -68,7 +68,7 @@ public class KeycloakBusinessServiceTest {
         doNothing().when(client).refreshToken();
         doNothing().when(client).sendUpdatePasswordEmail(any());
         String firstName = "a";
-        UserEntity u = new UserEntity(UserFactory.create(firstName, "", "a4", "teste", "a@b.pt", 0L));
+        UserEntity u = new UserEntity(UserFactory.create(firstName, "", "a4", "teste", "a@b.pt","951", 0L));
         String sub = target.createUser(u);
         assertEquals("", sub);
     }
@@ -81,7 +81,7 @@ public class KeycloakBusinessServiceTest {
         doNothing().when(client).deleteUser(any());
 
         String firstName = "a";
-        UserEntity u = new UserEntity(UserFactory.create(firstName, "", "a4", "teste", "a@b.pt", 0L));
+        UserEntity u = new UserEntity(UserFactory.create(firstName, "", "a4", "teste", "a@b.pt","951", 0L));
         boolean success = false;
         try{
             target.createUser(u);
@@ -94,7 +94,7 @@ public class KeycloakBusinessServiceTest {
     @Test
     public void testUpdateUser() throws Exception {
         doReturn(EMPTY_MOCK_RESPONSE).when(client).createUser(any());
-        SystemUser u = UserFactory.create("firstname", "", "a4", "teste", "a@b.pt", 0L);
+        SystemUser u = UserFactory.create("firstname", "", "a4", "teste", "a@b.pt","951", 0L);
         doNothing().when(client).updateUser(any(), any());
         boolean success = true;
         try{
@@ -108,7 +108,7 @@ public class KeycloakBusinessServiceTest {
     @Test
     public void testSendUpdatePasswordEmail() throws Exception {
         doReturn(EMPTY_MOCK_RESPONSE).when(client).createUser(any());
-        SystemUser u = UserFactory.create("firstname", "", "a4", "teste","a@b.pt", 0L);
+        SystemUser u = UserFactory.create("firstname", "", "a4", "teste","a@b.pt","951",0L);
         doNothing().when(client).sendUpdatePasswordEmail(any());
         boolean success = true;
         try{

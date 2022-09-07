@@ -1,7 +1,7 @@
 import { KeycloakConfig } from "keycloak-js";
 
 const keycloakConfig: KeycloakConfig = {
-  url: 'https://idp-test.protec.help/auth',
+  url: '',
   realm: 'protec',
   clientId: 'protec-fe'
 }; 

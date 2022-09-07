@@ -13,7 +13,7 @@
                                     class="input-text vertical-space-increase-bottom-2" 
                                     placeholder="{{'Text eingeben'  | translate }}"
                                     [(ngModel)]="whatWasDiagnosed" 
-                                    (change)="save()">
+                                    (input)="verifyInput()">
                             </div>
                             <div class="row col-lg-12 col-md-12 col-sm-12 vertical-space-increase-top">
                                 <div class="col-lg-6 col-md-5 col-sm-12">
@@ -28,7 +28,7 @@
                                 </div>
                             <div class="row col-lg-12 col-md-12 col-sm-12 vertical-space-increase-top-lg">
                                 <div class="col-lg-6 col-md-6 col-sm-12 ">
-                                    <p class="para-text horzontal-space-left-sm"> {{'illnesss.Beginn'  | translate }} </p>
+                                    <p class="para-text horzontal-space-left-sm"> {{'Beginn'  | translate }} </p>
 
                                     <div class="calendar-container">
                                         <div class="toggle-container">
@@ -109,7 +109,7 @@
 
                     </div>
                 <div class="bottom-nav-buttons">
-                    <app-g-button [data]="pageNav.navegation"></app-g-button>
+                    <app-g-button [data]="pageNav.navegation" (linkFunction)="saveAll($event)"></app-g-button>
                 </div>
             </div>
         </div>
