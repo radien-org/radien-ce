@@ -1,6 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import { Router } from '@angular/router';
 import {TranslateService} from "@ngx-translate/core";
+import {formatNumber} from "@angular/common";
+import {toNumbers} from "@angular/compiler-cli/src/version_helpers";
 
 @Component({
   selector: 'app-calendar',
@@ -10,6 +12,7 @@ import {TranslateService} from "@ngx-translate/core";
 export class CalendarComponent implements OnInit {
 
   @Output() dateSet: EventEmitter<String> = new EventEmitter<String>();
+  @Output() reqYear = new EventEmitter<String>();
   @Input() public initialDate : String | undefined
 
   date: {
@@ -18,7 +21,7 @@ export class CalendarComponent implements OnInit {
   }
 
   setDate(): void {
-    if (this.day_head_class == "toggle-button-completed" && this.month_head_class == "toggle-button-completed" && this.year_head_class == "toggle-button-completed") {
+    if (this.day_head_class == "toggle-button-completed" || this.month_head_class == "toggle-button-completed" || this.year_head_class == "toggle-button-completed") {
       this.date.value = `${this.selectedYear}.${this.selectedMonth}.${this.selectedDay}`
     } else {
       this.date.value = ''
@@ -33,6 +36,7 @@ export class CalendarComponent implements OnInit {
     this.date = {
       value: '', error: ""
     }
+    this.reqYear.emit("");
   }
 
 
@@ -44,9 +48,9 @@ export class CalendarComponent implements OnInit {
   currentMonth = this.today.getMonth();
   currentDay = this.today.getDate();
   monthNames = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
-  selectedYear =1;
-  selectedMonth=1;
-  selectedDay=1;
+  selectedYear = 0;
+  selectedMonth= 0;
+  selectedDay= 0;
   daysInMonth = new Date(this.selectedYear, this.selectedMonth, 0).getDate();
   year_selector_class = "show"
   month_selector_class = "hide"
@@ -76,15 +80,18 @@ export class CalendarComponent implements OnInit {
     this.year_head_class="toggle-button-completed"
     this.month_selector_class = "show";
     this.year_head_label= i.toString();
+    this.reqYear.emit(i.toString());
     this.setDate()
   }
   selectMonth(i: number){
-    this.selectedMonth = i;
-    this.month_selector_class = "hide";
-    this.day_selector_class = "show";
-    this.month_head_class = "toggle-button-completed"
-    this.month_head_label= this.monthNames[i];
-    this.setDate()
+    if(this.selectedYear != -1){
+      this.selectedMonth = i;
+      this.month_selector_class = "hide";
+      this.day_selector_class = "show";
+      this.month_head_class = "toggle-button-completed"
+      this.month_head_label= this.monthNames[i];
+      this.setDate()
+    }
   }
 
   getDaylist(){
@@ -109,44 +116,59 @@ export class CalendarComponent implements OnInit {
   }
 
   selectDay(i:number){
-    this.selectedDay=i;
-    this.day_selector_class = "hide";
-    this.day_head_class = "toggle-button-completed";
-    this.day_head_label= i.toString();
-    this.setDate()
+    if(this.selectedMonth != -1)
+    {
+      this.selectedDay=i;
+      this.day_selector_class = "hide";
+      this.day_head_class = "toggle-button-completed";
+      this.day_head_label= i.toString();
+      this.setDate()
+    }
   }
 
   enableSelectYear()
   {
     if(this.year_selector_class == 'hide') {
       this.year_selector_class = 'show';
+      this.month_selector_class = 'hide';
+      this.day_selector_class = 'hide';
       this.year_head_class = "";
       this.month_head_class = "";
       this.day_head_class = "";
       this.year_head_label = "JAHR *"
       this.month_head_label="MONAT"
       this.day_head_label="TAG"
-      this.selectedYear = 1;
+      this.selectedYear = -1;
+      this.selectedMonth=-1;
+      this.selectedDay=-1;
       this.setDate()
+      this.reqYear.emit("");
     }
   }
 
   enableSelectMonth(){
-    if(this.month_selector_class == 'hide') {
+    if(this.month_selector_class == 'hide' && this.selectedYear != -1) {
       this.month_selector_class = 'show';
+      this.year_selector_class = 'hide';
+      this.day_selector_class = 'hide';
       this.month_head_class = "";
       this.day_head_class = "";
       this.month_head_label="MONAT"
       this.day_head_label="TAG"
+      this.selectedMonth=-1;
+      this.selectedDay=-1;
       this.setDate()
     }
   }
 
   enableSelectDay(){
-    if(this.day_selector_class == 'hide') {
+    if(this.day_selector_class == 'hide' && this.selectedYear != -1 && this.selectedMonth != -1) {
       this.day_selector_class = 'show';
+      this.year_selector_class = 'hide';
+      this.month_selector_class = 'hide';
       this.day_head_class = "";
       this.day_head_label="TAG"
+      this.selectedDay=-1;
       this.setDate()
     }
   }
@@ -161,6 +183,18 @@ export class CalendarComponent implements OnInit {
       this.selectYear(+dateList[0]);
       this.selectMonth(+dateList[1]);
       this.selectDay(+dateList[2])
+      if (this.selectedYear == -1){
+        this.year_head_label = "JAHR *"
+        this.year_head_class = ""
+      }
+      if (this.selectedMonth == -1){
+        this.month_head_label="MONAT"
+        this.month_head_class = ""
+      }
+      if (this.selectedDay == -1){
+        this.day_head_label="TAG"
+        this.day_head_class = ""
+      }
     }
   }
 
