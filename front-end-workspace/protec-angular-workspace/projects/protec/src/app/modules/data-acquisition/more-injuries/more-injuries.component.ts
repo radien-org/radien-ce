@@ -12,7 +12,7 @@ import { LOCAL } from '../../../shared/services/storage/local.enum';
 export class MoreInjuriesComponent implements OnInit {
 
   buttons = [{
-    label: this.translationService.instant('JA'),
+    label: this.translationService.instant('Ja'),
     type: 'outline',
     link: 'function',
     funcParams: {
@@ -20,7 +20,7 @@ export class MoreInjuriesComponent implements OnInit {
     }
   },
   {
-    label: this.translationService.instant('NEIN'),
+    label: this.translationService.instant('Nein'),
     type: 'outline',
     link: 'function',
     funcParams: {
