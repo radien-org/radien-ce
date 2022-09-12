@@ -11,7 +11,7 @@ import {LOCAL} from "../../../shared/services/storage/local.enum";
 })
 export class PersonalDataInputComponent implements OnInit {
   initNavigation = [{
-    label: this.translationService.instant('back'),
+    label: this.translationService.instant('ZURÜCK'),
     link: '/data-acquisition/personal-data-information'
   }]
 
@@ -84,7 +84,7 @@ export class PersonalDataInputComponent implements OnInit {
   verifyInput(): void {
     if (this.lastName.value && this.firstName.value && this.birthDate.value) {
       this.pageNav.navegation.navegations = [...this.initNavigation, {
-        label: this.translationService.instant('next'),
+        label: this.translationService.instant('WEITER'),
         link: '/data-acquisition/personal-data-contact'
       }]
       this.saveInputs();
