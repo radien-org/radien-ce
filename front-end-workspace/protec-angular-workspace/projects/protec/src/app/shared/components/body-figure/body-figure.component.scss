@@ -14,6 +14,7 @@ canvas#bodyCanvas {
     height: 470px;
     max-height: 470px;
     min-height: 470px;
+    position: relative;
 }
 
 .bf-head-comp {
@@ -167,10 +168,19 @@ canvas#bodyCanvas {
     left: 0px;
 }
 
+.bf-background {
+    width: 100%;
+    left: 0;
+    right: 0;
+    position: absolute;
+    bottom: 0;
+}
+
 .bf-comp {
     cursor: pointer;
+    z-index: 1;
 }
 
 .bf-comp:hover {
-    filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(78deg) brightness(105%) contrast(101%);
+    filter: brightness(0) saturate(100%) invert(98%) sepia(8%) saturate(438%) hue-rotate(139deg) brightness(83%) contrast(97%);
 }
