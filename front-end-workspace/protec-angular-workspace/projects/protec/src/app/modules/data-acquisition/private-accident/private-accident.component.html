@@ -75,16 +75,16 @@
                                         (input)="verifyInput()">
                                 </div>
                             </div>
-                            <div class="grid-form-group" [hidden]="longerThanTwelveMonths.value">
-                                <div class="grid-form-group__item">
-                                    <p class="para-text"> {{'private-accident.Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *'  | translate }} </p>
-                                </div>
-                                <div class="grid-form-group__separator"></div>
-                                <div class="grid-form-group__item grid-form-group__item--row">
-                                    <mat-radio-button name="group2" class="para-text radio-button" [checked]="longerThanTwelveMonthsSecond.value" (change)="this.longerThanTwelveMonthsSecond.value = true; verifyInput()"> {{ 'form yes' | translate }} </mat-radio-button>
-                                    <mat-radio-button name="group2" class="para-text horzontal-space-left-md radio-button" [checked]="!longerThanTwelveMonthsSecond.value" (change)="this.longerThanTwelveMonthsSecond.value = false; verifyInput()"> {{ 'form no' | translate }} </mat-radio-button>
-                                </div>
-                            </div>
+<!--                            <div class="grid-form-group" [hidden]="longerThanTwelveMonths.value">-->
+<!--                                <div class="grid-form-group__item">-->
+<!--                                    <p class="para-text"> {{'private-accident.Wurde die berufliche Tätigkeit länger als 12 Monate ausgeübt? *'  | translate }} </p>-->
+<!--                                </div>-->
+<!--                                <div class="grid-form-group__separator"></div>-->
+<!--                                <div class="grid-form-group__item grid-form-group__item&#45;&#45;row">-->
+<!--                                    <mat-radio-button name="group2" class="para-text radio-button" [checked]="longerThanTwelveMonthsSecond.value" (change)="this.longerThanTwelveMonthsSecond.value = true; verifyInput()"> {{ 'form yes' | translate }} </mat-radio-button>-->
+<!--                                    <mat-radio-button name="group2" class="para-text horzontal-space-left-md radio-button" [checked]="!longerThanTwelveMonthsSecond.value" (change)="this.longerThanTwelveMonthsSecond.value = false; verifyInput()"> {{ 'form no' | translate }} </mat-radio-button>-->
+<!--                                </div>-->
+<!--                            </div>-->
                         <div style="margin-bottom: 32px; width: 100%"></div>
                     </div>
                 <div class="bottom-nav-buttons">
