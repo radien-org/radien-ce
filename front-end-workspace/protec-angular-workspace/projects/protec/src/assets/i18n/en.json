@@ -17,8 +17,6 @@
   "home": "HOME",
   "ZURÜCK": "BACK",
   "WEITER": "NEXT",
-  "weiter": "next",
-  "zurück": "back",
   "step1_title": "step 1",
   "Arbeitgeber": "Employer",
   "PLZ Arbeitgeber *": "Employer Postcode *",
@@ -175,6 +173,8 @@
   "Bitte klicke die von der Verletzung betroffene Körperregion an. Im nächsten Schritt gibst Du die Verletzung(en) und Verletzungsfolge(n) für diese Körperregion an. Wenn mehrere Körperregionen betroffen sind kannst Du weitere Verletzungen im Anschluss hinzufügen.": "Please click on the body region affected by the injury. In the next step you enter the injury(ies) and injury consequence(s) for this body region. If more than one body region is affected, you can add further injuries afterwards.",
   "Ja": "Yes",
   "Nein": "No",
+  "JA" : "YES",
+  "NEIN" : "NO",
   "JETZT STARTEN": "START NOW",
   "KRANKHEIT": "DISEASE",
   "ARBEITSUNFALL": "WORK ACCIDENT",
@@ -201,7 +201,8 @@
     "Berufliche Tätigkeit zum Zeitpunkt des Unfalls *": "Occupation at time of accident",
     "Übst du diese Tätigkeit heute noch aus? *": "Do you still do this job today? *",
     "Welche berufliche Tätigkeit übst heute aus? *": "What job do you do today *",
-    "Jetziger Arbeitgeber": "Current employer"
+    "Jetziger Arbeitgeber": "Current employer",
+    "Ergab sich eine weitere Verletzung aus diesem Unfall?" : "Were there any more Injuries during this accident?"
   },
   "OH NO!": "OH NO!",
   "ES TUT UNS LEID…": "WE ARE SORRY…",
@@ -313,6 +314,16 @@
   "arthrosis": "Arthrosis",
   "impingement_syndrome": "Impingement syndrome",
   "nerve_damage": "Nerve damage",
-  "chronic_influenza_infection": "Chronic influenza infection"
+  "chronic_influenza_infection": "Chronic influenza infection",
+
+  "request quote" : "request quote",
+  "KOSTENLOS UND UNVERBINDLICH" : "FREE AND WITHOUT OBLIGATION",
+  "JETZT ANGEBOT ANFORDERN" : "REQUEST A QUOTE NOW",
+  "Unser Klient:innenversprechen:" : "Our client promise:",
+  " Höchste Erfolgswahrscheinlichkeit" : "Highest probability of success",
+  " Schneller zum Bewilligungsbescheid" : "Faster to the decision on the granting of a pension",
+  " Maximierung Deiner Rentenleistung" : "Maximisation of your pension benefit",
+  " Minimierung Deines Aufwands" : "Minimisation of your effort",
+  " Maximale Transparenz" : "Maximum transparency"
 
 }

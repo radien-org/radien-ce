@@ -17,8 +17,6 @@
   "home": "HOME",
   "ZURÜCK": "ZURÜCK",
   "WEITER": "WEITER",
-  "weiter": "weiter",
-  "zurück": "zurück",
   "step1_title": "SCHRITT 1",
   "Arbeitgeber": "Arbeitgeber",
   "PLZ Arbeitgeber *": "PLZ Arbeitgeber *",
@@ -175,6 +173,8 @@
   "Bitte klicke die von der Verletzung betroffene Körperregion an. Im nächsten Schritt gibst Du die Verletzung(en) und Verletzungsfolge(n) für diese Körperregion an. Wenn mehrere Körperregionen betroffen sind kannst Du weitere Verletzungen im Anschluss hinzufügen.": "Bitte klicke die von der Verletzung betroffene Körperregion an. Im nächsten Schritt gibst Du die Verletzung(en) und Verletzungsfolge(n) für diese Körperregion an. Wenn mehrere Körperregionen betroffen sind kannst Du weitere Verletzungen im Anschluss hinzufügen.",
   "Ja": "Ja",
   "Nein": "Nein",
+  "JA" : "JA",
+  "NEIN" : "NEIN",
   "JETZT STARTEN": "JETZT STARTEN",
   "KRANKHEIT": "KRANKHEIT",
   "ARBEITSUNFALL": "ARBEITSUNFALL",
@@ -200,7 +200,9 @@
     "Berufliche Tätigkeit zum Zeitpunkt des Unfalls *": "Berufliche Tätigkeit zum Zeitpunkt des Unfalls *",
     "Übst du diese Tätigkeit heute noch aus? *": "Übst du diese Tätigkeit heute noch aus? *",
     "Welche berufliche Tätigkeit übst heute aus? *": "Welche berufliche Tätigkeit übst heute aus? *",
-    "Jetziger Arbeitgeber": "Jetziger Arbeitgeber"
+    "Jetziger Arbeitgeber": "Jetziger Arbeitgeber",
+    "Ergab sich eine weitere Verletzung aus diesem Unfall?" : "Ergab sich eine weitere Verletzung aus diesem Unfall?"
+
   },
   "OH NO!": "OH NO!",
   "ES TUT UNS LEID…": "ES TUT UNS LEID…",
@@ -313,5 +315,18 @@
   "arthrosis": "Arthrose",
   "impingement_syndrome": "Impingement-Syndrom",
   "nerve_damage": "Nervenschäden",
-  "chronic_influenza_infection": "Chronisch grippaler Infekt"
+  "chronic_influenza_infection": "Chronisch grippaler Infekt",
+
+
+  "request quote" : "request quote",
+  "request quote" : "request quote",
+  "KOSTENLOS UND UNVERBINDLICH" : "KOSTENLOS UND UNVERBINDLICH",
+  "JETZT ANGEBOT ANFORDERN" : "JETZT ANGEBOT ANFORDERN",
+  "Unser Klient:innenversprechen:" : "Unser Klient:innenversprechen",
+  " Höchste Erfolgswahrscheinlichkeit" : "Höchste Erfolgswahrscheinlichkeit",
+  " Schneller zum Bewilligungsbescheid" : "Schneller zum Bewilligungsbescheid",
+  " Maximierung Deiner Rentenleistung" : "Maximierung Deiner Rentenleistung",
+  " Minimierung Deines Aufwands" : "Minimierung Deines Aufwands",
+  " Maximale Transparenz" : "Maximale Transparenz" ,
+  "JETZT ANGEBOT ANFORDERUNGEN" : "JETZT ANGEBOT ANFORDERUNGEN"
 }
