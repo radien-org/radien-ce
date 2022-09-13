@@ -109,14 +109,14 @@ export class AdditionalInsuranceComponent implements OnInit {
     if(this.accidentType === 'recreational-accident') {
       this.pageNav.navegation.navegations.push(
         {
-          label: this.translationService.instant('weiter'),
+          label: this.translationService.instant('WEITER'),
           link: '/data-acquisition' + (this.buttonsStatus.firstStatus == 'no' ? '/we-are-sorry' : '/accident-date')
         }
       );
     } else if(this.accidentType === 'disease') {
       this.pageNav.navegation.navegations.push(
         {
-          label: this.translationService.instant('weiter'),
+          label: this.translationService.instant('WEITER'),
           link: '/data-acquisition' + (this.buttonsStatus.firstStatus == 'no' ? '/we-are-sorry' : '/accident-date')
         }
       );
