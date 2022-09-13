@@ -203,7 +203,7 @@
                                 value=""
                                 aria-invalid="<#if messagesPerField.existsError('terms')>true</#if>"
                             />
-                            <label>Ich stimme den <a href='${properties.terms_URL}' target="_blank">AGB</a> zu.</label>
+                            <label>Ich stimme den <a href='${properties.AGB_URL}' target="_blank">AGB</a> zu.</label>
 
                             <input 
                                 type="checkbox" 
@@ -213,7 +213,7 @@
                                 value=""
                                 aria-invalid="<#if messagesPerField.existsError('terms')>true</#if>"
                             />
-                            <label>Ich stimmer der <a href='${properties.terms_URL}' target="_blank">Datenschutzrichtlinie</a> zu.</label>
+                            <label>Ich stimmer der <a href='${properties.LEGAL_DATA_URL}' target="_blank">Datenschutzrichtlinie</a> zu.</label>
 
                             <#if messagesPerField.existsError('terms')>
                                 <span id="input-error-terms" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
