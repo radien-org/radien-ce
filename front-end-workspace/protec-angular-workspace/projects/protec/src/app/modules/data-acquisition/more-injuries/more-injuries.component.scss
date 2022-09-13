@@ -9,5 +9,17 @@
 }
 
 .btn-more-injuries{
-  width: 221px;
+  justify-self: center;
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 60px;
+}
+
+.generic-box-content-centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }

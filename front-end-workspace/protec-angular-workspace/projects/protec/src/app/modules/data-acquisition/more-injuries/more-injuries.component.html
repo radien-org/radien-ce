@@ -5,15 +5,13 @@
         </div>
         <div>
             <div class="generic-box-content align-content-center">
-                <div class="row base-min-height-45 justify-content-center ">
-                    <div class="col-lg-12 col-md-12 col-sm-12 ">
-                        <p class="content-text vertical-space-increase-top-lg justify-content-center ">
-                            {{ 'private-accident.Ergab sich eine weitere Verletzung aus diesem Unfall?' | translate }}
-                        </p>
-                    </div>
-                    <div class="col-lg-12 col-md-12 col-sm-12 mt-4 vertical-space-reducer-top-10">
-                        <div class="row mt-4 justify-content-center horzontal-space-left-md ">
-                            <div class="col-lg-3 col-md-6 col-sm-9 mt-3 btn-more-injuries" *ngFor="let item of buttons">
+                <div class="generic-box-content-centered">
+                    <p class="content-text justify-content-center ">
+                        {{ 'private-accident.Ergab sich eine weitere Verletzung aus diesem Unfall?' | translate }}
+                    </p>
+                    <div style="margin-top: 110px"></div>
+                        <div class="btn-more-injuries">
+                            <div *ngFor="let item of buttons">
                                 <app-g-button [data]="item" (linkFunction)="selectButton($event)"></app-g-button>
                             </div>
                         </div>

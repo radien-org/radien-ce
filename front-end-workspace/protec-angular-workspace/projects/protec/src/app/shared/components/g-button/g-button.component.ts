@@ -32,6 +32,7 @@ export class GButtonComponent implements OnInit {
       '/data-acquisition/accident-date': 1,
       '/data-acquisition/details-intro': 2,
       '/data-acquisition/illness-details': 2,
+      '/data-acquisition/private-accident': 2,
       '/data-acquisition/full-body': 2,
       '/data-acquisition/work-accident': 2,
       '/data-acquisition/part-body': 2,
