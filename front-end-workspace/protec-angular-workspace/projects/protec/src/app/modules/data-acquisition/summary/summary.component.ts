@@ -25,7 +25,7 @@ export class SummaryComponent implements OnInit {
           link: 'disabled'
         },
         {
-          label: this.translationService.instant('weiter'),
+          label: this.translationService.instant('WEITER'),
           link: '/data-acquisition/prospects-of-success'
         }
       ]

@@ -41,7 +41,7 @@ export class WizardComponent implements OnInit {
       type: 'anchor-button-home'
     },
     back: {
-      label: this.translationService.instant('back'),
+      label: this.translationService.instant('ZURÜCK'),
       type: 'footer-nav'
     }
   }

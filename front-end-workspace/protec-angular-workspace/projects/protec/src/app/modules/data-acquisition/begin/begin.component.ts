@@ -13,7 +13,7 @@ export class BeginComponent implements OnInit {
       type: 'anchor-button-home'
     },
     back: {
-      label: this.translationService.instant('BACK'),
+      label: this.translationService.instant('ZURÜCK'),
       type: 'footer-nav'
     }
   }
