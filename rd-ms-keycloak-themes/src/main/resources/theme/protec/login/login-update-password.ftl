@@ -9,7 +9,7 @@
             </div>
             <form id="kc-passwd-update-form" class="${properties.kcFormClass!}" action="${url.loginAction}" method="post">
                 <input type="text" id="username" name="username" value="${username}" autocomplete="username"
-                    readonly="readonly" style="display:none;"/>
+                       readonly="readonly" style="display:none;"/>
                 <input type="password" id="password" name="password" autocomplete="current-password" style="display:none;"/>
 
                 <div class="${properties.kcFormGroupClass!}">
@@ -17,16 +17,16 @@
                         <label for="password-new" class="${properties.kcLabelClass!}">${msg("passwordNew")}</label>
                     </div>
                     <div class="${properties.kcInputWrapperClass!}">
-                        <input type="password" id="password-new" name="password-new" class="${properties.kcInputClass!}"
-                            autofocus autocomplete="new-password"
-                            aria-invalid="<#if messagesPerField.existsError('password','password-confirm')>true</#if>"
-                        />
-
                         <#if messagesPerField.existsError('password')>
                             <span id="input-error-password" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
-                                ${kcSanitize(messagesPerField.get('password'))?no_esc}
+                               <#--${kcSanitize(messagesPerField.get('password'))?no_esc}-->
+                                ${msg("invalidPasswordGenericProctecPolicies")}
                             </span>
                         </#if>
+                        <input type="password" id="password-new" name="password-new" class="${properties.kcInputClass!}"
+                               autofocus autocomplete="new-password"
+                               aria-invalid="<#if messagesPerField.existsError('password','password-confirm')>true</#if>"
+                        />
                     </div>
                 </div>
 
@@ -35,18 +35,16 @@
                         <label for="password-confirm" class="${properties.kcLabelClass!}">${msg("passwordConfirm")}</label>
                     </div>
                     <div class="${properties.kcInputWrapperClass!}">
-                        <input type="password" id="password-confirm" name="password-confirm"
-                            class="${properties.kcInputClass!}"
-                            autocomplete="new-password"
-                            aria-invalid="<#if messagesPerField.existsError('password-confirm')>true</#if>"
-                        />
-
                         <#if messagesPerField.existsError('password-confirm')>
                             <span id="input-error-password-confirm" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
                                 ${kcSanitize(messagesPerField.get('password-confirm'))?no_esc}
                             </span>
                         </#if>
-
+                        <input type="password" id="password-confirm" name="password-confirm"
+                               class="${properties.kcInputClass!}"
+                               autocomplete="new-password"
+                               aria-invalid="<#if messagesPerField.existsError('password-confirm')>true</#if>"
+                        />
                     </div>
                 </div>
 
