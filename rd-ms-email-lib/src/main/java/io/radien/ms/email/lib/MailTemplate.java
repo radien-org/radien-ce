@@ -1,4 +1,4 @@
-package io.radien.kernel.mail;
+package io.radien.ms.email.lib;
 
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.mail.model.SystemMailTemplate;

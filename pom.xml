@@ -30,6 +30,7 @@
 		<module>rd-ms-rolemanagement</module>
 		<module>rd-ms-rolemanagement-client</module>
 		<module>rd-ms-config-lib</module>
+		<module>rd-ms-email-lib</module>
 		<module>rd-ms-ticketmanagement</module>
 		<module>rd-ms-ticketmanagement-client</module>
         <module>rd-ms-doctypemanagement</module>
