@@ -24,7 +24,6 @@ import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.security.UserSessionEnabled;
 import io.radien.api.service.LoginHook;
 import io.radien.api.service.user.UserRESTServiceAccess;
-import io.radien.api.webapp.i18n.LocaleManagerAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.ms.usermanagement.client.services.UserFactory;
@@ -34,7 +33,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
+import javax.annotation.Priority;
 import javax.enterprise.context.SessionScoped;
+import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import javax.faces.context.ExternalContext;
@@ -57,7 +58,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marco Weiland
  */
-public @Named @SessionScoped class UserSession implements UserSessionEnabled, TokensPlaceHolder {
+@Named
+@Alternative
+@Priority(1)
+@SessionScoped
+public class UserSession implements UserSessionEnabled, TokensPlaceHolder {
 
 	private static final long serialVersionUID = 1198636791261091733L;
 	private static final Logger log = LoggerFactory.getLogger(UserSession.class);
@@ -77,9 +82,6 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	private String language;
 
 	@Inject
-	private LocaleManagerAccess localeManager;
-
-	@Inject
 	private Config config;
 
 	private static final String IDP_LOGOUT_URL_PATTERN = "%s/auth/realms/%s/protocol/openid-connect/logout";
@@ -93,7 +95,6 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 		if(language == null) {
 			language = "de";
 		}
-		localeManager.setActiveLanguage(language);
 	}
 
 	/**

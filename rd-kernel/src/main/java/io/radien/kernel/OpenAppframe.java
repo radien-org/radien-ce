@@ -15,8 +15,9 @@
  */
 package io.radien.kernel;
 
+import javax.annotation.Priority;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Default;
+import javax.enterprise.inject.Alternative;
 import javax.inject.Named;
 
 /**
@@ -27,7 +28,9 @@ import javax.inject.Named;
  */
 @Named("openAppframe") // !!! IMPORTANT !!! @Named MUST be annotated for
 						// programatically EL Evaluation of the bean
-public @Default @ApplicationScoped class OpenAppframe extends OAF {
+@Alternative
+@Priority(1)
+public @ApplicationScoped class OpenAppframe extends OAF {
 
 	public static final String OAF_EL_RESOLVE_NAME = "#{openAppframe}";
 	private static final long serialVersionUID = -1802569158933030590L;

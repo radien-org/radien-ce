@@ -40,6 +40,7 @@ public abstract class AbstractAuthorizationFilter extends AbstractWebFilter {
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger log = LoggerFactory.getLogger(AbstractAuthorizationFilter.class);
+
 	@Inject
 	protected UserSessionEnabled session;
 	/** Bean responsible for utility redirect methods */

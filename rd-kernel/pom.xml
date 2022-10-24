@@ -59,6 +59,10 @@
 			<artifactId>rd-openid</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-config-lib</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>jakarta.platform</groupId>
 			<artifactId>jakarta.jakartaee-api</artifactId>
 		</dependency>
