@@ -83,6 +83,12 @@
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>com.sun.activation</groupId>
+			<artifactId>javax.activation</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+
 		<!-- test -->
 		<dependency>
 			<groupId>org.apache.tomee</groupId>
