@@ -130,6 +130,19 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
         });
     }
 
+    @Override
+    public SystemTicket getTicketByToken(String token) throws SystemException {
+        return get(() -> {
+            try {
+                TicketResourceClient client = getClient();
+                Response response = client.getByToken(token);
+                return TicketModelMapper.map((InputStream) response.getEntity());
+            } catch (IOException e) {
+                throw new SystemException(GenericErrorCodeMessage.ERROR_RETRIEVING_TICKETS.toString(String.valueOf(token)), e);
+            }
+        });
+    }
+
     private TicketResourceClient getClient() throws MalformedURLException {
         return clientServiceUtil.getTicketResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TICKETMANAGEMENT));
     }

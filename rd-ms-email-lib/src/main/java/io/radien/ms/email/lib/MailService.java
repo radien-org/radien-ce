@@ -64,7 +64,6 @@ public class MailService implements MailServiceAccess {
     private MailFactory mailFactory;
 
     public void send(Mail mailMessage) {
-
         Properties props = new Properties();
         props.setProperty("mail.transport.protocol", baseApp.getProperty(OAFProperties.SYS_MAIL_TRANSPORT_PROTOCOL));
         props.setProperty("mail.host", baseApp.getProperty(OAFProperties.SYS_MAIL_HOST));

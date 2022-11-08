@@ -53,6 +53,10 @@
 			<groupId>io.radien</groupId>
 			<artifactId>rd-api</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-config-lib</artifactId>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.eclipse.microprofile/microprofile -->
 		<dependency>
 			<groupId>org.eclipse.microprofile</groupId>
@@ -125,6 +129,13 @@
 			<groupId>org.apache.geronimo.config</groupId>
 			<artifactId>geronimo-config-impl</artifactId>
 			<version>1.2.2</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.geronimo.javamail</groupId>
+			<artifactId>geronimo-javamail_1.4_mail</artifactId>
+			<version>1.6</version>
 			<scope>provided</scope>
 		</dependency>
     </dependencies>

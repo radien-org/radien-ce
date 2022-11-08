@@ -18,7 +18,9 @@ package io.radien.webapp.user;
 import io.radien.api.SystemVariables;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.user.SystemUser;
+import io.radien.api.service.notification.email.EmailNotificationRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
+import io.radien.api.service.ticket.TicketRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.BadRequestException;
 import io.radien.exception.GenericErrorCodeMessage;
@@ -34,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
@@ -42,6 +45,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.Flash;
 import javax.faces.event.ComponentSystemEvent;
 
+import javax.inject.Inject;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -67,6 +71,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 import static org.mockito.Mockito.doReturn;
@@ -95,6 +100,12 @@ public class UserProfileManagerTest {
 
     @Mock
     private TenantRoleUserRESTServiceAccess tenantRoleUserRESTServiceAccess;
+
+    @Mock
+    private EmailNotificationRESTServiceAccess mailService;
+
+    @Mock
+    private TicketRESTServiceAccess ticketService;
 
     private FacesContext facesContext;
 
@@ -695,5 +706,20 @@ public class UserProfileManagerTest {
         String confirmInfo = "test";
         this.userProfileManager.setConfirmationInfo(confirmInfo);
         assertEquals(confirmInfo, userProfileManager.getConfirmationInfo());
+    }
+
+    @Test
+    public void testSendDataRequestOptIn() throws Exception {
+        when(JSFUtil.getBaseUrl()).thenReturn(Optional.of("baseUrl"));
+
+        Long userId = 89L;
+        SystemUser clonedSystemUser = new User((User) systemUser);
+        clonedSystemUser.setUserEmail("email@email.com");
+        userProfileManager.setClonedLogInUser(clonedSystemUser);
+
+        when(userSession.getLanguage()).thenReturn("en");
+
+        userProfileManager.sendDataRequestOptIn();
+        verify(mailService).notifyCurrentUser(anyString(), anyString(), any());
     }
 }

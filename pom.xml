@@ -36,7 +36,9 @@
         <module>rd-ms-doctypemanagement</module>
         <module>rd-ms-doctypemanagement-client</module>
         <module>rd-ms-keycloak-themes</module>
-  </modules>
+		<module>rd-ms-notificationmanagement</module>
+		<module>rd-ms-notificationmanagement-client</module>
+	</modules>
 	<properties>
 
 		<!-- SonarQube Properties -->
@@ -171,6 +173,11 @@
 			</dependency>
 			<dependency>
 				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-email-lib</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
 				<artifactId>rd-web-api</artifactId>
 				<version>${project.parent.version}</version>
 			</dependency>
@@ -237,6 +244,11 @@
 			<dependency>
 				<groupId>io.radien</groupId>
 				<artifactId>rd-ms-rolemanagement-client</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-notificationmanagement-client</artifactId>
 				<version>${project.parent.version}</version>
 			</dependency>
 			<dependency>

@@ -93,6 +93,29 @@ public class TicketResourceTest {
         assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
     }
 
+    @Test
+    public void testGetByToken404() {
+        Response response = ticketResource.getByToken("token");
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(),response.getStatus());
+    }
+
+    /**
+     * Get by ID with success should return a 200 code message
+     */
+    @Test
+    public void testGetByToken() throws SystemException {
+        when(ticketServiceAccess.getByToken("token")).thenReturn(new TicketEntity());
+        Response response = ticketResource.getByToken("token");
+        assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
+    }
+
+    @Test
+    public void testGetByTokenGenericException() throws SystemException {
+        when(ticketServiceAccess.getByToken("token")).thenThrow(new RuntimeException());
+        Response response = ticketResource.getByToken("token");
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),response.getStatus());
+    }
+
     /**
      * Test Get by ID exception which will return a 500 error code message
      */

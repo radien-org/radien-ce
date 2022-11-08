@@ -180,6 +180,8 @@ public class ContentService implements ContentServiceAccess {
             return "email-5";
         } else if (type == MailType.REQUEST_CONTEXT_DENIED) {
             return "email-6";
+        } else if(type == MailType.REQUEST_GDPR_DATA_OPT_IN) {
+            return "email-7";
         }
         return null;
     }

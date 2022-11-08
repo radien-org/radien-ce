@@ -17,20 +17,29 @@ package io.radien.webapp.user;
 
 import io.radien.api.SystemVariables;
 import io.radien.api.model.tenant.SystemTenant;
+import io.radien.api.model.ticket.SystemTicket;
 import io.radien.api.model.user.SystemUser;
+import io.radien.api.service.notification.email.EmailNotificationRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
+import io.radien.api.service.ticket.TicketRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.ProcessingException;
+import io.radien.exception.SystemException;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
+import io.radien.ms.ticketmanagement.client.entities.TicketType;
+import io.radien.ms.ticketmanagement.client.services.TicketFactory;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.security.UserSession;
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
@@ -59,6 +68,12 @@ public class UserProfileManager extends AbstractManager {
 
     @Inject
     private UserSession userSession;
+
+    @Inject
+    private EmailNotificationRESTServiceAccess mailService;
+
+    @Inject
+    private TicketRESTServiceAccess ticketService;
 
     @Inject
     private TenantRoleUserRESTServiceAccess tenantRoleUserRESTServiceAccess;
@@ -215,6 +230,27 @@ public class UserProfileManager extends AbstractManager {
             return DataModelEnum.PRETTY_PROFILE.getValue();
         }
         return DataModelEnum.PRETTY_INDEX.getValue();
+    }
+
+    public void sendDataRequestOptIn() throws SystemException {
+        String ticketUuid = createDataRequestTicket();
+
+        String referenceUrl = MessageFormat.format("{0}/confirmData?ticket={1}", JSFUtil.getBaseUrl().orElse("#"), ticketUuid);
+        String emailViewId = "email-7";
+        Map<String, String> argumentsMap = new HashMap<>();
+        argumentsMap.put("firstName", clonedLogInUser.getFirstname());
+        argumentsMap.put("lastName", clonedLogInUser.getLastname());
+        argumentsMap.put("portalUrl", "radien");
+        argumentsMap.put("targetUrl", referenceUrl);
+
+        mailService.notifyCurrentUser(emailViewId, userSession.getLanguage(), argumentsMap);
+    }
+
+    private String createDataRequestTicket() throws SystemException {
+        UUID uuid = UUID.randomUUID();
+        SystemTicket ticket = TicketFactory.create(clonedLogInUser.getId(), uuid.toString(), TicketType.GDPR_DATA_REQUEST.getId(), "", clonedLogInUser.getId());
+        ticketService.create(ticket);
+        return uuid.toString();
     }
 
     /**

@@ -13,6 +13,21 @@
     ]
   },
   {
+    "viewId": "email-7",
+    "contentType": "html",
+    "language": "en",
+    "active": "true",
+    "system": "true",
+    "name": "radien - GRP Art. 15 - Right of Access Confirmation",
+    "htmlContent": "Dear $firstName$ $lastName$, </br>If you requested your personal data from $portalUrl$, please click on the verify button below. </br>Ignore this email, if you did not request the data. </br> <a href='$targetUrl$'>Confirmation</a>",
+    "image": "logo.png",
+    "tags": [
+      "Radien",
+      "email",
+      "GDPR"
+    ]
+  },
+  {
     "viewId": "TaC",
     "contentType": "document",
     "language": "en",

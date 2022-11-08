@@ -54,6 +54,15 @@
 	</servlet-mapping>
 
 	<servlet>
+		<servlet-name>TicketConfirmationServlet</servlet-name>
+		<servlet-class>io.radien.webapp.util.TicketConfirmationServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>TicketConfirmationServlet</servlet-name>
+		<url-pattern>/confirmData</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
 		<servlet-name>SimpleCaptcha</servlet-name>
 		<servlet-class>io.radien.webapp.util.RadienCaptchaServlet</servlet-class>
 		<!-- The width and height params are optional;

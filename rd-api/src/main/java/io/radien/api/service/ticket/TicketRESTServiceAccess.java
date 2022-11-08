@@ -43,5 +43,5 @@ public interface TicketRESTServiceAccess extends Appframeable{
     public boolean update(SystemTicket ticket) throws SystemException;
 
 
-
+    SystemTicket getTicketByToken(String token) throws SystemException;
 }

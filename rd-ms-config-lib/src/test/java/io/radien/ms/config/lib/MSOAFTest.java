@@ -1,5 +1,6 @@
 package io.radien.ms.config.lib;
 
+import io.radien.api.OAFProperties;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,5 +28,15 @@ public class MSOAFTest extends TestCase {
     @Test
     public void testGetSystemAdminUserId() {
         assertEquals((Long) 0L, oaf.getSystemAdminUserId());
+    }
+
+    @Test
+    public void testFindLocale() {
+        assertNotNull(oaf.findLocale("en"));
+    }
+
+    @Test
+    public void testGetProperty() {
+        assertEquals("defaultValue", oaf.getProperty(OAFProperties.SYS_DEFAULT_LOCALE, "defaultValue"));
     }
 }

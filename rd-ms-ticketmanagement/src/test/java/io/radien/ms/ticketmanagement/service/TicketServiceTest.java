@@ -115,6 +115,13 @@ public class TicketServiceTest {
         assertTrue(actualMessage.contains(expectedMessage));
     }
 
+    @Test
+    public void testGetByToken() {
+        SystemTicket foundTicket = ticketServiceAccess.getByToken(systemTicket.getToken());
+        assertNotNull(foundTicket);
+        assertEquals("systemData", foundTicket.getData());
+    }
+
 
     /**
      * Gets tenant using the PK (id).

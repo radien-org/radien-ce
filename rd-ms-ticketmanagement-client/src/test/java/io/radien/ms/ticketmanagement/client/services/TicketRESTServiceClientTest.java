@@ -123,6 +123,31 @@ public class TicketRESTServiceClientTest {
         assertTrue(success);
     }
 
+    @Test
+    public void testGetTicketByToken() throws MalformedURLException, SystemException {
+        InputStream is = new ByteArrayInputStream(TicketModelMapper.map(dummyTicket).toString().getBytes());
+        Response response = Response.ok(is).build();
+        TicketResourceClient resourceClient = Mockito.mock(TicketResourceClient.class);
+        when(ticketServiceUtil.getTicketResourceClient(getTicketManagementURL())).thenReturn(resourceClient);
+        when(resourceClient.getByToken(anyString())).
+                thenReturn(response);
+        SystemTicket opt = target.getTicketByToken(dummyTicket.getToken());
+        assertNotNull(opt);
+        assertEquals(opt.getId(), dummyTicket.getId());
+    }
+
+    @Test
+    public void testGetTicketByTokenException() throws Exception {
+        boolean success = false;
+        when(ticketServiceUtil.getTicketResourceClient(getTicketManagementURL())).thenThrow(new MalformedURLException());
+        try {
+            target.getTicketByToken("token");
+        }catch (SystemException se){
+            success = true;
+        }
+        assertTrue(success);
+    }
+
 
     /**
      * Test for method getTicketById(id)

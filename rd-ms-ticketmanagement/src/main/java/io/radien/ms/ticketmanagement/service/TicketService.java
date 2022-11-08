@@ -70,6 +70,18 @@ public class TicketService implements TicketServiceAccess {
     }
 
     @Override
+    public SystemTicket getByToken(String ticketUuid) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<TicketEntity> criteriaQuery = criteriaBuilder.createQuery(TicketEntity.class);
+        Root<TicketEntity> ticketRoot = criteriaQuery.from(TicketEntity.class);
+
+        criteriaQuery.select(ticketRoot);
+        criteriaQuery.where(criteriaBuilder.equal(ticketRoot.get("token"), ticketUuid));
+
+        return entityManager.createQuery(criteriaQuery).getSingleResult();
+    }
+
+    @Override
     public Page<SystemTicket> getAll(SystemTicketSearchFilter filter, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
         log.info("Going to create a new pagination!");
         EntityManager entityManager = this.entityManager;
