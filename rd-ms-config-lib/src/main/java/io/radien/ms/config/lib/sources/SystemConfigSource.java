@@ -50,11 +50,15 @@ public class SystemConfigSource implements ConfigSource {
 
     protected void getSystemProperties() {
         try (InputStream stream = getClass().getClassLoader().getResourceAsStream(SYSTEM_CONFIG_FILE)) {
-            Properties propertiesList = new Properties();
-            propertiesList.load(stream);
-            propertiesList.stringPropertyNames().forEach(name -> {
-                systemProperties.put(name, propertiesList.getProperty(name));
-            });
+            if(stream != null) {
+                Properties propertiesList = new Properties();
+                propertiesList.load(stream);
+                if (!propertiesList.isEmpty()) {
+                    propertiesList.stringPropertyNames().forEach(name -> {
+                        systemProperties.put(name, propertiesList.getProperty(name));
+                    });
+                }
+            }
         } catch (Exception e) {
             log.info(SystemMessages.KERNEL_PROPERTIES_ERROR.message(), e);
         }
