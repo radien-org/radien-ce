@@ -17,7 +17,7 @@
 
                 <br style="box-sizing: border-box;">
                 <br style="box-sizing: border-box;">
-                <p style="box-sizing: border-box;">${kcSanitize(msg("emailVerificationBodyHtmlFooter"))}</p>
+                <p style="box-sizing: border-box;">${kcSanitize(msg("emailVerificationBodyHtmlFooter"))?no_esc}</p>
             </div>
             <div style="box-sizing: border-box; max-width: 500px; width: 100%; display: flex; flex-direction: row; padding: 16px; align-items: center; justify-content: space-between;">
                 <a href="www.protec-solution.de" style="box-sizing: border-box; text-decoration: none; font: normal normal bold 12px/15px Dosis; letter-spacing: 3.6px; color: #4A6767; text-transform: uppercase; opacity: 1;">
