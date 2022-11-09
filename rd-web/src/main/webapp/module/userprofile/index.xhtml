@@ -52,6 +52,11 @@
 									  value="#{msg.save}" tooltip="#{msg.rd_user_profile_update}"
 									  iconAwesome="fa-save"/>
 
+							<b:commandButton id="requestData"
+									  value="#{msg.request_data}" tooltip="#{msg.request_data_tooltip}"
+									  action="${userProfileManager.sendDataRequestOptIn}"
+									  iconAwesome="fa-file-circle-info"/>
+
 							<b:modal id="model"
 									 title="#{msg.confirmation}"
 									 styleClass="formValidationModalUserProfileUpdate"

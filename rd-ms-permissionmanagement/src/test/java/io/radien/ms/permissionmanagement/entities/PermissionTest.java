@@ -19,8 +19,6 @@ import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.ms.permissionmanagement.legacy.ActionFactory;
 import io.radien.ms.permissionmanagement.legacy.PermissionFactory;
-import io.radien.ms.permissionmanagement.model.ActionEntity;
-import io.radien.ms.permissionmanagement.model.PermissionEntity;
 import junit.framework.TestCase;
 import org.junit.Test;
 

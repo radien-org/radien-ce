@@ -59,6 +59,10 @@
 			<artifactId>rd-openid</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-config-lib</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>jakarta.platform</groupId>
 			<artifactId>jakarta.jakartaee-api</artifactId>
 		</dependency>
@@ -91,14 +95,6 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- Templating -->
-		<!-- https://mvnrepository.com/artifact/org.antlr/ST4 -->
-		<dependency>
-			<groupId>org.antlr</groupId>
-			<artifactId>ST4</artifactId>
-		</dependency>
-
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -112,12 +108,6 @@
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.mail</groupId>
-			<artifactId>javax.mail</artifactId>
-			<version>1.6.2</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

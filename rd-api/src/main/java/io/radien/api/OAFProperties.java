@@ -115,6 +115,7 @@ public enum OAFProperties implements SystemProperties{
     SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT("system.ms.endpoint.rolemanagement"),
     SYSTEM_MS_ENDPOINT_ECM("system.ms.endpoint.ecm"),
     SYSTEM_MS_ENDPOINT_DOCTYPEMANAGEMENT("system.ms.endpoint.doctypemanagement"),
+    SYSTEM_MS_ENDPOINT_NOTIFICATIONMANAGEMENT("system.ms.endpoint.notificationmanagement"),
 
     SYSTEM_MS_SECRET_ECM("system.ms.secret.ecm"),
 

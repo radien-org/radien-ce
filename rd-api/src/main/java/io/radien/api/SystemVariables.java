@@ -32,6 +32,7 @@ public enum SystemVariables {
     LAST_NAME("lastname", "Lastname"),
     LOGON("logon", "Logon"),
     USER_EMAIL("userEmail", "User Email"),
+    MOBILE_NUMBER("mobileNumber", "Mobile Number"),
     SUB("sub", "Subject"),
     USER_ENABLED("enabled", "Enabled"),
     USER_DELEGATION("delegatedCreation", "Delegated Creation"),

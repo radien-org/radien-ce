@@ -20,7 +20,7 @@ import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
-import io.radien.exception.TenantRoleIllegalArgumentException;
+import io.radien.api.model.tenantrole.exception.TenantRoleIllegalArgumentException;
 import io.radien.webapp.AbstractManager;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Model;

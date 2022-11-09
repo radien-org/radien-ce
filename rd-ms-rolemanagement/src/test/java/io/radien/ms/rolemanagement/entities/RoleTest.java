@@ -1,21 +1,25 @@
 package io.radien.ms.rolemanagement.entities;
 
-import io.radien.ms.rolemanagement.factory.RoleFactory;
 import java.util.Date;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class RoleTest {
-
     RoleEntity role;
     Date now = new Date();
 
     public RoleTest() {
-        role = RoleFactory.create("name", "description", 2L);
+        role = new RoleEntity();
+        role.setName("name");
+        role.setDescription("description");
         role.setId(44L);
+        role.setCreateUser(2L);
         role.setCreateDate(now);
         role.setTerminationDate(now);
         role.setLastUpdate(now);

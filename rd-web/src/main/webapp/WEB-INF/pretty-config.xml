@@ -100,16 +100,7 @@
 		<view-id value="/module/permission/resource.oaf" />
 	</url-mapping>
 
-	<!-- Contractsmanagement -->
-	<url-mapping id="contracts">
-		<pattern value="/module/contracts" />
-		<view-id value="/module/contracts/contracts.oaf" />
-	</url-mapping>
-	<url-mapping id="contract">
-		<pattern value="/module/contract" />
-		<view-id value="/module/contract/contract.oaf" />
-	</url-mapping>
-
+	<!-- Tenant Management -->
 	<url-mapping id="tenants">
 		<pattern value="/module/tenants" />
 		<view-id value="/module/tenants/tenants.oaf" />
@@ -133,24 +124,9 @@
 		<view-id value="/module/i18n/property.oaf" />
 	</url-mapping>
 
-	<url-mapping id="content_public">
-		<pattern
-			value="/public/content/display/#{contentViewManager.viewId}" />
-		<view-id value="/public/content.oaf" />
-	</url-mapping>
 	<url-mapping id="captcha">
 		<pattern value="/public/captcha" />
 		<view-id value="/captcha" />
-	</url-mapping>
-	<url-mapping id="index">
-		<pattern value="/public/#{index : contentViewManager.viewId}" />
-		<view-id value="/public/index.oaf" />
-	</url-mapping>
-
-	<url-mapping id="content">
-		<pattern
-			value="/module/content/display/#{contentViewManager.viewId}" />
-		<view-id value="/module/content.oaf" />
 	</url-mapping>
 
 <!-- DocTypeManagement service -->

@@ -56,9 +56,6 @@ public class JobshopRESTServiceClient extends AuthorizationChecker implements Jo
     private static final Logger log = LoggerFactory.getLogger(JobshopRESTServiceClient.class);
 
     @Inject
-    private OAFAccess oaf;
-
-    @Inject
     private ClientServiceUtil clientServiceUtil;
 
     private JobshopResourceClient getClient() throws MalformedURLException {

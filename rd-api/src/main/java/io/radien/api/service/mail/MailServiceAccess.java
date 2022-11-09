@@ -36,9 +36,8 @@ public interface MailServiceAccess extends ServiceAccess {
 	/**
 	 * Mail service send email message
 	 * @param mailMessage to be sent
-	 * @throws Exception in case of any issue while attempting sending the email
 	 */
-	void send(Mail mailMessage) throws Exception;
+	void send(Mail mailMessage);
 
 	/**
 	 * Send email asynchronous to receivers

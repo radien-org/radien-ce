@@ -37,10 +37,49 @@
 		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+
 	<servlet-mapping>
 		<servlet-name>Faces Servlet</servlet-name>
 		<url-pattern>*.oaf</url-pattern>
 		<url-pattern>/javax.faces.resource/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>SessionServlet</servlet-name>
+		<servlet-class>io.radien.webapp.util.SessionServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SessionServlet</servlet-name>
+		<url-pattern>/public/session</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>TicketConfirmationServlet</servlet-name>
+		<servlet-class>io.radien.webapp.util.TicketConfirmationServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>TicketConfirmationServlet</servlet-name>
+		<url-pattern>/confirmData</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>SimpleCaptcha</servlet-name>
+		<servlet-class>io.radien.webapp.util.RadienCaptchaServlet</servlet-class>
+		<!-- The width and height params are optional;
+        if unspecified they default to 200 and 50 respectively. -->
+		<init-param>
+			<param-name>width</param-name>
+			<param-value>250</param-value>
+		</init-param>
+		<init-param>
+			<param-name>height</param-name>
+			<param-value>75</param-value>
+		</init-param>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>SimpleCaptcha</servlet-name>
+		<url-pattern>/stickyImg</url-pattern>
 	</servlet-mapping>
 
 

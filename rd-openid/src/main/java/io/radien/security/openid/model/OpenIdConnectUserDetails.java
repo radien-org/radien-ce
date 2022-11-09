@@ -32,7 +32,8 @@ public class OpenIdConnectUserDetails implements UserDetails {
 	private String userEmail;
 	private String givenname;
 	private String familyname;
-	private String fullName; 
+	private String fullName;
+	private String mobileNumber;
 	
 
 	public OpenIdConnectUserDetails(Map<String, String> userInfo) {
@@ -41,6 +42,7 @@ public class OpenIdConnectUserDetails implements UserDetails {
 		this.username = userInfo.get("preferred_username");
 		this.givenname = userInfo.get("given_name");
 		this.familyname = userInfo.get("family_name");
+		this.mobileNumber = userInfo.get("mobile_number");
 		this.fullName = givenname + " " + familyname;
 
 
@@ -67,6 +69,20 @@ public class OpenIdConnectUserDetails implements UserDetails {
 	 */
 	public void setSub(String sub) {
 		this.sub = sub;
+	}
+
+	/**
+	 * @return the mobile number
+	 */
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	/**
+	 * @param mobileNumber the mobile number to set
+	 */
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
 
 	/**

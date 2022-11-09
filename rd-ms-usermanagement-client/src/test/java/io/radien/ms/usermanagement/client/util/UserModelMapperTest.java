@@ -57,7 +57,8 @@ public class UserModelMapperTest extends TestCase {
         String logon = "logonAA";
         String sub = "uuidReallyUnique";
         String email = "a@b.pt";
-        User user = UserFactory.create(firstName,lastName,logon,sub,email, null);
+        String mobileNumber = "951";
+        User user = UserFactory.create(firstName,lastName,logon,sub,email, mobileNumber, null);
         JsonObject jsonObject = UserModelMapper.map(user);
         validateUserJsonObject(user,jsonObject);
     }
@@ -69,7 +70,8 @@ public class UserModelMapperTest extends TestCase {
         String logon = "logonAA";
         String sub = "uuidReallyUnique";
         String email = "a@b.pt";
-        User user = UserFactory.create(firstName,lastName,logon,sub,email, null);
+        String mobileNumber = "951";
+        User user = UserFactory.create(firstName,lastName,logon,sub,email, mobileNumber, null);
         JsonArray jsonArray = UserModelMapper.map(Collections.singletonList(user));
         assertEquals(1,jsonArray.size());
         JsonObject jsonObject = jsonArray.getJsonObject(0);

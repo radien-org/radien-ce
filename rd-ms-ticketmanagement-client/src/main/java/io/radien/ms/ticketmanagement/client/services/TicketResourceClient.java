@@ -45,6 +45,10 @@ public interface TicketResourceClient {
     @GET
     public Response getById(@NotNull @QueryParam("id") Long id);
 
+    @GET
+    @Path(("/token"))
+    Response getByToken(@NotNull @QueryParam("token") String token);
+
     @POST
     public Response create(Ticket ticket);
 

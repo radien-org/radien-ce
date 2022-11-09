@@ -16,24 +16,15 @@
 package io.radien.ms.usermanagement.service;
 
 import io.radien.api.model.user.SystemUser;
-import io.radien.ms.usermanagement.client.entities.User;
-import io.radien.ms.usermanagement.entities.UserEntity;
-import io.radien.ms.usermanagement.legacy.UserFactory;
-import javax.inject.Inject;
-import javax.json.Json;
-import kong.unirest.Unirest;
+import io.radien.ms.usermanagement.client.services.UserFactory;
+import io.radien.ms.usermanagement.util.KeycloakFactory;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Bruno Gama
@@ -51,7 +42,7 @@ public class KeycloakFactoryTest {
     @Test
     public void convertToUserRepresentation() {
         SystemUser user = UserFactory.create("firstName", "lastName",
-                "logon", "sub", "email", 2L);
+                "logon", "sub", "email", "951",2L);
 
         UserRepresentation representations = KeycloakFactory.convertToUserRepresentation(user);
 
@@ -84,7 +75,7 @@ public class KeycloakFactoryTest {
      */
     private void mockUserRepresentationEmailVerify(boolean emailVerify){
         SystemUser user = UserFactory.create("firstName", "lastName",
-                "logon", "sub", "email@email.com", 2L);
+                "logon", "sub", "email@email.com","951", 2L);
 
         UserRepresentation representations = KeycloakFactory.convertUpdateEmailToUserRepresentation(user.getUserEmail(), emailVerify);
         representations.setEmailVerified(emailVerify);

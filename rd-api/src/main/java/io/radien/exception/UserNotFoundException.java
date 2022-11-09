@@ -15,12 +15,15 @@
  */
 package io.radien.exception;
 
+import io.radien.exception.generic.AbstractRestException;
+import javax.ws.rs.core.Response;
+
 /**
  * Exception to be throw when the user record cannot be found
  *
  * @author Marco Weiland
  */
-public class UserNotFoundException extends Exception {
+public class UserNotFoundException extends AbstractRestException {
 	private static final long serialVersionUID = 4736023328369994193L;
 
 	/**
@@ -28,6 +31,6 @@ public class UserNotFoundException extends Exception {
 	 * @param message to create the user not found exception with
 	 */
 	public UserNotFoundException(String message) {
-		super(message);
+		super(message, Response.Status.NOT_FOUND);
 	}
 }

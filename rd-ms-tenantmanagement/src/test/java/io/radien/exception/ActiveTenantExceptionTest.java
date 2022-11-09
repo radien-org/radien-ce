@@ -16,12 +16,13 @@
 
 package io.radien.exception;
 
+import io.radien.api.service.tenant.exception.ActiveTenantException;
 import junit.framework.TestCase;
 import org.junit.Test;
 
 /**
  * Active tenant exception test
- * {@link io.radien.exception.ActiveTenantException}
+ * {@link ActiveTenantException}
  * Will test the creation of the exception witha  given message
  *
  * @author Bruno Gama

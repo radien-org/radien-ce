@@ -216,7 +216,7 @@ public abstract class AuthorizationChecker implements Serializable {
      * @return true in case the roles exist for the user
      * @throws SystemException in case of any issue while communicating with the client
      */
-    public boolean hasGrantMultipleRoles(Long tenantId, List<String> roleNames) throws SystemException{
+    public boolean hasGrantMultipleRoles(Long tenantId, List<String> roleNames) throws SystemException {
         try {
             this.preProcess();
             Response response = null;
@@ -343,7 +343,7 @@ public abstract class AuthorizationChecker implements Serializable {
      */
     public UserClient getUserClient() throws SystemException {
         if (userClient == null) {
-            String url=getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT);
+            String url = getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT);
             log.info("UserManagement path:{}",url);
             userClient = buildClient(url,
                     UserClient.class);
@@ -359,7 +359,7 @@ public abstract class AuthorizationChecker implements Serializable {
      */
     public TenantRoleClient getTenantRoleClient() throws SystemException{
         if (tenantRoleClient == null) {
-            String url=getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT);
+            String url = getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT);
             log.info("RoleManagement path:{}",url);
             tenantRoleClient = buildClient(url,
                     TenantRoleClient.class);
@@ -375,7 +375,7 @@ public abstract class AuthorizationChecker implements Serializable {
      */
     public PermissionClient getPermissionClient() throws SystemException{
         if (permissionClient == null) {
-            String url=getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT);
+            String url= getOafAccess().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT);
             log.info("PermissionManagement path:{}",url);
             permissionClient = buildClient(url,
                     PermissionClient.class);

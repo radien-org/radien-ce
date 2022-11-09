@@ -1,6 +1,10 @@
 /* Patternfly CSS places a "bg-login.jpg" as the background on this ".login-pf" class.
    This clashes with the "keycloak-bg.png' background defined on the body below.
    Therefore the Patternfly background must be set to none. */
+*, *::after, *::before {
+    box-sizing: border-box;
+}
+
 .login-pf {
     background: none;
 }
@@ -158,7 +162,8 @@ textarea.pf-c-form-control {
 .pf-m-primary:hover {
     /*background-color: #004080;
     background-color: var(--pf-global--primary-color--200);*/
-    background-color: #223C51 !important;
+    background-color: #DADACF !important;
+    cursor: pointer;
 }
 
 /* default - IE compatibility */
@@ -172,6 +177,32 @@ h1#kc-page-title {
     margin-top: 10px;
 }
 
+.translate-links-content {
+    width: 40%;
+    display: flex;
+    align-items: stretch;
+}
+
+.translate-links-content a {
+    padding: 10px;
+}
+
+.translate-links-content:not(:last-child) a::after {
+    content: '|';
+    float: right;
+    position: relative;
+    bottom: 0px;
+    left: 12px;
+}
+
+#kc-locale {
+    position: absolute;
+    margin-top: 10px;
+    color: #ECE9EB;
+    padding-left: 10px;
+    z-index: 1;
+}
+
 #kc-locale ul {
     background-color: #FFF;
     background-color: var(--pf-global--BackgroundColor--100);
@@ -179,6 +210,7 @@ h1#kc-page-title {
     top: 20px;
     min-width: 100px;
     padding: 0;
+    box-shadow: 0 3px 9px #224745;
 }
 
 #kc-locale-dropdown{
@@ -186,7 +218,18 @@ h1#kc-page-title {
 }
 
 #kc-locale-dropdown:hover ul {
-    display:block;
+    display: block;
+    background: #ECE9EB;
+    color: #223C58;
+    text-align: left;
+    list-style-type: none;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#kc-locale-dropdown:hover ul li {
+    margin: 5px;
+    cursor: pointer;
 }
 
 /* IE compatibility */
@@ -202,7 +245,10 @@ h1#kc-page-title {
 a#kc-current-locale-link::after {
     content: "\2c5";
     margin-left: 4px;
-    margin-left: var(--pf-global--spacer--xs)
+    margin-left: var(--pf-global--spacer--xs);
+    position: relative;
+    left: 5px;
+    top: 5px;
 }
 
 .login-pf .container {
@@ -210,7 +256,7 @@ a#kc-current-locale-link::after {
 }
 
 .login-pf a:hover {
-    color: #0099d3;
+    color: #AAC0BF;
 }
 
 #kc-logo {
@@ -304,7 +350,7 @@ div.kc-logo-text span {
 #kc-info-wrapper {
     font-size: 13px;
     padding: 15px 35px;
-    background-color: #F0F0F0;
+    color: #ECE9EB;
 }
 
 #kc-form-options span {
@@ -313,7 +359,7 @@ div.kc-logo-text span {
 
 #kc-form-options .checkbox {
     margin-top: 0;
-    color: #72767b;
+    color: #AAC0BF;
 }
 
 #kc-terms-text {
@@ -595,11 +641,11 @@ ul#kc-totp-supported-apps {
 }
 
 #loginbox {
-    background-color: #ffffff;
-    box-shadow: 0 3px 9px #c1c1c1;
-    border-radius: 10px;
-    padding: 20%;
-    margin-top: 10%;
+    background-color: #224745;
+    box-shadow: 0 3px 9px #224745;
+    border-radius: 0px;
+    padding: 18%;
+    margin-top: 20vh;
 }
 
 .panel-title {
@@ -622,12 +668,17 @@ ul#kc-totp-supported-apps {
 input[type="text"] {
     padding: 5px;
     border: none;
-    border-radius: 5px;
+    border-radius: 0px;
     margin-bottom: 20px;
     margin-top: 5px;
-    background: RGBA(34,60,88,1);
+    background: #224745;
     width: 100%;
-    color: RGBA(255,255,255,0.9);
+    color: #ECE9EB;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #ECE9EB;
+    text-align: center;
+    opacity: 0.7;
 }
 
 input[type="button"] {
@@ -637,28 +688,37 @@ input[type="button"] {
     border-radius: 5px;
     background-color: #223C58;
     color: #ffffff;
-    opacity: 0.7;
+    opacity: 1;
     max-width: 180px;
 }
 
 input[type="submit"] {
     width: 100%;
-    height: 30px;
+    height: 35px;
     border: none;
-    border-radius: 5px;
-    background-color: #223C58;
-    color: #ffffff;
-    opacity: 0.7;
+    border-radius: 0px;
+    background-color: #ECE9EB;
+    color: #223C58;
+    opacity: 1;
     max-width: 180px;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 600;
 }
 
 input[type="password"] {
     padding: 5px;
     border: none;
-    border-radius: 5px;
+    border-radius: 0px;
     margin-bottom: 20px;
-    background: RGBA(34,60,88,1);
+    background: #224745;
     width: 100%;
+    color: #ECE9EB;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #ECE9EB;
+    text-align: center;
+    opacity: 0.7;
 }
 
 input[type="password"]:hover {
@@ -668,18 +728,46 @@ input[type="password"]:hover {
 input[type="tel"] {
     padding: 5px;
     border: none;
-    border-radius: 5px;
+    border-radius: 0px;
     margin-bottom: 20px;
     margin-top: 5px;
-    background: RGBA(34,60,88,1);
+    background: #224745;
     max-width: 310px;
     width: 310px !important;
     min-width: 213px;
     height: 30px;
+    color: #ECE9EB;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #ECE9EB;
+    text-align: center;
+    opacity: 0.7;
 }
 
 input[type="tel"]:hover {
     color: RGBA(255,255,255,0.9) !important;
+}
+
+.register-terms-link-content {
+    color: #ECE9EB;
+    margin-top: 20px;
+    font-weight: 100;
+}
+
+.register-terms-link-content label {
+    color: #ECE9EB;
+    font-weight: 100;
+}
+
+.register-terms-link-content label a {
+    color: #ECE9EB;
+    font-weight: 100;
+    text-decoration: underline;
+}
+
+.login-form-option-content {
+    margin-top: 10px;
+    margin-bottom: 50px;
 }
 
 .login-logo-form {
@@ -693,17 +781,22 @@ input[type="tel"]:hover {
 }
 
 .login-pf-header {
-    /* display: none; */
+    display: block;
 }
 
 a {
     font-weight: bold;
-    color: #223C58;
+    color: #ffffff;
     text-decoration: none;
 }
 
 .kc-feedback-text {
-    color: #223C58;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #EB5848;
     font-size: 14px;
 }
 
@@ -721,15 +814,36 @@ a {
 }
 
 p.instruction {
-    background-color: #F0F0F0;
     padding: 20px;
     text-align: center;
+    color: #ECE9EB;
 }
 
 .alert-warning {
-    background-color: #F0F0F0;
     padding: 20px !important;
     text-align: center;
+    color: #ECE9EB;
+}
+
+.login-registration-link {
+    color: #ECE9EB;
+    position: relative;
+    bottom: 50px;
+    text-align: center;
+    padding-top: 15px;
+    font-weight: 100;
+}
+
+.login-registration-link a {
+    color: #ECE9EB;
+    font-weight: 100;
+    text-decoration: underline;
+}
+
+.up-division-line {
+    border-top-style: solid;
+    border-top-width: 1px;
+    border-top-color: #ECE9EB;
 }
 
 @media screen and (max-width: 540px) {
@@ -750,9 +864,7 @@ p.instruction {
     }
 
     #kc-locale {
-        position: relative;
-        text-align: right;
-        z-index: 9999;
+        /*TODO: check if is realle necessary*/
     }
 }
 

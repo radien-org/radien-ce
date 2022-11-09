@@ -63,6 +63,22 @@ public class TicketResource implements TicketResourceClient {
     }
 
     @Override
+    public Response getByToken(String token) {
+        try {
+            SystemTicket ticket = ticketService.getByToken(token);
+            if(ticket == null){
+                return GenericErrorMessagesToResponseMapper.getResourceNotFoundException();
+            }
+            return Response.ok(ticket).build();
+        }catch (Exception e){
+            log.error(GenericErrorCodeMessage.ERROR_RETRIEVING_PROVIDED_TICKET.toString(String.valueOf(token)), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(GenericErrorCodeMessage.ERROR_RETRIEVING_PROVIDED_TICKET.toString(String.valueOf(token)) + e.getMessage())
+                    .build();
+        }
+    }
+
+    @Override
     public Response create(Ticket ticket) {
         try {
             ticketService.create(new TicketEntity(ticket));

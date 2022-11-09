@@ -46,10 +46,10 @@ public class UserFactory extends UserFactoryUtil {
      * @param email user email
      * @return a User object to be used
      */
-    public static User create(String firstname, String lastname, String logon, String sub, String email, Long createdUser){
+    public static User create(String firstname, String lastname, String logon, String sub, String email, String mobileNumber, Long createdUser){
         User user = new User();
         user.setEnabled(true);
-        return (User) createUser(user, firstname, lastname, logon, sub, email, createdUser);
+        return (User) createUser(user, firstname, lastname, logon, sub, email, mobileNumber, createdUser);
     }
 
     /**
@@ -75,12 +75,14 @@ public class UserFactory extends UserFactoryUtil {
         if(delegatedCreation != null){
             user.setDelegatedCreation(delegatedCreation);
         }
+
         return (User) createUser(user,
                 (String) userMappedValues.get( SystemVariables.FIRST_NAME.getFieldName()),
                 (String) userMappedValues.get(SystemVariables.LAST_NAME.getFieldName()),
                 (String) userMappedValues.get(SystemVariables.LOGON.getFieldName()),
                 (String) userMappedValues.get(SystemVariables.SUB.getFieldName()),
                 (String) userMappedValues.get(SystemVariables.USER_EMAIL.getFieldName()),
+                (String) userMappedValues.get(SystemVariables.MOBILE_NUMBER.getFieldName()),
                 (Long)   userMappedValues.get(SystemVariables.CREATE_USER.getFieldName()));
     }
 

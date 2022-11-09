@@ -33,6 +33,8 @@ public interface TicketServiceAccess extends ServiceAccess {
 
     public SystemTicket get(Long ticketId) throws SystemException;
 
+    SystemTicket getByToken(String ticketUuid);
+
     public Page<SystemTicket> getAll(SystemTicketSearchFilter filter, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
 
     public void update(SystemTicket ticket) throws UniquenessConstraintException, TicketException;

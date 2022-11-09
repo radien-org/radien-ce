@@ -19,17 +19,18 @@ import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.batch.DataIssue;
 import io.radien.api.service.role.SystemRolesEnum;
+import io.radien.exception.BadRequestException;
 import io.radien.exception.GenericErrorCodeMessage;
-import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
-import io.radien.exception.UserChangeCredentialException;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.authz.client.PermissionClient;
 import io.radien.ms.authz.client.TenantRoleClient;
+import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.openid.entities.Principal;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
+import io.radien.ms.usermanagement.resource.UserResource;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -47,7 +48,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -79,6 +79,9 @@ public class UserResourceTest {
     @Mock
     PermissionClient permissionClient;
 
+    @Mock
+    UserClient userClient;
+
     /**
      * Method before test preparation
      */
@@ -101,31 +104,10 @@ public class UserResourceTest {
     /**
      * Test of user not found where we get the user on base of his subject
      */
-    @Test
+    @Test(expected = UserNotFoundException.class)
     public void testGetUserIdBySubNotFoundCase() {
-        when(userBusinessService.getUserId("login1")).thenReturn(null);
-        Response response = userResource.getUserIdBySub("login1");
-        assertEquals(404, response.getStatus());
-    }
-
-    /**
-     * Test of user not found where we get the user on base of his subject
-     */
-    @Test(expected = SystemException.class)
-    public void testGetCurrentUserIdBySubNotFoundCase() throws SystemException {
-        when(userBusinessService.getUserId("login1")).thenReturn(null);
-        userResource.getCurrentUserIdBySub("login1");
-    }
-
-    /**
-     * Test of generic exception where we get the user on base of his subject
-     */
-    @Test
-    public void testGetUserIdBySubExceptionCase() {
-        when(userBusinessService.getUserId("login1")).
-                thenThrow(new RuntimeException("Error retrieving id"));
-        Response response = userResource.getUserIdBySub("login1");
-        assertEquals(500, response.getStatus());
+        when(userBusinessService.getUserId("login1")).thenThrow(new UserNotFoundException("error message"));
+        userResource.getUserIdBySub("login1");
     }
 
     /**
@@ -186,7 +168,7 @@ public class UserResourceTest {
      * Test that will test the error message 404 User Not Found
      */
     @Test
-    public void testGetById404() throws UserNotFoundException {
+    public void testGetById404() {
         preProcessAuthentication();
 
         Response expectedAuthGranted = Response.ok().entity(Boolean.TRUE).build();
@@ -264,16 +246,6 @@ public class UserResourceTest {
     public void testGetUsersBy() {
         Response response = userResource.getUsers("subj","email@email.pt","logon",null,true,true);
         assertEquals(200,response.getStatus());
-    }
-
-    /**
-     * Test Get users by should return error with a 500 error code message
-     */
-    @Test
-    public void testGetUsersByException() {
-        doThrow(new RuntimeException()).when(userBusinessService).getUsers(any());
-        Response response = userResource.getUsers("subj","email@email.pt","logon",null,true,true);
-        assertEquals(500,response.getStatus());
     }
 
     /**
@@ -488,15 +460,7 @@ public class UserResourceTest {
      */
     @Test
     public void testUpdate() {
-        Principal principal = new Principal();
-        principal.setSub("aaa-bbb-ccc-ddd");
-        HttpSession session = Mockito.mock(HttpSession.class);
-
-        when(servletRequest.getSession()).thenReturn(session);
-        when(servletRequest.getSession(false)).thenReturn(session);
-        when(session.getAttribute("USER")).thenReturn(principal);
-        doReturn(1001L).when(this.userBusinessService).getUserId(principal.getSub());
-
+        preProcessAuthentication();
 
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
 
@@ -572,15 +536,8 @@ public class UserResourceTest {
      * @throws UserNotFoundException in case of user not found
      */
     @Test
-    public void testUpdateInvalid() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
-        Principal principal = new Principal();
-        principal.setSub("aaa-bbb-ccc-ddd");
-        HttpSession session = Mockito.mock(HttpSession.class);
-
-        when(servletRequest.getSession()).thenReturn(session);
-        when(servletRequest.getSession(false)).thenReturn(session);
-        when(session.getAttribute("USER")).thenReturn(principal);
-        when(this.userBusinessService.getUserId(principal.getSub())).thenReturn(1001L);
+    public void testUpdateInvalid() throws UniquenessConstraintException {
+        preProcessAuthentication();
 
         Response expectedPermissionId = Response.ok().entity(1L).build();
         doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
@@ -731,25 +688,13 @@ public class UserResourceTest {
     }
 
     /**
-     * Tests the set admin password method and should finish with generic 500 code message error
-     * @throws UserNotFoundException in case of searched user is not existent or not found
-     */
-    @Test
-    public void testSetAdminResetPasswordGenericError() throws UserNotFoundException {
-        doThrow(new RuntimeException()).when(userBusinessService).get(1L);
-        Response response = userResource.sendUpdatePasswordEmail(1L);
-        assertEquals(500,response.getStatus());
-    }
-
-    /**
      * Tests the set admin password method and should finish with generic 404 code message error
      * @throws UserNotFoundException in case of searched user is not existent or not found
      */
-    @Test
+    @Test(expected = UserNotFoundException.class)
     public void testSetAdminResetPassword404() throws UserNotFoundException {
         when(userBusinessService.get(1L)).thenThrow(new UserNotFoundException("1"));
-        Response response = userResource.sendUpdatePasswordEmail(1L);
-        assertEquals(404,response.getStatus());
+        userResource.sendUpdatePasswordEmail(1L);
     }
 
     /**
@@ -798,30 +743,6 @@ public class UserResourceTest {
     }
 
     /**
-     * Tests the refresh token with generic exception 500 error code
-     * @throws RemoteResourceException in case of any issue while generating the refresh token
-     */
-    @Test
-    public void testRefreshTokenException() throws RemoteResourceException {
-        doThrow(new RuntimeException()).when(userBusinessService).refreshToken(anyString());
-        Response response = userResource.refreshToken("any");
-        assertEquals(500,response.getStatus());
-    }
-
-    /**
-     * Tests the refresh token with generic exception
-     */
-    @Test
-    public void testRefreshTokenGenericException() {
-        Response responseEmpty = userResource.refreshToken("");
-        assertEquals("refresh token null or empty",responseEmpty.getEntity().toString());
-
-        Response responseNull = userResource.refreshToken(null);
-        assertEquals("refresh token null or empty",responseNull.getEntity().toString());
-
-    }
-
-    /**
      * Private method to mock the preprocess method requested while validating the roles
      */
     private void preProcessAuthentication() {
@@ -834,18 +755,17 @@ public class UserResourceTest {
         when(servletRequest.getSession()).thenReturn(session);
         when(servletRequest.getSession(false)).thenReturn(session);
         when(session.getAttribute("USER")).thenReturn(principal);
-        doReturn(1001L).when(this.userBusinessService).getUserId(principal.getSub());
+        doReturn(Response.ok(1001L).build()).when(this.userClient).getUserIdBySub(principal.getSub());
     }
 
     /**
      * Test for method {@link UserResource#updatePassword(String, UserPasswordChanging)}
      * Simple scenario where operation is concluded with success.
      * Expected return status: 200 (OK)
-     * @throws UserChangeCredentialException thrown in case of any issue regarding changing password business rules
      * @throws RemoteResourceException thrown in case of any issue regarding communication with KeyCloak service
      */
     @Test
-    public void testUpdatePassword() throws UserChangeCredentialException, RemoteResourceException {
+    public void testUpdatePassword() throws RemoteResourceException {
         String subject = "aaa-bbb-ccc-ddd";
 
         UserPasswordChanging u = new UserPasswordChanging();
@@ -866,11 +786,10 @@ public class UserResourceTest {
      * Test for method {@link UserResource#updatePassword(String, UserPasswordChanging)}
      * Scenario: Changing password process not being requested by the current logged user and FOR
      * the current logged user. Expected return status: 403 (FORBIDDEN)
-     * @throws UserChangeCredentialException thrown in case of any issue regarding changing password business rules
      * @throws RemoteResourceException thrown in case of any issue regarding communication with KeyCloak service
      */
     @Test
-    public void testUpdatePasswordNotAllowed() throws UserChangeCredentialException, RemoteResourceException {
+    public void testUpdatePasswordNotAllowed() throws RemoteResourceException {
         String subject = "aaa-bbb-ccc-ddd";
 
         UserPasswordChanging u = new UserPasswordChanging();
@@ -891,11 +810,10 @@ public class UserResourceTest {
      * Test for method {@link UserResource#updatePassword(String, UserPasswordChanging)}
      * Scenario: Some business rule not met when trying to update user password
      * Expected return status: 400 (BAD REQUEST)
-     * @throws UserChangeCredentialException thrown in case of any issue regarding changing password business rules
      * @throws RemoteResourceException thrown in case of any issue regarding communication with KeyCloak service
      */
-    @Test
-    public void testUpdatePasswordInvalidRule() throws UserChangeCredentialException, RemoteResourceException {
+    @Test(expected = BadRequestException.class)
+    public void testUpdatePasswordInvalidRule() throws RemoteResourceException {
         String subject = "aaa-bbb-ccc-ddd";
 
         UserPasswordChanging u = new UserPasswordChanging();
@@ -908,32 +826,7 @@ public class UserResourceTest {
         when(session.getAttribute("USER")).thenReturn(principal);
 
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-        doThrow(new UserChangeCredentialException("test")).when(userBusinessService).changePassword(subject, u);
-        assertEquals(400, userResource.updatePassword(subject, u).getStatus());
-    }
-
-    /**
-     * Test for method {@link UserResource#updatePassword(String, UserPasswordChanging)}
-     * Scenario: Unexpected error when changing password.
-     * Expected return status: 500 (SERVER ERROR)
-     * @throws UserChangeCredentialException thrown in case of any issue regarding changing password business rules
-     * @throws RemoteResourceException thrown in case of any issue regarding communication with KeyCloak service
-     */
-    @Test
-    public void testUpdatePasswordUnexpectedError() throws UserChangeCredentialException, RemoteResourceException {
-        String subject = "aaa-bbb-ccc-ddd";
-
-        UserPasswordChanging u = new UserPasswordChanging();
-        Principal principal = new Principal();
-        principal.setSub(subject);
-        HttpSession session = Mockito.mock(HttpSession.class);
-
-        when(servletRequest.getSession()).thenReturn(session);
-        when(servletRequest.getSession(false)).thenReturn(session);
-        when(session.getAttribute("USER")).thenReturn(principal);
-
-        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
-        doThrow(new RuntimeException("test")).when(userBusinessService).changePassword(subject, u);
-        assertEquals(500, userResource.updatePassword(subject, u).getStatus());
+        doThrow(new BadRequestException("test")).when(userBusinessService).changePassword(subject, u);
+        userResource.updatePassword(subject, u);
     }
 }

@@ -20,12 +20,15 @@ package io.radien.ms.ecm.service;
 import io.radien.api.model.i18n.SystemI18NProperty;
 import io.radien.exception.SystemException;
 import io.radien.ms.ecm.client.entities.i18n.I18NProperty;
+import io.radien.ms.ecm.client.entities.i18n.I18NTranslation;
 import io.radien.ms.ecm.config.ConfigHandler;
 import io.radien.ms.ecm.datalayer.I18NRepository;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.eclipse.microprofile.config.Config;
 import org.junit.Before;
 import org.junit.Rule;
@@ -129,6 +132,25 @@ public class I18NServiceTest {
         when(repository.findAllByApplication("app"))
                 .thenReturn(propertyList);
         List<SystemI18NProperty> app = service.findAllByApplication("app");
+        assertFalse(app.isEmpty());
+        assertEquals(10, app.size());
+    }
+
+    @Test
+    public void testFindAllByApplicationAndLanguage() throws SystemException {
+        List<SystemI18NProperty> propertyList = new ArrayList<>();
+        for(int i = 0; i < 10; i++) {
+            I18NProperty i18NProperty = new I18NProperty();
+            i18NProperty.setKey("key " + i);
+            I18NTranslation translation = new I18NTranslation();
+            translation.setLanguage("en");
+            translation.setValue("value en " + i);
+            i18NProperty.setTranslations(Collections.singletonList(translation));
+            propertyList.add(i18NProperty);
+        }
+        when(repository.findAllByApplication("app"))
+                .thenReturn(propertyList);
+        Map<String, String> app = service.findAllByApplicationAndLanguage("app", "en");
         assertFalse(app.isEmpty());
         assertEquals(10, app.size());
     }

@@ -19,11 +19,11 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemResource;
 import io.radien.api.service.permission.ResourceServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
-import io.radien.exception.ResourceNotFoundException;
+import io.radien.api.service.permission.exception.ResourceNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ResourceSearchFilter;
-import io.radien.ms.permissionmanagement.model.PermissionEntity;
-import io.radien.ms.permissionmanagement.model.ResourceEntity;
+import io.radien.ms.permissionmanagement.datalayer.ResourceService;
+import io.radien.ms.permissionmanagement.entities.ResourceEntity;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -46,7 +46,7 @@ import static org.junit.Assert.assertNull;
 
 /**
  * Resource Service test, to test the crud requests and responses
- * {@link io.radien.ms.permissionmanagement.service.ResourceService}
+ * {@link ResourceService}
  *
  * @author Nuno Santana
  * @author Bruno Gama
@@ -336,20 +336,6 @@ public class ResourceServiceTest {
         UniquenessConstraintException exceptionName2 = assertThrows(UniquenessConstraintException.class, () -> resourceServiceAccess.update(r4));
         String messageFromException = exceptionName2.getMessage();
         assertTrue(messageFromException.contains(expectedMessageName));
-    }
-
-    /**
-     * Trying to update a resource that does not exist.
-     * Expected behaviour: Raise ResourceNotFound exception
-     */
-    @Test
-    public void testUpdateFailureResourceNotFound() {
-        String expectedMessage = GenericErrorCodeMessage.RESOURCE_NOT_FOUND.toString();
-        ResourceEntity r = createResource("unknown", 2L);
-        r.setId(100000L);
-        ResourceNotFoundException rnf = assertThrows(ResourceNotFoundException.class, () -> resourceServiceAccess.update(r));
-        String messageFromException = rnf.getMessage();
-        assertTrue(messageFromException.contains(expectedMessage));
     }
 
     /**

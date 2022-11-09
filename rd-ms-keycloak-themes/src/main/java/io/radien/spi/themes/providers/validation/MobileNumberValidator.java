@@ -36,11 +36,8 @@ import org.keycloak.models.UserModel;
 import org.keycloak.models.utils.FormMessage;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.services.validation.Validation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MobileNumberValidator implements FormAction, FormActionFactory {
-    private static final Logger log = LoggerFactory.getLogger(MobileNumberValidator.class);
 
     private static final String PROVIDER_ID = "organization-field-validation-action";
     private static AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = { AuthenticationExecutionModel.Requirement.REQUIRED, AuthenticationExecutionModel.Requirement.DISABLED };

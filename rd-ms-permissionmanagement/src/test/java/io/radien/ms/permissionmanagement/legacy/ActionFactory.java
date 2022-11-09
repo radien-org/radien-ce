@@ -1,7 +1,7 @@
 package io.radien.ms.permissionmanagement.legacy;
 
 
-import io.radien.ms.permissionmanagement.model.ActionEntity;
+import io.radien.ms.permissionmanagement.entities.ActionEntity;
 
 import java.util.Date;
 
