@@ -48,9 +48,13 @@
                 <div class="${properties.kcLocaleMainClass!}" id="kc-locale">
                     <div id="kc-locale-wrapper" class="${properties.kcLocaleWrapperClass!}">
                         <div id="kc-locale-dropdown" class="${properties.kcLocaleDropDownClass!}">
-                            <div class="translate-links-content">
+                            <div class="translate-links-content" style="font-family:'Open Sans'">
+                                <div class="translateDivider"></div>
                                 <#list locale.supported as l>
-                                    <a class="${properties.kcLocaleItemClass!}" href="${l.url}">${l.label} </a>
+                                    <a class="${properties.kcLocaleItemClass!}" href="${l.url}" style="font-weight:100;font-size:12px !important; ">
+                                        <#if l.label?lower_case == "english">EN</#if>
+                                        <#if l.label?lower_case == "deutsch">DE</#if>
+                                    </a>
                                 </#list>
                             </div>
                         </div>

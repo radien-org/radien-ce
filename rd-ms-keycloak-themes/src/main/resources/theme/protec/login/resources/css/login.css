@@ -182,11 +182,18 @@ h1#kc-page-title {
 .translate-links-content {
     width: 40%;
     display: flex;
-    align-items: stretch;
+    align-items: center;
+    justify-content: center;
+    font-family: "Open Sans", sans-serif !important;
+    font-weight: lighter !important;
 }
 
 .translate-links-content a {
-    padding: 10px;
+    padding: 5px;
+}
+
+.translate-links-content a:visited{
+    font-weight: bold !important;
 }
 
 .translate-links-content:not(:last-child) a::after {
@@ -199,9 +206,9 @@ h1#kc-page-title {
 
 #kc-locale {
     position: absolute;
-    margin-top: 10px;
+    margin-top: 20px;
     color: #ECE9EB;
-    padding-left: 10px;
+    padding-left: 395px;
     z-index: 1;
 }
 
@@ -217,6 +224,7 @@ h1#kc-page-title {
 
 #kc-locale-dropdown{
     display: inline-block;
+    font-family: "Open Sans", sans-serif;
 }
 
 #kc-locale-dropdown:hover ul {
@@ -241,6 +249,7 @@ h1#kc-page-title {
     text-align: right;
     font-size: 14px;
     font-size: var(--pf-global--FontSize--sm);
+    text-transform: uppercase;
 }
 
 /* IE compatibility */
@@ -359,9 +368,20 @@ div.kc-logo-text span {
     display: block;
 }
 
-#kc-form-options .checkbox {
-    margin-top: 0;
-    color: #AAC0BF;
+#kc-form-options .checkmark {
+    margin-top: 5px;
+    color: #ECE9EB;
+    font-family: "Open Sans", sans-serif !important;
+    font-weight: lighter !important;
+}
+
+
+.translateDivider{
+    border-left: 1px solid #ECE9EB;
+    border-radius: 2px;
+    height:15px;
+    position: relative;
+    left: 126%!important;
 }
 
 #kc-terms-text {
@@ -542,6 +562,8 @@ ul#kc-totp-supported-apps {
     margin-top: 20px;
 }
 
+
+
 .login-pf-page .login-pf-brand {
     margin-top: 20px;
     max-width: 360px;
@@ -628,11 +650,16 @@ ul#kc-totp-supported-apps {
     width: 100%;
 }
 
-#kc-form-login div.form-group:last-of-type,
+ div.form-group:last-of-type,
 #kc-register-form div.form-group:last-of-type,
 #kc-update-profile-form div.form-group:last-of-type {
     margin-bottom: 0px;
 }
+
+#kc-form-login{
+    margin-bottom:20px;
+}
+
 
 .no-bottom-margin {
     margin-bottom: 0;
@@ -646,7 +673,7 @@ ul#kc-totp-supported-apps {
     background-color: #224745;
     box-shadow: 0 3px 9px #224745;
     border-radius: 0px;
-    padding: 3rem;
+    padding: 2rem 3rem;
     margin-top: 20vh;
 }
 
@@ -657,9 +684,13 @@ ul#kc-totp-supported-apps {
 }
 
 .link-reset-password {
-    font-size: 80%; 
+    font-family: "Open Sans", sans-serif !important;
+    font-style: normal !important;
+    font-weight: lighter !important;
+    font-size: 100% !important;
     position: relative; 
-    top:-10px
+    top:10px;
+    font-decoration: underline;
 }
 
 .alert-danger {
@@ -694,18 +725,33 @@ input[type="button"] {
     max-width: 180px;
 }
 
+input[type="checkbox"] {
+    border-radius:50%!important;
+    background-color: #224745!important;
+    border-color: #ECE9EB!important;
+    height: 13px!important;
+    width: 13px!important;
+}
+
 input[type="submit"] {
     width: 100%;
     height: 35px;
     border: none;
     border-radius: 0px;
     background-color: #ECE9EB;
-    color: #223C58;
+    color: #224745;
     opacity: 1;
     max-width: 180px;
     text-transform: uppercase;
     font-size: 12px;
     font-weight: 600;
+}
+
+input[type="submit"]:hover {
+    background-color: #2B4645;
+    color: #ECE9EB;
+    border: solid #ECE9EB;
+    cursor: pointer;
 }
 
 input[type="password"] {
@@ -787,7 +833,7 @@ input[type="tel"]:hover {
 }
 
 a {
-    font-weight: bold;
+    font-weight: lighter !important;
     color: #ffffff;
     text-decoration: none;
 }
@@ -828,6 +874,7 @@ p.instruction {
 }
 
 .login-registration-link {
+    font-family: "Open Sans", sans-serif;
     color: #ECE9EB;
     position: relative;
     bottom: 50px;
@@ -870,11 +917,22 @@ p.instruction {
     }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
 
     .login-pf body {
         background: white;
     }
+
+    .translate-links-content {
+        width: 40%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Open Sans", sans-serif !important;
+        font-weight: lighter !important;
+    }
+
+
 
     #kc-header {
         padding-left: 15px;
@@ -920,6 +978,8 @@ p.instruction {
         text-align: right;
         z-index: 9999;
     }
+
+
 }
 
 @media (min-height: 646px) {

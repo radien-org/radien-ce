@@ -314,6 +314,14 @@ div.kc-logo-text span {
     color: #72767b;
 }
 
+#kc-form-options .radio {
+    margin-top: 0;
+    background-color: #2B4645;
+    border:  solid #ECE9EB;
+    color: #ECE9EB;
+
+}
+
 #kc-terms-text {
     margin-bottom: 20px;
 }
