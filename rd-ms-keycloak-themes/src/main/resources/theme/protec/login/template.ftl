@@ -6,7 +6,6 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="robots" content="noindex, nofollow">
-    <link rel="stylesheet" href="resources/fonts/fonts.css">
 
     <#if properties.meta?has_content>
         <#list properties.meta?split(' ') as meta>
@@ -47,17 +46,20 @@
         <header class="${properties.kcFormHeaderClass!}">
             <#if realm.internationalizationEnabled  && locale.supported?size gt 1>
                 <div class="${properties.kcLocaleMainClass!}" id="kc-locale">
-                    <div id="kc-locale-wrapper" class="${properties.kcLocaleWrapperClass!}">
-                        <div id="kc-locale-dropdown" class="${properties.kcLocaleDropDownClass!}">
-                            <div class="translate-links-content" style="font-family:'Open Sans'">
-                                <div class="translateDivider"></div>
-                                <#list locale.supported as l>
-                                    <a class="${properties.kcLocaleItemClass!}" href="${l.url}" style="font-weight:100;font-size:12px !important; ">
-                                        <#if l.label?lower_case == "english">EN</#if>
-                                        <#if l.label?lower_case == "deutsch">DE</#if>
+                    <div class="lang-wrapper">
+                        <div class="lang-container">
+                            <#list locale.supported as l>
+                                <#if locale.current?lower_case == l.label?lower_case>
+                                    <a class="lang-item lang-active" href="${l.url}">
+                                        ${l.label?substring(0, 2)}
                                     </a>
-                                </#list>
-                            </div>
+                                <#else>
+                                    <a class="lang-item lang-inactive" href="${l.url}">
+                                        ${l.label?substring(0, 2)}
+                                    </a>
+                                </#if>
+                            </#list>
+                            <div class="lang-divider"></div>
                         </div>
                     </div>
                 </div>

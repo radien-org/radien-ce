@@ -74,6 +74,18 @@
                                 </div>
 
                             </form>
+                            <#if realm.password && realm.registrationAllowed && !usernameEditDisabled??>
+                                <div class="form-group">
+                                    <div class="col-md-12 control">
+                                        <div class="login-registration-link up-division-line" style="font-family: Open Sans, sans-serif !important">
+                                            ${msg("noAccount")}
+                                            <a tabindex="6" href="${url.registrationUrl}">
+                                                ${msg("doRegister")}.
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </#if>
                             <#if realm.resetPasswordAllowed>
                                 <div class="link-reset-password"style="font-weight:100 !important">
                                     <a href="${url.loginResetCredentialsUrl}">
@@ -84,18 +96,6 @@
                         </div>
                     </div>
                 </div>
-                <#if realm.password && realm.registrationAllowed && !usernameEditDisabled??>
-                    <div class="form-group">
-                        <div class="col-md-12 control">
-                            <div class="login-registration-link up-division-line" style="font-family: Open Sans, sans-serif !important">
-                                ${msg("noAccount")}
-                                <a tabindex="6" href="${url.registrationUrl}">
-                                    ${msg("doRegister")}.
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </#if>
             </div>
         </#if>
     </#if>
