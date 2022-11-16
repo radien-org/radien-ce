@@ -568,6 +568,10 @@ ul#kc-totp-supported-apps {
     margin-top: 20px;
     max-width: 360px;
     width: 40%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .select-auth-box-arrow{
@@ -673,7 +677,7 @@ ul#kc-totp-supported-apps {
     background-color: #224745;
     box-shadow: 0 3px 9px #224745;
     border-radius: 0px;
-    padding: 2rem 3rem;
+    padding: 3.5rem;
     margin-top: 20vh;
 }
 
