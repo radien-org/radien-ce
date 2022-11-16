@@ -147,11 +147,11 @@
 
                 <div class="${properties.kcFormGroupClass!}">
                     <div class="${properties.kcInputWrapperClass!}">
-                        <img src="" alt="captcha" id="radCaptcha"/>
+                        <img src="" alt="captcha" id="radCaptcha" class="captcha_img"/>
                         <input
                                 type="text"
                                 id="captcha_value"
-                                class="${properties.kcInputClass!}"
+                                class="captcha_val"
                                 name="captcha_value"
                                 value="${(register.formData['captcha_value']!'')}"
                                 aria-invalid="<#if messagesPerField.existsError('captcha_value')>true</#if>"
@@ -180,35 +180,30 @@
 
                 <div class="${properties.kcFormGroupClass!}">
 
-                    <div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
-                        <input
-                                class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}"
-                                type="submit"
-                                value="${msg("doRegister")}"
-                        />
-                    </div>
-
                     <div class="${properties.kcFormGroupClass!}">
                         <div class="${properties.kcInputWrapperClass!} register-terms-link-content">
-                            <input
+                           <div>
+                                 <input
                                     type="checkbox"
                                     id="terms"
                                     class="${properties.kcInputClass!}"
                                     name="terms"
                                     value=""
                                     aria-invalid="<#if messagesPerField.existsError('terms')>true</#if>"
-                            />
-                            <label>${msg("termsAgreement")} <a href='${properties.AGB_URL}' target="_blank">${msg("AGB")}</a> ${msg("termsAgreementFinal")}</label>
-
-                            <input
+                                />
+                                 <label class="form-label">${msg("termsAgreement")} <a href='${properties.AGB_URL}' target="_blank">${msg("AGB")}</a> ${msg("termsAgreementFinal")}</label>
+                           </div>
+                            <div>
+                                <input
                                     type="checkbox"
                                     id="terms_2"
                                     class="${properties.kcInputClass!}"
                                     name="terms_2"
                                     value=""
                                     aria-invalid="<#if messagesPerField.existsError('terms')>true</#if>"
-                            />
-                            <label>${msg("termsAgreement")} <a href='${properties.LEGAL_DATA_URL}' target="_blank">${msg("Datenschutzrichtlinie")}</a> ${msg("termsAgreementFinal")}</label>
+                                />
+                            </div>
+                            <label class="form-label">${msg("termsAgreement")} <a href='${properties.LEGAL_DATA_URL}' target="_blank">${msg("Datenschutzrichtlinie")}</a> ${msg("termsAgreementFinal")}</label>
 
                             <#if messagesPerField.existsError('terms')>
                                 <span id="input-error-terms" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
@@ -218,6 +213,14 @@
                         </div>
                     </div>
 
+                    <div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
+                        <input
+                                class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}"
+                                type="submit"
+                                value="${msg("doRegister")}"
+                        />
+                    </div>
+
                 </div>
 
             </form>
@@ -225,7 +228,7 @@
 
         <div id="kc-form-options" class="${properties.kcFormOptionsClass!} login-registration-link up-division-line">
             <div class="${properties.kcFormOptionsWrapperClass!}">
-                <span><a href="${url.loginUrl}">${kcSanitize(msg("backToLogin"))?no_esc}</a></span>
+                <span class="form-msg">${kcSanitize(msg("backToLogin"))?no_esc}<a href="${url.loginUrl}">${kcSanitize(msg("doLogIn"))?no_esc}</a></span>
             </div>
         </div>
 

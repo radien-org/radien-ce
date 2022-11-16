@@ -18,12 +18,14 @@
 /*IE compatibility*/
 .pf-c-form-control {
     font-size: 14px;
+    color: #ECE9EB;
+    font-family: "Open Sans", sans-serif;
     font-size: var(--pf-global--FontSize--sm);
     border-width: 1px;
     border-width: var(--pf-global--BorderWidth--sm);;
     border-color: #EDEDED #EDEDED #8A8D90 #EDEDED;
     border-color: var(--pf-global--BorderColor--300) var(--pf-global--BorderColor--300) var(--pf-global--BorderColor--200) var(--pf-global--BorderColor--300);
-    background-color: #FFFFFF;
+    background-color: #ECE9EB;
     background-color: var(--pf-global--BackgroundColor--100);
     height: 36px;
     height: calc(var(--pf-c-form-control--FontSize) * var(--pf-c-form-control--LineHeight) + var(--pf-c-form-control--BorderWidth) * 2 + var(--pf-c-form-control--PaddingTop) + var(--pf-c-form-control--PaddingBottom));
@@ -644,7 +646,7 @@ ul#kc-totp-supported-apps {
     background-color: #224745;
     box-shadow: 0 3px 9px #224745;
     border-radius: 0px;
-    padding: 18%;
+    padding: 3rem;
     margin-top: 20vh;
 }
 
@@ -977,4 +979,26 @@ p.instruction {
     .kc-social-grid .kc-social-icon-text {
         left: -15px;
     }
+}
+
+.captcha_val{
+    float: left;
+    display: inline;
+}
+.captcha_img{
+    float: left;
+    display: inline;
+}
+
+.form-label{
+    text-align: center;
+    font: normal normal normal 12px "Open Sans", sans-serif;
+    letter-spacing: 0px;
+    color: #ECE9EB;
+}
+.form-msg{
+    text-align: center;
+    font: normal normal normal 16px "Open Sans", sans-serif;
+    letter-spacing: 0px;
+    color: #ECE9EB;
 }
