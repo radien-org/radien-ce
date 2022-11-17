@@ -104,7 +104,6 @@
                         </div>
                     </div>
                 </#if>
-                <br/>
                 <#if passwordRequired??>
                     <div class="${properties.kcFormGroupClass!}">
                         <div class="${properties.kcInputWrapperClass!}">
@@ -146,6 +145,11 @@
                 </#if>
 
                 <div class="${properties.kcFormGroupClass!}">
+                    <#if messagesPerField.existsError('captcha_value')>
+                        <span id="input-error-captcha" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                                ${kcSanitize(messagesPerField.get('captcha_value'))?no_esc}
+                            </span>
+                    </#if>
                     <div class="${properties.kcInputWrapperClass!} captcha-container">
                         <div class="captcha-img-wrapper">
                             <img src="" alt="captcha" id="radCaptcha" class="captcha_img"/>
@@ -159,11 +163,7 @@
                                 placeholder="${msg("captcha_value")}"
                         />
 
-                        <#if messagesPerField.existsError('captcha_value')>
-                            <span id="input-error-captcha" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
-                                ${kcSanitize(messagesPerField.get('captcha_value'))?no_esc}
-                            </span>
-                        </#if>
+
                         <input type="hidden"
                                id="captcha_uuid_value"
                                name="captcha_uuid_value"
@@ -180,6 +180,11 @@
                 </#if>
 
                 <div class="${properties.kcFormGroupClass!} register-terms-link-content">
+                    <#if messagesPerField.existsError('terms')>
+                        <span id="input-error-terms" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                                    ${kcSanitize(messagesPerField.get('missingTermsAndConditions'))?no_esc}
+                                </span>
+                    </#if>
                         <div class="form-group-checkmark">
                             <input type="checkbox"
                                    id="terms"
@@ -196,13 +201,18 @@
                             </label>
                         </div>
 
+                    <#if messagesPerField.existsError('Dataprivacy')>
+                        <span id="input-error-terms" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                                    ${kcSanitize(messagesPerField.get('missingDataprivacy'))?no_esc}
+                                </span>
+                    </#if>
                         <div class="form-group-checkmark">
                             <input
                                     type="checkbox"
                                     id="terms_2"
                                     class="${properties.kcInputClass!}"
                                     name="terms_2"
-                                    aria-invalid="<#if messagesPerField.existsError('terms')>true</#if>"/>
+                                    aria-invalid="<#if messagesPerField.existsError('Dataprivacy')>true</#if>"/>
                             <label class="form-label-checkmark" for="terms_2">
                                 <div class="checkmark-container">
                                     <div class="checkmark-container--inner">
@@ -233,8 +243,8 @@
         </div>
 
         <div id="kc-form-options" class="${properties.kcFormOptionsClass!} login-registration-link up-division-line">
-            <div class="${properties.kcFormOptionsWrapperClass!}">
-                <span class="form-msg">${kcSanitize(msg("backToLogin"))?no_esc}<a href="${url.loginUrl}">${kcSanitize(msg("doLogIn"))?no_esc}</a></span>
+            <div class="${properties.kcFormOptionsWrapperClass!} reg-footer-msg">
+                <span class="form-msg">${kcSanitize(msg("backToLogin"))?no_esc} <a href="${url.loginUrl}">${kcSanitize(msg("doLogIn"))?no_esc}</a></span>
             </div>
         </div>
 
