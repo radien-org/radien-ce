@@ -190,7 +190,7 @@
                                 <div class="checkmark-container">
                                     <div class="checkmark-container--inner">
                                     </div>
-                                    <div class="checkmark-sign-container"> </div>
+                                    <div class="checkmark-sign-container"> <img src="${url.resourcesPath}/img/ProTec_Software_Icon_check-2B4645.svg"> </div>
                                 </div>
                                 <span>${msg("termsAgreement")} <a href='${properties.AGB_URL}' target="_blank">${msg("AGB")}</a> ${msg("termsAgreementFinal")}</span>
                             </label>
@@ -207,9 +207,8 @@
                                 <div class="checkmark-container">
                                     <div class="checkmark-container--inner">
                                     </div>
-                                    <div class="checkmark-sign-container">
+                                    <div class="checkmark-sign-container"> <img src="${url.resourcesPath}/img/ProTec_Software_Icon_check-2B4645.svg"> </div>
 
-                                    </div>
                                 </div>
                                 <span>${msg("termsAgreement")} <a href='${properties.LEGAL_DATA_URL}' target="_blank">${msg("Datenschutzrichtlinie")}</a> ${msg("termsAgreementFinal")}</span>
                             </label>
