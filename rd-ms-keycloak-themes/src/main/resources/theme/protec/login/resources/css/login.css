@@ -1231,3 +1231,8 @@ input[type="checkbox"]:checked + .form-label-checkmark > .checkmark-container > 
     color: #ECE9EB !important;
     opacity: 1;
 }
+
+.checkmark-img{
+    width: 18px;
+    height: 18px;
+}
