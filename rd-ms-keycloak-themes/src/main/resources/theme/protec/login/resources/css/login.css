@@ -1105,13 +1105,38 @@ p.instruction {
     }
 }
 
-.captcha_val{
-    float: left;
-    display: inline;
+.captcha-container{
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+.captcha-img-wrapper{
+    height: 2rem;
+    flex:1;
+    margin-bottom: 20px;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#captcha_val{
+    display: flex;
+    flex: 1;
+    border-bottom: none;
+    width: 100%;
+    border-style: solid;
+    border-width: 1px;
+    bordercolor: #ECE9EB;
+    font-size: 1rem;
+    height: 2rem;
+    font-weight: normal;
+
 }
 .captcha_img{
-    float: left;
-    display: inline;
+    display: flex;
+    flex:1;
+    height: auto;
+    height: 2rem;
 }
 
 .form-label{
