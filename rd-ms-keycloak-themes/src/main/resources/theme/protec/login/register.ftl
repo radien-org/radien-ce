@@ -146,12 +146,13 @@
                 </#if>
 
                 <div class="${properties.kcFormGroupClass!}">
-                    <div class="${properties.kcInputWrapperClass!}">
-                        <img src="" alt="captcha" id="radCaptcha" class="captcha_img"/>
+                    <div class="${properties.kcInputWrapperClass!} captcha-container">
+                        <div class="captcha-img-wrapper">
+                            <img src="" alt="captcha" id="radCaptcha" class="captcha_img"/>
+                        </div>
                         <input
                                 type="text"
-                                id="captcha_value"
-                                class="captcha_val"
+                                id="captcha_val"
                                 name="captcha_value"
                                 value="${(register.formData['captcha_value']!'')}"
                                 aria-invalid="<#if messagesPerField.existsError('captcha_value')>true</#if>"
