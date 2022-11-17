@@ -62,7 +62,7 @@
                                                     </div>
                                                     <div class="checkmark-sign-container"> </div>
                                                 </div>
-                                                ${msg("rememberMe")}
+                                                <span>${msg("rememberMe")}</span>
                                             </label>
                                         </div>
                                     </#if>

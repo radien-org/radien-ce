@@ -192,7 +192,7 @@
                                     </div>
                                     <div class="checkmark-sign-container"> </div>
                                 </div>
-                                ${msg("termsAgreement")} <a href='${properties.AGB_URL}' target="_blank">${msg("AGB")}</a> ${msg("termsAgreementFinal")}
+                                <span>${msg("termsAgreement")} <a href='${properties.AGB_URL}' target="_blank">${msg("AGB")}</a> ${msg("termsAgreementFinal")}</span>
                             </label>
                         </div>
 
@@ -207,9 +207,11 @@
                                 <div class="checkmark-container">
                                     <div class="checkmark-container--inner">
                                     </div>
-                                    <div class="checkmark-sign-container"></div>
+                                    <div class="checkmark-sign-container">
+
+                                    </div>
                                 </div>
-                                ${msg("termsAgreement")} <a href='${properties.LEGAL_DATA_URL}' target="_blank">${msg("Datenschutzrichtlinie")}</a> ${msg("termsAgreementFinal")}
+                                <span>${msg("termsAgreement")} <a href='${properties.LEGAL_DATA_URL}' target="_blank">${msg("Datenschutzrichtlinie")}</a> ${msg("termsAgreementFinal")}</span>
                             </label>
                         </div>
 
