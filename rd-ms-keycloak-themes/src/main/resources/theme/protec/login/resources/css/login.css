@@ -965,7 +965,6 @@ p.instruction {
     text-align: center;
     padding-top: 15px;
     font-weight: 100;
-    top:55px;
 }
 
 .login-registration-link a {
@@ -987,6 +986,7 @@ p.instruction {
     width: calc(100% + 95px);
     position:relative;
     left:-48px;
+    top:55px;
 
 }
 
