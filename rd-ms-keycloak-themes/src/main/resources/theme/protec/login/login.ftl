@@ -83,7 +83,7 @@
                             <#if realm.password && realm.registrationAllowed && !usernameEditDisabled??>
                                 <div class="form-group">
                                     <div class="col-md-12 control">
-                                        <div class="login-registration-link up-division-line" style="font-family: Open Sans, sans-serif !important">
+                                        <div class="login-registration-link up-division-line divisionLogin" style="font-family: Open Sans, sans-serif !important">
                                             ${msg("noAccount")}
                                             <a tabindex="6" href="${url.registrationUrl}">
                                                 ${msg("doRegister")}.
@@ -93,7 +93,7 @@
                                 </div>
                             </#if>
                             <#if realm.resetPasswordAllowed>
-                                <div class="link-reset-password"style="font-weight:100 !important">
+                                <div class="link-reset-password"style="font-weight:100 !important; text-decoration-line: underline!important">
                                     <a href="${url.loginResetCredentialsUrl}">
                                         ${msg("doForgotPassword")}
                                     </a>

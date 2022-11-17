@@ -70,7 +70,7 @@ textarea.pf-c-form-control {
     height: 20px;
     background-color: white;
     position: absolute;
-    left: 50%;
+    left: 46.5%;
     top: 0;
     transform: translateX(-50%)
 }
@@ -767,8 +767,8 @@ ul#kc-totp-supported-apps {
     font-weight: lighter !important;
     font-size: 100% !important;
     position: relative; 
-    top:10px;
-    font-decoration: underline;
+    top:-30px;
+    font-decoration: underline !important;
 }
 
 .alert-danger {
@@ -893,6 +893,7 @@ input[type="tel"]:hover {
 
 .login-form-option-content {
     margin-top: 10px;
+    display: inline-block;
     margin-bottom: 50px;
 }
 
@@ -964,6 +965,7 @@ p.instruction {
     text-align: center;
     padding-top: 15px;
     font-weight: 100;
+    top:55px;
 }
 
 .login-registration-link a {
@@ -976,6 +978,29 @@ p.instruction {
     border-top-style: solid;
     border-top-width: 1px;
     border-top-color: #ECE9EB;
+}
+
+.divisionLogin {
+    border-top-style: solid;
+    border-top-width: 1px;
+    border-top-color: #ECE9EB;
+    width: calc(100% + 95px);
+    position:relative;
+    left:-48px;
+
+}
+
+#passwordUnderline{
+    text-decoration: underline ;
+}
+
+@media screen and (max-width:767px)
+{
+    #divisionLogin {
+        width: calc(100% + 40px);
+        position:relative;
+        left:-48px;
+    }
 }
 
 @media screen and (max-width: 540px) {
