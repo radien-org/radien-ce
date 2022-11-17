@@ -5,6 +5,10 @@
     box-sizing: border-box;
 }
 
+body {
+    margin: 0;
+}
+
 .login-pf {
     background: none;
 }
@@ -1095,11 +1099,15 @@ p.instruction {
 @media (max-width: 767px) {
     .login-pf-page .card-pf {
         max-width: none;
+        min-height: 100vh;
+        width: 100vw;
         margin-left: 0;
         margin-right: 0;
         padding-top: 0;
         border-top: 0;
         box-shadow: 0 0;
+        display: flex;
+        flex-direction: row;
     }
 
     .kc-social-grid {
@@ -1109,6 +1117,11 @@ p.instruction {
 
     .kc-social-grid .kc-social-icon-text {
         left: -15px;
+    }
+
+    #kc-content {
+        align-self: center;
+        justify-self: center;
     }
 }
 
@@ -1182,6 +1195,18 @@ input[type="checkbox"] {
     align-items: center;
 }
 
+@media (max-width: 450px) {
+    .form-group-checkmark {
+        padding: .5rem 1rem
+    }
+}
+
+@media (max-width: 400px) {
+    .form-group-checkmark {
+        padding: .5rem .5rem
+    }
+}
+
 .checkmark-container{
     height: 23px;
     width: 23px;
@@ -1212,7 +1237,6 @@ input[type="checkbox"] {
 }
 
 input[type="checkbox"]:checked + .form-label-checkmark > .checkmark-container > .checkmark-container--inner {
-    background-color: white;
     height: 18px;
     width: 18px;
     border-radius: 50%;
@@ -1235,4 +1259,10 @@ input[type="checkbox"]:checked + .form-label-checkmark > .checkmark-container > 
 .checkmark-img{
     width: 18px;
     height: 18px;
+    opacity: 0;
+    transition: 0.2s ease-in-out;
+}
+
+input[type="checkbox"]:checked + .form-label-checkmark > .checkmark-container  > .checkmark-sign-container > .checkmark-img {
+    opacity: 1;
 }
