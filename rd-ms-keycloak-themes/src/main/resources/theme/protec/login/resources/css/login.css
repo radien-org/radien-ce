@@ -1135,3 +1135,67 @@ p.instruction {
     align-items: center;
     justify-content: center;
 }
+
+input[type="checkbox"] {
+    display: none;
+    visibility: hidden;
+}
+
+.form-group-checkmark {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: .5rem 3rem;
+    flex-direction: row;
+    align-items: center;
+}
+
+.checkmark-container{
+    height: 23px;
+    width: 23px;
+    border-radius: 50%;
+    border: 2px solid white;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.checkmark-container--inner {
+    height: 2px;
+    width: 2px;
+    border-radius: 50%;
+    background-color: #224745;
+    transition: 0.2s ease-out;
+    transform-origin: 50% 50%;
+}
+
+.checkmark-sign-container {
+    color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+input[type="checkbox"]:checked + .form-label-checkmark > .checkmark-container > .checkmark-container--inner {
+    background-color: white;
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+}
+
+
+.form-label-checkmark {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    font-family: Open Sans, sans-serif !important;
+    font-size: 14px;
+    color: #ECE9EB !important;
+    opacity: 1;
+}

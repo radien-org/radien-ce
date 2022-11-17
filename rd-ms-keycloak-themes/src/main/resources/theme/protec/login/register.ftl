@@ -178,40 +178,45 @@
                     </div>
                 </#if>
 
-                <div class="${properties.kcFormGroupClass!}">
+                <div class="${properties.kcFormGroupClass!} register-terms-link-content">
+                        <div class="form-group-checkmark">
+                            <input type="checkbox"
+                                   id="terms"
+                                   class="${properties.kcInputClass!}"
+                                   name="terms"
+                                   aria-invalid="<#if messagesPerField.existsError('terms')>true</#if>"/>
+                            <label class="form-label-checkmark" for="terms">
+                                <div class="checkmark-container">
+                                    <div class="checkmark-container--inner">
+                                    </div>
+                                    <div class="checkmark-sign-container"> </div>
+                                </div>
+                                ${msg("termsAgreement")} <a href='${properties.AGB_URL}' target="_blank">${msg("AGB")}</a> ${msg("termsAgreementFinal")}
+                            </label>
+                        </div>
 
-                    <div class="${properties.kcFormGroupClass!}">
-                        <div class="${properties.kcInputWrapperClass!} register-terms-link-content">
-                           <div>
-                                 <input
-                                    type="checkbox"
-                                    id="terms"
-                                    class="${properties.kcInputClass!}"
-                                    name="terms"
-                                    value=""
-                                    aria-invalid="<#if messagesPerField.existsError('terms')>true</#if>"
-                                />
-                                 <label class="form-label">${msg("termsAgreement")} <a href='${properties.AGB_URL}' target="_blank">${msg("AGB")}</a> ${msg("termsAgreementFinal")}</label>
-                           </div>
-                            <div>
-                                <input
+                        <div class="form-group-checkmark">
+                            <input
                                     type="checkbox"
                                     id="terms_2"
                                     class="${properties.kcInputClass!}"
                                     name="terms_2"
-                                    value=""
-                                    aria-invalid="<#if messagesPerField.existsError('terms')>true</#if>"
-                                />
-                            </div>
-                            <label class="form-label">${msg("termsAgreement")} <a href='${properties.LEGAL_DATA_URL}' target="_blank">${msg("Datenschutzrichtlinie")}</a> ${msg("termsAgreementFinal")}</label>
-
-                            <#if messagesPerField.existsError('terms')>
-                                <span id="input-error-terms" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
-                                        ${kcSanitize(messagesPerField.get('terms'))?no_esc}
-                                    </span>
-                            </#if>
+                                    aria-invalid="<#if messagesPerField.existsError('terms')>true</#if>"/>
+                            <label class="form-label-checkmark" for="terms_2">
+                                <div class="checkmark-container">
+                                    <div class="checkmark-container--inner">
+                                    </div>
+                                    <div class="checkmark-sign-container"></div>
+                                </div>
+                                ${msg("termsAgreement")} <a href='${properties.LEGAL_DATA_URL}' target="_blank">${msg("Datenschutzrichtlinie")}</a> ${msg("termsAgreementFinal")}
+                            </label>
                         </div>
-                    </div>
+
+                        <#if messagesPerField.existsError('terms')>
+                            <span id="input-error-terms" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                                    ${kcSanitize(messagesPerField.get('terms'))?no_esc}
+                                </span>
+                        </#if>
 
                     <div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
                         <input

@@ -50,13 +50,19 @@
 
                                 <div id="kc-form-options" class="${properties.kcFormOptionsClass!} login-form-option-content">
                                     <#if realm.rememberMe && !usernameEditDisabled??>
-                                        <div class="checkmark" style="margin-top:20px ; font-family:'Open Sans';font-size: 14px">
-                                            <label>
-                                                <#if login.rememberMe??>
-                                                    <input tabindex="3" id="checkbox" name="checkbox" type="checkbox"  tabindex="3" checked> ${msg("rememberMe")}
-                                                <#else>
-                                                    <input tabindex="3" id="checkbox" name="checkbox" type="checkbox"  tabindex="3" > ${msg("rememberMe")}
-                                                </#if>
+                                        <div class="form-group-checkmark">
+                                            <#if login.rememberMe??>
+                                                <input tabindex="3" id="checkbox" name="checkbox" type="checkbox"  tabindex="3" checked>
+                                            <#else>
+                                                <input tabindex="3" id="checkbox" name="checkbox" type="checkbox"  tabindex="3" >
+                                            </#if>
+                                            <label class="form-label-checkmark" for="checkbox">
+                                                <div class="checkmark-container">
+                                                    <div class="checkmark-container--inner">
+                                                    </div>
+                                                    <div class="checkmark-sign-container"> </div>
+                                                </div>
+                                                ${msg("rememberMe")}
                                             </label>
                                         </div>
                                     </#if>
