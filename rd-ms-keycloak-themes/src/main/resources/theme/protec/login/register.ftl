@@ -147,7 +147,7 @@
                 <div class="${properties.kcFormGroupClass!}">
                     <#if messagesPerField.existsError('captcha_value')>
                         <span id="input-error-captcha" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
-                                ${kcSanitize(messagesPerField.get('captcha_value'))?no_esc}
+                                ${msg('invalid_captcha')?no_esc}
                             </span>
                     </#if>
                     <div class="${properties.kcInputWrapperClass!} captcha-container">
@@ -182,8 +182,8 @@
                 <div class="${properties.kcFormGroupClass!} register-terms-link-content">
                     <#if messagesPerField.existsError('terms')>
                         <span id="input-error-terms" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
-                                    ${kcSanitize(messagesPerField.get('missingTermsAndConditions'))?no_esc}
-                                </span>
+                                    ${msg('missingTermsAndConditions')?no_esc}
+                        </span>
                     </#if>
                         <div class="form-group-checkmark">
                             <input type="checkbox"
@@ -203,8 +203,8 @@
 
                     <#if messagesPerField.existsError('Dataprivacy')>
                         <span id="input-error-terms" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
-                                    ${kcSanitize(messagesPerField.get('missingDataprivacy'))?no_esc}
-                                </span>
+                                    ${msg('missingDataprivacy')?no_esc}
+                        </span>
                     </#if>
                         <div class="form-group-checkmark">
                             <input
@@ -212,7 +212,8 @@
                                     id="terms_2"
                                     class="${properties.kcInputClass!}"
                                     name="terms_2"
-                                    aria-invalid="<#if messagesPerField.existsError('Dataprivacy')>true</#if>"/>
+                                    aria-invalid="<#if messagesPerField.existsError('Dataprivacy')>true</#if>"
+                            />
                             <label class="form-label-checkmark" for="terms_2">
                                 <div class="checkmark-container">
                                     <div class="checkmark-container--inner">
@@ -223,11 +224,6 @@
                             </label>
                         </div>
 
-                        <#if messagesPerField.existsError('terms')>
-                            <span id="input-error-terms" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
-                                    ${kcSanitize(messagesPerField.get('terms'))?no_esc}
-                                </span>
-                        </#if>
 
                     <div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
                         <input
