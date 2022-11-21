@@ -633,6 +633,13 @@ ul#kc-totp-supported-apps {
     margin-top: 20px;
 }
 
+@media (max-width: 768px) {
+    #kc-form-buttons {
+        margin-top: 30px;
+        margin-bottom: 10px;
+    }
+}
+
 
 
 .login-pf-page .login-pf-brand {
@@ -755,6 +762,12 @@ ul#kc-totp-supported-apps {
     margin-bottom: 2rem;
 }
 
+@media (max-width: 767px) {
+    #loginbox {
+        margin-bottom: 5rem
+    }
+}
+
 .panel-title {
     font-size: 24px;
     padding-bottom: 20px;
@@ -765,10 +778,16 @@ ul#kc-totp-supported-apps {
     font-family: "Open Sans", sans-serif !important;
     font-style: normal !important;
     font-weight: lighter !important;
-    font-size: 100% !important;
-    position: relative; 
-    top:-30px;
+    position: relative;
+    margin-top: 2.2rem;
+    margin-bottom: -1rem;
     font-decoration: underline !important;
+}
+
+@media (max-width: 767px) {
+    .link-reset-password {
+        margin-bottom: -4rem;
+    }
 }
 
 .alert-danger {
@@ -941,7 +960,7 @@ a {
     color: #ffffff;
 }
 
-p.instruction {
+.instruction {
     padding: 4px 0;
     text-align: center;
     color: #ECE9EB;
@@ -949,7 +968,13 @@ p.instruction {
     opacity: 1;
     font-size: 18px;
     font-family: "Open Sans", sans-serif;
-    font-weight: lighter;
+    font-weight: lighter !important;
+}
+
+@media (max-width: 767px) {
+    .instruction {
+        font-size: 15px;
+    }
 }
 
 .alert-warning {
@@ -976,6 +1001,7 @@ p.instruction {
 .up-division-line {
     border-top-style: solid;
     border-top-width: 1px;
+    margin-top: 20px;
     border-top-color: #ECE9EB;
 }
 
@@ -986,8 +1012,6 @@ p.instruction {
     width: calc(100% + 95px);
     position:relative;
     left:-48px;
-    top:55px;
-
 }
 
 #passwordUnderline{
@@ -1308,4 +1332,8 @@ input[type="checkbox"]:checked + .form-label-checkmark > .checkmark-container  >
 
 .a:hover{
     color:  #AAC0BF;
+}
+
+.error-form {
+    color: #EB5848 !important;
 }

@@ -21,7 +21,7 @@
 
                             <#if message?has_content>
                                 <div id="login-alert" class="alert alert-danger col-sm-12">
-                                    <span class="kc-feedback-text">
+                                    <span class="kc-feedback-text error-form">
                                         ${kcSanitize(message.summary)?no_esc}
                                     </span>
                                 </div>
@@ -78,30 +78,29 @@
                                         </#if>
                                     </div>
                                 </div>
-
                             </form>
-                            <#if realm.password && realm.registrationAllowed && !usernameEditDisabled??>
-                                <div class="form-group">
-                                    <div class="col-md-12 control">
-                                        <div class="login-registration-link up-division-line divisionLogin" style="font-family: Open Sans, sans-serif !important">
-                                            ${msg("noAccount")}
-                                            <a tabindex="6" href="${url.registrationUrl}">
-                                                ${msg("doRegister")}.
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </#if>
-                            <#if realm.resetPasswordAllowed>
-                                <div class="link-reset-password"style="font-weight:100 !important; text-decoration-line: underline!important">
-                                    <a href="${url.loginResetCredentialsUrl}">
-                                        ${msg("doForgotPassword")}
-                                    </a>
-                                </div>
-                            </#if>
                         </div>
+                        <#if realm.resetPasswordAllowed>
+                            <div class="link-reset-password instruction"style="font-weight:100 !important; text-decoration-line: underline!important">
+                                <a href="${url.loginResetCredentialsUrl}">
+                                    ${msg("doForgotPassword")}
+                                </a>
+                            </div>
+                        </#if>
                     </div>
                 </div>
+                <#if realm.password && realm.registrationAllowed && !usernameEditDisabled??>
+                    <div class="form-group">
+                        <div class="col-md-12 control">
+                            <div class="login-registration-link up-division-line divisionLogin instruction" style="font-family: Open Sans, sans-serif !important">
+                                ${msg("noAccount")}
+                                <a tabindex="6" href="${url.registrationUrl}">
+                                    ${msg("doRegister")}.
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </#if>
             </div>
         </#if>
     </#if>

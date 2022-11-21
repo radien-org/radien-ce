@@ -227,7 +227,7 @@
 
                     <div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
                         <input
-                                class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}"
+                                class="${properties.kcButtonClass!}"
                                 type="submit"
                                 value="${msg("doRegister")}"
                         />
@@ -238,9 +238,9 @@
             </form>
         </div>
 
-        <div id="kc-form-options" class="${properties.kcFormOptionsClass!} login-registration-link up-division-line">
+        <div id="kc-form-options" class="${properties.kcFormOptionsClass!} login-registration-link up-division-line divisionLogin">
             <div class="${properties.kcFormOptionsWrapperClass!} reg-footer-msg">
-                <span class="form-msg">${kcSanitize(msg("backToLogin"))?no_esc} <a href="${url.loginUrl}">${kcSanitize(msg("doLogIn"))?no_esc}</a></span>
+                <span class="instruction">${kcSanitize(msg("backToLogin"))?no_esc} &nbsp;<a href="${url.loginUrl}">${kcSanitize(msg("doLogIn"))?no_esc}</a></span>
             </div>
         </div>
 
