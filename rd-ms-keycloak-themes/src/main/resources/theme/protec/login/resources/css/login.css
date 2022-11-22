@@ -337,9 +337,14 @@ a#kc-current-locale-link::after {
     padding-top: 0px;
 }
 
+.login-pf a {
+    color: #ECE9EB;
+}
+
 .login-pf a:hover {
     color: #AAC0BF;
 }
+
 
 #kc-logo {
     width: 100%;
@@ -1093,7 +1098,7 @@ a {
     }
 
     #kc-info-wrapper {
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        /*border-top: 1px solid rgba(255, 255, 255, 0.1);*/
         background-color: transparent;
     }
 

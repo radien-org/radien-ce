@@ -8,37 +8,41 @@
                 <img src="${url.resourcesPath}/img/ProTecSports_Logo_Wortmarke.png" class="login-logo-form"/>
             </div>
             <form id="kc-reset-password-form" class="${properties.kcFormClass!}" action="${url.loginAction}" method="post">
+                <div class="instruction">
+                    ${kcSanitize(msg('forgotPasswordInstruction1'))?no_esc}
+                </div>
+                <br/>
                 <div class="${properties.kcFormGroupClass!}">
-                    <div class="${properties.kcLabelWrapperClass!}">
-                        <label for="username" class="${properties.kcLabelClass!}"><#if !realm.loginWithEmailAllowed>${msg("username")}<#elseif !realm.registrationEmailAsUsername>${msg("usernameOrEmail")}<#else>${msg("email")}</#if></label>
-                    </div>
                     <div class="${properties.kcInputWrapperClass!}">
                         <#if messagesPerField.existsError('username')>
                             <span id="input-error-username" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
                             ${kcSanitize(messagesPerField.get('username'))?no_esc}
                         </span>
                         </#if>
-                        <input type="text" id="username" name="username" class="${properties.kcInputClass!}" autofocus value="${(auth.attemptedUsername!'')}" aria-invalid="<#if messagesPerField.existsError('username')>true</#if>"/>
+                        <input
+                                type="text"
+                                id="username"
+                                class="${properties.kcInputClass!}"
+                                name="username"
+                                autofocus
+                                value="${(auth.attemptedUsername!'')}"
+                                aria-invalid="<#if messagesPerField.existsError('username')>true</#if>"
+                                placeholder="${msg("forgotPasswordLabel")}"
+                        />
                     </div>
                 </div>
-                <div class="${properties.kcFormGroupClass!} ${properties.kcFormSettingClass!}">
-                    <div id="kc-form-options" class="${properties.kcFormOptionsClass!}">
-                        <div class="${properties.kcFormOptionsWrapperClass!}">
-                            <span><a href="${url.loginUrl}">${kcSanitize(msg("backToLogin"))?no_esc}</a></span>
-                        </div>
-                    </div>
-
-                    <div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
-                        <input class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}" type="submit" value="${msg("doSubmit")}"/>
+                <br>
+                <div id="kc-form-buttons" style="margin-top:10px" class="${properties.kcFormButtonsClass!}">
+                    <div class="${properties.kcFormButtonsWrapperClass!}">
+                        <input tabindex="4" class="${properties.kcButtonClass!}" id="kc-login" type="submit" value="${msg("forgotPasswordSubmit")}"/>
                     </div>
                 </div>
             </form>
         </div>
-    <#elseif section = "info" >
-        <#if realm.duplicateEmailsAllowed>
-            ${msg("emailInstructionUsername")}
-        <#else>
-            ${msg("emailInstruction")}
-        </#if>
+        <div id="kc-form-options" class="${properties.kcFormOptionsClass!} login-registration-link up-division-line divisionLogin" style="margin-top: 3rem">
+            <div class="${properties.kcFormOptionsWrapperClass!} reg-footer-msg">
+                <span class="instruction">${kcSanitize(msg("forgotPasswordBackToLogin"))?no_esc} &nbsp;<a href="${url.loginUrl}">${kcSanitize(msg("doLogIn"))?no_esc}</a></span>
+            </div>
+        </div>
     </#if>
 </@layout.registrationLayout>
