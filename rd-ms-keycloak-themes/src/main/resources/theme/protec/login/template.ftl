@@ -46,13 +46,20 @@
         <header class="${properties.kcFormHeaderClass!}">
             <#if realm.internationalizationEnabled  && locale.supported?size gt 1>
                 <div class="${properties.kcLocaleMainClass!}" id="kc-locale">
-                    <div id="kc-locale-wrapper" class="${properties.kcLocaleWrapperClass!}">
-                        <div id="kc-locale-dropdown" class="${properties.kcLocaleDropDownClass!}">
-                            <div class="translate-links-content">
-                                <#list locale.supported as l>
-                                    <a class="${properties.kcLocaleItemClass!}" href="${l.url}">${l.label} </a>
-                                </#list>
-                            </div>
+                    <div class="lang-wrapper">
+                        <div class="lang-container">
+                            <#list locale.supported as l>
+                                <#if locale.current?lower_case == l.label?lower_case>
+                                    <a class="lang-item lang-active" href="${l.url}">
+                                        ${l.label?substring(0, 2)}
+                                    </a>
+                                <#else>
+                                    <a class="lang-item lang-inactive" href="${l.url}">
+                                        ${l.label?substring(0, 2)}
+                                    </a>
+                                </#if>
+                            </#list>
+                            <div class="lang-divider"></div>
                         </div>
                     </div>
                 </div>

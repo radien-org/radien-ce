@@ -104,7 +104,6 @@
                         </div>
                     </div>
                 </#if>
-                <br/>
                 <#if passwordRequired??>
                     <div class="${properties.kcFormGroupClass!}">
                         <div class="${properties.kcInputWrapperClass!}">
@@ -146,23 +145,25 @@
                 </#if>
 
                 <div class="${properties.kcFormGroupClass!}">
-                    <div class="${properties.kcInputWrapperClass!}">
-                        <img src="" alt="captcha" id="radCaptcha"/>
+                    <#if messagesPerField.existsError('captcha_value')>
+                        <span id="input-error-captcha" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                                ${msg('invalid_captcha')?no_esc}
+                            </span>
+                    </#if>
+                    <div class="${properties.kcInputWrapperClass!} captcha-container">
+                        <div class="captcha-img-wrapper">
+                            <img src="" alt="captcha" id="radCaptcha" class="captcha_img"/>
+                        </div>
                         <input
                                 type="text"
-                                id="captcha_value"
-                                class="${properties.kcInputClass!}"
+                                id="captcha_val"
                                 name="captcha_value"
                                 value="${(register.formData['captcha_value']!'')}"
                                 aria-invalid="<#if messagesPerField.existsError('captcha_value')>true</#if>"
                                 placeholder="${msg("captcha_value")}"
                         />
 
-                        <#if messagesPerField.existsError('captcha_value')>
-                            <span id="input-error-captcha" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
-                                ${kcSanitize(messagesPerField.get('captcha_value'))?no_esc}
-                            </span>
-                        </#if>
+
                         <input type="hidden"
                                id="captcha_uuid_value"
                                name="captcha_uuid_value"
@@ -178,44 +179,58 @@
                     </div>
                 </#if>
 
-                <div class="${properties.kcFormGroupClass!}">
+                <div class="${properties.kcFormGroupClass!} register-terms-link-content">
+                    <#if messagesPerField.existsError('terms')>
+                        <span id="input-error-terms" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                                    ${msg('missingTermsAndConditions')?no_esc}
+                        </span>
+                    </#if>
+                        <div class="form-group-checkmark">
+                            <input type="checkbox"
+                                   id="terms"
+                                   class="${properties.kcInputClass!}"
+                                   name="terms"
+                                   aria-invalid="<#if messagesPerField.existsError('terms')>true</#if>"/>
+                            <label class="form-label-checkmark" for="terms">
+                                <div class="checkmark-container">
+                                    <div class="checkmark-container--inner">
+                                    </div>
+                                    <div class="checkmark-sign-container"> <img class="checkmark-img" src="${url.resourcesPath}/img/ProTec_Software_Icon_check-2B4645.svg"> </div>
+                                </div>
+                                <span>${msg("termsAgreement")} <a href='${properties.AGB_URL}' target="_blank">${msg("AGB")}</a> ${msg("termsAgreementFinal")}</span>
+                            </label>
+                        </div>
 
-                    <div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
-                        <input
-                                class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}"
-                                type="submit"
-                                value="${msg("doRegister")}"
-                        />
-                    </div>
-
-                    <div class="${properties.kcFormGroupClass!}">
-                        <div class="${properties.kcInputWrapperClass!} register-terms-link-content">
-                            <input
-                                    type="checkbox"
-                                    id="terms"
-                                    class="${properties.kcInputClass!}"
-                                    name="terms"
-                                    value=""
-                                    aria-invalid="<#if messagesPerField.existsError('terms')>true</#if>"
-                            />
-                            <label>${msg("termsAgreement")} <a href='${properties.AGB_URL}' target="_blank">${msg("AGB")}</a> ${msg("termsAgreementFinal")}</label>
-
+                    <#if messagesPerField.existsError('Dataprivacy')>
+                        <span id="input-error-terms" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                                    ${msg('missingDataprivacy')?no_esc}
+                        </span>
+                    </#if>
+                        <div class="form-group-checkmark">
                             <input
                                     type="checkbox"
                                     id="terms_2"
                                     class="${properties.kcInputClass!}"
                                     name="terms_2"
-                                    value=""
-                                    aria-invalid="<#if messagesPerField.existsError('terms')>true</#if>"
+                                    aria-invalid="<#if messagesPerField.existsError('Dataprivacy')>true</#if>"
                             />
-                            <label>${msg("termsAgreement")} <a href='${properties.LEGAL_DATA_URL}' target="_blank">${msg("Datenschutzrichtlinie")}</a> ${msg("termsAgreementFinal")}</label>
-
-                            <#if messagesPerField.existsError('terms')>
-                                <span id="input-error-terms" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
-                                        ${kcSanitize(messagesPerField.get('terms'))?no_esc}
-                                    </span>
-                            </#if>
+                            <label class="form-label-checkmark" for="terms_2">
+                                <div class="checkmark-container">
+                                    <div class="checkmark-container--inner">
+                                    </div>
+                                    <div class="checkmark-sign-container"> <img class="checkmark-img" src="${url.resourcesPath}/img/ProTec_Software_Icon_check-2B4645.svg"> </div>
+                                </div>
+                                <span>${msg("termsAgreement")} <a href='${properties.LEGAL_DATA_URL}' target="_blank">${msg("Datenschutzrichtlinie")}</a> ${msg("termsAgreementFinal")}</span>
+                            </label>
                         </div>
+
+
+                    <div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
+                        <input
+                                class="${properties.kcButtonClass!}"
+                                type="submit"
+                                value="${msg("doRegister")}"
+                        />
                     </div>
 
                 </div>
@@ -223,9 +238,9 @@
             </form>
         </div>
 
-        <div id="kc-form-options" class="${properties.kcFormOptionsClass!} login-registration-link up-division-line">
-            <div class="${properties.kcFormOptionsWrapperClass!}">
-                <span><a href="${url.loginUrl}">${kcSanitize(msg("backToLogin"))?no_esc}</a></span>
+        <div id="kc-form-options" class="${properties.kcFormOptionsClass!} login-registration-link up-division-line divisionLogin">
+            <div class="${properties.kcFormOptionsWrapperClass!} reg-footer-msg">
+                <span class="instruction">${kcSanitize(msg("backToLogin"))?no_esc} &nbsp;<a href="${url.loginUrl}">${kcSanitize(msg("doLogIn"))?no_esc}</a></span>
             </div>
         </div>
 

@@ -9,18 +9,11 @@
                     <div class="panel panel-info">
                         
                         <div class="panel-heading">
-                            <div align="center">
+                            <div align="center" style="bottom:60px">
                                 <img src="${url.resourcesPath}/img/ProTecSports_Logo_Wortmarke.png" class="login-logo-form"/>
                             </div>
                             <#if realm.displayName=='Keycloak'>
                             <#else>
-                            </#if>
-                            <#if realm.resetPasswordAllowed>
-                                <div class="link-reset-password">
-                                    <a href="${url.loginResetCredentialsUrl}">
-                                        ${msg("doForgotPassword")}
-                                    </a>
-                                </div>
                             </#if>
                         </div>
 
@@ -28,7 +21,7 @@
 
                             <#if message?has_content>
                                 <div id="login-alert" class="alert alert-danger col-sm-12">
-                                    <span class="kc-feedback-text">
+                                    <span class="kc-feedback-text error-form">
                                         ${kcSanitize(message.summary)?no_esc}
                                     </span>
                                 </div>
@@ -57,13 +50,19 @@
 
                                 <div id="kc-form-options" class="${properties.kcFormOptionsClass!} login-form-option-content">
                                     <#if realm.rememberMe && !usernameEditDisabled??>
-                                        <div class="checkbox">
-                                            <label>
-                                                <#if login.rememberMe??>
-                                                    <input tabindex="3" id="rememberMe" name="rememberMe" type="checkbox" tabindex="3" checked> ${msg("rememberMe")}
-                                                <#else>
-                                                    <input tabindex="3" id="rememberMe" name="rememberMe" type="checkbox" tabindex="3"> ${msg("rememberMe")}
-                                                </#if>
+                                        <div class="form-group-checkmark">
+                                            <#if login.rememberMe??>
+                                                <input tabindex="3" id="checkbox" name="checkbox" type="checkbox"  tabindex="3" checked>
+                                            <#else>
+                                                <input tabindex="3" id="checkbox" name="checkbox" type="checkbox"  tabindex="3" >
+                                            </#if>
+                                            <label class="form-label-checkmark" for="checkbox">
+                                                <div class="checkmark-container">
+                                                    <div class="checkmark-container--inner">
+                                                    </div>
+                                                    <div class="checkmark-sign-container"><img class="checkmark-img" src="${url.resourcesPath}/img/ProTec_Software_Icon_check-2B4645.svg"> </div>
+                                                </div>
+                                                <span>${msg("rememberMe")}</span>
                                             </label>
                                         </div>
                                     </#if>
@@ -79,15 +78,21 @@
                                         </#if>
                                     </div>
                                 </div>
-
                             </form>
                         </div>
+                        <#if realm.resetPasswordAllowed>
+                            <div class="link-reset-password instruction"style="font-weight:100 !important; text-decoration-line: underline!important">
+                                <a href="${url.loginResetCredentialsUrl}">
+                                    ${msg("doForgotPassword")}
+                                </a>
+                            </div>
+                        </#if>
                     </div>
                 </div>
                 <#if realm.password && realm.registrationAllowed && !usernameEditDisabled??>
                     <div class="form-group">
                         <div class="col-md-12 control">
-                            <div class="login-registration-link up-division-line" >
+                            <div class="login-registration-link up-division-line divisionLogin instruction" style="font-family: Open Sans, sans-serif !important">
                                 ${msg("noAccount")}
                                 <a tabindex="6" href="${url.registrationUrl}">
                                     ${msg("doRegister")}.
