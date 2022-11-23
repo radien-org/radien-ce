@@ -46,8 +46,6 @@ textarea.pf-c-form-control {
 .pf-c-form-control:hover, .pf-c-form-control:focus {
     border-bottom-color: #0066CC;
     border-bottom-color: var(--pf-global--primary-color--100);
-    border-bottom-width: 2px;
-    border-bottom-width: var(--pf-global--BorderWidth--md);
     color: RGBA(255,255,255,0.9) !important;
 }
 
@@ -111,8 +109,10 @@ textarea.pf-c-form-control {
 .pf-c-form-control[aria-invalid="true"] {
     border-bottom-color: #C9190B;
     border-bottom-color: var(--pf-global--danger-color--100);
-    border-bottom-width: 2px;
-    border-bottom-width: var(--pf-global--BorderWidth--md);
+}
+
+.pf-c-form-control[aria-invalid="true"]::placeholder {
+    font-weight: bold;
 }
 
 .pf-c-check__label, .pf-c-radio__label {
@@ -814,6 +814,13 @@ input[type="text"] {
     border-bottom-color: #ECE9EB;
     text-align: center;
     opacity: 0.7;
+}
+
+input[type="text"]:focus::placeholder,
+input[type="text"]:hover::placeholder,
+input[type="password"]:focus::placeholder,
+input[type="password"]:hover::placeholder{
+    font-weight: bold;
 }
 
 input[type="button"] {

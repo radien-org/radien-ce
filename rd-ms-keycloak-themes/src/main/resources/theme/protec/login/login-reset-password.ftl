@@ -41,7 +41,7 @@
         </div>
         <div id="kc-form-options" class="${properties.kcFormOptionsClass!} login-registration-link up-division-line divisionLogin" style="margin-top: 3rem">
             <div class="${properties.kcFormOptionsWrapperClass!} reg-footer-msg">
-                <span class="instruction">${kcSanitize(msg("forgotPasswordBackToLogin"))?no_esc} &nbsp;<a href="${url.loginUrl}">${kcSanitize(msg("doLogIn"))?no_esc}</a></span>
+                <span class="instruction">${kcSanitize(msg("forgotPasswordBackToLogin"))?no_esc} &nbsp;<a href="${url.loginUrl}">${kcSanitize(msg("doLogIn"))?no_esc}.</a></span>
             </div>
         </div>
     </#if>
