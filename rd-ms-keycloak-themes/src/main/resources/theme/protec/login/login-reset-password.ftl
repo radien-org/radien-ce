@@ -16,7 +16,7 @@
                     <div class="${properties.kcInputWrapperClass!}">
                         <#if messagesPerField.existsError('username')>
                             <span id="input-error-username" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
-                            ${kcSanitize(messagesPerField.get('username'))?no_esc}
+                            ${kcSanitize(msg('forgotPasswordError'))?no_esc}
                         </span>
                         </#if>
                         <input

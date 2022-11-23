@@ -704,13 +704,24 @@ ul#kc-totp-supported-apps {
 
 .card-pf {
     margin: 0 auto;
-    padding: 0 20px;
     background-color: #224745;
     box-shadow: 0 3px 9px #224745;
     padding: 2rem 3rem;
     max-width: 500px;
     border-color: #0066CC; /* default - IE compatibility */
     border-color: var(--pf-global--primary-color--100);
+}
+
+@media (max-width: 350px){
+    .card-pf {
+        padding: 2rem 1.5rem;
+    }
+}
+
+@media (max-width: 320px){
+    .card-pf {
+        padding: 2rem 1rem;
+    }
 }
 
 .login-pf-page .login-pf-signup {
@@ -1257,21 +1268,19 @@ input[type="checkbox"] {
     display: flex;
     justify-content: space-between;
     width: 100%;
-    padding: .5rem 3rem;
+    padding: .5rem 0;
     flex-direction: row;
     align-items: center;
 }
 
-@media (max-width: 450px) {
-    .form-group-checkmark {
-        padding: .5rem 1rem
-    }
+.checkmarks-container {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
-@media (max-width: 400px) {
-    .form-group-checkmark {
-        padding: .5rem .5rem
-    }
+.checkmarks-container > .input-error-terms {
+    align-self: center;
 }
 
 .checkmark-container{
