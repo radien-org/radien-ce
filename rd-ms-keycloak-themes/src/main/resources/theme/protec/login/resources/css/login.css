@@ -1273,7 +1273,7 @@ input[type="checkbox"] {
     height: 23px;
     width: 23px;
     border-radius: 50%;
-    border: 2px solid white;
+    border: 2px solid #ECE9EB;
     margin-right: 10px;
     display: flex;
     align-items: center;
