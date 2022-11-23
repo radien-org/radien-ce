@@ -848,7 +848,7 @@ input[type="submit"] {
     border: none;
     border-radius: 0px;
     background-color: #ECE9EB;
-    color: #224745;
+    color: #2B4645;
     opacity: 1;
     max-width: 180px;
     text-transform: uppercase;
@@ -944,7 +944,6 @@ input[type="tel"]:hover {
 
 a {
     font-weight: lighter !important;
-    color: #ffffff;
     text-decoration: none;
 }
 
