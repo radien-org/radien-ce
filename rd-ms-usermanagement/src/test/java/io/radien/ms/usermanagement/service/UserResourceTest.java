@@ -167,7 +167,7 @@ public class UserResourceTest {
     /**
      * Test that will test the error message 404 User Not Found
      */
-    @Test
+    @Test(expected = UserNotFoundException.class)
     public void testGetById404() {
         preProcessAuthentication();
 
@@ -182,7 +182,6 @@ public class UserResourceTest {
 
         when(userBusinessService.get(1L)).thenThrow(new UserNotFoundException("1"));
         Response response = userResource.getById(1L);
-        assertEquals(404,response.getStatus());
     }
 
     /**

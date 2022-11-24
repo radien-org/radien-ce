@@ -31,11 +31,6 @@ public class MSOAFTest extends TestCase {
     }
 
     @Test
-    public void testFindLocale() {
-        assertNotNull(oaf.findLocale("en"));
-    }
-
-    @Test
     public void testGetProperty() {
         assertEquals("defaultValue", oaf.getProperty(OAFProperties.SYS_DEFAULT_LOCALE, "defaultValue"));
     }

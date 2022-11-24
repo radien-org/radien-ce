@@ -172,8 +172,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
             return Optional.of(UserModelMapper.map((InputStream) client.getById(id).getEntity()));
-        }
-        catch (NotFoundException n) {
+        } catch (NotFoundException n) {
             return Optional.empty();
         }
         catch (ExtensionException | ProcessingException | MalformedURLException e) {

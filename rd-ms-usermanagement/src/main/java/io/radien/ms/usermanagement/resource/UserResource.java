@@ -102,10 +102,10 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 			if (!checkUserRoles()) {
 				return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
 			}
-			return Response.ok(userBusinessService.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
 		} catch (Exception e) {
 			return getResponseFromException(e);
 		}
+		return Response.ok(userBusinessService.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
 	}
 
 	/**
@@ -134,11 +134,11 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 			if (!checkUserRoles()) {
 				return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
 			}
-			SystemUser systemUser = userBusinessService.get(id);
-			return Response.ok(systemUser).build();
-		} catch(Exception e) {
+		} catch(SystemException e) {
 			return getResponseFromException(e);
 		}
+		SystemUser systemUser = userBusinessService.get(id);
+		return Response.ok(systemUser).build();
 	}
 
 	/**
@@ -151,10 +151,10 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 			if (!checkUserRoles()) {
 				return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
 			}
-			userBusinessService.delete(id);
 		}  catch (Exception e){
 			return getResponseFromException(e);
 		}
+		userBusinessService.delete(id);
 		return Response.ok().build();
 	}
 
