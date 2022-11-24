@@ -1,4 +1,4 @@
-FROM sleighzy/keycloak:16.1.0-arm64
+FROM quay.io/keycloak/keycloak:16.1.1
 #ENV KEYCLOAK_USER=raiden \
 #    KEYCLOAK_PASSWORD=brutality
 #    KEYCLOAK_IMPORT=/tmp/master.json

@@ -202,7 +202,7 @@
                             </label>
                         </div>
 
-                        <#if messagesPerField.existsError('Dataprivacy')>
+                        <#if messagesPerField.existsError('terms_2')>
                             <span id="input-error-terms" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
                                     ${msg('missingDataprivacy')?no_esc}
                         </span>
@@ -224,6 +224,8 @@
                                 <span style="flex: 1; display: flex; flex-wrap: wrap; gap: 3px">${msg("termsAgreement")} <a href='${properties.LEGAL_DATA_URL}' target="_blank">${kcSanitize(msg("Datenschutzrichtlinie"))?no_esc}</a>${kcSanitize(msg("termsAgreementFinal"))?no_esc}</span>
                             </label>
                         </div>
+
+
                     </div>
 
 
