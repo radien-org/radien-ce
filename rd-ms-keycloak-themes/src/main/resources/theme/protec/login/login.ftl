@@ -62,7 +62,7 @@
                                                     </div>
                                                     <div class="checkmark-sign-container"><img class="checkmark-img" src="${url.resourcesPath}/img/ProTec_Software_Icon_check-2B4645.svg"> </div>
                                                 </div>
-                                                <span>${msg("rememberMe")}</span>
+                                                <span style="flex: 1;  display: flex; flex-wrap: wrap">${msg("rememberMe")}</span>
                                             </label>
                                         </div>
                                     </#if>

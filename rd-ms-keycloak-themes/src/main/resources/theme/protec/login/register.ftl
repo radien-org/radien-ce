@@ -180,11 +180,12 @@
                 </#if>
 
                 <div class="${properties.kcFormGroupClass!} register-terms-link-content">
-                    <#if messagesPerField.existsError('terms')>
-                        <span id="input-error-terms" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                    <div class="checkmarks-container">
+                        <#if messagesPerField.existsError('terms')>
+                            <span id="input-error-terms" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
                                     ${msg('missingTermsAndConditions')?no_esc}
                         </span>
-                    </#if>
+                        </#if>
                         <div class="form-group-checkmark">
                             <input type="checkbox"
                                    id="terms"
@@ -197,15 +198,15 @@
                                     </div>
                                     <div class="checkmark-sign-container"> <img class="checkmark-img" src="${url.resourcesPath}/img/ProTec_Software_Icon_check-2B4645.svg"> </div>
                                 </div>
-                                <span>${msg("termsAgreement")} <a href='${properties.AGB_URL}' target="_blank">${msg("AGB")}</a> ${msg("termsAgreementFinal")}</span>
+                                <span style="flex: 1; display: flex; flex-wrap: wrap; gap: 3px">${msg("termsAgreement")} <a href='${properties.AGB_URL}' target="_blank">${kcSanitize(msg("AGB"))?no_esc}</a>${kcSanitize(msg("termsAgreementFinal"))?no_esc}</span>
                             </label>
                         </div>
 
-                    <#if messagesPerField.existsError('Dataprivacy')>
-                        <span id="input-error-terms" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                        <#if messagesPerField.existsError('terms_2')>
+                            <span id="input-error-terms" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
                                     ${msg('missingDataprivacy')?no_esc}
                         </span>
-                    </#if>
+                        </#if>
                         <div class="form-group-checkmark">
                             <input
                                     type="checkbox"
@@ -220,9 +221,12 @@
                                     </div>
                                     <div class="checkmark-sign-container"> <img class="checkmark-img" src="${url.resourcesPath}/img/ProTec_Software_Icon_check-2B4645.svg"> </div>
                                 </div>
-                                <span>${msg("termsAgreement")} <a href='${properties.LEGAL_DATA_URL}' target="_blank">${msg("Datenschutzrichtlinie")}</a> ${msg("termsAgreementFinal")}</span>
+                                <span style="flex: 1; display: flex; flex-wrap: wrap; gap: 3px">${msg("termsAgreement")} <a href='${properties.LEGAL_DATA_URL}' target="_blank">${kcSanitize(msg("Datenschutzrichtlinie"))?no_esc}</a>${kcSanitize(msg("termsAgreementFinal"))?no_esc}</span>
                             </label>
                         </div>
+
+
+                    </div>
 
 
                     <div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
@@ -240,7 +244,7 @@
 
         <div id="kc-form-options" class="${properties.kcFormOptionsClass!} login-registration-link up-division-line divisionLogin">
             <div class="${properties.kcFormOptionsWrapperClass!} reg-footer-msg">
-                <span class="instruction">${kcSanitize(msg("backToLogin"))?no_esc} &nbsp;<a href="${url.loginUrl}">${kcSanitize(msg("doLogIn"))?no_esc}</a></span>
+                <span class="instruction">${kcSanitize(msg("backToLogin"))?no_esc} <a href="${url.loginUrl}">${kcSanitize(msg("doLogIn"))?no_esc}.</a></span>
             </div>
         </div>
 

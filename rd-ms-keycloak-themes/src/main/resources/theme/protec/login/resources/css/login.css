@@ -46,8 +46,6 @@ textarea.pf-c-form-control {
 .pf-c-form-control:hover, .pf-c-form-control:focus {
     border-bottom-color: #0066CC;
     border-bottom-color: var(--pf-global--primary-color--100);
-    border-bottom-width: 2px;
-    border-bottom-width: var(--pf-global--BorderWidth--md);
     color: RGBA(255,255,255,0.9) !important;
 }
 
@@ -111,8 +109,10 @@ textarea.pf-c-form-control {
 .pf-c-form-control[aria-invalid="true"] {
     border-bottom-color: #C9190B;
     border-bottom-color: var(--pf-global--danger-color--100);
-    border-bottom-width: 2px;
-    border-bottom-width: var(--pf-global--BorderWidth--md);
+}
+
+.pf-c-form-control[aria-invalid="true"]::placeholder {
+    font-weight: bold;
 }
 
 .pf-c-check__label, .pf-c-radio__label {
@@ -337,9 +337,14 @@ a#kc-current-locale-link::after {
     padding-top: 0px;
 }
 
+.login-pf a {
+    color: #ECE9EB;
+}
+
 .login-pf a:hover {
     color: #AAC0BF;
 }
+
 
 #kc-logo {
     width: 100%;
@@ -699,13 +704,24 @@ ul#kc-totp-supported-apps {
 
 .card-pf {
     margin: 0 auto;
-    padding: 0 20px;
     background-color: #224745;
     box-shadow: 0 3px 9px #224745;
     padding: 2rem 3rem;
     max-width: 500px;
     border-color: #0066CC; /* default - IE compatibility */
     border-color: var(--pf-global--primary-color--100);
+}
+
+@media (max-width: 350px){
+    .card-pf {
+        padding: 2rem 1.5rem;
+    }
+}
+
+@media (max-width: 320px){
+    .card-pf {
+        padding: 2rem 1rem;
+    }
 }
 
 .login-pf-page .login-pf-signup {
@@ -762,7 +778,7 @@ ul#kc-totp-supported-apps {
     margin-bottom: 2rem;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
     #loginbox {
         margin-bottom: 5rem
     }
@@ -784,7 +800,7 @@ ul#kc-totp-supported-apps {
     font-decoration: underline !important;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
     .link-reset-password {
         margin-bottom: -4rem;
     }
@@ -809,6 +825,13 @@ input[type="text"] {
     border-bottom-color: #ECE9EB;
     text-align: center;
     opacity: 0.7;
+}
+
+input[type="text"]:focus::placeholder,
+input[type="text"]:hover::placeholder,
+input[type="password"]:focus::placeholder,
+input[type="password"]:hover::placeholder{
+    font-weight: bold;
 }
 
 input[type="button"] {
@@ -836,7 +859,7 @@ input[type="submit"] {
     border: none;
     border-radius: 0px;
     background-color: #ECE9EB;
-    color: #224745;
+    color: #2B4645;
     opacity: 1;
     max-width: 180px;
     text-transform: uppercase;
@@ -932,7 +955,6 @@ input[type="tel"]:hover {
 
 a {
     font-weight: lighter !important;
-    color: #ffffff;
     text-decoration: none;
 }
 
@@ -971,7 +993,7 @@ a {
     font-weight: lighter !important;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
     .instruction {
         font-size: 15px;
     }
@@ -1009,16 +1031,30 @@ a {
     border-top-style: solid;
     border-top-width: 1px;
     border-top-color: #ECE9EB;
-    width: calc(100% + 95px);
+    width: calc(100% + 6rem);
     position:relative;
-    left:-48px;
+    left:-3rem;
+}
+
+@media (max-width: 350px){
+    .divisionLogin {
+        width: calc(100% + 3rem);
+        left: -1.5rem;
+    }
+}
+
+@media (max-width: 320px){
+    .divisionLogin {
+        width: calc(100% + 2rem);
+        left: -1rem;
+    }
 }
 
 #passwordUnderline{
     text-decoration: underline ;
 }
 
-@media screen and (max-width:767px)
+@media screen and (max-width:768px)
 {
     #divisionLogin {
         width: calc(100% + 40px);
@@ -1093,7 +1129,6 @@ a {
     }
 
     #kc-info-wrapper {
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
         background-color: transparent;
     }
 
@@ -1153,7 +1188,7 @@ a {
 /* End of IE11 workaround for select-authenticator screen */
 
 /*phone*/
-@media (max-width: 767px) {
+@media (max-width: 768px) {
     .login-pf-page .card-pf {
         max-width: none;
         min-height: 100vh;
@@ -1247,28 +1282,26 @@ input[type="checkbox"] {
     display: flex;
     justify-content: space-between;
     width: 100%;
-    padding: .5rem 3rem;
+    padding: .5rem 0;
     flex-direction: row;
     align-items: center;
 }
 
-@media (max-width: 450px) {
-    .form-group-checkmark {
-        padding: .5rem 1rem
-    }
+.checkmarks-container {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
-@media (max-width: 400px) {
-    .form-group-checkmark {
-        padding: .5rem .5rem
-    }
+.checkmarks-container > .input-error-terms {
+    align-self: center;
 }
 
 .checkmark-container{
     height: 23px;
     width: 23px;
     border-radius: 50%;
-    border: 2px solid white;
+    border: 2px solid #ECE9EB;
     margin-right: 10px;
     display: flex;
     align-items: center;
