@@ -20,6 +20,7 @@ import io.radien.api.OAFProperties;
 import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.util.FactoryUtilService;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.UserClient;
@@ -425,6 +426,20 @@ public class ActiveTenantRESTServiceClientTest {
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
         target.deleteByTenantAndUser(2L,2L);
+    }
+
+
+    /**
+    * Tests the access into the db and deletion of a active tenant (by tenant and user) without success,
+    * when a NotFoundException is thrown.
+    * @throws Exception in case of issue
+    */
+    @Test
+    public void testDeleteByTenantAndUserReturnFalseOnNotFoundException() throws Exception {
+        ActiveTenantResourceClient activeTenantResourceClient = Mockito.mock(ActiveTenantResourceClient.class);
+        when(activeTenantResourceClient.delete(2L, 2L)).thenReturn(Response.ok(Boolean.TRUE).build());
+        when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenThrow(NotFoundException.class);
+        assertFalse(target.deleteByTenantAndUser(2L,2L));
     }
 
 

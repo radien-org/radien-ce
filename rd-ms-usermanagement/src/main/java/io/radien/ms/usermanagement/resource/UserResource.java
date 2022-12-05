@@ -148,7 +148,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	 */
 	public Response delete(long id)  {
 		try {
-			if (!checkUserRoles()) {
+			if (!checkUserRoles() && id != getCurrentUserId()) {
 				return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
 			}
 		}  catch (Exception e){

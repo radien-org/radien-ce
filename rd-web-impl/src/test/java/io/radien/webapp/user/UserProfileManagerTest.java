@@ -73,14 +73,7 @@ import static org.junit.Assert.fail;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.nullable;
-
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Class that aggregates UnitTest cases for UserProfileManager
@@ -656,6 +649,90 @@ public class UserProfileManagerTest {
         assertNotNull(userPasswordChanging.getOldPassword());
         assertNotNull(userPasswordChanging.getNewPassword());
         assertNotNull(userProfileManager.getConfirmationInfo());
+    }
+
+    /**
+     * Test method for {@link UserProfileManager#deleteUserListener()}
+     * for a successful scenario
+     */
+    @Test
+    public void testDeleteUserListenerSuccessful(){
+        Long userId = 99L;
+        when(userSession.getUserId()).then(i -> userId);
+        Tenant tenant = new Tenant(); tenant.setId(1111L);
+
+        List<SystemTenant> assigned = new ArrayList<>();
+        assigned.add(tenant);
+        userProfileManager.setAssignedTenants(assigned);
+
+        try {
+            when(tenantRoleUserRESTServiceAccess.unAssignUser(tenant.getId(), null, userId)).
+                    thenReturn(Boolean.TRUE);
+        } catch (SystemException s) {
+            fail("unexpected");
+        }
+        when(userRESTServiceAccess.deleteUser(userId)).thenReturn(true);
+        when(userSession.logout()).thenReturn(true);
+
+        userProfileManager.deleteUserListener();
+
+        verify(userRESTServiceAccess).deleteUser(userId);
+        verify(userSession).logout();
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
+        assertEquals("rd_user_profile_delete_success", captured.getSummary());
+
+    }
+
+    /**
+     * Test method for {@link UserProfileManager#deleteUserListener()}
+     * for the unsuccessful scenario where the user deletion failed
+     */
+    @Test
+    public void testDeleteUserListenerUnSuccessful() {
+        Long userId = 99L;
+        when(userSession.getUserId()).then(i -> userId);
+        when(userRESTServiceAccess.deleteUser(userId)).thenReturn(false);
+
+        userProfileManager.deleteUserListener();
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
+        assertEquals("rd_user_profile_delete_error", captured.getSummary());
+
+        assertEquals(new Long(0), userProfileManager.getTabIndex());
+    }
+
+    /**
+     * Test method for {@link UserProfileManager#deleteUserListener()}
+     * for specific unsuccessful scenario when a NullPointerException is thrown
+     */
+    @Test
+    public void testDeleteUserListenerException() {
+        Long userId = 99L;
+        when(userSession.getUserId()).then(i -> userId);
+        Tenant tenant = new Tenant(); tenant.setId(1111L);
+        List<SystemTenant> assigned = new ArrayList<>();
+        userProfileManager.setAssignedTenants(assigned);
+
+        when(userRESTServiceAccess.deleteUser(userId)).thenThrow(new NullPointerException());
+        userProfileManager.deleteUserListener();
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
+        assertEquals("rd_user_profile_delete_error", captured.getSummary());
+
+        assertEquals(new Long(0), userProfileManager.getTabIndex());
     }
 
     /**

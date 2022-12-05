@@ -15,7 +15,8 @@
  */
 package io.radien.ms.tenantmanagement.client.services;
 
-import io.radien.exception.InternalServerErrorException;
+import io.radien.exception.*;
+
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.text.ParseException;
@@ -36,9 +37,6 @@ import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
-import io.radien.exception.GenericErrorCodeMessage;
-import io.radien.exception.SystemException;
-import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
 import io.radien.ms.tenantmanagement.client.util.ActiveTenantModelMapper;
@@ -309,15 +307,12 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             ActiveTenantResourceClient client = clientServiceUtil.getActiveTenantResourceClient(oafAccess.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
             Response response = client.delete(tenant, user);
-            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-                return response.readEntity(Boolean.class);
-            }
-            String issue = response.readEntity(String.class);
-            log.error(issue);
-            return false;
-        }
-        catch (MalformedURLException | ExtensionException | ProcessingException e) {
+            return response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL;
+        }catch (MalformedURLException | ExtensionException | ProcessingException e) {
             throw new SystemException(e);
+        } catch (NotFoundException e) {
+            log.error(e.getMessage());
+            return false;
         }
     }
 

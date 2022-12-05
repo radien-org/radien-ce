@@ -57,6 +57,10 @@
 									  action="${userProfileManager.sendDataRequestOptIn}"
 									  iconAwesome="fa-file-circle-info"/>
 
+							<b:button id="deleteMyUser"
+									  value="#{msg.delete_my_user}" tooltip="#{msg.delete_my_user}"
+									  onclick="$('.formValidationModalUserProfileDeletion').modal('show')"/>
+
 							<b:modal id="model"
 									 title="#{msg.confirmation}"
 									 styleClass="formValidationModalUserProfileUpdate"
@@ -70,6 +74,22 @@
 									<b:commandButton value="#{msg.yes}" look="warning"
 													 action="#{userProfileManager.updateProfile(userProfileManager.clonedLogInUser)}"
 													 oncomplete="{ $('.formValidationModalUserProfileUpdate').modal('hide') } "/>
+								</f:facet>
+							</b:modal>
+
+							<b:modal id="model_profile_deletion"
+									 title="#{msg.confirmation}"
+									 styleClass="formValidationModalUserProfileDeletion"
+									 closable="false"
+									 close-on-escape="false" backdrop="false">
+								<p>#{msg.userProfileDeletionConfirmation}</p>
+								<f:facet name="footer">
+									<b:commandButton value="#{msg.returnButton}"
+													 type="reset"
+													 onclick="{ $('.formValidationModalUserProfileDeletion').modal('hide') } "/>
+									<b:commandButton value="#{msg.yes}" look="warning"
+													 action="#{userProfileManager.deleteUserListener()}"
+													 oncomplete="{ $('.formValidationModalUserProfileDeletion').modal('hide') } "/>
 								</f:facet>
 							</b:modal>
 

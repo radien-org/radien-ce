@@ -358,6 +358,36 @@ public class UserProfileManager extends AbstractManager {
         }
     }
 
+    public void deleteUserListener() {
+        Long id = userSession.getUserId();
+        try {
+            log.info("Starting to delete user {}", id);
+
+            if(userService.deleteUser(id)){
+               userSession.logout();
+               log.info("User {} succesfully deleted", id);
+
+                log.info("Starting to unassign all tenants from user {}", id);
+                for(SystemTenant tenant: assignedTenants) {
+                    tenantRoleUserRESTServiceAccess.unAssignUser(tenant.getId(), null, userSession.getUserId());
+                }
+                log.info("Succesfully unasigned all tenants from user {}", id);
+
+                handleMessage(
+                        FacesMessage.SEVERITY_INFO,
+                        JSFUtil.getMessage("rd_user_profile_delete_success"));
+           }else {
+                log.info("Failed to delete user: {}", id);
+                handleMessage(FacesMessage.SEVERITY_ERROR,
+                        JSFUtil.getMessage("rd_user_profile_delete_error"));
+           }
+        } catch (Exception e) {
+            log.info("A exception occured while trying to delete user: {}", id);
+            handleError(e,
+                    JSFUtil.getMessage("rd_user_profile_delete_error"));
+        }
+    }
+
     /**
      * Listener/Validator to check if password and confirmation password matches
      * @param event validation event
