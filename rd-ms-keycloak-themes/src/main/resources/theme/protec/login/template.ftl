@@ -7,6 +7,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="robots" content="noindex, nofollow">
 
+    <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="26eead5e-6cb6-4d36-9b7b-686ed5c4673f" data-blockingmode="auto" type="text/javascript"></script>
+
     <#if properties.meta?has_content>
         <#list properties.meta?split(' ') as meta>
             <meta name="${meta?split('==')[0]}" content="${meta?split('==')[1]}"/>
