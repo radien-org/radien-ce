@@ -232,18 +232,28 @@ public class UserProfileManager extends AbstractManager {
         return DataModelEnum.PRETTY_INDEX.getValue();
     }
 
-    public void sendDataRequestOptIn() throws SystemException {
-        String ticketUuid = createDataRequestTicket();
+    public void sendDataRequestOptIn(){
+        try {
+            String ticketUuid = createDataRequestTicket();
 
-        String referenceUrl = MessageFormat.format("{0}/confirmData?ticket={1}", JSFUtil.getBaseUrl().orElse("#"), ticketUuid);
-        String emailViewId = "email-7";
-        Map<String, String> argumentsMap = new HashMap<>();
-        argumentsMap.put("firstName", clonedLogInUser.getFirstname());
-        argumentsMap.put("lastName", clonedLogInUser.getLastname());
-        argumentsMap.put("portalUrl", "radien");
-        argumentsMap.put("targetUrl", referenceUrl);
+            String referenceUrl = MessageFormat.format("{0}/confirmData?ticket={1}", JSFUtil.getBaseUrl().orElse("#"), ticketUuid);
+            String emailViewId = "email-7";
+            Map<String, String> argumentsMap = new HashMap<>();
+            argumentsMap.put("firstName", clonedLogInUser.getFirstname());
+            argumentsMap.put("lastName", clonedLogInUser.getLastname());
+            argumentsMap.put("portalUrl", "radien");
+            argumentsMap.put("targetUrl", referenceUrl);
 
-        mailService.notifyCurrentUser(emailViewId, userSession.getLanguage(), argumentsMap);
+            mailService.notifyCurrentUser(emailViewId, userSession.getLanguage(), argumentsMap);
+        } catch (SystemException e) {
+            log.info("A exception occured while trying to request data for the user {}. The exception message is: {}", userSession.getUserId(), e.getMessage());
+            handleMessage(FacesMessage.SEVERITY_ERROR,
+                    JSFUtil.getMessage("request_data_error"));
+
+            handleMessage(FacesMessage.SEVERITY_ERROR,
+                    JSFUtil.getMessage("rd_user_profile_delete_error"));
+        }
+
     }
 
     private String createDataRequestTicket() throws SystemException {
