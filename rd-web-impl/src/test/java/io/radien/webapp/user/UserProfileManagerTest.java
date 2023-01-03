@@ -799,4 +799,25 @@ public class UserProfileManagerTest {
         userProfileManager.sendDataRequestOptIn();
         verify(mailService).notifyCurrentUser(anyString(), anyString(), any());
     }
+
+    @Test
+    public void testSendDataRequestOptInException() throws SystemException {
+        when(JSFUtil.getBaseUrl()).thenReturn(Optional.of("baseUrl"));
+
+        SystemUser clonedSystemUser = new User((User) systemUser);
+        clonedSystemUser.setUserEmail("email@email.com");
+        userProfileManager.setClonedLogInUser(clonedSystemUser);
+
+        when(userSession.getLanguage()).thenReturn("en");
+
+        when(mailService.notifyCurrentUser(anyString(),anyString(),any())).thenThrow(new SystemException());
+        userProfileManager.sendDataRequestOptIn();
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
+        assertEquals("request_data_error", captured.getSummary());
+    }
 }
