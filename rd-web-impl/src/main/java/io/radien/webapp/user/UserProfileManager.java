@@ -249,9 +249,6 @@ public class UserProfileManager extends AbstractManager {
             log.info("A exception occured while trying to request data for the user {}. The exception message is: {}", userSession.getUserId(), e.getMessage());
             handleMessage(FacesMessage.SEVERITY_ERROR,
                     JSFUtil.getMessage("request_data_error"));
-
-            handleMessage(FacesMessage.SEVERITY_ERROR,
-                    JSFUtil.getMessage("rd_user_profile_delete_error"));
         }
 
     }
