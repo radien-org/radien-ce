@@ -71,6 +71,8 @@ public interface UserRESTServiceAccess extends Appframeable{
      * @return true if user has been created with success or false if not
      * @throws SystemException in case of token expiration or any issue on the application
      */
+    Optional<SystemUser> getCurrentUserInSession() throws SystemException;
+
     /**
      * Creates given user
      * @param user to be created

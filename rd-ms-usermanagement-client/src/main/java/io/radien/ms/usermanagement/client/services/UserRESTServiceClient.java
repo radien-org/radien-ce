@@ -244,6 +244,21 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         }
     }
 
+    public Optional<SystemUser> getCurrentUserInSession() throws SystemException {
+        return get(() -> {
+            try {
+                UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+                Response response = client.getUserInSession();
+                if(response.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL)) {
+                    return Optional.of(UserModelMapper.map((InputStream) response.getEntity()));
+                }
+                return Optional.empty();
+            } catch (MalformedURLException e) {
+                throw new SystemException(e);
+            }
+        });
+    }
+
     /**
      * Creates given user
      * @param user to be created
