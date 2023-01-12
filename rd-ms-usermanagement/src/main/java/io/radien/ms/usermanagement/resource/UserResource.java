@@ -24,6 +24,7 @@ import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import io.radien.ms.usermanagement.entities.UserEntity;
 import io.radien.ms.usermanagement.service.UserBusinessService;
+import java.util.Objects;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
@@ -131,7 +132,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	 */
 	public Response getById(Long id) {
 		try {
-			if (!checkUserRoles()) {
+			if (!checkUserRoles() && !Objects.equals(getCurrentUserId(), id)) {
 				return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
 			}
 		} catch(SystemException e) {

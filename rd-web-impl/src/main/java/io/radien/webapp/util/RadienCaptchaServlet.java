@@ -46,7 +46,6 @@ public class RadienCaptchaServlet extends SimpleCaptchaServlet {
         if (this.getInitParameter("captcha-width") != null) {
             _width = Integer.valueOf(this.getInitParameter("captcha-width"));
         }
-
     }
 
     @Override
