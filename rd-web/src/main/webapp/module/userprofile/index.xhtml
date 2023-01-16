@@ -180,11 +180,11 @@
 				<b:button value="#{msg.cancel}"
 								 onclick="{ $('.changePwdDialog').modal('hide') } "/>
 
-				<b:commandButton largeScreen="half" update="@form"
+				<b:commandButton update="@form sys-messages"
 								 dismiss="modal"
-								 value="#{msg.confirm}" look="warning"
-								 actionListener="#{userProfileManager.changePasswordListener}"
-								 oncomplete="if(!validationFailed &amp;&amp; !bfHasError &amp;&amp; !bfHasInfo) { $('.changePwdDialog').modal('hide') } "/>
+								 value="#{msg.confirm}"
+								 action="#{userProfileManager.changePasswordListener}"
+								 oncomplete="if(!validationFailed &amp;&amp; !bfHasError) { $('.changePwdDialog').modal('hide') } "/>
 				<b:fetchBeanInfos />
 			</b:form>
 		</b:modal>

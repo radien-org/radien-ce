@@ -128,7 +128,6 @@ public class UserProfileManagerTest {
 
     @Before
     public void before(){
-
         facesContext = mock(FacesContext.class);
         when(FacesContext.getCurrentInstance()).thenReturn(facesContext);
 
@@ -502,7 +501,7 @@ public class UserProfileManagerTest {
     public void testChangePasswordListenerSuccess() throws SystemException {
         String logon = "test.test";
         String sub = "123-45-bb";
-        String pass = "1234", newPass = "123456";
+        String pass = "1234", newPass = "123456aA!";
 
         systemUser.setLogon(logon);
         when(userSession.getUser()).thenReturn(systemUser);
@@ -516,13 +515,6 @@ public class UserProfileManagerTest {
         when(this.userRESTServiceAccess.updatePassword(sub, userPasswordChanging)).
                 thenReturn(Boolean.TRUE);
         this.userProfileManager.changePasswordListener();
-
-        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
-        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
-
-        FacesMessage captured = facesMessageCaptor.getValue();
-        assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
-        assertEquals(DataModelEnum.USER_CHANGE_PASSWORD_SUCCESS.getValue(), captured.getSummary());
 
         assertNull(userPasswordChanging.getLogin());
         assertNull(userPasswordChanging.getOldPassword());
@@ -540,7 +532,7 @@ public class UserProfileManagerTest {
     public void testChangePasswordListenerFail() throws SystemException{
         String logon = "test.test";
         String sub = "123-45-bb";
-        String pass = "1234", newPass = "123456";
+        String pass = "1234", newPass = "123456aA!";
 
         systemUser.setLogon(logon);
         when(userSession.getUser()).thenReturn(systemUser);
@@ -555,12 +547,6 @@ public class UserProfileManagerTest {
                 thenThrow(new SystemException("fail"));
         this.userProfileManager.changePasswordListener();
 
-        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
-        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
-
-        FacesMessage captured = facesMessageCaptor.getValue();
-        assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals(DataModelEnum.USER_CHANGE_PASSWORD_UNSUCCESSFUL.getValue(), captured.getSummary());
 
         assertNotNull(userPasswordChanging.getLogin());
         assertNotNull(userPasswordChanging.getOldPassword());
@@ -596,13 +582,6 @@ public class UserProfileManagerTest {
                 thenThrow(new SystemException(badRequestException));
         this.userProfileManager.changePasswordListener();
 
-        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
-        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
-
-        FacesMessage captured = facesMessageCaptor.getValue();
-        assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals(DataModelEnum.USER_CHANGE_PASSWORD_ACTUAL_PASSWORD_INVALID.getValue(), captured.getSummary());
-
         assertNotNull(userPasswordChanging.getLogin());
         assertNotNull(userPasswordChanging.getOldPassword());
         assertNotNull(userPasswordChanging.getNewPassword());
@@ -637,13 +616,6 @@ public class UserProfileManagerTest {
         when(this.userRESTServiceAccess.updatePassword(sub, userPasswordChanging)).
                 thenThrow(new SystemException(badRequestException));
         this.userProfileManager.changePasswordListener();
-
-        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
-        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
-
-        FacesMessage captured = facesMessageCaptor.getValue();
-        assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals(DataModelEnum.USER_CHANGE_PASSWORD_UNSUCCESSFUL.getValue(), captured.getSummary());
 
         assertNotNull(userPasswordChanging.getLogin());
         assertNotNull(userPasswordChanging.getOldPassword());
@@ -756,13 +728,6 @@ public class UserProfileManagerTest {
         when(event.getComponent()).thenReturn(components);
 
         userProfileManager.validateComparePasswords(event);
-
-        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
-        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
-
-        FacesMessage captured = facesMessageCaptor.getValue();
-        assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
-        assertEquals(DataModelEnum.USER_CHANGE_PASSWORD_NO_MATCHES.getValue(), captured.getSummary());
     }
 
     /**

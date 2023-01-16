@@ -346,22 +346,28 @@ public class UserProfileManager extends AbstractManager {
             String username = this.userSession.getUser().getLogon();
             String sub = this.userSession.getUserIdSubject();
             this.changing.setLogin(username);
+            if(!this.changing.validatePassword()) {
+                for(String error : this.changing.getValidationErrors()) {
+                    JSFUtil.addErrorMessage(error);
+                }
+                return;
+            }
             userService.updatePassword(sub, this.changing);
             setTabIndex(0L);
             this.changing.clear();
             this.confirmationInfo = "";
-            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.USER_CHANGE_PASSWORD_SUCCESS.getValue()));
+            JSFUtil.addSuccessMessage(DataModelEnum.USER_CHANGE_PASSWORD_SUCCESS.getValue());
         }
         catch(Exception e) {
             Map<String, String> map = (Map<String, String>) this.getWrappedErrorDescriptor(e);
             if (map != null) {
                 String code = map.get(SystemVariables.GENERIC_ERROR_MESSAGE_CODE.getFieldName());
                 if (code != null && code.equals(ERROR_INVALID_CREDENTIALS.getCode())) {
-                    handleMessage(FacesMessage.SEVERITY_ERROR, JSFUtil.getMessage(DataModelEnum.USER_CHANGE_PASSWORD_ACTUAL_PASSWORD_INVALID.getValue()));
+                    JSFUtil.addErrorMessage(DataModelEnum.USER_CHANGE_PASSWORD_ACTUAL_PASSWORD_INVALID.getValue());
                     return;
                 }
             }
-            handleError(e, JSFUtil.getMessage(DataModelEnum.USER_CHANGE_PASSWORD_UNSUCCESSFUL.getValue()));
+            JSFUtil.addErrorMessage(DataModelEnum.USER_CHANGE_PASSWORD_UNSUCCESSFUL.getValue());
         }
     }
 
@@ -412,7 +418,7 @@ public class UserProfileManager extends AbstractManager {
             return;
         }
         if (!pass.equals(confirm)) {
-            handleMessage(FacesMessage.SEVERITY_ERROR, JSFUtil.getMessage(DataModelEnum.USER_CHANGE_PASSWORD_NO_MATCHES.getValue()));
+            JSFUtil.addErrorMessage(DataModelEnum.USER_CHANGE_PASSWORD_NO_MATCHES.getValue());
             JSFUtil.getFacesContext().renderResponse();
         }
     }

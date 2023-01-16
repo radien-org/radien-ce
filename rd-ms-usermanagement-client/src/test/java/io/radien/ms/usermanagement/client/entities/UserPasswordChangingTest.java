@@ -18,8 +18,10 @@ package io.radien.ms.usermanagement.client.entities;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test class for {@link UserPasswordChanging}
@@ -71,6 +73,32 @@ public class UserPasswordChangingTest {
         String login = "test";
         u.setLogin(login);
         assertEquals(login, u.getLogin());
+    }
+
+    @Test
+    public void testClear() {
+        UserPasswordChanging u = new UserPasswordChanging();
+        String login = "test";
+        u.setLogin(login);
+        assertEquals(login, u.getLogin());
+        u.clear();
+        assertNull(u.getLogin());
+    }
+
+    @Test
+    public void testValidatePasswordFullInvalid() {
+        UserPasswordChanging u = new UserPasswordChanging();
+        u.setNewPassword(" ");
+        assertFalse(u.validatePassword());
+        assertEquals(5, u.getValidationErrors().size());
+    }
+
+    @Test
+    public void testValidatePasswordValid() {
+        UserPasswordChanging u = new UserPasswordChanging();
+        u.setNewPassword("Abcd_123");
+        assertTrue(u.validatePassword());
+        assertEquals(0, u.getValidationErrors().size());
     }
 
 
