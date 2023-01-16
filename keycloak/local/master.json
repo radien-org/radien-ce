@@ -561,6 +561,9 @@
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
     "realmRoles" : [ "default-roles-master" ],
+    "clientRoles": {
+      "radien-realm": [ "manage-users" ]
+    },
     "notBefore" : 0,
     "groups" : [ ]
   } ],

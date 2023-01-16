@@ -50,6 +50,7 @@ public class KeycloakInitializer {
     private static final String MASTER_TOKEN_PATH = "/auth/realms/master/protocol/openid-connect/token";
     private static final String REALMS = "/auth/admin/realms/";
     private static final String MASTER_CLIENTS = "/auth/admin/realms/master/clients";
+    private static final String MASTER_USERS = "/auth/admin/realms/master/users";
     private static final String RADIEN_USERS = "/auth/admin/realms/radien/users";
 
     public KeycloakInitializer(String masterRealmUser, String masterRealmUserPassword,String idpUrl,String workDir) {
@@ -80,9 +81,9 @@ public class KeycloakInitializer {
 
     public void createServiceClient(String masterAccessToken){
 
-        List<String> lines = null;
+        List<String> clientContent = null;
         try {
-            lines = Files.readAllLines(Paths.get(workDir + File.separator +"ServiceAccountsClient.json"));
+            clientContent = Files.readAllLines(Paths.get(workDir + File.separator +"ServiceAccountsClient.json"));
         } catch (IOException e) {
             String msg = Paths.get(".").toAbsolutePath().toString();
             log.error("location expected {}", msg);
@@ -90,13 +91,47 @@ public class KeycloakInitializer {
             System.exit(52);
         }
 
-        HttpResponse<HashMap<String,Object>> response = Unirest.post(idpUrl+MASTER_CLIENTS)
-                .body(String.join("\n",lines))
+        HttpResponse<HashMap<String,Object>> responseClient = Unirest.post(idpUrl+MASTER_CLIENTS)
+                .body(String.join("\n",clientContent))
                 .header(Headers.AUTHORIZATION,Headers.BEARER+masterAccessToken)
                 .header(CONTENT_TYPE,APPLICATION_JSON)
                 .asObject(new GenericType<HashMap<String,Object>>(){});
-        logProgress("Create Service Client",response);
+        logProgress("Create Service Client",responseClient);
+    }
 
+    public void createServiceClientUser(String masterAccessToken) {
+        String serviceClientId = "/e0778735-a0a3-4ee7-908f-6dc13dee0d4a";
+
+        HttpResponse<HashMap<String,Object>> responseClient = Unirest.get(idpUrl + MASTER_CLIENTS + serviceClientId + "/service-account-user")
+                .header(Headers.AUTHORIZATION,Headers.BEARER+masterAccessToken)
+                .header(CONTENT_TYPE,APPLICATION_JSON)
+                .asObject(new GenericType<HashMap<String,Object>>(){});
+        logProgress("Get Service Account User", responseClient);
+        String serviceAccountUserId = responseClient.getBody().get("id").toString();
+        log.info("Service Account User Id {}", serviceAccountUserId);
+
+        HttpResponse<ArrayList<HashMap<String,Object>>> masterRadienClient = Unirest.get(idpUrl + MASTER_CLIENTS + "?clientId=radien-realm")
+                .header(Headers.AUTHORIZATION,Headers.BEARER+masterAccessToken)
+                .header(CONTENT_TYPE,APPLICATION_JSON)
+                .asObject(new GenericType<ArrayList<HashMap<String,Object>>>(){});
+        logProgress("Get Radien Client Id", masterRadienClient);
+        String radienClientId = masterRadienClient.getBody().get(0).get("id").toString();
+        log.info("Radien Client Id {}", radienClientId);
+
+        HttpResponse<ArrayList<HashMap<String,Object>>> radienClientRoles = Unirest.get(idpUrl + MASTER_CLIENTS + "/" + radienClientId + "/roles?search=manage-users")
+                .header(Headers.AUTHORIZATION,Headers.BEARER+masterAccessToken)
+                .header(CONTENT_TYPE,APPLICATION_JSON)
+                .asObject(new GenericType<ArrayList<HashMap<String,Object>>>(){});
+        logProgress("Get Radien Client Manage Users Role", radienClientRoles);
+        String roleId = radienClientRoles.getBody().get(0).get("id").toString();
+        log.info("Radien Client Manage Users Role Id {}", roleId);
+
+        HttpResponse<HashMap<String,Object>> roleAssignment = Unirest.post(idpUrl + MASTER_USERS + "/" + serviceAccountUserId + "/role-mappings/clients/" + radienClientId)
+                .body("[{\"id\":\"" + roleId + "\",\n\"name\":\"manage-users\"}]")
+                .header(Headers.AUTHORIZATION,Headers.BEARER+masterAccessToken)
+                .header(CONTENT_TYPE,APPLICATION_JSON)
+                .asObject(new GenericType<HashMap<String,Object>>(){});
+        logProgress("Assign Service Client User Role", roleAssignment);
     }
 
     public List<String> getTokens(){

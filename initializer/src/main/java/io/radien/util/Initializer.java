@@ -226,6 +226,7 @@ public class Initializer {
                 String masterAccessToken = masterTokens.get(0);
                 keycloakInitializer.createRealm(masterAccessToken);
                 keycloakInitializer.createServiceClient(masterAccessToken);
+                keycloakInitializer.createServiceClientUser(masterAccessToken);
                 keycloakInitializer.createUser(masterAccessToken);
             }
 
