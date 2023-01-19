@@ -1,0 +1,193 @@
+version: "3.9"
+services:
+  keycloak:
+    container_name: rkc
+    build:
+      context: .
+      dockerfile: keycloak/local/Dockerfile
+    environment:
+      - KEYCLOAK_USER=raiden
+      - KEYCLOAK_PASSWORD=brutality
+      - AWS_SNS_SIMULATION=true
+      - AWS_SNS_SENDER_ID=RADIEN
+      - AWS_SNS_MESSAGE_LENGTH=6
+      - AWS_SNS_TTL=300
+    ports:
+      - "8180:8080"
+      - "8343:8443"
+  mail-hog:
+    container_name: mailHog
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+  user:
+    container_name: userManagementService
+    build:
+      context: .
+      dockerfile: tomee/local/Dockerfile
+      args:
+        - SOURCE_WAR_PATH=rd-ms-usermanagement/target/usermanagementservice.war
+        - EXT_PROPERTIES_PATH=tomee/local/system-ext.properties
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/usermanagementservice/v1/health" ]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    ports:
+      - "8441:8443"
+      - "8085:8080"
+      - "8005:8000"
+  tenant:
+    container_name: tenantManagementService
+    build:
+      context: .
+      dockerfile: tomee/local/Dockerfile
+      args:
+        - SOURCE_WAR_PATH=rd-ms-tenantmanagement/target/tenantmanagementservice.war
+        - EXT_PROPERTIES_PATH=tomee/local/system-ext.properties
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/tenantmanagementservice/v1/health" ]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    ports:
+      - "8442:8443"
+      - "8084:8080"
+      - "8004:8000"
+  role:
+    container_name: roleManagementService
+    build:
+      context: .
+      dockerfile: tomee/local/Dockerfile
+      args:
+        - SOURCE_WAR_PATH=rd-ms-rolemanagement/target/rolemanagementservice.war
+        - EXT_PROPERTIES_PATH=tomee/local/system-ext.properties
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/rolemanagementservice/v1/health" ]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    ports:
+      - "8444:8443"
+      - "8083:8080"
+      - "8003:8000"
+  ticket:
+    container_name: ticketManagementService
+    build:
+      context: .
+      dockerfile: tomee/local/Dockerfile
+      args:
+        - SOURCE_WAR_PATH=rd-ms-ticketmanagement/target/ticketmanagementservice.war
+        - EXT_PROPERTIES_PATH=tomee/local/system-ext.properties
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/ticketmanagementservice/v1/health" ]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    ports:
+      - "8449:8443"
+      - "8088:8080"
+      - "8008:8000"
+  permission:
+    container_name: permissionManagementService
+    build:
+      context: .
+      dockerfile: tomee/local/Dockerfile
+      args:
+        - SOURCE_WAR_PATH=rd-ms-permissionmanagement/target/permissionmanagementservice.war
+        - EXT_PROPERTIES_PATH=tomee/local/system-ext.properties
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/permissionmanagementservice/v1/health" ]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    ports:
+      - "8445:8443"
+      - "8082:8080"
+      - "8002:8000"
+  notification:
+    container_name: notificationManagementService
+    build:
+      context: .
+      dockerfile: tomee/local/Dockerfile
+      args:
+        - SOURCE_WAR_PATH=rd-ms-notificationmanagement/target/notificationmanagementservice.war
+        - EXT_PROPERTIES_PATH=tomee/local/system-ext.properties
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/notificationmanagementservice/v1/health" ]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    ports:
+      - "8448:8443"
+      - "8087:8080"
+      - "8007:8000"
+  document-type:
+    container_name: documentTypeManagementService
+    build:
+      context: .
+      dockerfile: tomee/local/Dockerfile
+      args:
+        - SOURCE_WAR_PATH=rd-ms-doctypemanagement/target/doctypemanagementservice.war
+        - EXT_PROPERTIES_PATH=tomee/local/system-ext.properties
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/doctypemanagementservice/v1/health" ]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    ports:
+      - "8447:8443"
+      - "8086:8080"
+      - "8006:8000"
+  cms:
+    container_name: contentManagementService
+    build:
+      context: .
+      dockerfile: tomee/local/Dockerfile
+      args:
+        - SOURCE_WAR_PATH=rd-ms-ecm/target/cms.war
+        - EXT_PROPERTIES_PATH=tomee/local/system-ext.properties
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/cms/v1/health" ]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    ports:
+      - "8446:8443"
+      - "8081:8080"
+      - "8000:8000"
+    environment:
+      SYSTEM_JCR_NODETYPES_CND_FILE: jcr/oafnodetypes.cnd
+      SYSTEM_JCR_HOME: rd_cms
+      SYSTEM_JCR_SOURCE: FILESYSTEM
+      FELIX_WEBCONSOLE_USERNAME: admin
+      FELIX_WEBCONSOLE_PASSWORD: admin
+      OAK_MONGO_URI: mongodb://host.docker.internal:27017
+      OAK_MONGO_DB: radien-cms-ddb
+  web:
+    container_name: webService
+    build:
+      context: .
+      dockerfile: tomee/local/Dockerfile
+      args:
+        - SOURCE_WAR_PATH=rd-web/target/web.war
+        - EXT_PROPERTIES_PATH=tomee/local/system-ext.properties
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/web/health" ]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    ports:
+      - "8443:8443"
+      - "8080:8080"
+      - "8001:8000"
