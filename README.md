@@ -24,6 +24,8 @@ Please use the following deployment configuration, or similar:
 ![deployConfiguration_1.png](readmeSources/deployConfiguration_1.png)
 ![deployConfiguration_2.png](readmeSources/deployConfiguration_2.png)
 
+Ensure that **Remove Images on 'DOWN': All**, **ATTACH TO: None** and **BUILD: Always** are set.
+
 Feel free to use any other deployment methods you feel comfortable with. 
 The main points to be aware is that if the target is a Docker Container, the changed code must be
 repackaged to ensure the deployment of the changes.
