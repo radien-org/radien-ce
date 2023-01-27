@@ -37,6 +37,15 @@ const updateActiveTenant = (tenantId: number, activeTenant: ActiveTenant) => {
     return axios.get(`/api/tenant/activeTenant/setActiveTenant?tenantId=${tenantId}`);
 }
 
+const i18nStrings = {
+    searchIconAriaLabel: "Search",
+    searchDismissIconAriaLabel: "Close search",
+    overflowMenuTriggerText: "More",
+    overflowMenuTitleText: "All",
+    overflowMenuBackIconAriaLabel: "Back",
+    overflowMenuDismissIconAriaLabel: "Close menu"
+}
+
 export default function Header() {
     const { data: session } = useSession();
 
@@ -49,34 +58,19 @@ export default function Header() {
 
 function LoggedOutHeader() {
     return (
-        <TopNavigation
-            identity={{
-                href: "/",
-                title: "radien",
-                logo: {
-                    src:
-                        "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNDNweCIgaGVpZ2h0PSIzMXB4IiB2aWV3Qm94PSIwIDAgNDMgMzEiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxnIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgICAgIDxyZWN0IGZpbGw9IiMyMzJmM2UiIHN0cm9rZT0iI2Q1ZGJkYiIgeD0iMC41IiB5PSIwLjUiIHdpZHRoPSI0MiIgaGVpZ2h0PSIzMCIgcng9IjIiPjwvcmVjdD4KICAgICAgICA8dGV4dCBmb250LWZhbWlseT0iQW1hem9uRW1iZXItUmVndWxhciwgQW1hem9uIEVtYmVyIiBmb250LXNpemU9IjEyIiBmaWxsPSIjRkZGRkZGIj4KICAgICAgICAgICAgPHRzcGFuIHg9IjkiIHk9IjE5Ij5Mb2dvPC90c3Bhbj4KICAgICAgICA8L3RleHQ+CiAgICA8L2c+Cjwvc3ZnPgo=",
-                    alt: "radien"
-                }
-            }}
-            utilities= {[
-                {
+            <TopNavigation
+                identity={{
+                    href: "/",
+                    logo: {src: './top-navigation/trademark.svg', alt: 'ra\'di\'en'}
+                }}
+                utilities={[{
                     type: "button",
                     title: "Log In",
                     text: "Log In",
                     ariaLabel: "Log In",
                     onClick: () => signIn("keycloak")
-                }
-            ]}
-            i18nStrings={{
-                searchIconAriaLabel: "Search",
-                searchDismissIconAriaLabel: "Close search",
-                overflowMenuTriggerText: "More",
-                overflowMenuTitleText: "All",
-                overflowMenuBackIconAriaLabel: "Back",
-                overflowMenuDismissIconAriaLabel: "Close menu"
-            }}
-        />
+                }]}
+                i18nStrings={i18nStrings}/>
     );
 }
 
@@ -216,25 +210,12 @@ function LoggedInHeader(props: LoggedInProps) {
     utilities.splice(0, 0, systemMenus);
 
     return (
-        <TopNavigation
+            <TopNavigation
             identity={{
                 href: "/",
-                title: "radien",
-                logo: {
-                    src:
-                        "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNDNweCIgaGVpZ2h0PSIzMXB4IiB2aWV3Qm94PSIwIDAgNDMgMzEiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxnIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgICAgIDxyZWN0IGZpbGw9IiMyMzJmM2UiIHN0cm9rZT0iI2Q1ZGJkYiIgeD0iMC41IiB5PSIwLjUiIHdpZHRoPSI0MiIgaGVpZ2h0PSIzMCIgcng9IjIiPjwvcmVjdD4KICAgICAgICA8dGV4dCBmb250LWZhbWlseT0iQW1hem9uRW1iZXItUmVndWxhciwgQW1hem9uIEVtYmVyIiBmb250LXNpemU9IjEyIiBmaWxsPSIjRkZGRkZGIj4KICAgICAgICAgICAgPHRzcGFuIHg9IjkiIHk9IjE5Ij5Mb2dvPC90c3Bhbj4KICAgICAgICA8L3RleHQ+CiAgICA8L2c+Cjwvc3ZnPgo=",
-                    alt: "radien"
-                }
+                logo: {src: './top-navigation/trademark.svg', alt: 'ra\'di\'en'}
             }}
             utilities={utilities}
-            i18nStrings={{
-                searchIconAriaLabel: "Search",
-                searchDismissIconAriaLabel: "Close search",
-                overflowMenuTriggerText: "More",
-                overflowMenuTitleText: "All",
-                overflowMenuBackIconAriaLabel: "Back",
-                overflowMenuDismissIconAriaLabel: "Close menu"
-            }}
-        />
+            i18nStrings={i18nStrings}/>
     );
 }
