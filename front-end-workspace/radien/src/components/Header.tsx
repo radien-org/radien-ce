@@ -133,6 +133,7 @@ function LoggedInHeader(props: LoggedInProps) {
     utilities = [
         {
             type: "menu-dropdown",
+            iconName: "multiscreen",
             ariaLabel: activeTenant ? availableTenants.find(t => t.id === String(activeTenant.tenantId))?.text : 'No tenant selected..',
             text: activeTenant ? availableTenants.find(t => t.id === String(activeTenant.tenantId))?.text : 'No tenant selected..',
             title: activeTenant ? availableTenants.find(t => t.id === String(activeTenant.tenantId))?.text : 'No tenant selected..',
@@ -168,7 +169,7 @@ function LoggedInHeader(props: LoggedInProps) {
     ];
     let systemMenus: Utility = {
         type: "menu-dropdown",
-        iconName: "security",
+        iconName: "settings",
         ariaLabel: "Settings",
         text: "Settings",
         title: "Settings",
