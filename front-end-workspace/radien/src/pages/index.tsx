@@ -1,7 +1,5 @@
 import Head from 'next/head'
 import { Inter } from '@next/font/google'
-import Header from "@/components/Header";
-import Main from "@cloudscape-design/components/app-layout/visual-refresh/main";
 import React from "react";
 
 
@@ -16,7 +14,6 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Header />
         <main>
             <div className="flex min-h-screen justify-center items-center">
                 <div className="text-center">
