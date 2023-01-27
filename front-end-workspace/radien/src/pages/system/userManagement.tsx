@@ -24,7 +24,6 @@ export default function UserManagement() {
 
     const clickTargetUserPage = async (event: NonCancelableCustomEvent<PaginationProps.ChangeDetail>) => {
         let targetPage = event.detail.currentPageIndex;
-        console.log(event);
         getUserPage(targetPage)
             .then(result => {
                 setUsersPage(result.data);
@@ -49,7 +48,7 @@ export default function UserManagement() {
 
     return (
         <>
-            <div>
+            <Box padding={"xl"}>
                 <Table
                     selectionType={"single"}
                     onSelectionChange={({ detail }) =>
@@ -58,7 +57,7 @@ export default function UserManagement() {
                     selectedItems={[selectedItem]}
                     columnDefinitions={[
                         {
-                            id: "logon1",
+                            id: "logon",
                             header: "Username",
                             cell: item => item?.logon || "-",
                             sortingField: "logon"
@@ -128,7 +127,9 @@ export default function UserManagement() {
                 >
                     Are you sure you would like to delete {selectedItem?.firstname} {selectedItem?.lastname}
                 </Modal>
-            </div>
+            </Box>
+
+
             <div className="flex justify-end px-24 py-6 gap-1">
                 <Button variant={"primary"}>Create</Button>
                 <Button disabled={!selectedItem}>View</Button>

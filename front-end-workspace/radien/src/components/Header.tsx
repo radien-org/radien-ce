@@ -61,7 +61,7 @@ function LoggedOutHeader() {
             <TopNavigation
                 identity={{
                     href: "/",
-                    logo: {src: './top-navigation/trademark.svg', alt: 'ra\'di\'en'}
+                    logo: {src: '/top-navigation/trademark.svg', alt: 'ra\'di\'en'}
                 }}
                 utilities={[{
                     type: "button",
@@ -213,7 +213,7 @@ function LoggedInHeader(props: LoggedInProps) {
             <TopNavigation
             identity={{
                 href: "/",
-                logo: {src: './top-navigation/trademark.svg', alt: 'ra\'di\'en'}
+                logo: {src: '/top-navigation/trademark.svg', alt: 'ra\'di\'en'}
             }}
             utilities={utilities}
             i18nStrings={i18nStrings}/>
