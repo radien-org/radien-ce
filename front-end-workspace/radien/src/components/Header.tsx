@@ -27,14 +27,14 @@ const itemClicked = async (event: CustomEvent<ButtonDropdownProps.ItemClickDetai
 }
 
 const getAvailableTenants = (userId: number)  => {
-    return axios.get(`api/role/tenantroleuser/getTenants?userId=${userId}`);
+    return axios.get(`/api/role/tenantroleuser/getTenants?userId=${userId}`);
 }
 
 const updateActiveTenant = (tenantId: number, activeTenant: ActiveTenant) => {
     if(activeTenant) {
-        return axios.get(`api/tenant/activeTenant/setActiveTenant?tenantId=${tenantId}&activeTenantId=${activeTenant.id}`);
+        return axios.get(`/api/tenant/activeTenant/setActiveTenant?tenantId=${tenantId}&activeTenantId=${activeTenant.id}`);
     }
-    return axios.get(`api/tenant/activeTenant/setActiveTenant?tenantId=${tenantId}`);
+    return axios.get(`/api/tenant/activeTenant/setActiveTenant?tenantId=${tenantId}`);
 }
 
 export default function Header() {
@@ -51,7 +51,7 @@ function LoggedOutHeader() {
     return (
         <TopNavigation
             identity={{
-                href: "#",
+                href: "/",
                 title: "radien",
                 logo: {
                     src:
@@ -95,7 +95,7 @@ function LoggedInHeader(props: LoggedInProps) {
         const response: AxiosResponse = await updateActiveTenant(Number(event.detail.id), activeTenant!);
         if(response.status === 200) {
             setActiveTenant(
-                (await axios.get(`api/tenant/activeTenant/getActiveTenant?userId=${session.radienUser.id}`)).data[0]
+                (await axios.get(`/api/tenant/activeTenant/getActiveTenant?userId=${session.radienUser.id}`)).data[0]
             )
         }
     }
@@ -112,12 +112,12 @@ function LoggedInHeader(props: LoggedInProps) {
                     })
                 );
             });
-        axios.get(`api/tenant/activeTenant/getActiveTenant?userId=${session.radienUser.id}`)
+        axios.get(`/api/tenant/activeTenant/getActiveTenant?userId=${session.radienUser.id}`)
             .then(result => {
                 const tenantId = result.data[0].tenantId;
-                const rolesPath = `api/role/tenantrolepermission/hasPermission?userId=${session.radienUser.id}&resource=Roles&action=Read&tenantId=${tenantId}`;
-                const userPath = `api/role/tenantrolepermission/hasPermission?userId=${session.radienUser.id}&resource=User&action=Read&tenantId=${tenantId}`;
-                const permissionPath = `api/role/tenantrolepermission/hasPermission?userId=${session.radienUser.id}&resource=Permission&action=Read&tenantId=${tenantId}`;
+                const rolesPath = `/api/role/tenantrolepermission/hasPermission?userId=${session.radienUser.id}&resource=Roles&action=Read&tenantId=${tenantId}`;
+                const userPath = `/api/role/tenantrolepermission/hasPermission?userId=${session.radienUser.id}&resource=User&action=Read&tenantId=${tenantId}`;
+                const permissionPath = `/api/role/tenantrolepermission/hasPermission?userId=${session.radienUser.id}&resource=Permission&action=Read&tenantId=${tenantId}`;
                 if(!activeTenant) {
                     setActiveTenant(result.data[0]);
                 }
@@ -192,21 +192,24 @@ function LoggedInHeader(props: LoggedInProps) {
     if(permissionViewPermission) {
         const item: ItemOrGroup = {
             id: "permissionManagement",
-            text: "Permission Management"
+            text: "Permission Management",
+            href: "/system/permissionManagement"
         };
         systemMenus.items = [item, ...systemMenus.items];
     }
     if(roleViewPermission) {
         const item: ItemOrGroup = {
             id: "roleManagement",
-            text: "Role Management"
+            text: "Role Management",
+            href: "/system/roleManagement"
         };
         systemMenus.items = [item, ...systemMenus.items];
     }
     if(userViewPermission) {
         const item: ItemOrGroup = {
             id: "userManagement",
-            text: "User Management"
+            text: "User Management",
+            href: "/system/userManagement"
         };
         systemMenus.items = [item, ...systemMenus.items];
     }
@@ -215,7 +218,7 @@ function LoggedInHeader(props: LoggedInProps) {
     return (
         <TopNavigation
             identity={{
-                href: "#",
+                href: "/",
                 title: "radien",
                 logo: {
                     src:
