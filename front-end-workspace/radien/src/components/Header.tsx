@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import TopNavigation, {TopNavigationProps} from "@cloudscape-design/components/top-navigation";
 import {signIn, signOut, useSession} from "next-auth/react";
 import axios, {AxiosResponse} from "axios";
@@ -7,6 +7,9 @@ import {ActiveTenant, Tenant} from "radien";
 import ItemOrGroup = ButtonDropdownProps.ItemOrGroup;
 import {Session} from "next-auth";
 import Utility = TopNavigationProps.Utility;
+import useAvailableTenants from '@/hooks/useAvailableTenants';
+import useActiveTenant from "@/hooks/useActiveTenant";
+import useCheckPermissions from "@/hooks/useCheckPermissions";
 
 React.useLayoutEffect = React.useEffect;
 
@@ -26,10 +29,6 @@ const itemClicked = async (event: CustomEvent<ButtonDropdownProps.ItemClickDetai
     }
 }
 
-const getAvailableTenants = (userId: number)  => {
-    return axios.get(`/api/role/tenantroleuser/getTenants?userId=${userId}`);
-}
-
 const updateActiveTenant = (tenantId: number, activeTenant: ActiveTenant) => {
     if(activeTenant) {
         return axios.get(`/api/tenant/activeTenant/setActiveTenant?tenantId=${tenantId}&activeTenantId=${activeTenant.id}`);
@@ -44,6 +43,11 @@ const i18nStrings = {
     overflowMenuTitleText: "All",
     overflowMenuBackIconAriaLabel: "Back",
     overflowMenuDismissIconAriaLabel: "Close menu"
+}
+
+const checkPermission = (userId: number, resource: string, action: string, tenantId: number) => {
+    const path = `/api/role/tenantrolepermission/hasPermission?userId=${userId}&resource=${resource}&action=${action}&tenantId=${tenantId}`;
+    return axios.get(path);
 }
 
 export default function Header() {
@@ -75,70 +79,237 @@ function LoggedOutHeader() {
 }
 
 function LoggedInHeader(props: LoggedInProps) {
-    const { session } = props;
-    const [availableTenants, setAvailableTenants] = useState<ItemOrGroup[]>([]);
-    const [activeTenant, setActiveTenant] = useState<ActiveTenant>();
+    const permissions = {
+        roles: {resource: "Roles", action: "Read"},
+        user: {resource: "User", action: "Read"},
+        permission: {resource: "Permission", action: "Read"},
+    }
 
-    const [roleViewPermission, setRoleViewPermission] = useState<boolean>();
-    const [userViewPermission, setUserViewPermission] = useState<boolean>();
-    const [permissionViewPermission, setPermissionViewPermission] = useState<boolean>();
+    const { session } = props;
+    const { isLoading: loadingAvailableTenants, data: availableTenants } = useAvailableTenants(session.radienUser!.id!);
+    const { isLoading: activeTenantLoading, data: activeTenant, refetch: refetchActiveTenant } = useActiveTenant(session.radienUser!.id!);
+    const [
+        { isLoading: isLoadingRoles, data: rolesViewPermission, refetch: refetchRoles },
+        { isLoading: isLoadingUser, data: usersViewPermission, refetch: refetchUser },
+        { isLoading: isLoadingPermission, data: permissionViewPermission, refetch: refetchPermission },
+    ] = useCheckPermissions(session!.radienUser.id!, activeTenant?.tenantId!);
+    const tenantClicked = async (event: CustomEvent<ButtonDropdownProps.ItemClickDetails>) => {
+        const response: AxiosResponse = await updateActiveTenant(Number(event.detail.id), activeTenant!);
+        if(response.status === 200) {
+            await refetchActiveTenant();
+        }
+    }
+
+    let utilities: TopNavigationProps.Utility[];
+    if(loadingAvailableTenants || activeTenantLoading) {
+        utilities = [
+            {
+                type: "menu-dropdown",
+                ariaLabel: 'Loading...',
+                text: 'Loading...',
+                title: 'Loading...',
+                items: []
+            },
+            {
+                type: "menu-dropdown",
+                text: `${session.radienUser.firstname} ${session.radienUser.lastname}`,
+                description: session.radienUser.userEmail,
+                iconName: "user-profile",
+                onItemClick: (event) => itemClicked(event, session.radienUser.id),
+                items: [
+                    { id: "profile", text: "Profile" },
+                    {
+                        id: "support-group",
+                        text: "Support",
+                        items: [
+                            {
+                                id: "documentation",
+                                text: "Documentation",
+                                href: "https://rethink.atlassian.net/wiki/spaces/RP",
+                                external: true,
+                                externalIconAriaLabel:
+                                    " (opens in new tab)"
+                            },
+                            { id: "support", text: "Support", href: "https://rethink.atlassian.net/wiki/spaces/RP", external: true },
+                        ]
+                    },
+                    { id: "signout", text: "Sign out" }
+                ]
+            }
+        ];
+    }
+    else {
+        utilities = [
+            {
+                type: "menu-dropdown",
+                iconName: "multiscreen",
+                ariaLabel: availableTenants?.find((t: Tenant) => t.id == activeTenant?.tenantId)?.name || "No tenant selected....",
+                text: availableTenants?.find((t: Tenant) => t.id == activeTenant?.tenantId)?.name || "No tenant selected....",
+                title: availableTenants?.find((t: Tenant) => t.id == activeTenant?.tenantId)?.name || "No tenant selected....",
+                onItemClick: (event) => tenantClicked(event),
+                items: availableTenants!.map((tenant: Tenant) => {
+                    return { id: `${tenant.id}`, text: tenant.name }
+                })
+            },
+            {
+                type: "menu-dropdown",
+                text: `${session.radienUser.firstname} ${session.radienUser.lastname}`,
+                description: session.radienUser.userEmail,
+                iconName: "user-profile",
+                onItemClick: (event) => itemClicked(event, session.radienUser.id),
+                items: [
+                    { id: "profile", text: "Profile" },
+                    {
+                        id: "support-group",
+                        text: "Support",
+                        items: [
+                            {
+                                id: "documentation",
+                                text: "Documentation",
+                                href: "https://rethink.atlassian.net/wiki/spaces/RP",
+                                external: true,
+                                externalIconAriaLabel:
+                                    " (opens in new tab)"
+                            },
+                            { id: "support", text: "Support", href: "https://rethink.atlassian.net/wiki/spaces/RP", external: true },
+                        ]
+                    },
+                    { id: "signout", text: "Sign out" }
+                ]
+            }
+        ];
+    }
+        let systemMenus: Utility = {
+            type: "menu-dropdown",
+            iconName: "settings",
+            ariaLabel: "Settings",
+            text: "Settings",
+            title: "Settings",
+            items: []
+        };
+        if(!isLoadingPermission && permissionViewPermission) {
+            const item: ItemOrGroup = {
+                id: "permissionManagement",
+                text: "Permission Management",
+                href: "/system/permissionManagement"
+            };
+            systemMenus.items = [item, ...systemMenus.items];
+        }
+        if(!isLoadingRoles && rolesViewPermission) {
+            const item: ItemOrGroup = {
+                id: "roleManagement",
+                text: "Role Management",
+                href: "/system/roleManagement"
+            };
+            systemMenus.items = [item, ...systemMenus.items];
+        }
+        if(!isLoadingUser && usersViewPermission) {
+            const item: ItemOrGroup = {
+                id: "userManagement",
+                text: "User Management",
+                href: "/system/userManagement"
+            };
+            systemMenus.items = [item, ...systemMenus.items];
+        }
+        utilities.splice(0, 0, systemMenus);
+
+    return (
+        <TopNavigation
+            identity={{
+                href: "/",
+                logo: {src: '/top-navigation/trademark.svg', alt: 'ra\'di\'en'}
+            }}
+            utilities={utilities}
+            i18nStrings={i18nStrings}/>
+    );
+}
+
+/*
+const { session } = props;
+    const [ activeTenant, setActiveTenant ] = useState<ActiveTenant>();
+    const [ selectedTenant, setSelectedTenant ] = useState<string>("No tenant selected...");
+    const { isLoading, data } = useAvailableTenants(session.radienUser!.id!);
+    const [
+        { isLoading: isLoadingRoles, data: rolesViewPermission, refetch: refetchRoles },
+        { isLoading: isLoadingUser, data: usersViewPermission, refetch: refetchUser },
+        { isLoading: isLoadingPermission, data: permissionViewPermission, refetch: refetchPermission },
+    ] = useCheckPermissions(session.radienUser.id!, activeTenant?.id!);
 
     let utilities: TopNavigationProps.Utility[];
 
     const tenantClicked = async (event: CustomEvent<ButtonDropdownProps.ItemClickDetails>) => {
         const response: AxiosResponse = await updateActiveTenant(Number(event.detail.id), activeTenant!);
+        console.log(response);
         if(response.status === 200) {
-            setActiveTenant(
-                (await axios.get(`/api/tenant/activeTenant/getActiveTenant?userId=${session.radienUser.id}`)).data[0]
-            )
+            const at: ActiveTenant = (await axios.get(`/api/tenant/activeTenant/getActiveTenant?userId=${session.radienUser.id}`)).data[0]
+            setActiveTenant(at);
+
+            setSelectedTenant(data.find((t: Tenant) => t.id == activeTenant?.tenantId).name);
+
+            refetchPermission();
+            refetchRoles();
+            refetchUser();
         }
     }
 
     useEffect(() => {
-        getAvailableTenants(session.radienUser.id!)
-            .then(result => {
-                const resultData: Tenant[] = result.data;
-                setAvailableTenants(resultData.map(tenant => {
-                        return {
-                            id: `${tenant.id}`,
-                            text: tenant.name,
-                        }
-                    })
-                );
-            });
         axios.get(`/api/tenant/activeTenant/getActiveTenant?userId=${session.radienUser.id}`)
             .then(result => {
-                const tenantId = result.data[0].tenantId;
-                const rolesPath = `/api/role/tenantrolepermission/hasPermission?userId=${session.radienUser.id}&resource=Roles&action=Read&tenantId=${tenantId}`;
-                const userPath = `/api/role/tenantrolepermission/hasPermission?userId=${session.radienUser.id}&resource=User&action=Read&tenantId=${tenantId}`;
-                const permissionPath = `/api/role/tenantrolepermission/hasPermission?userId=${session.radienUser.id}&resource=Permission&action=Read&tenantId=${tenantId}`;
-                if(!activeTenant) {
-                    setActiveTenant(result.data[0]);
+                setActiveTenant(result.data[0]);
+                if(!isLoading && activeTenant?.tenantId) {
+                    setSelectedTenant(data.find((t: Tenant) => t.id == activeTenant?.tenantId).name);
                 }
-                axios.get(rolesPath)
-                    .then(result => {
-                        setRoleViewPermission(result.data);
-                    });
-                axios.get(userPath)
-                    .then(result => {
-                        setUserViewPermission(result.data);
-                    });
-                axios.get(permissionPath)
-                    .then(result => {
-                        setPermissionViewPermission(result.data);
-                    });
-            }).catch(e => console.log("Not active tenant available"));
-    }, [activeTenant]);
+            });
+        }, [session.radienUser.id, data, isLoading, activeTenant?.tenantId]);
 
+    if(isLoading) {
+        utilities = [
+            {
+                type: "menu-dropdown",
+                ariaLabel: 'Loading...',
+                text: 'Loading...',
+                title: 'Loading...',
+                items: []
+            },
+            {
+                type: "menu-dropdown",
+                text: `${session.radienUser.firstname} ${session.radienUser.lastname}`,
+                description: session.radienUser.userEmail,
+                iconName: "user-profile",
+                onItemClick: (event) => itemClicked(event, session.radienUser.id),
+                items: [
+                    { id: "profile", text: "Profile" },
+                    {
+                        id: "support-group",
+                        text: "Support",
+                        items: [
+                            {
+                                id: "documentation",
+                                text: "Documentation",
+                                href: "https://rethink.atlassian.net/wiki/spaces/RP",
+                                external: true,
+                                externalIconAriaLabel:
+                                    " (opens in new tab)"
+                            },
+                            { id: "support", text: "Support", href: "https://rethink.atlassian.net/wiki/spaces/RP", external: true },
+                        ]
+                    },
+                    { id: "signout", text: "Sign out" }
+                ]
+            }
+        ];
+    } else {
     utilities = [
         {
             type: "menu-dropdown",
             iconName: "multiscreen",
-            ariaLabel: activeTenant ? availableTenants.find(t => t.id === String(activeTenant.tenantId))?.text : 'No tenant selected..',
-            text: activeTenant ? availableTenants.find(t => t.id === String(activeTenant.tenantId))?.text : 'No tenant selected..',
-            title: activeTenant ? availableTenants.find(t => t.id === String(activeTenant.tenantId))?.text : 'No tenant selected..',
+            ariaLabel: selectedTenant,
+            text: selectedTenant,
+            title: selectedTenant,
             onItemClick: (event) => tenantClicked(event),
-            items: availableTenants
+            items: data.map((tenant: Tenant) => {
+                        return { id: `${tenant.id}`, text: tenant.name }
+                    })
         },
         {
             type: "menu-dropdown",
@@ -167,6 +338,7 @@ function LoggedInHeader(props: LoggedInProps) {
             ]
         }
     ];
+}
     let systemMenus: Utility = {
         type: "menu-dropdown",
         iconName: "settings",
@@ -192,7 +364,7 @@ function LoggedInHeader(props: LoggedInProps) {
         };
         systemMenus.items = [item, ...systemMenus.items];
     }
-    if(roleViewPermission) {
+    if(rolesViewPermission) {
         const item: ItemOrGroup = {
             id: "roleManagement",
             text: "Role Management",
@@ -200,7 +372,7 @@ function LoggedInHeader(props: LoggedInProps) {
         };
         systemMenus.items = [item, ...systemMenus.items];
     }
-    if(userViewPermission) {
+    if(usersViewPermission) {
         const item: ItemOrGroup = {
             id: "userManagement",
             text: "User Management",
@@ -219,4 +391,4 @@ function LoggedInHeader(props: LoggedInProps) {
             utilities={utilities}
             i18nStrings={i18nStrings}/>
     );
-}
+ */
