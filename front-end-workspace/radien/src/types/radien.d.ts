@@ -24,6 +24,13 @@ declare module "radien" {
         tenantId: number,
     }
 
+    interface Role {
+        id?: number,
+        name: string,
+        description: string,
+        terminationDate: Date
+    }
+
     interface Page<T> {
         results: T[],
         currentPage: number,

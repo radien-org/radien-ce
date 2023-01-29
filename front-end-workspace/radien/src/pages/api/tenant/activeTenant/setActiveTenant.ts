@@ -1,6 +1,6 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import axios, {AxiosError, AxiosResponse} from "axios";
-import {unstable_getServerSession} from "next-auth";
+import {getServerSession} from "next-auth";
 import {authOptions} from "@/pages/api/auth/[...nextauth]";
 import {ActiveTenant} from "radien";
 
@@ -35,7 +35,7 @@ const deleteActiveTenant = async (userId: Number, tenantId: string, accessToken:
 }
 export default async (req: NextApiRequest, res: NextApiResponse) => {
     const { tenantId } = req.query;
-    const session = await unstable_getServerSession(req, res, authOptions);
+    const session = await getServerSession(req, res, authOptions);
     if(!session) {
         res.status(401).json({});
         return;
