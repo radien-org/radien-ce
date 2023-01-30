@@ -2,7 +2,7 @@ import React from "react";
 import {Role} from "radien";
 import axios from "axios";
 import {PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
-import {TableProps} from "@cloudscape-design/components";
+import {Box, TableProps} from "@cloudscape-design/components";
 import dynamic from "next/dynamic";
 import {QueryKeys} from "@/consts";
 
@@ -42,7 +42,7 @@ export default function RoleManagement() {
     }
 
     return (
-        <>
+        <Box padding={"xl"}>
             <PaginatedTable
                 queryKey={QueryKeys.ROLE_MANAGEMENT}
                 getPaginated={getRolePage}
@@ -52,6 +52,6 @@ export default function RoleManagement() {
                 emptyMessage={"No roles available"}
                 emptyAction={"Create role"}
             />
-        </>
+        </Box>
     )
 }

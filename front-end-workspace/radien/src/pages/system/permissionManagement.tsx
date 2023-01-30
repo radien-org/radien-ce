@@ -2,7 +2,7 @@ import React from "react";
 import {Permission} from "radien";
 import axios from "axios";
 import {PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
-import {TableProps} from "@cloudscape-design/components";
+import {Box, TableProps} from "@cloudscape-design/components";
 import dynamic from "next/dynamic";
 import {QueryKeys} from "@/consts";
 
@@ -42,7 +42,7 @@ export default function PermissionManagement() {
     }
 
     return (
-        <>
+        <Box padding={"xl"}>
             <PaginatedTable
                 queryKey={QueryKeys.PERMISSION_MANAGEMENT}
                 getPaginated={getPermissionPage}
@@ -52,6 +52,6 @@ export default function PermissionManagement() {
                 emptyMessage={"No permissions available"}
                 emptyAction={"Create permission"}
             />
-        </>
+        </Box>
     )
 }

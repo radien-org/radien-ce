@@ -1,5 +1,16 @@
 import React, {useEffect, useState} from "react";
-import {Box, Button, ButtonDropdown, Container, Form, Header, Input, SpaceBetween, TableProps} from "@cloudscape-design/components";
+import {
+    Box,
+    Button,
+    ButtonDropdown,
+    Container,
+    ExpandableSection,
+    Form,
+    Header,
+    Input,
+    SpaceBetween,
+    TableProps
+} from "@cloudscape-design/components";
 import {RadienModel, Tenant, User} from "radien";
 import {useUserInSession} from "@/hooks/useUserInSession";
 import {useMutation, useQueryClient} from "react-query";
@@ -86,10 +97,9 @@ export default function UserProfile() {
         updateUser.mutate(radUser);
     }
 
-    const getTenants = async (pageNumber: number = 1, pageSize: number = 10) => {
-        return await axios.get("/api/tenant/getAll", {
+    const getTenantPage = async (pageNumber: number = 1, pageSize: number = 10) => {
+        return await axios.get("/api/tenant/tenant/getAll", {
             params: {
-                userId: radienUser!.data.id,
                 page: pageNumber,
                 pageSize: pageSize
             }
@@ -154,16 +164,21 @@ export default function UserProfile() {
                     </form>
                 </Container>
             </Box>
-            <PaginatedTable
-                queryKey={QueryKeys.AVAILABLE_TENANTS}
-                getPaginated={getTenants}
-                columnDefinitions={colDefinition}
-                deleteConfirmationText={"Are you sure you would like to dissociate yourself from this tenant?"}
-                tableHeader={"User Tenants"}
-                hideCreate={true}
-                deleteAction={dissociateUser.mutate}
-                emptyAction={"Request Tenant"}
-                emptyMessage={"No tenants found"}/>
+            <Box padding={"xl"}>
+                <Container>
+                    <PaginatedTable
+                        tableVariant={"embedded"}
+                        queryKey={QueryKeys.AVAILABLE_TENANTS}
+                        getPaginated={getTenantPage}
+                        columnDefinitions={colDefinition}
+                        deleteConfirmationText={"Are you sure you would like to dissociate yourself from this tenant?"}
+                        tableHeader={"User Tenants"}
+                        hideCreate={true}
+                        deleteAction={dissociateUser.mutate}
+                        emptyAction={"Request Tenant"}
+                        emptyMessage={"No tenants found"}/>
+                </Container>
+            </Box>
         </>
 
     )

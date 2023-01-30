@@ -4,6 +4,7 @@ import axios from "axios";
 import {PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
 import dynamic from "next/dynamic";
 import {QueryKeys} from "@/consts";
+import {Box} from "@cloudscape-design/components";
 
 export default function UserManagement() {
     const PaginatedTable = dynamic(
@@ -48,7 +49,7 @@ export default function UserManagement() {
     }
 
     return (
-        <>
+        <Box padding={"xl"}>
             <PaginatedTable
                 queryKey={QueryKeys.USER_MANAGEMENT}
                 getPaginated={getUserPage}
@@ -58,6 +59,6 @@ export default function UserManagement() {
                 emptyMessage={"No users available"}
                 emptyAction={"Create user"}
             />
-        </>
+        </Box>
     )
 }

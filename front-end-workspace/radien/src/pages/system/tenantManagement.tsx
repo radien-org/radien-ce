@@ -2,7 +2,7 @@ import React from "react";
 import {Tenant} from "radien";
 import axios from "axios";
 import {PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
-import {TableProps} from "@cloudscape-design/components";
+import {Box, TableProps} from "@cloudscape-design/components";
 import dynamic from "next/dynamic";
 import {QueryKeys} from "@/consts";
 
@@ -102,7 +102,7 @@ export default function TenantManagement() {
     }
 
     return (
-        <>
+        <Box padding={"xl"}>
             <PaginatedTable
                 queryKey={QueryKeys.TENANT_MANAGEMENT}
                 getPaginated={getTenantPage}
@@ -112,6 +112,6 @@ export default function TenantManagement() {
                 emptyMessage={"No tenant available"}
                 emptyAction={"Create tenant"}
             />
-        </>
+        </Box>
     )
 }
