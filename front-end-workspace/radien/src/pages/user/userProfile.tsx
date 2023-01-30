@@ -12,12 +12,12 @@ import {
 } from "@cloudscape-design/components";
 import {Tenant, User} from "radien";
 import {useUserInSession} from "@/hooks/useUserInSession";
-import {useMutation, useQueryClient} from "react-query";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import {QueryKeys} from "@/consts";
 import {PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
-import useAvailableTenants from "@/hooks/useAvailableTenants";
+import useUpdateUser from "@/hooks/useUpdateUser";
+import useDissociateTenant from "@/hooks/useDissociateTenant";
 
 const FormField = dynamic(
     () => import("@cloudscape-design/components/form-field"),
@@ -29,51 +29,17 @@ const PaginatedTable = dynamic(
 ) as React.ComponentType<PaginatedTableProps<Tenant>>
 
 export default function UserProfile() {
-    const queryClient = useQueryClient();
     const { userInSession: radienUser, isLoadingUserInSession } = useUserInSession();
-    const { isLoading: loadingAvailableTenants, data: availableTenants } = useAvailableTenants(radienUser?.data.id);
-    const updateUser = useMutation({
-        mutationFn: (updatedUser: User) => axios.post(`/api/user/updateUser`, updatedUser),
-        onSuccess: () => {
-            queryClient.invalidateQueries({queryKey: QueryKeys.ME})
-        }
-    });
-    const dissociateUser = useMutation({
-        mutationFn: (tenantId: number) => axios.delete(`/api/role/tenantroleuser/dissociateTenant`, { params: {tenantId, userId: radienUser?.data.id} }),
-        onSuccess: () => {
-            queryClient.invalidateQueries({queryKey: QueryKeys.AVAILABLE_TENANTS})
-            queryClient.invalidateQueries({queryKey: QueryKeys.ACTIVE_TENANT})
-        }
-    });
+    const updateUser = useUpdateUser()
+    const dissociateUser = useDissociateTenant();
+
+    const [ selectedTenant, setSelectedTenant ] = useState<Tenant>();
 
     const [ firstName, setFirstName ] = useState<string>(radienUser?.data.firstname || '');
     const [ lastName, setLastName ] = useState<string>(radienUser?.data.lastname || '');
     const [ logon, setLogon ] = useState<string>(radienUser?.data.logon || '');
     const [ userEmail, setUserEmail ] = useState<string>(radienUser?.data.userEmail || '');
     const [ sub, setSub ] = useState<string>(radienUser?.data.sub || '');
-
-
-
-    const colDefinition: TableProps.ColumnDefinition<Tenant>[] = [
-        {
-            id: "key",
-            header: "Key",
-            cell: (item: Tenant) => item?.tenantKey || "-",
-            sortingField: "key"
-        },
-        {
-            id: "name",
-            header: "Name",
-            cell: (item: Tenant) => item?.name || "-",
-            sortingField: "name"
-        },
-        {
-            id: "type",
-            header: "Type",
-            cell: (item: Tenant) => item?.tenantType || "-",
-            sortingField: "type"
-        }
-    ]
 
     useEffect(() => {
         setFirstName(radienUser?.data.firstname || '');
@@ -98,13 +64,42 @@ export default function UserProfile() {
         updateUser.mutate(radUser);
     }
 
-    const getTenantPage = async (pageNumber: number = 1, pageSize: number = 10) => {
-        return await axios.get("/api/role/tenantroleuser/getTenants", {
+    const colDefinition: TableProps.ColumnDefinition<Tenant>[] = [
+        {
+            id: "key",
+            header: "Key",
+            cell: (item: Tenant) => item?.tenantKey || "-",
+            sortingField: "key"
+        },
+        {
+            id: "name",
+            header: "Name",
+            cell: (item: Tenant) => item?.name || "-",
+            sortingField: "name"
+        },
+        {
+            id: "type",
+            header: "Type",
+            cell: (item: Tenant) => item?.tenantType || "-",
+            sortingField: "type"
+        }
+    ]
+
+    const getTenantPage = (pageNumber: number = 1, pageSize: number = 10) => {
+        return axios.get("/api/role/tenantroleuser/getTenants", {
             params: {
                 userId: radienUser?.data.id,
             }
         });
     }
+
+    const tenantDetailsView = (
+        <div>
+            <div><b>Tenant Key:</b> {selectedTenant?.tenantKey}</div>
+            <div><b>Tenant Name:</b> {selectedTenant?.name}</div>
+            <div><b>Tenant Type:</b> {selectedTenant?.tenantType}</div>
+        </div>
+    )
 
     return (
         <>
@@ -167,16 +162,42 @@ export default function UserProfile() {
             <Box padding={"xl"}>
                 <Container>
                     <PaginatedTable
+                        tableHeader={"Associated Tenants"}
                         tableVariant={"embedded"}
                         queryKey={QueryKeys.AVAILABLE_TENANTS}
-                        getPaginated={getTenantPage}
                         columnDefinitions={colDefinition}
-                        deleteConfirmationText={"Are you sure you would like to dissociate yourself from this tenant?"}
-                        tableHeader={"Associated Tenants"}
-                        hideCreate={true}
-                        deleteAction={dissociateUser.mutate}
-                        emptyAction={"Request Tenant"}
-                        emptyMessage={"No tenants found"}/>
+                        getPaginated={getTenantPage}
+                        selectedItemDetails={
+                            {
+                                selectedItem: selectedTenant,
+                                setSelectedItem: setSelectedTenant
+                            }
+                        }
+                        viewActionProps={
+                            {
+                                viewComponent: tenantDetailsView
+                            }
+                        }
+                        createActionProps={
+                            {
+                                createLabel: "Request Tenant"
+                            }
+                        }
+                        deleteActionProps={
+                            {
+                                deleteLabel: "Dissociate Tenant",
+                                deleteConfirmationText: `Are you sure you would like to dissociate ${selectedTenant?.name}`,
+                                deleteAction: dissociateUser.mutate
+
+                            }
+                        }
+                        emptyProps={
+                            {
+                                emptyMessage: "No tenants available",
+                                emptyActionLabel: "Request Tenant"
+                            }
+                        }
+                    />
                 </Container>
             </Box>
         </>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {Permission} from "radien";
 import axios from "axios";
 import {PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
@@ -11,6 +11,8 @@ export default function PermissionManagement() {
         () => import("@/components/PaginatedTable/PaginatedTable"),
         { ssr: false}
     ) as React.ComponentType<PaginatedTableProps<Permission>>
+
+    const [ selectedPermission, setSelectedPermission ] = useState<Permission>();
 
     const colDefinition: TableProps.ColumnDefinition<Permission>[] = [
         {
@@ -44,13 +46,30 @@ export default function PermissionManagement() {
     return (
         <Box padding={"xl"}>
             <PaginatedTable
+                tableHeader={"User Management"}
                 queryKey={QueryKeys.PERMISSION_MANAGEMENT}
-                getPaginated={getPermissionPage}
                 columnDefinitions={colDefinition}
-                deleteConfirmationText={"Are you sure you would like to delete the selected permission?"}
-                tableHeader={"Permission Management"}
-                emptyMessage={"No permissions available"}
-                emptyAction={"Create permission"}
+                getPaginated={getPermissionPage}
+                selectedItemDetails={
+                    {
+                        selectedItem: selectedPermission,
+                        setSelectedItem: setSelectedPermission
+                    }
+                }
+                viewActionProps={{}}
+                createActionProps={{}}
+                deleteActionProps={
+                    {
+                        deleteLabel: "Delete Permission",
+                        deleteConfirmationText: `Are you sure you would like to delete ${selectedPermission?.name}`
+                    }
+                }
+                emptyProps={
+                    {
+                        emptyMessage: "No permissions available",
+                        emptyActionLabel: "Create Permission"
+                    }
+                }
             />
         </Box>
     )

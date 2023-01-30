@@ -12,37 +12,65 @@ import {
     Table, TableProps
 } from "@cloudscape-design/components";
 import {UseMutateFunction, useQuery} from "react-query";
+import {useUserInSession} from "@/hooks/useUserInSession";
+
+interface SelectedItemDetails<T> {
+    selectedItem: T | undefined,
+    setSelectedItem: (value: T) => void
+}
+
+interface DeleteActionProps {
+    deleteLabel?: string,
+    deleteConfirmationText: string,
+    deleteAction?: (UseMutateFunction<AxiosResponse<any, any>, unknown, any, unknown>)
+}
+
+interface CreateActionProps {
+    hideCreate?: boolean,
+    createLabel?: string,
+    createAction?: () => void
+}
+
+interface ViewActionDetails {
+    viewComponent?: React.ReactNode
+}
+
+interface EmptyProps {
+    emptyMessage?: string,
+    emptyActionLabel?: string,
+}
 
 export interface PaginatedTableProps<T> {
+    tableHeader: string,
     tableVariant?: 'embedded' | 'container' | 'stacked' | 'full-page'
     queryKey: string,
-    getPaginated: (pageNumber?: number, pageSize?: number) => Promise<AxiosResponse<Page<T>, Error>>,
     columnDefinitions: TableProps.ColumnDefinition<T>[],
-    deleteConfirmationText: string,
-    deleteAction?: (UseMutateFunction<AxiosResponse<any, any>, unknown, number, unknown>),
-    tableHeader: string,
-    hideCreate?: boolean
-    emptyMessage?: string,
-    emptyAction?: string,
-
+    getPaginated: (pageNumber?: number, pageSize?: number) => Promise<AxiosResponse<Page<T>, Error>>,
+    selectedItemDetails: SelectedItemDetails<T>
+    viewActionProps: ViewActionDetails,
+    createActionProps: CreateActionProps,
+    deleteActionProps: DeleteActionProps,
+    emptyProps: EmptyProps,
 }
 
 export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
     const {
+        tableHeader,
         tableVariant,
+        columnDefinitions,
         queryKey,
         getPaginated,
-        columnDefinitions,
-        deleteConfirmationText,
-        deleteAction,
-        tableHeader,
-        hideCreate,
-        emptyMessage,
-        emptyAction } = props;
+        selectedItemDetails: {selectedItem, setSelectedItem},
+        deleteActionProps: {deleteLabel, deleteConfirmationText, deleteAction},
+        createActionProps: {createLabel, hideCreate},
+        viewActionProps: { viewComponent },
+        emptyProps: {emptyMessage, emptyActionLabel }
+    } = props;
+    const { userInSession } = useUserInSession();
     const [ currentPage, setCurrentPage ] = useState<number>(1);
     const [ pageSize, setPageSize ] = useState<number>(10);
-    const [ selectedItem, setSelectedItem ] = useState<T>();
     const [ deleteModalVisible, setDeleteModalVisible ] = useState(false);
+    const [ viewModalVisible, setViewModalVisible ] = useState(false);
     const { isLoading, data } = useQuery([queryKey, currentPage], () => getPaginated(currentPage, pageSize))
 
 
@@ -71,7 +99,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
                             variant="p"
                             color="inherit"
                         >
-                        <Button>{emptyAction || "Create resource"}</Button>
+                        <Button>{emptyActionLabel || "Create resource"}</Button>
                         </Box>
                     </Box>
                 }
@@ -98,7 +126,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
                             <Button variant="link" onClick={() => setDeleteModalVisible(false)}>Cancel</Button>
                             <Button variant="primary" onClick={() => {
                                 if(deleteAction) {
-                                    deleteAction(selectedItem ? (selectedItem as RadienModel).id! : -1);
+                                    deleteAction({tenantId: selectedItem ? (selectedItem as RadienModel).id! : -1, userId: userInSession?.data.id});
                                 }
                                 setDeleteModalVisible(false)
                             }}>Ok</Button>
@@ -108,12 +136,26 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
                 header="Delete">
                 {deleteConfirmationText}
             </Modal>
+            <Modal
+                onDismiss={() => setViewModalVisible(false)}
+                visible={viewModalVisible}
+                closeAriaLabel="Close modal"
+                footer={
+                    <Box float="right">
+                        <SpaceBetween direction="horizontal" size="xs">
+                            <Button variant="primary" onClick={() => { setViewModalVisible(false)}}>Ok</Button>
+                        </SpaceBetween>
+                    </Box>
+                }
+                header="View">
+                {viewComponent}
+            </Modal>
 
 
             <div className="flex justify-end py-6 gap-2">
-                { !hideCreate && <Button variant={"primary"}>Create</Button> }
-                <Button disabled={!selectedItem}>View</Button>
-                <Button onClick={() => setDeleteModalVisible(true)} disabled={!selectedItem}>Delete</Button>
+                { !hideCreate && <Button variant={"primary"}>{createLabel || 'Create'}</Button> }
+                {viewComponent && <Button disabled={!selectedItem} onClick={() => setViewModalVisible(true)}>View</Button>}
+                <Button onClick={() => setDeleteModalVisible(true)} disabled={!selectedItem}>{deleteLabel || 'Delete'}</Button>
             </div>
         </>
     )

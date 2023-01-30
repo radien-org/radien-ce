@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {Tenant} from "radien";
 import axios from "axios";
 import {PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
@@ -11,6 +11,8 @@ export default function TenantManagement() {
         () => import("@/components/PaginatedTable/PaginatedTable"),
         { ssr: false}
     ) as React.ComponentType<PaginatedTableProps<Tenant>>
+
+    const [ selectedTenant, setSelectedTenant ] = useState<Tenant>();
 
     const colDefinition: TableProps.ColumnDefinition<Tenant>[] = [
         {
@@ -104,13 +106,30 @@ export default function TenantManagement() {
     return (
         <Box padding={"xl"}>
             <PaginatedTable
-                queryKey={QueryKeys.TENANT_MANAGEMENT}
-                getPaginated={getTenantPage}
-                columnDefinitions={colDefinition}
-                deleteConfirmationText={"Are you sure you would like to delete the selected tenant?"}
                 tableHeader={"Tenant Management"}
-                emptyMessage={"No tenant available"}
-                emptyAction={"Create tenant"}
+                queryKey={QueryKeys.TENANT_MANAGEMENT}
+                columnDefinitions={colDefinition}
+                getPaginated={getTenantPage}
+                selectedItemDetails={
+                    {
+                        selectedItem: selectedTenant,
+                        setSelectedItem: setSelectedTenant
+                    }
+                }
+                viewActionProps={{}}
+                createActionProps={{}}
+                deleteActionProps={
+                    {
+                        deleteLabel: "Delete Tenant",
+                        deleteConfirmationText: `Are you sure you would like to delete ${selectedTenant?.name}`
+                    }
+                }
+                emptyProps={
+                    {
+                        emptyMessage: "No tenants available",
+                        emptyActionLabel: "Create Tenant"
+                    }
+                }
             />
         </Box>
     )

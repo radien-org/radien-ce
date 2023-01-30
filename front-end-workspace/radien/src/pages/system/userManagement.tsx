@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {User} from "radien";
 import axios from "axios";
 import {PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
@@ -11,6 +11,8 @@ export default function UserManagement() {
         () => import("@/components/PaginatedTable/PaginatedTable"),
         { ssr: false}
     ) as React.ComponentType<PaginatedTableProps<User>>
+
+    const [ selectedUser, setSelectedUser ] = useState<User>()
 
 
     const colDefinition = [
@@ -51,13 +53,30 @@ export default function UserManagement() {
     return (
         <Box padding={"xl"}>
             <PaginatedTable
-                queryKey={QueryKeys.USER_MANAGEMENT}
-                getPaginated={getUserPage}
-                columnDefinitions={colDefinition}
-                deleteConfirmationText={"Are you sure you would like to delete the selected user?"}
                 tableHeader={"User Management"}
-                emptyMessage={"No users available"}
-                emptyAction={"Create user"}
+                queryKey={QueryKeys.USER_MANAGEMENT}
+                columnDefinitions={colDefinition}
+                getPaginated={getUserPage}
+                selectedItemDetails={
+                    {
+                        selectedItem: selectedUser,
+                        setSelectedItem: setSelectedUser
+                    }
+                }
+                viewActionProps={{}}
+                createActionProps={{}}
+                deleteActionProps={
+                    {
+                        deleteLabel: "Delete User",
+                        deleteConfirmationText: `Are you sure you would like to delete ${selectedUser?.firstname} ${selectedUser?.lastname}`
+                    }
+                }
+                emptyProps={
+                    {
+                        emptyMessage: "No users available",
+                        emptyActionLabel: "Create User"
+                    }
+                }
             />
         </Box>
     )

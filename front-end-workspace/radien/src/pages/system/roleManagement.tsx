@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {Role} from "radien";
 import axios from "axios";
 import {PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
@@ -11,6 +11,8 @@ export default function RoleManagement() {
         () => import("@/components/PaginatedTable/PaginatedTable"),
         { ssr: false}
     ) as React.ComponentType<PaginatedTableProps<Role>>
+
+    const [ selectedRole, setSelectedRole ] = useState<Role>();
 
     const colDefinition: TableProps.ColumnDefinition<Role>[] = [
         {
@@ -44,13 +46,30 @@ export default function RoleManagement() {
     return (
         <Box padding={"xl"}>
             <PaginatedTable
-                queryKey={QueryKeys.ROLE_MANAGEMENT}
-                getPaginated={getRolePage}
-                columnDefinitions={colDefinition}
-                deleteConfirmationText={"Are you sure you would like to delete the selected role?"}
                 tableHeader={"Role Management"}
-                emptyMessage={"No roles available"}
-                emptyAction={"Create role"}
+                queryKey={QueryKeys.ROLE_MANAGEMENT}
+                columnDefinitions={colDefinition}
+                getPaginated={getRolePage}
+                selectedItemDetails={
+                    {
+                        selectedItem: selectedRole,
+                        setSelectedItem: setSelectedRole
+                    }
+                }
+                viewActionProps={{}}
+                createActionProps={{}}
+                deleteActionProps={
+                    {
+                        deleteLabel: "Delete Role",
+                        deleteConfirmationText: `Are you sure you would like to delete ${selectedRole?.name}`
+                    }
+                }
+                emptyProps={
+                    {
+                        emptyMessage: "No roles available",
+                        emptyActionLabel: "Create Role"
+                    }
+                }
             />
         </Box>
     )
