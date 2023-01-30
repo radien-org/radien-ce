@@ -504,7 +504,7 @@
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
     "secret" : "86c27042-b3a2-48ea-a936-025103144844",
-    "redirectUris" : ["https://localhost:8443/web/*","https://host.docker.internals:8443/web/*"],
+    "redirectUris" : ["https://localhost:8443/web/*","https://host.docker.internals:8443/web/*","http://localhost:3000/*"],
     "webOrigins" : ["https://localhost:8443","https://host.docker.internals:8443/web/*"],
     "notBefore" : 0,
     "bearerOnly" : false,
