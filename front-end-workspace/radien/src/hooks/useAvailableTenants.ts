@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useQuery } from "react-query";
-import {Tenant} from "radien";
+import {Page, Tenant} from "radien";
 import {QueryKeys} from "@/consts";
 
 const getAvailableTenants = (userId?: number)  => {
@@ -8,5 +8,6 @@ const getAvailableTenants = (userId?: number)  => {
 }
 
 export default function useAvailableTenants(userId?: number) {
-    return useQuery<Tenant[], Error>(QueryKeys.AVAILABLE_TENANTS, async () => { const {data} = await getAvailableTenants(userId); return data;}, { refetchInterval: 20000});
+    return useQuery<Page<Tenant>, Error>(QueryKeys.AVAILABLE_TENANTS, async () => { const {data} = await getAvailableTenants(userId); return data;},
+        { refetchInterval: 20000, enabled: !!userId});
 }

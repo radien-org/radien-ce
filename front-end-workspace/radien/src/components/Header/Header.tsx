@@ -11,7 +11,6 @@ import useActiveTenant from "@/hooks/useActiveTenant";
 import useCheckPermissions from "@/hooks/useCheckPermissions";
 import {useUserInSession} from "@/hooks/useUserInSession";
 import {QueryClient} from "react-query";
-import {QueryKey} from "react-query/types/devtools/styledComponents";
 import {QueryKeys} from "@/consts";
 
 React.useLayoutEffect = React.useEffect;
@@ -140,11 +139,11 @@ function LoggedInHeader(props: LoggedInProps) {
             {
                 type: "menu-dropdown",
                 iconName: "multiscreen",
-                ariaLabel: availableTenants?.find((t: Tenant) => t.id == activeTenant?.tenantId)?.name || "No tenant selected....",
-                text: availableTenants?.find((t: Tenant) => t.id == activeTenant?.tenantId)?.name || "No tenant selected....",
-                title: availableTenants?.find((t: Tenant) => t.id == activeTenant?.tenantId)?.name || "No tenant selected....",
+                ariaLabel: availableTenants?.results.find((t: Tenant) => t.id == activeTenant?.tenantId)?.name || "No tenant selected....",
+                text: availableTenants?.results.find((t: Tenant) => t.id == activeTenant?.tenantId)?.name || "No tenant selected....",
+                title: availableTenants?.results.find((t: Tenant) => t.id == activeTenant?.tenantId)?.name || "No tenant selected....",
                 onItemClick: (event) => tenantClicked(event),
-                items: availableTenants ? availableTenants.map((tenant: Tenant) => { return { id: `${tenant.id}`, text: tenant.name }}) : []
+                items: availableTenants ? availableTenants.results.map((tenant: Tenant) => { return { id: `${tenant.id}`, text: tenant.name }}) : []
             },
             {
                 type: "menu-dropdown",

@@ -2,6 +2,7 @@ import {NextApiRequest, NextApiResponse} from "next";
 import axios, {AxiosResponse} from "axios";
 import {getServerSession} from "next-auth";
 import {authOptions} from "@/pages/api/auth/[...nextauth]";
+import {Page, Tenant} from "radien";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
     const { userId } = req.query;
@@ -19,8 +20,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                     "Authorization": `Bearer ${session.accessToken}`
                 }
             });
-
-        res.status(200).json(result.data);
+        const resultPage: Page<Tenant> = {
+            totalResults: result.data.length,
+            currentPage: 1,
+            totalPages: 1,
+            results: result.data
+        }
+        res.status(200).json(resultPage);
     } catch(e) {
         res.status(500).json(e);
     }

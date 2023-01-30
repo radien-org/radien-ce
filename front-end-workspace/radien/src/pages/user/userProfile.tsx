@@ -11,13 +11,14 @@ import {
     SpaceBetween,
     TableProps
 } from "@cloudscape-design/components";
-import {RadienModel, Tenant, User} from "radien";
+import {Page, RadienModel, Tenant, User} from "radien";
 import {useUserInSession} from "@/hooks/useUserInSession";
 import {useMutation, useQueryClient} from "react-query";
-import axios from "axios";
+import axios, {AxiosResponse} from "axios";
 import dynamic from "next/dynamic";
 import {QueryKeys} from "@/consts";
 import {PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
+import useAvailableTenants from "@/hooks/useAvailableTenants";
 
 const FormField = dynamic(
     () => import("@cloudscape-design/components/form-field"),
@@ -31,6 +32,7 @@ const PaginatedTable = dynamic(
 export default function UserProfile() {
     const queryClient = useQueryClient();
     const { userInSession: radienUser, isLoadingUserInSession } = useUserInSession();
+    const { isLoading: loadingAvailableTenants, data: availableTenants } = useAvailableTenants(radienUser?.data.id);
     const updateUser = useMutation({
         mutationFn: (updatedUser: User) => axios.post(`/api/user/updateUser`, updatedUser),
         onSuccess: () => {
@@ -98,12 +100,13 @@ export default function UserProfile() {
     }
 
     const getTenantPage = async (pageNumber: number = 1, pageSize: number = 10) => {
-        return await axios.get("/api/tenant/tenant/getAll", {
-            params: {
-                page: pageNumber,
-                pageSize: pageSize
-            }
-        });
+        if(radienUser) {
+            return await axios.get("/api/role/tenantroleuser/getTenants", {
+                params: {
+                    userId: radienUser?.data.id,
+                }
+            });
+        }
     }
 
     return (
@@ -172,7 +175,7 @@ export default function UserProfile() {
                         getPaginated={getTenantPage}
                         columnDefinitions={colDefinition}
                         deleteConfirmationText={"Are you sure you would like to dissociate yourself from this tenant?"}
-                        tableHeader={"User Tenants"}
+                        tableHeader={"Associated Tenants"}
                         hideCreate={true}
                         deleteAction={dissociateUser.mutate}
                         emptyAction={"Request Tenant"}
