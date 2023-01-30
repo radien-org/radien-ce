@@ -25,8 +25,8 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
     const { queryKey, getPaginated, columnDefinitions, deleteConfirmationText, tableHeader } = props;
     const [ currentPage, setCurrentPage ] = useState<number>(1);
     const [ pageSize, setPageSize ] = useState<number>(10);
-    const [selectedItem, setSelectedItem] = useState<T>();
-    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [ selectedItem, setSelectedItem ] = useState<T>();
+    const [ deleteModalVisible, setDeleteModalVisible ] = useState(false);
     const { isLoading, data } = useQuery([queryKey, currentPage], () => getPaginated(currentPage, pageSize))
 
 
