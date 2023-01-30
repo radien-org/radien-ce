@@ -4,17 +4,16 @@ import {
     Button,
     ButtonDropdown,
     Container,
-    ExpandableSection,
     Form,
     Header,
     Input,
     SpaceBetween,
     TableProps
 } from "@cloudscape-design/components";
-import {Page, RadienModel, Tenant, User} from "radien";
+import {Tenant, User} from "radien";
 import {useUserInSession} from "@/hooks/useUserInSession";
 import {useMutation, useQueryClient} from "react-query";
-import axios, {AxiosResponse} from "axios";
+import axios from "axios";
 import dynamic from "next/dynamic";
 import {QueryKeys} from "@/consts";
 import {PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
@@ -100,13 +99,11 @@ export default function UserProfile() {
     }
 
     const getTenantPage = async (pageNumber: number = 1, pageSize: number = 10) => {
-        if(radienUser) {
-            return await axios.get("/api/role/tenantroleuser/getTenants", {
-                params: {
-                    userId: radienUser?.data.id,
-                }
-            });
-        }
+        return await axios.get("/api/role/tenantroleuser/getTenants", {
+            params: {
+                userId: radienUser?.data.id,
+            }
+        });
     }
 
     return (

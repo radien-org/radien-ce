@@ -19,7 +19,7 @@ export interface PaginatedTableProps<T> {
     getPaginated: (pageNumber?: number, pageSize?: number) => Promise<AxiosResponse<Page<T>, Error>>,
     columnDefinitions: TableProps.ColumnDefinition<T>[],
     deleteConfirmationText: string,
-    deleteAction: (UseMutateFunction<AxiosResponse<any, any>, unknown, number, unknown>),
+    deleteAction?: (UseMutateFunction<AxiosResponse<any, any>, unknown, number, unknown>),
     tableHeader: string,
     hideCreate?: boolean
     emptyMessage?: string,
@@ -96,7 +96,12 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
                     <Box float="right">
                         <SpaceBetween direction="horizontal" size="xs">
                             <Button variant="link" onClick={() => setDeleteModalVisible(false)}>Cancel</Button>
-                            <Button variant="primary" onClick={() => { deleteAction(selectedItem ? (selectedItem as RadienModel).id! : -1); setDeleteModalVisible(false)}}>Ok</Button>
+                            <Button variant="primary" onClick={() => {
+                                if(deleteAction) {
+                                    deleteAction(selectedItem ? (selectedItem as RadienModel).id! : -1);
+                                }
+                                setDeleteModalVisible(false)
+                            }}>Ok</Button>
                         </SpaceBetween>
                     </Box>
                 }
