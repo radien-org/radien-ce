@@ -88,6 +88,7 @@ function LoggedInHeader(props: LoggedInProps) {
         { isLoading: isLoadingRoles, data: rolesViewPermission },
         { isLoading: isLoadingUser, data: usersViewPermission },
         { isLoading: isLoadingPermission, data: permissionViewPermission },
+        { isLoading: isLoadingTenant, data: tenantViewPermission },
     ] = useCheckPermissions(radienUser.id!, activeTenant?.tenantId!);
     const tenantClicked = async (event: CustomEvent<ButtonDropdownProps.ItemClickDetails>) => {
         const response: AxiosResponse = await updateActiveTenant(radienUser.id!, Number(event.detail.id), activeTenant);
@@ -194,6 +195,14 @@ function LoggedInHeader(props: LoggedInProps) {
                 id: "roleManagement",
                 text: "Role Management",
                 href: "/system/roleManagement"
+            };
+            systemMenus.items = [item, ...systemMenus.items];
+        }
+        if(!isLoadingTenant && tenantViewPermission) {
+            const item: ItemOrGroup = {
+                id: "tenantManagement",
+                text: "Tenant Management",
+                href: "/system/tenantManagement"
             };
             systemMenus.items = [item, ...systemMenus.items];
         }
