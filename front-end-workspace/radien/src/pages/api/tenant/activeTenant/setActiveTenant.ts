@@ -33,7 +33,7 @@ const deleteActiveTenant = async (userId: Number, tenantId: string, accessToken:
     }
 }
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-    const { userId ,tenantId } = req.query;
+    const { userId, tenantId } = req.query;
     const session = await getServerSession(req, res, authOptions);
     if(!session) {
         res.status(401).json({});

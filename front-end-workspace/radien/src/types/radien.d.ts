@@ -1,6 +1,9 @@
 declare module "radien" {
-    interface User {
-        id?: number,
+    interface RadienModel {
+        id?: number
+    }
+
+    interface User extends RadienModel {
         sub: string,
         firstname: string,
         lastname: string,
@@ -14,8 +17,7 @@ declare module "radien" {
         lastUpdate: Date
     }
 
-    interface Tenant {
-        id?: number,
+    interface Tenant extends RadienModel {
         name: string,
         tenantKey: string,
         tenantType: string,
@@ -31,14 +33,12 @@ declare module "radien" {
         clientId: number
     }
 
-    interface ActiveTenant {
-        id?: number,
+    interface ActiveTenant extends RadienModel {
         userId: number,
         tenantId: number,
     }
 
-    interface Role {
-        id?: number,
+    interface Role extends RadienModel {
         name: string,
         description: string,
         terminationDate: Date

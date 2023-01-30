@@ -10,6 +10,9 @@ import useAvailableTenants from '@/hooks/useAvailableTenants';
 import useActiveTenant from "@/hooks/useActiveTenant";
 import useCheckPermissions from "@/hooks/useCheckPermissions";
 import {useUserInSession} from "@/hooks/useUserInSession";
+import {QueryClient} from "react-query";
+import {QueryKey} from "react-query/types/devtools/styledComponents";
+import {QueryKeys} from "@/consts";
 
 React.useLayoutEffect = React.useEffect;
 
@@ -17,9 +20,13 @@ interface LoggedInProps {
     radienUser: User
 }
 
+const queryClient: QueryClient = new QueryClient();
+
+
 const logout = async(): Promise<void> => {
     const { data: { path }} = await axios.get('/api/auth/logout');
     await signOut({redirect: false});
+    await queryClient.invalidateQueries({queryKey: QueryKeys.ME});
     window.location.href = path;
 }
 
@@ -29,11 +36,11 @@ const itemClicked = async (event: CustomEvent<ButtonDropdownProps.ItemClickDetai
     }
 }
 
-const updateActiveTenant = (userId: number, tenantId: number, activeTenant: ActiveTenant) => {
+const updateActiveTenant = (userId: number, tenantId: number, activeTenant?: ActiveTenant) => {
     if(activeTenant) {
-        return axios.get(`/api/tenant/activeTenant/setActiveTenant?userId=${userId}tenantId=${tenantId}&activeTenantId=${activeTenant.id}`);
+        return axios.get(`/api/tenant/activeTenant/setActiveTenant?userId=${userId}&tenantId=${tenantId}&activeTenantId=${activeTenant.id}`);
     }
-    return axios.get(`/api/tenant/activeTenant/setActiveTenant?userId=${userId}tenantId=${tenantId}`);
+    return axios.get(`/api/tenant/activeTenant/setActiveTenant?userId=${userId}&tenantId=${tenantId}`);
 }
 
 const i18nStrings = {
@@ -84,7 +91,7 @@ function LoggedInHeader(props: LoggedInProps) {
         { isLoading: isLoadingPermission, data: permissionViewPermission },
     ] = useCheckPermissions(radienUser.id!, activeTenant?.tenantId!);
     const tenantClicked = async (event: CustomEvent<ButtonDropdownProps.ItemClickDetails>) => {
-        const response: AxiosResponse = await updateActiveTenant(radienUser.id!, Number(event.detail.id), activeTenant!);
+        const response: AxiosResponse = await updateActiveTenant(radienUser.id!, Number(event.detail.id), activeTenant);
         if(response.status === 200) {
             await refetchActiveTenant();
         }
@@ -137,9 +144,7 @@ function LoggedInHeader(props: LoggedInProps) {
                 text: availableTenants?.find((t: Tenant) => t.id == activeTenant?.tenantId)?.name || "No tenant selected....",
                 title: availableTenants?.find((t: Tenant) => t.id == activeTenant?.tenantId)?.name || "No tenant selected....",
                 onItemClick: (event) => tenantClicked(event),
-                items: availableTenants!.map((tenant: Tenant) => {
-                    return { id: `${tenant.id}`, text: tenant.name }
-                })
+                items: availableTenants ? availableTenants.map((tenant: Tenant) => { return { id: `${tenant.id}`, text: tenant.name }}) : []
             },
             {
                 type: "menu-dropdown",

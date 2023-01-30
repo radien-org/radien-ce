@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Box, Button, ButtonDropdown, Container, Form, Header, Input, SpaceBetween, TableProps} from "@cloudscape-design/components";
-import {Tenant, User} from "radien";
+import {RadienModel, Tenant, User} from "radien";
 import {useUserInSession} from "@/hooks/useUserInSession";
 import {useMutation, useQueryClient} from "react-query";
 import axios from "axios";
@@ -26,12 +26,21 @@ export default function UserProfile() {
             queryClient.invalidateQueries({queryKey: QueryKeys.ME})
         }
     });
+    const dissociateUser = useMutation({
+        mutationFn: (tenantId: number) => axios.delete(`/api/role/tenantroleuser/dissociateTenant`, { params: {tenantId, userId: radienUser?.data.id} }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: QueryKeys.AVAILABLE_TENANTS})
+            queryClient.invalidateQueries({queryKey: QueryKeys.ACTIVE_TENANT})
+        }
+    });
 
     const [ firstName, setFirstName ] = useState<string>(radienUser?.data.firstname || '');
     const [ lastName, setLastName ] = useState<string>(radienUser?.data.lastname || '');
     const [ logon, setLogon ] = useState<string>(radienUser?.data.logon || '');
     const [ userEmail, setUserEmail ] = useState<string>(radienUser?.data.userEmail || '');
     const [ sub, setSub ] = useState<string>(radienUser?.data.sub || '');
+
+
 
     const colDefinition: TableProps.ColumnDefinition<Tenant>[] = [
         {
@@ -78,7 +87,7 @@ export default function UserProfile() {
     }
 
     const getTenants = async (pageNumber: number = 1, pageSize: number = 10) => {
-        return await axios.get("/api/tenantroleUser/getTenants", {
+        return await axios.get("/api/tenant/getAll", {
             params: {
                 userId: radienUser!.data.id,
                 page: pageNumber,
@@ -151,6 +160,8 @@ export default function UserProfile() {
                 columnDefinitions={colDefinition}
                 deleteConfirmationText={"Are you sure you would like to dissociate yourself from this tenant?"}
                 tableHeader={"User Tenants"}
+                hideCreate={true}
+                deleteAction={dissociateUser.mutate}
                 emptyAction={"Request Tenant"}
                 emptyMessage={"No tenants found"}/>
         </>

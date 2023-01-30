@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { Page } from "radien";
+import {Page, RadienModel} from "radien";
 import {AxiosResponse} from "axios";
 import {
     Box,
@@ -11,21 +11,32 @@ import {
     SpaceBetween,
     Table, TableProps
 } from "@cloudscape-design/components";
-import {useQuery} from "react-query";
+import {UseMutateFunction, useQuery} from "react-query";
 
 export interface PaginatedTableProps<T> {
     queryKey: string,
     getPaginated: (pageNumber?: number, pageSize?: number) => Promise<AxiosResponse<Page<T>, Error>>,
     columnDefinitions: TableProps.ColumnDefinition<T>[],
     deleteConfirmationText: string,
+    deleteAction: (UseMutateFunction<AxiosResponse<any, any>, unknown, number, unknown>),
     tableHeader: string,
-    emptyMessage: string,
-    emptyAction: string,
+    hideCreate?: boolean
+    emptyMessage?: string,
+    emptyAction?: string,
 
 }
 
 export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
-    const { queryKey, getPaginated, columnDefinitions, deleteConfirmationText, tableHeader, emptyMessage, emptyAction } = props;
+    const {
+        queryKey,
+        getPaginated,
+        columnDefinitions,
+        deleteConfirmationText,
+        deleteAction,
+        tableHeader,
+        hideCreate,
+        emptyMessage,
+        emptyAction } = props;
     const [ currentPage, setCurrentPage ] = useState<number>(1);
     const [ pageSize, setPageSize ] = useState<number>(10);
     const [ selectedItem, setSelectedItem ] = useState<T>();
@@ -43,9 +54,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
             <Box padding={"xl"}>
                 <Table
                     selectionType={"single"}
-                    onSelectionChange={({ detail }) =>
-                        setSelectedItem(detail.selectedItems[0])
-                    }
+                    onSelectionChange={ ({ detail }) => setSelectedItem(detail.selectedItems[0]) }
                     selectedItems={[selectedItem!]}
                     columnDefinitions={columnDefinitions}
                     items={data?.data?.results!}
@@ -73,9 +82,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
                             ariaLabels={{
                                 nextPageLabel: "Next page",
                                 previousPageLabel: "Previous page",
-                                pageLabel: pageNumber =>
-                                    `Page ${pageNumber} of all pages`
-                            }}
+                                pageLabel: pageNumber => `Page ${pageNumber} of all pages` }}
                         />
                     }
                 />
@@ -87,7 +94,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
                         <Box float="right">
                             <SpaceBetween direction="horizontal" size="xs">
                                 <Button variant="link" onClick={() => setDeleteModalVisible(false)}>Cancel</Button>
-                                <Button variant="primary">Ok</Button>
+                                <Button variant="primary" onClick={() => { deleteAction(selectedItem ? (selectedItem as RadienModel).id! : -1); setDeleteModalVisible(false)}}>Ok</Button>
                             </SpaceBetween>
                         </Box>
                     }
@@ -98,7 +105,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
 
 
             <div className="flex justify-end px-24 py-6 gap-1">
-                <Button variant={"primary"}>Create</Button>
+                { !hideCreate && <Button variant={"primary"}>Create</Button> }
                 <Button disabled={!selectedItem}>View</Button>
                 <Button onClick={() => setDeleteModalVisible(true)} disabled={!selectedItem}>Delete</Button>
             </div>
