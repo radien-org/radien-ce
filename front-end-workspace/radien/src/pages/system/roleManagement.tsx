@@ -32,7 +32,7 @@ export default function UserManagement() {
     ]
 
     const getRolePage = async (pageNumber: number = 1, pageSize: number = 10) => {
-        return await axios.get("/api/role/role/getRoles", {
+        return await axios.get("/api/role/role/getAll", {
             params: {
                 page: pageNumber,
                 pageSize: pageSize
