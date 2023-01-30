@@ -6,7 +6,10 @@ declare module "radien" {
         lastname: string,
         userEmail: string,
         logon: string,
+        mobileNumber: string,
         enabled: boolean,
+        delegatedCreation: boolean,
+        terminationDate: Date,
         createDate: Date,
         lastUpdate: Date
     }
@@ -38,3 +41,4 @@ declare module "radien" {
         totalPages: number
     }
 }
+

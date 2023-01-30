@@ -12,11 +12,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
     let permissionId = await getPermissionId(String(resource), String(action), session.accessToken!);
     if(permissionId != -1) {
-        let path = `${process.env.RADIEN_ROLE_URL}/tenantrole/exists/permission?userId=${session.radienUser.id}&permissionId=${permissionId}&tenantId=${tenantId}`;
+        let path = `${process.env.RADIEN_ROLE_URL}/tenantrole/exists/permission?userId=${userId}&permissionId=${permissionId}&tenantId=${tenantId}`;
         let permissionCheck = await checkForPermission(path, session.accessToken!);
         if(!permissionCheck) {
             permissionId = await getPermissionId(String(resource), "All", session.accessToken!);
-            path = `${process.env.RADIEN_ROLE_URL}/tenantrole/exists/permission?userId=${session.radienUser.id}&permissionId=${permissionId}&tenantId=${tenantId}`;
+            path = `${process.env.RADIEN_ROLE_URL}/tenantrole/exists/permission?userId=${userId}&permissionId=${permissionId}&tenantId=${tenantId}`;
             permissionCheck = await checkForPermission(path, session.accessToken!);
         }
         res.status(200).json(permissionCheck);

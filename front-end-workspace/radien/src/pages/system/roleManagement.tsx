@@ -4,6 +4,7 @@ import axios from "axios";
 import {PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
 import {TableProps} from "@cloudscape-design/components";
 import dynamic from "next/dynamic";
+import {QueryKeys} from "@/consts";
 
 export default function UserManagement() {
     const PaginatedTable = dynamic(
@@ -43,11 +44,14 @@ export default function UserManagement() {
     return (
         <>
             <PaginatedTable
-                queryKey={"roleManagement"}
+                queryKey={QueryKeys.ROLE_MANAGEMENT}
                 getPaginated={getRolePage}
                 columnDefinitions={colDefinition}
                 deleteConfirmationText={"Are you sure you would like to delete the selected role?"}
-                tableHeader={"Role Management"} />
+                tableHeader={"Role Management"}
+                emptyMessage={"No roles available"}
+                emptyAction={"Create role"}
+            />
         </>
     )
 }

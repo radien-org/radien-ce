@@ -1,17 +1,17 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import Card from "@/components/Card/Card";
 import useCheckPermissions from "@/hooks/useCheckPermissions";
-import {useSession} from "next-auth/react";
 import useActiveTenant from "@/hooks/useActiveTenant";
+import {useUserInSession} from "@/hooks/useUserInSession";
 
 export default function ServiceDashboard() {
-    const { data: session } = useSession();
-    const { data: activeTenantData } = useActiveTenant(session!.radienUser.id!);
+    const { me: radienUser } = useUserInSession();
+    const { data: activeTenantData } = useActiveTenant(radienUser?.data.id!);
     const [
         { data: rolesViewPermission },
         { data: usersViewPermission },
         { data: permissionViewPermission },
-    ] = useCheckPermissions(session!.radienUser.id!, activeTenantData?.tenantId!);
+    ] = useCheckPermissions(radienUser?.data.id!, activeTenantData?.tenantId!);
 
     const cards = [
         {

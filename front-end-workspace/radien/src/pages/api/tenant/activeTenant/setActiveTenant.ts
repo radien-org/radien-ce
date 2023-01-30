@@ -4,7 +4,6 @@ import {getServerSession} from "next-auth";
 import {authOptions} from "@/pages/api/auth/[...nextauth]";
 import {ActiveTenant} from "radien";
 
-
 const deleteActiveTenant = async (userId: Number, tenantId: string, accessToken: string) => {
     try {
         let path = `${process.env.RADIEN_TENANT_URL}/activeTenant/find?userId=${userId}`;
@@ -34,7 +33,7 @@ const deleteActiveTenant = async (userId: Number, tenantId: string, accessToken:
     }
 }
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-    const { tenantId } = req.query;
+    const { userId ,tenantId } = req.query;
     const session = await getServerSession(req, res, authOptions);
     if(!session) {
         res.status(401).json({});
@@ -42,9 +41,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
     let path = `${process.env.RADIEN_TENANT_URL}/activeTenant`;
 
-    if(await deleteActiveTenant(session.radienUser.id!, String(tenantId), session.accessToken!)) {
+    if(await deleteActiveTenant(Number(userId), String(tenantId), session.accessToken!)) {
         const tenant: ActiveTenant = {
-            userId: session.radienUser.id!,
+            userId: Number(userId),
             tenantId: Number(tenantId)
         }
         try {

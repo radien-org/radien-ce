@@ -1,6 +1,5 @@
-import NextAuth, {AuthOptions, Awaitable, Session} from "next-auth"
+import NextAuth, {AuthOptions} from "next-auth"
 import KeycloakProvider from "next-auth/providers/keycloak"
-import axios, {AxiosError, AxiosResponse} from "axios";
 export const authOptions: AuthOptions = {
     providers: [
         KeycloakProvider({
@@ -12,14 +11,6 @@ export const authOptions: AuthOptions = {
     callbacks: {
         async session({ session, token, user }) {
             session.accessToken = token.accessToken;
-            const pathUser = `${process.env.RADIEN_USER_URL}/user/session`;
-            const resultUser: AxiosResponse = await axios
-                .get(pathUser, {
-                    headers: {
-                        "Authorization": `Bearer ${session.accessToken}`
-                    }
-                });
-            session.radienUser = resultUser.data;
             return session;
         },
         async jwt({ token, user, account, profile, isNewUser }) {

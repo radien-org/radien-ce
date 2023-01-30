@@ -18,11 +18,14 @@ export interface PaginatedTableProps<T> {
     getPaginated: (pageNumber?: number, pageSize?: number) => Promise<AxiosResponse<Page<T>, Error>>,
     columnDefinitions: TableProps.ColumnDefinition<T>[],
     deleteConfirmationText: string,
-    tableHeader: string
+    tableHeader: string,
+    emptyMessage: string,
+    emptyAction: string,
+
 }
 
 export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
-    const { queryKey, getPaginated, columnDefinitions, deleteConfirmationText, tableHeader } = props;
+    const { queryKey, getPaginated, columnDefinitions, deleteConfirmationText, tableHeader, emptyMessage, emptyAction } = props;
     const [ currentPage, setCurrentPage ] = useState<number>(1);
     const [ pageSize, setPageSize ] = useState<number>(10);
     const [ selectedItem, setSelectedItem ] = useState<T>();
@@ -51,18 +54,17 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
                     sortingDisabled
                     empty={
                         <Box textAlign="center" color="inherit">
-                            <b>No resources</b>
+                            <b>{emptyMessage || "No resources to display."}</b>
                             <Box
-                                padding={{ bottom: "s" }}
+                                padding={{ bottom: "s", top: "m" }}
                                 variant="p"
                                 color="inherit"
                             >
-                                No resources to display.
+                            <Button>{emptyAction || "Create resource"}</Button>
                             </Box>
-                            <Button>Create resource</Button>
                         </Box>
                     }
-                    header={<Header key={queryKey} id={`${queryKey}Header`}> {tableHeader} </Header>}
+                    header={<Header key={queryKey}> {tableHeader} </Header>}
                     pagination={
                         <Pagination
                             currentPageIndex={data?.data?.currentPage!}

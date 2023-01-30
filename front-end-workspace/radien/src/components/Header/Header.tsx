@@ -3,18 +3,18 @@ import TopNavigation, {TopNavigationProps} from "@cloudscape-design/components/t
 import {signIn, signOut, useSession} from "next-auth/react";
 import axios, {AxiosResponse} from "axios";
 import {ButtonDropdownProps} from "@cloudscape-design/components";
-import {ActiveTenant, Tenant} from "radien";
+import {ActiveTenant, Tenant, User} from "radien";
 import ItemOrGroup = ButtonDropdownProps.ItemOrGroup;
-import {Session} from "next-auth";
 import Utility = TopNavigationProps.Utility;
 import useAvailableTenants from '@/hooks/useAvailableTenants';
 import useActiveTenant from "@/hooks/useActiveTenant";
 import useCheckPermissions from "@/hooks/useCheckPermissions";
+import {useUserInSession} from "@/hooks/useUserInSession";
 
 React.useLayoutEffect = React.useEffect;
 
 interface LoggedInProps {
-    session: Session,
+    radienUser: User
 }
 
 const logout = async(): Promise<void> => {
@@ -29,11 +29,11 @@ const itemClicked = async (event: CustomEvent<ButtonDropdownProps.ItemClickDetai
     }
 }
 
-const updateActiveTenant = (tenantId: number, activeTenant: ActiveTenant) => {
+const updateActiveTenant = (userId: number, tenantId: number, activeTenant: ActiveTenant) => {
     if(activeTenant) {
-        return axios.get(`/api/tenant/activeTenant/setActiveTenant?tenantId=${tenantId}&activeTenantId=${activeTenant.id}`);
+        return axios.get(`/api/tenant/activeTenant/setActiveTenant?userId=${userId}tenantId=${tenantId}&activeTenantId=${activeTenant.id}`);
     }
-    return axios.get(`/api/tenant/activeTenant/setActiveTenant?tenantId=${tenantId}`);
+    return axios.get(`/api/tenant/activeTenant/setActiveTenant?userId=${userId}tenantId=${tenantId}`);
 }
 
 const i18nStrings = {
@@ -47,11 +47,12 @@ const i18nStrings = {
 
 export default function Header() {
     const { data: session } = useSession();
+    const { userInSession, isLoadingUserInSession, isLoadingUserInSessionError } = useUserInSession();
 
-    if(!session) {
+    if(!session || isLoadingUserInSession || isLoadingUserInSessionError) {
         return <LoggedOutHeader />
     } else {
-        return <LoggedInHeader session={session}/>
+        return <LoggedInHeader radienUser={userInSession!.data}/>
     }
 }
 
@@ -74,16 +75,16 @@ function LoggedOutHeader() {
 }
 
 function LoggedInHeader(props: LoggedInProps) {
-    const { session } = props;
-    const { isLoading: loadingAvailableTenants, data: availableTenants } = useAvailableTenants(session.radienUser.id!);
-    const { isLoading: activeTenantLoading, data: activeTenant, refetch: refetchActiveTenant } = useActiveTenant(session.radienUser.id!);
+    const { radienUser } = props;
+    const { isLoading: loadingAvailableTenants, data: availableTenants } = useAvailableTenants(radienUser.id);
+    const { isLoading: activeTenantLoading, data: activeTenant, refetch: refetchActiveTenant } = useActiveTenant(radienUser.id);
     const [
         { isLoading: isLoadingRoles, data: rolesViewPermission },
         { isLoading: isLoadingUser, data: usersViewPermission },
         { isLoading: isLoadingPermission, data: permissionViewPermission },
-    ] = useCheckPermissions(session.radienUser.id!, activeTenant?.tenantId!);
+    ] = useCheckPermissions(radienUser.id!, activeTenant?.tenantId!);
     const tenantClicked = async (event: CustomEvent<ButtonDropdownProps.ItemClickDetails>) => {
-        const response: AxiosResponse = await updateActiveTenant(Number(event.detail.id), activeTenant!);
+        const response: AxiosResponse = await updateActiveTenant(radienUser.id!, Number(event.detail.id), activeTenant!);
         if(response.status === 200) {
             await refetchActiveTenant();
         }
@@ -101,12 +102,12 @@ function LoggedInHeader(props: LoggedInProps) {
             },
             {
                 type: "menu-dropdown",
-                text: `${session.radienUser.firstname} ${session.radienUser.lastname}`,
-                description: session.radienUser.userEmail,
+                text: `${radienUser.firstname} ${radienUser.lastname}`,
+                description: radienUser.userEmail,
                 iconName: "user-profile",
-                onItemClick: (event) => itemClicked(event, session.radienUser.id),
+                onItemClick: (event) => itemClicked(event, radienUser.id),
                 items: [
-                    { id: "profile", text: "Profile" },
+                    { id: "profile", text: "Profile", href: "/user/userProfile" },
                     {
                         id: "support-group",
                         text: "Support",
@@ -142,12 +143,12 @@ function LoggedInHeader(props: LoggedInProps) {
             },
             {
                 type: "menu-dropdown",
-                text: `${session.radienUser.firstname} ${session.radienUser.lastname}`,
-                description: session.radienUser.userEmail,
+                text: `${radienUser.firstname} ${radienUser.lastname}`,
+                description: radienUser.userEmail,
                 iconName: "user-profile",
-                onItemClick: (event) => itemClicked(event, session.radienUser.id),
+                onItemClick: (event) => itemClicked(event, radienUser.id),
                 items: [
-                    { id: "profile", text: "Profile" },
+                    { id: "profile", text: "Profile", href: "/user/userProfile" },
                     {
                         id: "support-group",
                         text: "Support",
