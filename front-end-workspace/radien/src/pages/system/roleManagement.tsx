@@ -27,7 +27,7 @@ export default function RoleManagement() {
         {
             id: "terminationDate",
             header: "Termination Date",
-            cell: (item: Role) => item?.terminationDate.toString() || "-",
+            cell: (item: Role) => item?.terminationDate.toString().substring(0, item?.terminationDate.toString().indexOf('T')) || "-",
             sortingField: "terminationDate"
         }
     ]
