@@ -19,6 +19,16 @@ declare module "radien" {
         name: string,
         tenantKey: string,
         tenantType: string,
+        tenantStart: Date,
+        tenantEnd: Date,
+        clientAddress: string,
+        clientZipCode: string,
+        clientCity: string,
+        clientCountry: string,
+        clientPhoneNumber: number,
+        clientEmail: string,
+        parentId: number,
+        clientId: number
     }
 
     interface ActiveTenant {
@@ -32,6 +42,13 @@ declare module "radien" {
         name: string,
         description: string,
         terminationDate: Date
+    }
+
+    interface Permission {
+        id?: number,
+        name: string,
+        actionId: number,
+        resourceId: number
     }
 
     interface Page<T> {

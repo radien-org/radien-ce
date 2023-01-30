@@ -5,12 +5,13 @@ import useActiveTenant from "@/hooks/useActiveTenant";
 import {useUserInSession} from "@/hooks/useUserInSession";
 
 export default function ServiceDashboard() {
-    const { me: radienUser } = useUserInSession();
+    const { userInSession: radienUser } = useUserInSession();
     const { data: activeTenantData } = useActiveTenant(radienUser?.data.id!);
     const [
         { data: rolesViewPermission },
         { data: usersViewPermission },
         { data: permissionViewPermission },
+        { data: tenantViewPermission },
     ] = useCheckPermissions(radienUser?.data.id!, activeTenantData?.tenantId!);
 
     const cards = [
@@ -31,6 +32,12 @@ export default function ServiceDashboard() {
             description: "Which permissions are going to be allowed? In here you can define them.",
             href: "/system/permissionManagement",
             hasPermission: permissionViewPermission
+        },
+        {
+            title: "Tenant Management",
+            description: "Which tenant are going to exist.",
+            href: "/system/tenantManagement",
+            hasPermission: tenantViewPermission
         }
     ];
 

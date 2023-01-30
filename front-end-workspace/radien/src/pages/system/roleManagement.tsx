@@ -6,7 +6,7 @@ import {TableProps} from "@cloudscape-design/components";
 import dynamic from "next/dynamic";
 import {QueryKeys} from "@/consts";
 
-export default function UserManagement() {
+export default function RoleManagement() {
     const PaginatedTable = dynamic(
         () => import("@/components/PaginatedTable/PaginatedTable"),
         { ssr: false}
