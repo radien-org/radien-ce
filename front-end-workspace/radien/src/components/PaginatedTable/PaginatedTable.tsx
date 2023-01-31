@@ -133,7 +133,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
                         </SpaceBetween>
                     </Box>
                 }
-                header="Delete">
+                header={deleteLabel}>
                 {deleteConfirmationText}
             </Modal>
             <Modal

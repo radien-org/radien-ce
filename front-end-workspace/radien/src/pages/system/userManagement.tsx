@@ -51,6 +51,7 @@ export default function UserManagement() {
     }
 
     return (
+
         <Box padding={"xl"}>
             <PaginatedTable
                 tableHeader={"User Management"}
