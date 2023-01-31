@@ -1,11 +1,17 @@
-/** @type {import('next').NextConfig} */
-const withTranspileModules = require('next-transpile-modules');
-const withPlugins = require('next-compose-plugins');
+const withTM = require('next-transpile-modules')(['@cloudscape-design/components']);
 
+/** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+    reactStrictMode: true,
+    swcMinify: true,
 }
 
-module.exports = withPlugins([
-    withTranspileModules(['@cloudscape-design/components']),
-  ], nextConfig);
+const buildConfig = _phase => {
+    const plugins = [withTM]
+    const config = plugins.reduce((acc, next) => next(acc), {
+        ...nextConfig
+    })
+    return config
+}
+
+module.exports = buildConfig();

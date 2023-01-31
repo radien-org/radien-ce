@@ -13,6 +13,8 @@ import {
 } from "@cloudscape-design/components";
 import {UseMutateFunction, useQuery} from "react-query";
 import {useUserInSession} from "@/hooks/useUserInSession";
+import {useRouter} from "next/router";
+import {signIn} from "next-auth/react";
 
 interface SelectedItemDetails<T> {
     selectedItem: T | undefined,
@@ -62,7 +64,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
         getPaginated,
         selectedItemDetails: {selectedItem, setSelectedItem},
         deleteActionProps: {deleteLabel, deleteConfirmationText, deleteAction},
-        createActionProps: {createLabel, hideCreate},
+        createActionProps: {createLabel, hideCreate, createAction},
         viewActionProps: { viewComponent },
         emptyProps: {emptyMessage, emptyActionLabel }
     } = props;
@@ -71,12 +73,28 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
     const [ pageSize, setPageSize ] = useState<number>(10);
     const [ deleteModalVisible, setDeleteModalVisible ] = useState(false);
     const [ viewModalVisible, setViewModalVisible ] = useState(false);
-    const { isLoading, data } = useQuery([queryKey, currentPage], () => getPaginated(currentPage, pageSize))
+    const router = useRouter();
+    const { isLoading, data } = useQuery([queryKey, currentPage], () => getPaginated(currentPage, pageSize),  {
+        onError: (error) => {
+            // @ts-ignore
+            if (error.response.status === 401) {
+                // signIn("keycloak").then(() => {
+                //     router.push(router.asPath);
+                // });
+            }
+        }
+    })
 
 
     const clickTargetUserPage = async (event: NonCancelableCustomEvent<PaginationProps.ChangeDetail>) => {
         let targetPage = event.detail.currentPageIndex;
         setCurrentPage(targetPage);
+    }
+
+    const createResource = () => {
+        if (createAction) {
+            createAction();
+        }
     }
 
     return (
@@ -99,7 +117,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
                             variant="p"
                             color="inherit"
                         >
-                        <Button>{emptyActionLabel || "Create resource"}</Button>
+                        <Button onClick={createResource}>{emptyActionLabel || "Create resource"}</Button>
                         </Box>
                     </Box>
                 }
@@ -153,7 +171,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
 
 
             <div className="flex justify-end py-6 gap-2">
-                { !hideCreate && <Button variant={"primary"}>{createLabel || 'Create'}</Button> }
+                { !hideCreate && <Button onClick={createResource} variant={"primary"}>{createLabel || 'Create'}</Button> }
                 {viewComponent && <Button disabled={!selectedItem} onClick={() => setViewModalVisible(true)}>View</Button>}
                 <Button onClick={() => setDeleteModalVisible(true)} disabled={!selectedItem}>{deleteLabel || 'Delete'}</Button>
             </div>

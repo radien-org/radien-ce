@@ -1,4 +1,6 @@
 import '@/styles/globals.css'
+import '@/styles/createUser.styles.scss'
+import '@/styles/Loader.styles.scss'
 import "@cloudscape-design/global-styles/index.css"
 import type { AppProps } from 'next/app'
 import {SessionProvider} from "next-auth/react";

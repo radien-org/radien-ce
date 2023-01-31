@@ -5,6 +5,7 @@ import {PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
 import dynamic from "next/dynamic";
 import {QueryKeys} from "@/consts";
 import {Box} from "@cloudscape-design/components";
+import {useRouter} from "next/router";
 
 export default function UserManagement() {
     const PaginatedTable = dynamic(
@@ -13,6 +14,7 @@ export default function UserManagement() {
     ) as React.ComponentType<PaginatedTableProps<User>>
 
     const [ selectedUser, setSelectedUser ] = useState<User>()
+    const router = useRouter();
 
 
     const colDefinition = [
@@ -65,7 +67,13 @@ export default function UserManagement() {
                     }
                 }
                 viewActionProps={{}}
-                createActionProps={{}}
+                createActionProps={{
+                    createLabel: "Create user",
+                    createAction: () => {
+                        console.log("Create User");
+                        router.push('/user/createUser');
+                    }
+                }}
                 deleteActionProps={
                     {
                         deleteLabel: "Delete User",
@@ -75,7 +83,7 @@ export default function UserManagement() {
                 emptyProps={
                     {
                         emptyMessage: "No users available",
-                        emptyActionLabel: "Create User"
+                        emptyActionLabel: "Create User",
                     }
                 }
             />
