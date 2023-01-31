@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {
     Box,
     Button,
-    ButtonDropdown,
+    ButtonDropdown, ButtonDropdownProps,
     Container,
     Form,
     Header,
@@ -10,14 +10,17 @@ import {
     SpaceBetween,
     TableProps
 } from "@cloudscape-design/components";
-import {Tenant, User} from "radien";
+import {Tenant, Ticket, User} from "radien";
 import {useUserInSession} from "@/hooks/useUserInSession";
 import axios from "axios";
+import {v4 as uuidv4} from 'uuid';
+import moment from 'moment';
 import dynamic from "next/dynamic";
-import {QueryKeys} from "@/consts";
+import {QueryKeys, TicketType} from "@/consts";
 import {PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
 import useUpdateUser from "@/hooks/useUpdateUser";
 import useDissociateTenant from "@/hooks/useDissociateTenant";
+import {FlashbarContext} from "@/context/FlashbarContext";
 
 const FormField = dynamic(
     () => import("@cloudscape-design/components/form-field"),
@@ -29,6 +32,7 @@ const PaginatedTable = dynamic(
 ) as React.ComponentType<PaginatedTableProps<Tenant>>
 
 export default function UserProfile() {
+    const flashbarContext = React.useContext(FlashbarContext);
     const { userInSession: radienUser, isLoadingUserInSession } = useUserInSession();
     const updateUser = useUpdateUser()
     const dissociateUser = useDissociateTenant();
@@ -93,6 +97,39 @@ export default function UserProfile() {
         });
     }
 
+    const dropdownClickEvent = async (event: CustomEvent<ButtonDropdownProps.ItemClickDetails>) => {
+        if(event.detail.id == "dataReq") {
+            // TODO: Figure out replacement for JSF servlet!
+            // TODO: Include language
+            const uuid = uuidv4();
+            const ticket: Ticket = {
+                userId: Number(radienUser?.data.id),
+                token: uuid,
+                ticketType: TicketType.GDPR_DATA_REQUEST,
+                data: "",
+                createUser: Number(radienUser?.data.id),
+                expireDate: moment().add(24, "hours").toDate()
+            }
+            await axios.post("/api/ticket/createTicket", ticket);
+
+            const referenceUrl: string = `${process.env.NEXT_PUBLIC_RADIEN_WEB_URL}/confirmData?ticket=${uuid}")`;
+            const viewId: string = "email-7";
+            const args = {
+                firstName: radienUser?.data.firstname,
+                lastName: radienUser?.data.lastname,
+                portalUrl: "radien",
+                targetUrl: referenceUrl
+            }
+            await axios.post("/api/notification/notifyCurrentUser", args, {
+                params: {
+                    viewId,
+                    language: "en"
+                }
+            })
+            flashbarContext.addSuccessMessage("Successfully requested data. Please check your email for more details.");
+        }
+    }
+
     const tenantDetailsView = (
         <div>
             <div><b>Tenant Key:</b> {selectedTenant?.tenantKey}</div>
@@ -110,7 +147,7 @@ export default function UserProfile() {
                             variant="h1"
                             description="Here you can manage your profile details"
                             actions={
-                                <ButtonDropdown variant="icon"
+                                <ButtonDropdown variant="icon" onItemClick={(event) => dropdownClickEvent(event)}
                                                 items={[
                                                     { text: "Delete", id: "delUser", disabled: false },
                                                     { text: "Request Tenant", id: "tenantReq", disabled: false },

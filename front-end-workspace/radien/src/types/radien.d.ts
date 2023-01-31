@@ -51,6 +51,15 @@ declare module "radien" {
         resourceId: number
     }
 
+    interface Ticket extends RadienModel {
+        userId: number,
+        ticketType: number,
+        expireDate: Date,
+        token: string,
+        data: string,
+        createUser: number,
+    }
+
     interface Page<T> {
         results: T[],
         currentPage: number,
