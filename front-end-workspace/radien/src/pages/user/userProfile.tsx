@@ -126,7 +126,6 @@ export default function UserProfile() {
             })
             addSuccessMessage("Successfully requested data. Please check your email for more details.");
         }
-        addSuccessMessage("HAI")
     }
 
     const tenantDetailsView = (
