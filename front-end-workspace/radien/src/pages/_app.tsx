@@ -1,5 +1,4 @@
 import '@/styles/globals.css'
-import '@/styles/createUser.styles.scss'
 import '@/styles/Loader.styles.scss'
 import "@cloudscape-design/global-styles/index.css"
 import type { AppProps } from 'next/app'
@@ -11,7 +10,7 @@ import React, {useState} from "react";
 import {handleErrorMessage, handleInfoMessage, handleSuccessMessage, handleWarningMessage, FlashbarContext} from "@/context/FlashbarContext";
 import {FlashbarProps} from "@cloudscape-design/components";
 import FlashbarComponent from "@/components/Flashbar/FlashbarComponent";
-import Link from "next/link";
+
 
 export default function App({ Component, pageProps: { session, ...pageProps} }: AppProps) {
     const queryClient: QueryClient = new QueryClient();

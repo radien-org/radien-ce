@@ -74,16 +74,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
     const [ deleteModalVisible, setDeleteModalVisible ] = useState(false);
     const [ viewModalVisible, setViewModalVisible ] = useState(false);
     const router = useRouter();
-    const { isLoading, data } = useQuery([queryKey, currentPage], () => getPaginated(currentPage, pageSize),  {
-        onError: (error) => {
-            // @ts-ignore
-            if (error.response.status === 401) {
-                // signIn("keycloak").then(() => {
-                //     router.push(router.asPath);
-                // });
-            }
-        }
-    })
+    const { isLoading, data } = useQuery([queryKey, currentPage], () => getPaginated(currentPage, pageSize))
 
 
     const clickTargetUserPage = async (event: NonCancelableCustomEvent<PaginationProps.ChangeDetail>) => {
