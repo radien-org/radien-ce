@@ -112,7 +112,7 @@ export default function UserProfile() {
             }
             await axios.post("/api/ticket/createTicket", ticket);
 
-            const referenceUrl: string = `${process.env.NEXT_PUBLIC_RADIEN_WEB_URL}/confirmData?ticket=${uuid}")`;
+            const referenceUrl: string = `${process.env.NEXTAUTH_URL}/api/data-privacy/dataRequest?ticket=${uuid}")`;
             const viewId: string = "email-7";
             const args = {
                 firstName: radienUser?.data.firstname,
