@@ -5,28 +5,28 @@ import Button from "@cloudscape-design/components/button";
 import Header from "@cloudscape-design/components/header";
 import {Alert, Box, Container, FormField, Input} from "@cloudscape-design/components";
 import axios from "axios";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import {Loader} from "@/components/Loader/Loader";
 import {User} from "radien";
 
 
 export default () => {
-    const [email, setEmail] = React.useState("");
-    const [firstName, setFirstName] = React.useState("");
-    const [lastName, setLastName] = React.useState("");
+    const [email, setEmail] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
 
-    const [isEmailTouched, setIsEmailTouched] = React.useState(false);
-    const [isFirstNameTouched, setIsFirstNameTouched] = React.useState(false);
-    const [isLastNameTouched, setIsLastNameTouched] = React.useState(false);
-    const [isEmailValid, setIsEmailValid] = React.useState(false);
+    const [isEmailTouched, setIsEmailTouched] = useState(false);
+    const [isFirstNameTouched, setIsFirstNameTouched] = useState(false);
+    const [isLastNameTouched, setIsLastNameTouched] = useState(false);
+    const [isEmailValid, setIsEmailValid] = useState(false);
 
-    const [isFirstNameValid, setIsFirstNameValid] = React.useState(false);
-    const [isLastNameValid, setIsLastNameValid] = React.useState(false);
-    const [isFormValid, setIsFormValid] = React.useState(false);
+    const [isFirstNameValid, setIsFirstNameValid] = useState(false);
+    const [isLastNameValid, setIsLastNameValid] = useState(false);
+    const [isFormValid, setIsFormValid] = useState(false);
 
-    const [formError, setFormError] = React.useState("");
-    const [loading, setLoading] = React.useState(false);
-    const [success, setSuccess] = React.useState(false);
+    const [formError, setFormError] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
 
     useEffect(() => {
         validateAll();

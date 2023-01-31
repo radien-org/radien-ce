@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import {Page, RadienModel} from "radien";
 import {AxiosResponse} from "axios";
 import {
@@ -12,9 +12,8 @@ import {
     Table, TableProps
 } from "@cloudscape-design/components";
 import {UseMutateFunction, useQuery} from "react-query";
-import {useUserInSession} from "@/hooks/useUserInSession";
 import {useRouter} from "next/router";
-import {signIn} from "next-auth/react";
+import {RadienContext} from "@/context/RadienContextProvider";
 
 interface SelectedItemDetails<T> {
     selectedItem: T | undefined,
@@ -68,7 +67,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
         viewActionProps: { viewComponent },
         emptyProps: {emptyMessage, emptyActionLabel }
     } = props;
-    const { userInSession } = useUserInSession();
+    const { userInSession } = useContext(RadienContext);
     const [ currentPage, setCurrentPage ] = useState<number>(1);
     const [ pageSize, setPageSize ] = useState<number>(10);
     const [ deleteModalVisible, setDeleteModalVisible ] = useState(false);
@@ -135,7 +134,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
                             <Button variant="link" onClick={() => setDeleteModalVisible(false)}>Cancel</Button>
                             <Button variant="primary" onClick={() => {
                                 if(deleteAction) {
-                                    deleteAction({tenantId: selectedItem ? (selectedItem as RadienModel).id! : -1, userId: userInSession?.data.id});
+                                    deleteAction({tenantId: selectedItem ? (selectedItem as RadienModel).id! : -1, userId: userInSession?.id});
                                 }
                                 setDeleteModalVisible(false)
                             }}>Ok</Button>

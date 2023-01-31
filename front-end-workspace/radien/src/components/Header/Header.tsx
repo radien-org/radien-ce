@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import TopNavigation, {TopNavigationProps} from "@cloudscape-design/components/top-navigation";
 import {signIn, signOut, useSession} from "next-auth/react";
 import axios, {AxiosResponse} from "axios";
@@ -7,11 +7,10 @@ import {ActiveTenant, Tenant, User} from "radien";
 import ItemOrGroup = ButtonDropdownProps.ItemOrGroup;
 import Utility = TopNavigationProps.Utility;
 import useAvailableTenants from '@/hooks/useAvailableTenants';
-import useActiveTenant from "@/hooks/useActiveTenant";
 import useCheckPermissions from "@/hooks/useCheckPermissions";
-import {useUserInSession} from "@/hooks/useUserInSession";
 import {QueryClient} from "react-query";
 import {QueryKeys} from "@/consts";
+import {RadienContext} from "@/context/RadienContextProvider";
 
 React.useLayoutEffect = React.useEffect;
 
@@ -53,12 +52,12 @@ const i18nStrings = {
 
 export default function Header() {
     const { data: session } = useSession();
-    const { userInSession, isLoadingUserInSession, isLoadingUserInSessionError } = useUserInSession();
+    const { userInSession, isLoadingUserInSession } = useContext(RadienContext);
 
-    if(!session || isLoadingUserInSession || isLoadingUserInSessionError) {
+    if(!session || isLoadingUserInSession) {
         return <LoggedOutHeader />
     } else {
-        return <LoggedInHeader radienUser={userInSession!.data}/>
+        return <LoggedInHeader radienUser={userInSession!}/>
     }
 }
 
@@ -83,7 +82,7 @@ function LoggedOutHeader() {
 function LoggedInHeader(props: LoggedInProps) {
     const { radienUser } = props;
     const { isLoading: loadingAvailableTenants, data: availableTenants } = useAvailableTenants(radienUser.id);
-    const { isLoading: activeTenantLoading, data: activeTenant, refetch: refetchActiveTenant } = useActiveTenant(radienUser.id);
+    const { activeTenant: { data: activeTenant, refetch: refetchActiveTenant, isLoading: activeTenantLoading } } = useContext(RadienContext);
     const [
         { isLoading: isLoadingRoles, data: rolesViewPermission },
         { isLoading: isLoadingUser, data: usersViewPermission },

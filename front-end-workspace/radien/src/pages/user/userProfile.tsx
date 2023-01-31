@@ -11,7 +11,6 @@ import {
     TableProps
 } from "@cloudscape-design/components";
 import {Tenant, Ticket, User} from "radien";
-import {useUserInSession} from "@/hooks/useUserInSession";
 import axios from "axios";
 import {v4 as uuidv4} from 'uuid';
 import moment from 'moment';
@@ -20,7 +19,7 @@ import {QueryKeys, TicketType} from "@/consts";
 import {PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
 import useUpdateUser from "@/hooks/useUpdateUser";
 import useDissociateTenant from "@/hooks/useDissociateTenant";
-import {FlashbarContext} from "@/context/FlashbarContext";
+import {RadienContext} from "@/context/RadienContextProvider";
 
 const FormField = dynamic(
     () => import("@cloudscape-design/components/form-field"),
@@ -32,25 +31,24 @@ const PaginatedTable = dynamic(
 ) as React.ComponentType<PaginatedTableProps<Tenant>>
 
 export default function UserProfile() {
-    const flashbarContext = React.useContext(FlashbarContext);
-    const { userInSession: radienUser, isLoadingUserInSession } = useUserInSession();
+    const { addSuccessMessage, userInSession: radienUser, isLoadingUserInSession } = React.useContext(RadienContext);
     const updateUser = useUpdateUser()
     const dissociateUser = useDissociateTenant();
 
     const [ selectedTenant, setSelectedTenant ] = useState<Tenant>();
 
-    const [ firstName, setFirstName ] = useState<string>(radienUser?.data.firstname || '');
-    const [ lastName, setLastName ] = useState<string>(radienUser?.data.lastname || '');
-    const [ logon, setLogon ] = useState<string>(radienUser?.data.logon || '');
-    const [ userEmail, setUserEmail ] = useState<string>(radienUser?.data.userEmail || '');
-    const [ sub, setSub ] = useState<string>(radienUser?.data.sub || '');
+    const [ firstName, setFirstName ] = useState<string>(radienUser?.firstname || '');
+    const [ lastName, setLastName ] = useState<string>(radienUser?.lastname || '');
+    const [ logon, setLogon ] = useState<string>(radienUser?.logon || '');
+    const [ userEmail, setUserEmail ] = useState<string>(radienUser?.userEmail || '');
+    const [ sub, setSub ] = useState<string>(radienUser?.sub || '');
 
     useEffect(() => {
-        setFirstName(radienUser?.data.firstname || '');
-        setLastName(radienUser?.data.lastname || '');
-        setLogon(radienUser?.data.logon || '');
-        setUserEmail(radienUser?.data.userEmail || '');
-        setSub(radienUser?.data.sub || '');
+        setFirstName(radienUser?.firstname || '');
+        setLastName(radienUser?.lastname || '');
+        setLogon(radienUser?.logon || '');
+        setUserEmail(radienUser?.userEmail || '');
+        setSub(radienUser?.sub || '');
     }, [radienUser])
 
     if(isLoadingUserInSession) {
@@ -58,7 +56,7 @@ export default function UserProfile() {
     }
 
     const saveData = () => {
-        const radUser: User = radienUser!.data;
+        const radUser: User = radienUser!;
         radUser.firstname = firstName;
         radUser.lastname = lastName;
         radUser.logon = logon;
@@ -92,7 +90,7 @@ export default function UserProfile() {
     const getTenantPage = (pageNumber: number = 1, pageSize: number = 10) => {
         return axios.get("/api/role/tenantroleuser/getTenants", {
             params: {
-                userId: radienUser?.data.id,
+                userId: radienUser?.id,
             }
         });
     }
@@ -103,11 +101,11 @@ export default function UserProfile() {
             // TODO: Include language
             const uuid = uuidv4();
             const ticket: Ticket = {
-                userId: Number(radienUser?.data.id),
+                userId: Number(radienUser?.id),
                 token: uuid,
                 ticketType: TicketType.GDPR_DATA_REQUEST,
                 data: "",
-                createUser: Number(radienUser?.data.id),
+                createUser: Number(radienUser?.id),
                 expireDate: moment().add(24, "hours").toDate()
             }
             await axios.post("/api/ticket/createTicket", ticket);
@@ -115,8 +113,8 @@ export default function UserProfile() {
             const referenceUrl: string = `${process.env.NEXTAUTH_URL}/api/data-privacy/dataRequest?ticket=${uuid}")`;
             const viewId: string = "email-7";
             const args = {
-                firstName: radienUser?.data.firstname,
-                lastName: radienUser?.data.lastname,
+                firstName: radienUser?.firstname,
+                lastName: radienUser?.lastname,
                 portalUrl: "radien",
                 targetUrl: referenceUrl
             }
@@ -126,8 +124,9 @@ export default function UserProfile() {
                     language: "en"
                 }
             })
-            flashbarContext.addSuccessMessage("Successfully requested data. Please check your email for more details.");
+            addSuccessMessage("Successfully requested data. Please check your email for more details.");
         }
+        addSuccessMessage("HAI")
     }
 
     const tenantDetailsView = (

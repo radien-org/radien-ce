@@ -1,9 +1,9 @@
 import React, {useContext} from "react";
 import {Flashbar} from "@cloudscape-design/components";
-import {FlashbarContext} from "@/context/FlashbarContext";
+import {RadienContext} from "@/context/RadienContextProvider";
 
 export default function FlashbarComponent() {
-    const context = useContext(FlashbarContext);
+    const context = useContext(RadienContext);
     return (
         <Flashbar items={context.values} />
     );

@@ -6,38 +6,23 @@ import {SessionProvider} from "next-auth/react";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 import {QueryClient, QueryClientProvider} from "react-query";
-import React, {useState} from "react";
-import {handleErrorMessage, handleInfoMessage, handleSuccessMessage, handleWarningMessage, FlashbarContext} from "@/context/FlashbarContext";
-import {FlashbarProps} from "@cloudscape-design/components";
+import React from "react";
 import FlashbarComponent from "@/components/Flashbar/FlashbarComponent";
 
+import RadienProvider from "@/context/RadienContextProvider";
 
 export default function App({ Component, pageProps: { session, ...pageProps} }: AppProps) {
     const queryClient: QueryClient = new QueryClient();
-    const [messages, setMessages] = useState<FlashbarProps.MessageDefinition[]>([]);
-
-    const addSuccessMessage = (message: string) => {
-        handleSuccessMessage(messages, setMessages, message);
-    }
-    const addInfoMessage = (message: string) => {
-        handleInfoMessage(messages, setMessages, message);
-    }
-    const addWarningMessage = (message: string) => {
-        handleWarningMessage(messages, setMessages, message);
-    }
-    const addErrorMessage = (message: string) => {
-        handleErrorMessage(messages, setMessages, message);
-    }
 
   return (
       <SessionProvider session={session} >
           <QueryClientProvider client={queryClient}>
-              <FlashbarContext.Provider value={{values: messages, addSuccessMessage, addInfoMessage, addWarningMessage, addErrorMessage}}>
+              <RadienProvider>
                 <Header />
                 <FlashbarComponent />
                 <Component {...pageProps} />
                 <Footer />
-              </FlashbarContext.Provider>
+              </RadienProvider>
           </QueryClientProvider>
       </SessionProvider>
     )

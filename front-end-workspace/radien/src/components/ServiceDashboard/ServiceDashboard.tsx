@@ -1,18 +1,16 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import Card from "@/components/Card/Card";
 import useCheckPermissions from "@/hooks/useCheckPermissions";
-import useActiveTenant from "@/hooks/useActiveTenant";
-import {useUserInSession} from "@/hooks/useUserInSession";
+import {RadienContext} from "@/context/RadienContextProvider";
 
 export default function ServiceDashboard() {
-    const { userInSession: radienUser } = useUserInSession();
-    const { data: activeTenantData } = useActiveTenant(radienUser?.data.id!);
+    const { userInSession: radienUser, activeTenant: { data: activeTenantData}} = useContext(RadienContext);
     const [
         { data: rolesViewPermission },
         { data: usersViewPermission },
         { data: permissionViewPermission },
         { data: tenantViewPermission },
-    ] = useCheckPermissions(radienUser?.data.id!, activeTenantData?.tenantId!);
+    ] = useCheckPermissions(radienUser?.id!, activeTenantData?.tenantId!);
 
     const cards = [
         {
