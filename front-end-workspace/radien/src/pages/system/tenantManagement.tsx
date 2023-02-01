@@ -1,10 +1,11 @@
-import React, {useState} from "react";
-import {Tenant} from "radien";
+import React, {useContext, useState} from "react";
+import {RadienModel, Tenant} from "radien";
 import axios from "axios";
 import {PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
 import {Box, TableProps} from "@cloudscape-design/components";
 import dynamic from "next/dynamic";
 import {QueryKeys} from "@/consts";
+import {RadienContext} from "@/context/RadienContextProvider";
 
 export default function TenantManagement() {
     const PaginatedTable = dynamic(
@@ -13,6 +14,7 @@ export default function TenantManagement() {
     ) as React.ComponentType<PaginatedTableProps<Tenant>>
 
     const [ selectedTenant, setSelectedTenant ] = useState<Tenant>();
+    const {addSuccessMessage, addErrorMessage} = useContext(RadienContext);
 
     const colDefinition: TableProps.ColumnDefinition<Tenant>[] = [
         {
@@ -103,6 +105,16 @@ export default function TenantManagement() {
         });
     }
 
+    // @ts-ignore
+    const deleteTenant = async ({tenantId, userId}) => {
+       try {
+           await axios.delete(`/api/tenant/delete/${tenantId}`);
+           addSuccessMessage("Tenant deleted successfully");
+       } catch (e) {
+           addErrorMessage("Failed to delete tenant");
+       }
+    }
+
     return (
         <Box padding={"xl"}>
             <PaginatedTable
@@ -121,7 +133,8 @@ export default function TenantManagement() {
                 deleteActionProps={
                     {
                         deleteLabel: "Delete Tenant",
-                        deleteConfirmationText: `Are you sure you would like to delete ${selectedTenant?.name}`
+                        deleteConfirmationText: `Are you sure you would like to delete ${selectedTenant?.name}`,
+                        deleteAction: deleteTenant
                     }
                 }
                 emptyProps={
