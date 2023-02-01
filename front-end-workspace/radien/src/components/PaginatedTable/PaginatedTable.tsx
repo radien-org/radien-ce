@@ -33,7 +33,8 @@ interface CreateActionProps {
 }
 
 interface ViewActionDetails {
-    ViewComponent?: React.FunctionComponent<{data: any}>
+    ViewComponent?: React.FunctionComponent<{data: any}>,
+    viewTitle?: string
 }
 
 interface EmptyProps {
@@ -64,7 +65,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
         selectedItemDetails: {selectedItem, setSelectedItem},
         deleteActionProps: {deleteLabel, deleteConfirmationText, deleteAction},
         createActionProps: {createLabel, hideCreate, createAction},
-        viewActionProps: { ViewComponent },
+        viewActionProps: { ViewComponent, viewTitle },
         emptyProps: {emptyMessage, emptyActionLabel }
     } = props;
     const { userInSession } = useContext(RadienContext);
@@ -155,7 +156,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
                         </SpaceBetween>
                     </Box>
                 }
-                header="View">
+                header={viewTitle || "View"}>
                 {ViewComponent && <ViewComponent data={selectedItem} />}
             </Modal>
 

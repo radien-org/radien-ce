@@ -69,6 +69,7 @@ export default function UserManagement() {
                 }
                 viewActionProps={{
                     ViewComponent: UserDetailsView,
+                    viewTitle: "User details"
                 }}
                 createActionProps={{
                     createLabel: "Create user",
