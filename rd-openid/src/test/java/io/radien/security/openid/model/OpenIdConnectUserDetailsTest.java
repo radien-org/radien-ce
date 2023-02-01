@@ -91,4 +91,12 @@ public class OpenIdConnectUserDetailsTest {
         oud.setFullName(fullName);
         assertEquals(fullName, oud.getFullName());
     }
+
+    @Test
+    public void testSetterMobileNumber() {
+        String mobileNumber = "a";
+        OpenIdConnectUserDetails oud = new OpenIdConnectUserDetails(new HashMap<>());
+        oud.setMobileNumber(mobileNumber);
+        assertEquals(mobileNumber, oud.getMobileNumber());
+    }
 }

@@ -27,11 +27,9 @@ import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.client.exception.NotFoundException;
 import io.radien.ms.openid.entities.Principal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
@@ -42,13 +40,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.anyList;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -114,6 +106,7 @@ public class AuthorizationCheckerTest {
         when(tokensPlaceHolder.getRefreshToken()).thenReturn(refreshToken);
         when(this.userClient.refreshToken(refreshToken)).thenReturn(Response.status(300).build());
         assertFalse(authorizationChecker.refreshToken());
+        assertNotEquals(refreshToken, newAccessToken);
     }
 
     /**
@@ -369,6 +362,33 @@ public class AuthorizationCheckerTest {
         when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz");
 
         assertFalse(authorizationChecker.hasGrant(tenantId, roleName));
+    }
+
+
+    @Test(expected = SystemException.class)
+    public void testHasPermissionException() throws SystemException {
+        Long userId = 1001L;
+        String actionName = "admin";
+        String resourceName = "admin";
+        Long permissionId = 1001L;
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(session);
+
+        Principal principal = new Principal();
+        principal.setSub("aaa-bbb-ccc-ddd");
+
+        when(servletRequest.getSession()).thenReturn(session);
+        when(servletRequest.getSession(false)).thenReturn(session);
+        when(session.getAttribute("USER")).thenReturn(principal);
+
+        when(this.userClient.getUserIdBySub(principal.getSub())).
+                thenReturn(Response.ok().entity(userId).build());
+        when(this.tenantRoleClient.isPermissionExistentForUser(userId, permissionId, null)).
+                thenReturn(Response.ok().entity(Boolean.TRUE).build());
+        when(tokensPlaceHolder.getAccessToken()).thenReturn("token-yyz");
+
+        when(authorizationChecker.hasPermission(userId,actionName,resourceName)).thenThrow(SystemException.class);
     }
 
 

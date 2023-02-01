@@ -41,6 +41,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.primefaces.event.SelectEvent;
+import org.primefaces.model.LazyDataModel;
 
 import static org.junit.Assert.assertEquals;
 
@@ -68,6 +69,9 @@ public class ActionDataModelTest extends JSFUtilAndFaceContextMessagesTest {
 
     @Mock
     private ActiveTenantDataModelManager activeTenantDataModelManager;
+
+    @Mock
+    private LazyDataModel<? extends SystemAction> lazyModel;
 
     SystemAction systemAction;
 
@@ -186,4 +190,6 @@ public class ActionDataModelTest extends JSFUtilAndFaceContextMessagesTest {
         assertEquals(systemAction, actionDataModel.getSelectedAction());
     }
 
+    @Test
+    public void testGetLazyModel() {assertEquals(lazyModel,actionDataModel.getLazyModel());}
 }

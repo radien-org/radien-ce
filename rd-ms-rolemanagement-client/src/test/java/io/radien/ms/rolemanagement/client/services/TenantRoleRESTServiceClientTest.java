@@ -18,6 +18,7 @@ package io.radien.ms.rolemanagement.client.services;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
+import io.radien.api.model.role.SystemRole;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.util.FactoryUtilService;
@@ -28,12 +29,14 @@ import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.security.AuthorizationChecker;
+import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.json.Json;
@@ -140,7 +143,7 @@ public class TenantRoleRESTServiceClientTest {
      * Test the get association of a tenant role by id but this time with status not ok
      * @throws MalformedURLException for url informed incorrectly
      * @throws SystemException in case of any communication issue
-     */ 
+     */
     @Test
     public void testGetTenantRoleByIdWithStatusNeqOK() throws MalformedURLException, SystemException {
 
@@ -757,4 +760,68 @@ public class TenantRoleRESTServiceClientTest {
                 thenThrow(new MalformedURLException());
         target.update(tenantRole);
     }
+
+    /**
+     * Test the retrieval of the Roles for a User into a list but with token expired
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testRolesForUserTenantListWithTokenException() throws MalformedURLException, SystemException {
+        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
+
+        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(client.getRolesForUserTenant(1L,2L)).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getRolesForUserTenant(1L,2L);
+    }
+
+    /**
+     * Test the retrieval of the Roles for User into a list but with exception being thrown
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testTenantRoleListWithProcessingException() throws MalformedURLException, SystemException {
+        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
+
+        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(client.getRolesForUserTenant(1L, 2L)).thenThrow(new ProcessingException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getRolesForUserTenant(1L, 2L);
+    }
+
+    /**
+     * Test the retrieval of the Roles for UserTenant into a list
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testTenantRoleIntoList() throws MalformedURLException, SystemException {
+        String jsonArrayAsString = "[{\"id\": 10, \"tenantId\": 20, \"roleId\": 30}, " +
+                "{\"id\": 20, \"tenantId\": 50, \"roleId\": 60}]";
+
+        InputStream i = new ByteArrayInputStream(jsonArrayAsString.getBytes());
+        Response response = Response.ok().entity(i).build();
+
+        TenantRoleResourceClient client = Mockito.mock(TenantRoleResourceClient.class);
+
+        when(roleServiceUtil.getTenantResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(client.getRolesForUserTenant(10L, 20L)).
+                thenReturn(response);
+
+        List<? extends SystemRole> rolesList =
+                target.getRolesForUserTenant(10L, 20L);
+        assertNotNull(rolesList);
+        assertEquals(2, rolesList.size());
+    }
+
 }

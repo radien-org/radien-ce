@@ -41,6 +41,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
 import javax.faces.application.FacesMessage;
@@ -512,5 +513,13 @@ public class TenantDataModelTest {
         Date now = new Date();
         tenantDataModel.setTenantEndDate(now);
         assertEquals(now, tenantDataModel.getTenantEndDate());
+    }
+
+    @Test
+    public void testOnRowSelect() {
+        SelectEvent<SystemTenant> event = mock(SelectEvent.class);
+        when(event.getObject()).thenReturn(tenant);
+        tenantDataModel.onRowSelect(event);
+        assertEquals(tenant, tenantDataModel.getSelectedTenant());
     }
 }

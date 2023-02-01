@@ -240,7 +240,7 @@ public class ActiveTenantServiceTest {
     }
 
     /**
-     * Test of get all the active tenants
+     * Test of get all the active tenants in ascending and descending order
      * @throws UniquenessConstraintException in case of duplicates
      * @throws ActiveTenantException in case of any issue in the data
      */
@@ -271,7 +271,7 @@ public class ActiveTenantServiceTest {
         assertEquals(1, result.getTotalResults());
 
         result = activeTenantServiceAccess.getAll(tenantId,null,1,10,
-                Collections.singletonList(SystemVariables.USER_ID.getFieldName()),false);
+                Collections.singletonList(SystemVariables.USER_ID.getFieldName()),true);
         assertNotNull(result);
         assertEquals(2, result.getTotalResults());
     }

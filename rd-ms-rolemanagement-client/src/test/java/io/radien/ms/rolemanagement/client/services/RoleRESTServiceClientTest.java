@@ -30,7 +30,6 @@ import io.radien.ms.rolemanagement.client.util.RoleModelMapper;
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -663,5 +662,34 @@ public class RoleRESTServiceClientTest {
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
         assertDoesNotThrow(()-> target.update(role));
+    }
+
+    /**
+     * Method that tests if the right system exception is sent when url is informed incorrectly
+     * @throws SystemException in case of any communication issue
+     * @throws MalformedURLException for url informed incorrectly
+     */
+    @Test(expected = SystemException.class)
+    public void testGetTotalRecordsCountSystemException() throws SystemException, MalformedURLException {
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenThrow(new MalformedURLException());
+
+        target.getTotalRecordsCount();
+    }
+
+    /**
+     * Tests if the current count of records in db are the correct ones.
+     * @throws SystemException in case of any communication issue
+     * @throws MalformedURLException for url informed incorrectly
+     */
+    @Test
+    public void testGetTotalRecordsCount() throws SystemException, MalformedURLException {
+        RoleResourceClient roleResourceClient = Mockito.mock(RoleResourceClient.class);
+        when(roleServiceUtil.getRoleResourceClient(getPermissionManagementUrl())).thenReturn(roleResourceClient);
+
+        Response mockResponse = Mockito.mock(Response.class);
+        when(roleResourceClient.getTotalRecordsCount()).thenReturn(mockResponse);
+        when(mockResponse.readEntity(any(Class.class))).thenReturn("1");
+
+        assertEquals(Long.valueOf(1),target.getTotalRecordsCount());
     }
 }

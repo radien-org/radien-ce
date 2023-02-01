@@ -17,6 +17,8 @@ package io.radien.ms.usermanagement.client.exceptions;
 
 import org.junit.Test;
 
+import javax.ws.rs.core.Response;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 /**
@@ -36,6 +38,14 @@ public class RemoteResourceExceptionTest {
         assertNotNull(exception);
         RemoteResourceException exception2 = new RemoteResourceException("message");
         assertEquals("message",exception2.getMessage());
+    }
+
+    @Test
+    public void testRemoteResourceExceptionStatus(){
+        RemoteResourceException exception = new RemoteResourceException();
+        assertNotNull(exception);
+        RemoteResourceException exception2 = new RemoteResourceException("message", Response.Status.INTERNAL_SERVER_ERROR);
+        assertEquals(exception.getStatus(),exception2.getStatus());
     }
 
 }

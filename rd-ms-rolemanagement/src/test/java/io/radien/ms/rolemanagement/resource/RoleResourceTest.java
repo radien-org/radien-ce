@@ -160,4 +160,13 @@ public class RoleResourceTest {
         roleResource.update(1L, new Role());
     }
 
+    /**
+     * Tests the response of get total records count
+     */
+    @Test
+    public void testGetTotalRecordsCount() {
+        Response response = roleResource.getTotalRecordsCount();
+        assertEquals(200,response.getStatus());
+    }
+
 }

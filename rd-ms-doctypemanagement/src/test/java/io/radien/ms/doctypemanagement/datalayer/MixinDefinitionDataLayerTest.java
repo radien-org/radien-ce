@@ -215,4 +215,9 @@ public class MixinDefinitionDataLayerTest {
         mixinDefinitionDAL.delete(4L);
     }
 
+    @Test
+    public void testGetTotalRecordsCount() {
+        long result = mixinDefinitionDAL.getTotalRecordsCount();
+        assertEquals(1, result);
+    }
 }

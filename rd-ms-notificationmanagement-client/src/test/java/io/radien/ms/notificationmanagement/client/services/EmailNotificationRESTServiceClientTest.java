@@ -15,6 +15,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -54,5 +55,14 @@ public class EmailNotificationRESTServiceClientTest {
         when(mockResponse.getStatus()).thenReturn(200);
 
         assertEquals(true, client.notifyCurrentUser("", "", new HashMap<>()));
+    }
+
+    /**
+     * Test to attempt to connect with the OAF
+     */
+    @Test
+    public void testAccessingOAF() {
+        OAFAccess oafAccess = client.getOAF();
+        assertNotNull(oafAccess);
     }
 }

@@ -129,8 +129,11 @@ public class UserSessionTest {
         user.setEnabled(true);
         user.setFirstname("my");
         user.setLastname("email");
+        user.setMobileNumber("12345678");
 
         userSession.setUser(user);
+        userSession.setLanguage("Portuguese");
+
     }
 
     /**
@@ -236,6 +239,15 @@ public class UserSessionTest {
 
     /**
      * Test method for
+     * {@link UserSession#getMobileNumber()}
+     */
+    @Test
+    public void testGetMobileNumber(){
+        assertNotNull(userSession.getMobileNumber());
+    }
+
+    /**
+     * Test method for
      * {@link UserSession#getUserLastName()}
      */
     @Test
@@ -250,6 +262,15 @@ public class UserSessionTest {
     @Test
     public void testGetUserFullName(){
         assertNotNull(userSession.getUserFullName());
+    }
+
+    /**
+     * Test method for
+     * {@link UserSession#getLanguage()}
+     */
+    @Test
+    public void testGetLanguage(){
+        assertNotNull(userSession.getLanguage());
     }
 
     /**
@@ -422,5 +443,4 @@ public class UserSessionTest {
         doThrow(new ServletException("error")).when(request).logout();
         Assert.assertFalse(userSession.logout());
     }
-
 }

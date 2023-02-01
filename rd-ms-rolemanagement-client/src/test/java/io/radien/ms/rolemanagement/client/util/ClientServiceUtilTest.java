@@ -46,4 +46,37 @@ public class ClientServiceUtilTest extends TestCase {
         }
         assertTrue(valid);
     }
+
+    @Test
+    public void testGetTenantResourceClient(){
+        boolean valid = true;
+        try {
+            roleServiceUtil.getTenantResourceClient("http://url.test.pt");
+        } catch (MalformedURLException e){
+            valid = false;
+        }
+        assertTrue(valid);
+    }
+
+    @Test
+    public void testGetTenantRoleUserResourceClient(){
+        boolean valid = true;
+        try {
+            roleServiceUtil.getTenantRoleUserResourceClient("http://url.test.pt");
+        } catch (MalformedURLException e){
+            valid = false;
+        }
+        assertTrue(valid);
+    }
+
+    @Test
+    public void testGetTenantRolePermissionResourceClient(){
+        boolean valid = true;
+        try {
+            roleServiceUtil.getTenantRolePermissionResourceClient("http://url.test.pt");
+        } catch (MalformedURLException e){
+            valid = false;
+        }
+        assertTrue(valid);
+    }
 }

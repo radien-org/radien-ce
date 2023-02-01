@@ -32,6 +32,8 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.radien.api.model.user.SystemUserPasswordChanging;
 import io.radien.exception.BadRequestException;
 import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
@@ -1348,5 +1350,30 @@ public class UserRESTServiceClientTest {
         List<? extends SystemUser> outcome = target.getUsersByIds(ids);
         assertNotNull(outcome);
         assertEquals(1, outcome.size());
+    }
+
+    @Test
+    public void testGetCurrentUserInSession() throws MalformedURLException, SystemException {
+        User dummyUser = new User();
+        dummyUser.setId(1L);
+        InputStream is = new ByteArrayInputStream(UserModelMapper.map(dummyUser).toString().getBytes());
+
+        Response response = Response.ok(is).build();
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+
+        when(resourceClient.getUserInSession()).thenReturn(response);
+
+        Optional<SystemUser> osu = target.getCurrentUserInSession();
+
+        assertNotNull(osu);
+        assertTrue(osu.isPresent());
+        assertEquals(osu.get().getId(), dummyUser.getId());
+    }
+
+    @Test (expected = SystemException.class)
+    public void testGetCurrentUserInSessionMalformed() throws MalformedURLException, SystemException {
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenThrow(new MalformedURLException());
+        target.getCurrentUserInSession();
     }
 }

@@ -44,8 +44,8 @@ public class PropertyDefinitionModelMapperTest {
         object.setRequiredType(1);
 
         JsonObject result = PropertyDefinitionModelMapper.map(object);
-        assertEquals(1L, result.getJsonNumber("id").longValue());
-        assertEquals("name", result.getJsonString("name").getString());
+        assertEquals(object.getId().longValue(), result.getJsonNumber("id").longValue());
+        assertEquals(object.getName(), result.getJsonString("name").getString());
         assertTrue(result.getBoolean("mandatory"));
         assertTrue(result.getBoolean("multiple"));
         assertTrue(result.getBoolean("protected"));

@@ -33,7 +33,7 @@ public class ClientServiceUtilTest {
     private ClientServiceUtil serviceUtil;
 
     @Test
-    public void testGetResourceClient() {
+    public void testGetPropertyDefinitionResourceClient() {
         boolean valid = true;
         try {
             serviceUtil.getPropertyDefinitionClient("http://url.test.pt") ;
@@ -43,8 +43,24 @@ public class ClientServiceUtilTest {
         assertTrue(valid);
     }
 
+    @Test
+    public void testGetMixinDefinitionResourceClient() {
+        boolean valid = true;
+        try {
+            serviceUtil.getMixinDefinitionClient("http://url.test.pt") ;
+        } catch (MalformedURLException e) {
+            valid = false;
+        }
+        assertTrue(valid);
+    }
+
     @Test(expected = MalformedURLException.class)
-    public void testGetResourceClientException() throws MalformedURLException {
+    public void testGetPropertyDefinitionResourceClientException() throws MalformedURLException {
         serviceUtil.getPropertyDefinitionClient("not.a.valid.url") ;
+    }
+
+    @Test(expected = MalformedURLException.class)
+    public void testGetMixinDefinitionResourceClientException() throws MalformedURLException {
+        serviceUtil.getMixinDefinitionClient("not.a.valid.url") ;
     }
 }
