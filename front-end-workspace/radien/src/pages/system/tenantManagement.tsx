@@ -13,6 +13,8 @@ export default function TenantManagement() {
         { ssr: false}
     ) as React.ComponentType<PaginatedTableProps<Tenant>>
 
+
+
     const {addSuccessMessage, addErrorMessage} = useContext(RadienContext);
 
     const colDefinition: TableProps.ColumnDefinition<Tenant>[] = [
@@ -103,6 +105,7 @@ export default function TenantManagement() {
             }
         });
     }
+
 
     const deleteTenant = async (data: DeleteParams) => {
        try {
