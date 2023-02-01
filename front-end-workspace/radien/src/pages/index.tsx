@@ -11,16 +11,14 @@ export default function Home() {
     const { data: session } = useSession();
 
   return (
-    <>
-        <main>
-            { !session &&
-            <div className="flex justify-center items-center">
-                <div className="text-center">
-                    <img className="h-[35rem] my-[25%] p-[2rem]" src='./index/radien.svg' alt="Extra large avatar" />
-                </div>
-            </div>  }
-            { session && <ServiceDashboard />}
-        </main>
-    </>
+    <main>
+        { !session &&
+        <div className="flex justify-center items-center">
+            <div className="text-center">
+                <img className="h-[35rem] my-[25%] p-[2rem]" src='./index/radien.svg' alt="Extra large avatar" />
+            </div>
+        </div>  }
+        { session && <ServiceDashboard />}
+    </main>
   )
 }

@@ -1,6 +1,12 @@
 import useDarkMode from "@/hooks/useDarkMode";
-import {Icon, Toggle} from "@cloudscape-design/components";
+import {Icon} from "@cloudscape-design/components";
 import React from "react";
+import dynamic from "next/dynamic";
+
+const Toggle = dynamic(
+    () => import("@cloudscape-design/components/toggle"),
+    { ssr: false}
+);
 
 export default function ThemeToggle() {
 const {colorTheme, setTheme} = useDarkMode();

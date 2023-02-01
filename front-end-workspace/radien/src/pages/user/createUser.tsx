@@ -10,7 +10,7 @@ import {Loader} from "@/components/Loader/Loader";
 import {User} from "radien";
 
 
-export default () => {
+export default function CreateUser() {
     const [email, setEmail] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
