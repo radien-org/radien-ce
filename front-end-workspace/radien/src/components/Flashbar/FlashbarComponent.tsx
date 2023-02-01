@@ -5,6 +5,8 @@ import {RadienContext} from "@/context/RadienContextProvider";
 export default function FlashbarComponent() {
     const context = useContext(RadienContext);
     return (
-        <Flashbar items={context.values} />
+        <div className={"flash-bar--container"}>
+            <Flashbar items={context.values} />
+        </div>
     );
 }

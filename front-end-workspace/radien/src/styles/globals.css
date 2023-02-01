@@ -7,3 +7,11 @@
 html {
     font-size: 10px;
 }
+
+.flash-bar--container {
+    position: fixed;
+    top: 5rem;
+    right: 2rem;
+    max-width: 80rem;
+    z-index: 1000;
+}

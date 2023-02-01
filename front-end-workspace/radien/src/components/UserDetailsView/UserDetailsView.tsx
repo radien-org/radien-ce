@@ -8,8 +8,8 @@ import {User} from "radien";
 const UserDetailsView: FunctionComponent<{data: User}> =  ({data}) => {
 
     return (
-        <Box padding="xl">
-            <Container>
+        <Box padding="l">
+            <>
                 {data && ( <>
                     <SpaceBetween direction="vertical" size="l">
                         <FormField key="view-form-1" label={"Email"}>
@@ -71,7 +71,7 @@ const UserDetailsView: FunctionComponent<{data: User}> =  ({data}) => {
                     </SpaceBetween>
                 </> )}
 
-            </Container>
+            </>
         </Box>
     );
 }

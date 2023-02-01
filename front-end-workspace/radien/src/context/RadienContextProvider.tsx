@@ -7,6 +7,7 @@ import {ActiveTenant, Tenant, User} from "radien";
 import useAvailableTenants from "@/hooks/useAvailableTenants";
 import useActiveTenant from "@/hooks/useActiveTenant";
 import {UseQueryResult} from "react-query";
+import {add} from "unload";
 
 export const RadienContext = React.createContext({
     values: [] as FlashbarProps.MessageDefinition[], addSuccessMessage: (message: string, dismissedAfter?: number) => {},
@@ -26,17 +27,32 @@ export default function RadienProvider({ children }: RadienProviderProps) {
     const [messages, setMessages] = useState<FlashbarProps.MessageDefinition[]>([]);
     const { userInSession: radienUser, isLoadingUserInSession } = useUserInSession();
     const activeTenant: UseQueryResult<ActiveTenant, Error> = useActiveTenant(radienUser?.data.id);
+
+    const deleteMessage = (id: string) => {
+        setMessages((old: FlashbarProps.MessageDefinition[]) => {
+            let newValues = [...old];
+            newValues = newValues.filter((value) => value.id !== id);
+            return newValues;
+        })
+    }
+    const addMessage = (message: FlashbarProps.MessageDefinition) => {
+        setMessages((old: FlashbarProps.MessageDefinition[]) => {
+            let newValues = [...old];
+            newValues.push(message);
+            return newValues;
+        })
+    }
     const addSuccessMessage = (message: string) => {
-        handleSuccessMessage(messages, setMessages, message);
+        handleSuccessMessage(addMessage, deleteMessage, message);
     }
     const addInfoMessage = (message: string) => {
-        handleInfoMessage(messages, setMessages, message);
+        handleInfoMessage(addMessage, deleteMessage, message);
     }
     const addWarningMessage = (message: string) => {
-        handleWarningMessage(messages, setMessages, message);
+        handleWarningMessage(addMessage, deleteMessage, message);
     }
     const addErrorMessage = (message: string) => {
-        handleErrorMessage(messages, setMessages, message);
+        handleErrorMessage(addMessage, deleteMessage, message);
     }
 
     const contextValue = {
@@ -60,38 +76,40 @@ export default function RadienProvider({ children }: RadienProviderProps) {
 /**
  * FLASHBAR RELATED METHODS
  */
-const createMessage = (values: FlashbarProps.MessageDefinition[], valueSetter: Function, message: string, type: FlashbarProps.Type) => {
+const createMessage = (deleteMessage: Function, message: string, type: FlashbarProps.Type) => {
     const uuid = uuidv4();
     const firstSpaceIndex = message.indexOf(" ");
     const msgObj: FlashbarProps.MessageDefinition = {
         type: type,
         dismissible: type === 'warning' || type === 'error',
         dismissLabel: 'Dismiss message',
-        onDismiss: () => {valueSetter(values.splice(values.findIndex(m => m.id === uuid), 1))},
+        onDismiss: () => {
+            deleteMessage(uuid);
+        },
         content: (<><span className={"font-bold"}>{message.substring(0, firstSpaceIndex)}</span>{message.substring(firstSpaceIndex)} </>),
         id: uuid,
     };
     return {uuid, msgObj};
 }
-function handleSuccessMessage(values: FlashbarProps.MessageDefinition[], valueSetter: Function, message: string, dismissedAfter: number = 5000) {
-    const {uuid, msgObj} = createMessage(values, valueSetter, message, "success");
+function handleSuccessMessage(addMessage: Function, deleteMessage: Function, message: string, dismissedAfter: number = 5000) {
+    const {uuid, msgObj} = createMessage(deleteMessage, message, "success");
     setTimeout(() => {
-        valueSetter(values.splice(values.findIndex(m => m.id === uuid), 1))
+        deleteMessage(uuid);
     }, dismissedAfter)
-    valueSetter([...values, msgObj]);
+    addMessage(msgObj);
 }
-function handleInfoMessage(values: FlashbarProps.MessageDefinition[], valueSetter: Function, message: string, dismissedAfter: number = 5000) {
-    const {uuid, msgObj} = createMessage(values, valueSetter, message, "info");
+function handleInfoMessage(addMessage: Function, deleteMessage: Function,  message: string, dismissedAfter: number = 5000) {
+    const {uuid, msgObj} = createMessage(deleteMessage, message, "info");
     setTimeout(() => {
-        valueSetter(values.splice(values.findIndex(m => m.id === uuid), 1))
+        deleteMessage(uuid);
     }, dismissedAfter)
-    valueSetter([...values, msgObj]);
+    addMessage(msgObj);
 }
-function handleWarningMessage(values: FlashbarProps.MessageDefinition[], valueSetter: Function, message: string) {
-    const {uuid, msgObj} = createMessage(values, valueSetter, message, "warning");
-    valueSetter([...values, msgObj]);
+function handleWarningMessage(addMessage: Function, deleteMessage: Function, message: string) {
+    const {msgObj} = createMessage(deleteMessage, message, "warning");
+    addMessage(msgObj);
 }
-function handleErrorMessage(values: FlashbarProps.MessageDefinition[], valueSetter: Function, message: string) {
-    const {uuid, msgObj} = createMessage(values, valueSetter, message, "error");
-    valueSetter([...values, msgObj]);
+function handleErrorMessage(addMessage: Function, deleteMessage: Function,  message: string) {
+    const {msgObj} = createMessage(deleteMessage, message, "error");
+    addMessage(msgObj);
 }
