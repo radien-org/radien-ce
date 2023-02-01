@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import TopNavigation, {TopNavigationProps} from "@cloudscape-design/components/top-navigation";
 import {signIn, signOut, useSession} from "next-auth/react";
 import axios, {AxiosResponse} from "axios";
-import {ButtonDropdownProps} from "@cloudscape-design/components";
+import {ButtonDropdownProps, Icon, Toggle} from "@cloudscape-design/components";
 import {ActiveTenant, Tenant, User} from "radien";
 import ItemOrGroup = ButtonDropdownProps.ItemOrGroup;
 import Utility = TopNavigationProps.Utility;
@@ -11,6 +11,8 @@ import useCheckPermissions from "@/hooks/useCheckPermissions";
 import {QueryClient} from "react-query";
 import {QueryKeys} from "@/consts";
 import {RadienContext} from "@/context/RadienContextProvider";
+import useDarkMode from "@/hooks/useDarkMode";
+import ThemeToggle from "@/components/Header/ThemeToggle";
 
 React.useLayoutEffect = React.useEffect;
 
@@ -63,6 +65,7 @@ export default function Header() {
 
 function LoggedOutHeader() {
     return (
+        <>
             <TopNavigation
                 identity={{
                     href: "/",
@@ -74,8 +77,10 @@ function LoggedOutHeader() {
                     text: "Log In",
                     ariaLabel: "Log In",
                     onClick: () => signIn("keycloak")
-                }]}
+                },
+                { type: "button", text: "", iconSvg: ThemeToggle() }]}
                 i18nStrings={i18nStrings}/>
+        </>
     );
 }
 
@@ -129,6 +134,7 @@ function LoggedInHeader(props: LoggedInProps) {
                             { id: "support", text: "Support", href: "https://rethink.atlassian.net/wiki/spaces/RP", external: true },
                         ]
                     },
+                    { id: "theme", text: "", iconSvg: ( ThemeToggle() ) },
                     { id: "signout", text: "Sign out" }
                 ]
             }
@@ -168,6 +174,7 @@ function LoggedInHeader(props: LoggedInProps) {
                             { id: "support", text: "Support", href: "https://rethink.atlassian.net/wiki/spaces/RP", external: true },
                         ]
                     },
+                    { id: "theme", text: "", iconSvg: ( ThemeToggle() ) },
                     { id: "signout", text: "Sign out" }
                 ]
             }
@@ -179,7 +186,9 @@ function LoggedInHeader(props: LoggedInProps) {
             ariaLabel: "Settings",
             text: "Settings",
             title: "Settings",
-            items: []
+            items: [
+
+            ]
         };
         if(!isLoadingPermission && permissionViewPermission) {
             const item: ItemOrGroup = {
@@ -216,6 +225,7 @@ function LoggedInHeader(props: LoggedInProps) {
         utilities.splice(0, 0, systemMenus);
 
     return (
+        <>
         <TopNavigation
             identity={{
                 href: "/",
@@ -223,5 +233,7 @@ function LoggedInHeader(props: LoggedInProps) {
             }}
             utilities={utilities}
             i18nStrings={i18nStrings}/>
+
+        </>
     );
 }
