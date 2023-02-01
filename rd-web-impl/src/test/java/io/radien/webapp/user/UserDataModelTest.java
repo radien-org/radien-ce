@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.radien.webapp.user;
 
 import io.radien.api.model.tenant.SystemActiveTenant;
@@ -70,13 +71,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.nullable;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+
 /**
  * Class that aggregates UnitTest cases for UserDataModel
  */
@@ -326,6 +322,10 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
     @Test
     public void testPrepareTenantAssociation() {
         assertEquals(DataModelEnum.USER_ASSIGNING_TENANT_ASSOCIATION_PATH.getValue(), userDataModel.prepareTenantAssociation());
+
+        userDataModel.getUser().setProcessingLocked(true);
+        assertEquals(DataModelEnum.USER_PATH.getValue(), userDataModel.prepareTenantAssociation());
+        
     }
 
     /**
@@ -424,10 +424,18 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
      */
     @Test
     public void testUserProfile() {
-        userDataModel.setSelectedUser(new User());
-        assertEquals(DataModelEnum.USERS_PROFILE_PATH.getValue(), userDataModel.userProfile());
         userDataModel.setSelectedUser(null);
         assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.userProfile());
+
+        SystemUser user = new User();
+        user.setProcessingLocked(false);
+        userDataModel.setSelectedUser(user);
+        assertEquals(DataModelEnum.USERS_PROFILE_PATH.getValue(), userDataModel.userProfile());
+
+        user.setProcessingLocked(true);
+        assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.userProfile());
+
+        
     }
 
     /**
@@ -466,10 +474,19 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
      */
     @Test
     public void testDeleteRecord(){
-        userDataModel.setSelectedUser(new User());
-        assertEquals(DataModelEnum.USER_DELETE_PATH.getValue(), userDataModel.deleteRecord());
         userDataModel.setSelectedUser(null);
         assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.deleteRecord());
+
+        SystemUser user = new User();
+        user.setProcessingLocked(false);
+        userDataModel.setSelectedUser(user);
+        assertEquals(DataModelEnum.USER_DELETE_PATH.getValue(), userDataModel.deleteRecord());
+
+        user.setProcessingLocked(true);
+        userDataModel.setSelectedUser(user);
+        assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.deleteRecord());
+
+        
     }
 
     /**
@@ -571,6 +588,21 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
         assertNull(userDataModel.getSelectedUser());
     }
 
+    /**
+     * Test for method {@link UserDataModel#deleteUser()}
+     * @throws SystemException in case of any issue regarding REST API communication
+     */
+    @Test
+    public void testDeleteUserProcessingLocked()  {
+        User user = new User();
+        user.setProcessingLocked(true);
+        userDataModel.setSelectedUser(user);
+
+        userDataModel.deleteUser();
+
+        verify(userRESTServiceAccess, never()).deleteUser(anyLong());
+    }
+
     private List<? extends SystemTenantRoleUser> getTenantRoleUsersForDeleteUser(Long userId) {
         List<SystemTenantRoleUser> result = new ArrayList<>();
         
@@ -635,7 +667,7 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
 //    }
 
     /**
-     * Test for method {@link UserDataModel#saveUser(SystemUser)}
+     * Test for method {@link UserDataModel#saveUser(SystemUser, boolean)
      * corresponding to the case of user updating
      */
     @Test
@@ -646,7 +678,7 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
         User user = new User();
         userDataModel.setSelectedUser(user);
         when(userRESTServiceAccess.updateUser(user)).thenReturn(true);
-        userDataModel.saveUser(user);
+        userDataModel.saveUser(user, true);
         assertEquals(currentLoggedUserId, user.getCreateUser());
     }
 
@@ -662,10 +694,26 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
         User user = new User(); user.setId(1L);
         userDataModel.setSelectedUser(user);
         when(userRESTServiceAccess.updateUser(user)).thenReturn(true);
-        userDataModel.saveUser(user);
+        userDataModel.saveUser(user, true);
         assertEquals(currentLoggedUserId, user.getLastUpdateUser());
 
-        userDataModel.saveUser(null);
+        userDataModel.saveUser(null, true);
+    }
+
+    /**
+     * Test for method {@link UserDataModel#deleteUser()}
+     * Incase processing locked is set for user
+     */
+    @Test
+    public void testEditUpdateUserWhenProcessingIsLocked() {
+        Long currentLoggedUserId = 1111111L;
+        when(userSessionEnabled.getUserId()).thenReturn(currentLoggedUserId);
+
+        User user = new User(); user.setId(1L);
+        user.setProcessingLocked(true);
+        userDataModel.setSelectedUser(user);
+        when(userRESTServiceAccess.updateUser(user)).thenReturn(true);
+        assertEquals(false,userDataModel.saveUser(user, true));
     }
 
     /**
@@ -735,13 +783,16 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
      */
     @Test
     public void testUserRoles(){
+        userDataModel.setSelectedUser(null);
+        assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.userRoles());
+
         SystemUser user = new User(); user.setId(2L);
         userDataModel.setSelectedUser(user);
         assertEquals(DataModelEnum.USERS_ROLES_PATH.getValue(), userDataModel.userRoles());
 
-        userDataModel.setSelectedUser(null);
+        user.setProcessingLocked(true);
         assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.userRoles());
-
+        
     }
 
     /**
@@ -750,13 +801,17 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
      */
     @Test
     public void testUserUnAssign(){
+        userDataModel.setSelectedUser(null);
+        assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.userUnAssign());
+
         SystemUser user = new User(); user.setId(2L);
         userDataModel.setSelectedUser(user);
         assertEquals(DataModelEnum.USER_UN_ASSIGN_PATH.getValue(), userDataModel.userUnAssign());
 
-        userDataModel.setSelectedUser(null);
-        assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.userUnAssign());
+        user.setProcessingLocked(true);
 
+        assertEquals(DataModelEnum.USERS_PATH.getValue(), userDataModel.userUnAssign());
+        
     }
 
     /**
@@ -857,5 +912,17 @@ public class UserDataModelTest extends JSFUtilAndFaceContextMessagesTest {
         systemUser.setUserEmail("email@email.com");
         this.userDataModel.setUpdateEmail(systemUser);
         assertEquals(systemUser, userDataModel.getUpdateEmail());
+    }
+
+    /**
+     * Test for method {@link UserDataModel#changeProcessingLocked(SystemUser)} ()}
+     */
+    @Test
+    public void testChangeProcessingLocked() throws Exception{
+        SystemUser user = new User();
+        user.setProcessingLocked(false);
+        when(userRESTServiceAccess.updateUser(user)).thenReturn(true);
+        userDataModel.changeProcessingLocked(user);
+        assertEquals(true, user.isProcessingLocked());
     }
 }

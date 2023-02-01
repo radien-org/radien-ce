@@ -34,6 +34,7 @@ public enum SystemVariables {
     USER_EMAIL("userEmail", "User Email"),
     MOBILE_NUMBER("mobileNumber", "Mobile Number"),
     SUB("sub", "Subject"),
+    PROCESSING_LOCKED("processingLocked", "Processing Locked"),
     USER_ENABLED("enabled", "Enabled"),
     USER_DELEGATION("delegatedCreation", "Delegated Creation"),
     CREATE_USER("createUser", "Create User"),

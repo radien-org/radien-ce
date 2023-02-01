@@ -63,9 +63,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -158,7 +156,7 @@ public class UserSessionTest {
      */
     @Test
     public void testLoginNotExistedAnUser() throws Exception {
-        when(UserFactory.create(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyLong())).thenReturn((User) user );
+        when(UserFactory.create(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyLong(), anyBoolean())).thenReturn((User) user );
         userSession.login("sub", "myemail@email.com", "myname", "name",
                 "my", "951", "acc-token","re-token" );
 
@@ -172,7 +170,7 @@ public class UserSessionTest {
      */
     @Test
     public void testLoginNullUser() throws Exception {
-        when(UserFactory.create(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyLong())).thenReturn(null);
+        when(UserFactory.create(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyLong(), anyBoolean())).thenReturn(null);
         userSession.login("sub", "myemail@email.com", "myname", "name",
                 "my", "951", "acc-token","re-token" );
 

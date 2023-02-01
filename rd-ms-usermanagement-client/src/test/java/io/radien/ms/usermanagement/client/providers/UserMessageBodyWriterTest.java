@@ -50,10 +50,11 @@ public class UserMessageBodyWriterTest extends TestCase {
                 "\"lastname\":\"b\"," +
                 "\"mobileNumber\":\"951\"," +
                 "\"delegatedCreation\":false," +
-                "\"enabled\":true" +
+                "\"enabled\":true," +
+                "\"processingLocked\":false" +
                 "}";
         UserMessageBodyWriter target = new UserMessageBodyWriter();
-        User user = UserFactory.create("a","b","logon","sub","email@server.pt","951", null);
+        User user = UserFactory.create("a","b","logon","sub","email@server.pt","951", null, false);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         target.writeTo(user,null,null,null, null,null, baos);
 

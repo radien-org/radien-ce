@@ -52,10 +52,11 @@ public class UserFactoryUtil implements Serializable {
      * @param sub user sub
      * @param email user email
      * @param createdUser user createUser
+     * @param processingLocked user createUser
      * @return user object
      */
     public static SystemUser createUser(SystemUser user, String firstname, String lastname, String logon, String sub,
-                                        String email, String mobileNumber, Long createdUser){
+                                        String email, String mobileNumber, Long createdUser, boolean processingLocked){
         user.setFirstname(firstname);
         user.setLastname(lastname);
         user.setLogon(logon);
@@ -66,6 +67,7 @@ public class UserFactoryUtil implements Serializable {
         user.setLastUpdate(now);
         user.setCreateDate(now);
         user.setUserEmail(email);
+        user.setProcessingLocked(processingLocked);
 
         return user;
     }
@@ -86,6 +88,7 @@ public class UserFactoryUtil implements Serializable {
         systemUserMapValues.put(SystemVariables.USER_EMAIL.getFieldName(), FactoryUtilService.getStringFromJson(SystemVariables.USER_EMAIL.getFieldName(), jsonSystemUserObject));
         systemUserMapValues.put(SystemVariables.CREATE_USER.getFieldName(), FactoryUtilService.getLongFromJson(SystemVariables.CREATE_USER.getFieldName(), jsonSystemUserObject));
         systemUserMapValues.put(SystemVariables.SUB.getFieldName(), FactoryUtilService.getStringFromJson(SystemVariables.SUB.getFieldName(), jsonSystemUserObject));
+        systemUserMapValues.put(SystemVariables.PROCESSING_LOCKED.getFieldName(), FactoryUtilService.getBooleanFromJson(SystemVariables.PROCESSING_LOCKED.getFieldName(),jsonSystemUserObject ));
         return systemUserMapValues;
     }
 
@@ -109,6 +112,8 @@ public class UserFactoryUtil implements Serializable {
         FactoryUtilService.addValue(builder, SystemVariables.MOBILE_NUMBER.getFieldName(), systemUser.getMobileNumber());
         FactoryUtilService.addValueBoolean(builder, SystemVariables.USER_DELEGATION.getFieldName(), systemUser.isDelegatedCreation());
         FactoryUtilService.addValueBoolean(builder, SystemVariables.USER_ENABLED.getFieldName(), systemUser.isEnabled());
+        FactoryUtilService.addValueBoolean(builder, SystemVariables.PROCESSING_LOCKED.getFieldName(), systemUser.isProcessingLocked());
+
         return  builder.build();
     }
 

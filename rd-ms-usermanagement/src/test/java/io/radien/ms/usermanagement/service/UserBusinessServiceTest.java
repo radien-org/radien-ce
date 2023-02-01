@@ -20,9 +20,7 @@ import io.radien.api.model.user.SystemUser;
 import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.user.UserServiceAccess;
-import io.radien.exception.BadRequestException;
-import io.radien.exception.UniquenessConstraintException;
-import io.radien.exception.UserNotFoundException;
+import io.radien.exception.*;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
@@ -50,9 +48,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Class that aggregates UnitTest cases for UserBusinessService
@@ -121,7 +117,7 @@ public class UserBusinessServiceTest {
      */
     @Test
     public void testGet() {
-        SystemUser user = UserFactory.create("a","b","l","s","e","951",1L);
+        SystemUser user = UserFactory.create("a","b","l","s","e","951",1L,false);
         List<Long> listIds = Collections.singletonList(2L);
         List<SystemUser> listUsers = Collections.singletonList(user);
         when(userServiceAccess.get(2L)).thenReturn(user);
@@ -143,7 +139,7 @@ public class UserBusinessServiceTest {
      */
     @Test
     public void testDelete() {
-        SystemUser user = UserFactory.create("a", "b", "l", "subTest", "e", "951",1L);
+        SystemUser user = UserFactory.create("a", "b", "l", "subTest", "e", "951",1L,false);
         when(userServiceAccess.get((Long) any())).thenReturn(user);
 
         boolean success = false;
@@ -156,12 +152,26 @@ public class UserBusinessServiceTest {
     }
 
     /**
+     * Test for method {@link UserBusinessService#delete(long)}
+     * if user processingIsLocked
+     */
+    @Test(expected = ProcessingLockedException.class)
+    public void testDeleteIfProcessingIsLocked() {
+        SystemUser user = new User();
+        user.setProcessingLocked(true);
+        when(userServiceAccess.get((Long) any())).thenReturn(user);
+
+        userBusinessService.delete(1L);
+        verify(userServiceAccess, never()).delete(1L);
+    }
+
+    /**
      * Test method for {@link UserBusinessService#create(User, boolean)}
      * @throws UniquenessConstraintException if unique user founds
      */
     @Test
     public void testCreateException() throws UniquenessConstraintException {
-        User u = UserFactory.create("a","b","l","s","e","951",1L);
+        User u = UserFactory.create("a","b","l","s","e","951",1L,false);
         doThrow(new UniquenessConstraintException("")).when(userServiceAccess).create(u);
         boolean success = false;
         try{
@@ -178,9 +188,9 @@ public class UserBusinessServiceTest {
      */
     @Test
     public void testCreateSkipKeycloak() throws UniquenessConstraintException {
-        User user = UserFactory.create("a","b","l",null,"e","951",1L);
+        User user = UserFactory.create("a","b","l",null,"e","951",1L,false);
         user.setId(2L);
-        User user2 = UserFactory.create("a","b","l",null,"e","951",1L);
+        User user2 = UserFactory.create("a","b","l",null,"e","951",1L,false);
         when(userServiceAccess.get((Long) any())).thenReturn(user2);
 
         boolean success = true;
@@ -198,7 +208,7 @@ public class UserBusinessServiceTest {
      */
     @Test
     public void testCreateSkipKeycloakWithCreationRemoteException() throws UniquenessConstraintException {
-        User user2 = UserFactory.create("a","b","l",null,"e","951",1L);
+        User user2 = UserFactory.create("a","b","l",null,"e","951",1L,false);
         when(userServiceAccess.get((Long) any())).thenReturn(user2);
         doThrow(new RemoteResourceException()).when(keycloakBusinessService).createUser(any());
         boolean success = true;
@@ -216,7 +226,7 @@ public class UserBusinessServiceTest {
      */
     @Test
     public void testCreateSkipKeycloakWithCreationRemoteExceptionSub() throws UniquenessConstraintException {
-        User user2 = UserFactory.create("a","b","l","sub","e","951",1L);
+        User user2 = UserFactory.create("a","b","l","sub","e","951",1L,false);
         when(userServiceAccess.get((Long) any())).thenReturn(user2);
         doThrow(new RemoteResourceException()).when(keycloakBusinessService).getSubFromEmail(anyString());
         boolean success = true;
@@ -329,6 +339,22 @@ public class UserBusinessServiceTest {
         userBusinessService.update(user4, false);
     }
 
+    /**
+     * Test method for {@link UserBusinessService#update(User, boolean)}
+     * If processing is locked
+     * during update operation
+     */
+    @Test(expected = ProcessingLockedException.class)
+    public void testUpdateUserProcessingLocked() throws SystemException, UniquenessConstraintException {
+        User user4 = new User();
+        user4.setId(111111L);
+        user4.setProcessingLocked(true);
+        when(userServiceAccess.get(user4.getId())).thenReturn(user4);
+
+        userBusinessService.update(user4, true);
+        verify(userServiceAccess,never()).update(any());
+    }
+
 
 
     /**
@@ -337,7 +363,7 @@ public class UserBusinessServiceTest {
      */
     @Test
     public void testCreateEmptyLogon() throws UniquenessConstraintException {
-        User user = UserFactory.create("a","b","",null,"e","951",1L);
+        User user = UserFactory.create("a","b","",null,"e","951",1L,false);
         user.setId(2L);
         when(userServiceAccess.get((Long) any())).thenReturn(user);
 
@@ -356,7 +382,7 @@ public class UserBusinessServiceTest {
      */
     @Test
     public void testCreateEmptyFirstName() throws UniquenessConstraintException {
-        User user = UserFactory.create("","b","logon",null,"c","951",1L);
+        User user = UserFactory.create("","b","logon",null,"c","951",1L,false);
         user.setId(2L);
         when(userServiceAccess.get((Long) any())).thenReturn(user);
 
@@ -375,7 +401,7 @@ public class UserBusinessServiceTest {
      */
     @Test
     public void testCreateEmptyLastName() throws UniquenessConstraintException {
-        User user = UserFactory.create("a","","logon",null,"c","951",1L);
+        User user = UserFactory.create("a","","logon",null,"c","951",1L,false);
         user.setId(2L);
         when(userServiceAccess.get((Long) any())).thenReturn(user);
 
@@ -394,7 +420,7 @@ public class UserBusinessServiceTest {
      */
     @Test
     public void testCreateEmptyEmail() throws UniquenessConstraintException {
-        User user = UserFactory.create("a","b","logon",null,"","951",1L);
+        User user = UserFactory.create("a","b","logon",null,"","951",1L,false);
         user.setId(2L);
         when(userServiceAccess.get((Long) any())).thenReturn(user);
 
@@ -414,9 +440,9 @@ public class UserBusinessServiceTest {
      */
     @Test
     public void testCreateNoSkippingKeycloakWithRemoteException() throws UniquenessConstraintException {
-        User user = UserFactory.create("a","b","l",null,"e","951",1L);
+        User user = UserFactory.create("a","b","l",null,"e","951",1L,false);
         user.setId(2L);
-        User user2 = UserFactory.create("a","b","l",null,"e","951",1L);
+        User user2 = UserFactory.create("a","b","l",null,"e","951",1L,false);
         when(userServiceAccess.get((Long) any())).thenReturn(user2);
         doThrow(new RemoteResourceException()).when(keycloakBusinessService).createUser(any());
 
@@ -435,7 +461,7 @@ public class UserBusinessServiceTest {
      */
     @Test
     public void testCreateEmptyUsername() throws UniquenessConstraintException {
-        User u = UserFactory.create("a","b","","s","e","951",1L);
+        User u = UserFactory.create("a","b","","s","e","951",1L,false);
         boolean success = false;
         try{
             userBusinessService.create(u,false);
@@ -451,9 +477,9 @@ public class UserBusinessServiceTest {
      */
     @Test
     public void testCreateCreationFalse() throws UniquenessConstraintException {
-        User user = UserFactory.create("a","b","l",null,"e","951",1L);
+        User user = UserFactory.create("a","b","l",null,"e","951",1L,false);
         user.setId(2L);
-        User user2 = UserFactory.create("a","b","l",null,"e","951",1L);
+        User user2 = UserFactory.create("a","b","l",null,"e","951",1L,false);
         when(userServiceAccess.get((Long) any())).thenReturn(user2);
 
         boolean success = true;
@@ -488,7 +514,7 @@ public class UserBusinessServiceTest {
      */
     @Test
     public void testSendUpdatePasswordEmail() throws Exception {
-        User user = UserFactory.create("first", "last", "logon", "test-sub", "u@email.com", "951",1L);
+        User user = UserFactory.create("first", "last", "logon", "test-sub", "u@email.com", "951",1L,false);
         when(userServiceAccess.get((Long) any())).thenReturn(user);
         doNothing().when(keycloakBusinessService).sendUpdatePasswordEmail(any());
         boolean success = true;
@@ -505,7 +531,7 @@ public class UserBusinessServiceTest {
      */
     @Test
     public void testCreate() {
-        SystemUser user = UserFactory.create("a","b","l",null,"e","951",1L);
+        SystemUser user = UserFactory.create("a","b","l",null,"e","951",1L,false);
         user.setId(2L);
 
         List<SystemUser> listOfUsers = new ArrayList<>();
@@ -525,7 +551,7 @@ public class UserBusinessServiceTest {
      */
     @Test
     public void testSendPasswordEmail() {
-        User user = UserFactory.create("a","b","l",null,"e","951",1L);
+        User user = UserFactory.create("a","b","l",null,"e","951",1L,false);
         user.setId(2L);
 
         boolean success = true;

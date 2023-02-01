@@ -22,10 +22,12 @@
 							<b:row><h1/></b:row>
 							<b:panelGrid colSpans="2,10">
 								<h:outputLabel for="userFirstName" value="#{msg.firstname}"/>
-								<b:inputText id="userFirstName" value="#{userProfileManager.clonedLogInUser.firstname}" span="6"/>
+								<b:inputText id="userFirstName" value="#{userProfileManager.clonedLogInUser.firstname}"
+											 disabled="#{userProfileManager.clonedLogInUser.processingLocked}" span="6"/>
 
 								<h:outputLabel for="userLastName" value="#{msg.lastname}"/>
-								<b:inputText id="userLastName" value="#{userProfileManager.clonedLogInUser.lastname}" span="6"/>
+								<b:inputText id="userLastName" value="#{userProfileManager.clonedLogInUser.lastname}"
+											 disabled="#{userProfileManager.clonedLogInUser.processingLocked}" span="6"/>
 
 								<h:outputLabel value="#{msg.rd_user_logon}"/>
 								<b:inputText id="userLogon" value="#{userProfileManager.clonedLogInUser.logon}" disabled="false" span="6"/>
@@ -50,7 +52,7 @@
 							<b:button id="updateUserProfile"
 									  onclick="$('.formValidationModalUserProfileUpdate').modal('show')"
 									  value="#{msg.save}" tooltip="#{msg.rd_user_profile_update}"
-									  iconAwesome="fa-save"/>
+									  iconAwesome="fa-save" disabled="#{userProfileManager.clonedLogInUser.processingLocked}"/>
 
 							<b:commandButton id="requestData"
 									  value="#{msg.request_data}" tooltip="#{msg.request_data}"
@@ -59,7 +61,22 @@
 
 							<b:button id="deleteMyUser"
 									  value="#{msg.delete_my_user}" tooltip="#{msg.delete_my_user}"
-									  onclick="$('.formValidationModalUserProfileDeletion').modal('show')"/>
+									  onclick="$('.formValidationModalUserProfileDeletion').modal('show')"
+									  disabled="#{userProfileManager.clonedLogInUser.processingLocked}"
+							/>
+
+							<b:button id="lockMyUserFromProcessing"
+									  rendered="#{!(userProfileManager.clonedLogInUser.processingLocked)}"
+									  value="#{msg.lock_my_user_from_processing}" tooltip="#{msg.lock_my_user_from_processing}"
+									  onclick="$('.formValidationModalUserLockProcessing').modal('show')"
+									  />
+
+							<b:button id="UnlockMyUserForProcessing"
+									  rendered="#{userProfileManager.clonedLogInUser.processingLocked}"
+									  value="#{msg.unlock_my_user_for_processing}" tooltip="#{msg.unlock_my_user_for_processing}"
+									  onclick="$('.formValidationModalUserUnlockProcessing').modal('show')"
+									  />
+
 
 							<b:modal id="model"
 									 title="#{msg.confirmation}"
@@ -72,11 +89,13 @@
 													 type="reset"
 													 onclick="{ $('.formValidationModalUserProfileUpdate').modal('hide') } "/>
 									<b:commandButton value="#{msg.yes}" look="warning"
-													 action="#{userProfileManager.updateProfile(userProfileManager.clonedLogInUser)}"
+													 action="#{userProfileManager.updateProfile(userProfileManager.clonedLogInUser, true)}"
 													 oncomplete="{ $('.formValidationModalUserProfileUpdate').modal('hide') } "/>
 								</f:facet>
 							</b:modal>
 
+
+							<!-- START profile deletion modal-->
 							<b:modal id="model_profile_deletion"
 									 title="#{msg.confirmation}"
 									 styleClass="formValidationModalUserProfileDeletion"
@@ -92,6 +111,39 @@
 													 oncomplete="{ $('.formValidationModalUserProfileDeletion').modal('hide') } "/>
 								</f:facet>
 							</b:modal>
+							<!-- END profile deletion modal-->
+
+							<!-- START profile processing locking modal-->
+							<b:modal id="model_lock_profile_processing"
+									 title="#{msg.confirmation}"
+									 styleClass="formValidationModalUserLockProcessing"
+									 closable="false"
+									 close-on-escape="false" backdrop="false">
+								<p>#{msg.userLockProcessingConfirmation}</p>
+								<f:facet name="footer">
+									<b:commandButton value="#{msg.returnButton}"
+													 type="reset"
+													 onclick="{ $('.formValidationModalUserLockProcessing').modal('hide') } "/>
+									<b:commandButton value="#{msg.yes}" look="warning"
+													 action="#{userProfileManager.lockUserProcessing()}"
+													 oncomplete="{ $('.formValidationModalUserLockProcessing').modal('hide') } "/>
+								</f:facet>
+							</b:modal>
+							<!-- END profile processing locking modal-->
+
+							<!-- START profile processing unlock modal-->
+							<b:modal id="model_unlock_profile_processing"
+									 title="#{msg.unlock_my_user_for_processing}"
+									 styleClass="formValidationModalUserUnlockProcessing"
+									 closable="false"
+									 close-on-escape="false" backdrop="false">
+								<p>#{msg.userUnlockProcessingInformation}</p>
+								<f:facet name="footer">
+									<b:commandButton value="#{msg.confirm}" look="warning"
+													 oncomplete="{ $('.formValidationModalUserUnlockProcessing').modal('hide') } "/>
+								</f:facet>
+							</b:modal>
+							<!-- END profile processing locking modal-->
 
 						</b:container>
 					</b:tab>
@@ -124,7 +176,8 @@
 										  value="#{msg.dissociate}"
 										  tooltip="#{msg.dissociate} #{msg.rd_user} #{msg.rd_tenant}"
 										  iconAwesome="fa-ban"
-										  onclick="$('.formValidationModalDeleteTenantFromUserProfile').modal('show')"/>
+										  onclick="$('.formValidationModalDeleteTenantFromUserProfile').modal('show')"
+										  disabled="#{userProfileManager.clonedLogInUser.processingLocked}"/>
 
 								<b:modal id="modalDissociation"
 										 title="#{msg.confirmation}"

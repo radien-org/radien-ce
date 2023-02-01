@@ -145,6 +145,9 @@ public class UserProfileManagerTest {
         systemUser.setId(117L);
         systemUser.setFirstname("firstname");
         systemUser.setLastname("lastname");
+
+        SystemUser clonedSystemUser = new User((User) systemUser);
+        userProfileManager.setClonedLogInUser(clonedSystemUser);
     }
 
     /**
@@ -373,6 +376,7 @@ public class UserProfileManagerTest {
      */
     @Test
     public void testInitWithException() {
+        userProfileManager.setClonedLogInUser(null);
         doReturn(true).when(this.userSession).isActive();
         doThrow(new RuntimeException()).when(this.userSession).getUser();
         userProfileManager.init();
@@ -390,7 +394,21 @@ public class UserProfileManagerTest {
         systemUser.setFirstname("firstname-update");
         doReturn(true).when(userRESTServiceAccess).updateUser(systemUser);
 
-        assertEquals("pretty:index", userProfileManager.updateProfile(systemUser));
+        assertEquals("pretty:index", userProfileManager.updateProfile(systemUser,true));
+    }
+
+    /**
+     * Test method updateProfile()
+     * Test case if processingLocked is set on true
+     * asserts equality of home HTML page
+     */
+    @Test
+    public void testUpdateProfileProcessingLocked() {
+        userProfileManager.getClonedLogInUser().setProcessingLocked(true);
+        userProfileManager.deleteUserListener();
+
+        assertEquals("pretty:profile", userProfileManager.updateProfile(systemUser,true));
+        verify(userRESTServiceAccess, never()).deleteUser(anyLong());
     }
 
     /**
@@ -403,7 +421,7 @@ public class UserProfileManagerTest {
         systemUser.setFirstname("firstname-update");
         doThrow(new RuntimeException()).when(userRESTServiceAccess).updateUser(systemUser);
 
-        assertEquals("pretty:profile", userProfileManager.updateProfile(systemUser));
+        assertEquals("pretty:profile", userProfileManager.updateProfile(systemUser,true));
     }
 
     /**
@@ -413,6 +431,7 @@ public class UserProfileManagerTest {
     @Test
     public void testDissociateTenantForUserWhenNoSelectedTenant() {
         userProfileManager.setSelectedTenantToUnAssign(null);
+
         String returnUrl = userProfileManager.dissociateUserTenant();
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
@@ -489,6 +508,24 @@ public class UserProfileManagerTest {
 
         assertEquals(new Long(0), userProfileManager.getTabIndex());
         assertEquals(userProfileManager.getHomeGui(), returnUrl);
+    }
+
+    /**
+     * Test for method dissociateUserTenant.
+     * Expected outcome (SUCCESS): Dissociation is not performed because of processingLocked
+     */
+    @Test
+    public void testDissociateTenantForUserWithProcessingLocked() throws SystemException {
+        SystemUser user = new User();
+        user.setProcessingLocked(true);
+        userProfileManager.setClonedLogInUser(user);
+
+        String returnUrl = userProfileManager.dissociateUserTenant();
+
+        assertEquals(new Long(0), userProfileManager.getTabIndex());
+        assertEquals("pretty:profile", returnUrl);
+
+        verify(tenantRoleUserRESTServiceAccess, never()).unAssignUser(anyLong(),any(),anyLong());
     }
 
     /**
@@ -684,6 +721,19 @@ public class UserProfileManagerTest {
 
     /**
      * Test method for {@link UserProfileManager#deleteUserListener()}
+     * for the scenario if processingLocked is set on true
+     */
+    @Test
+    public void testDeleteUserListenerProcessingLocked() {
+        userProfileManager.getClonedLogInUser().setProcessingLocked(true);
+        userProfileManager.deleteUserListener();
+
+        assertEquals(new Long(0), userProfileManager.getTabIndex());
+        verify(userRESTServiceAccess, never()).deleteUser(anyLong());
+    }
+
+    /**
+     * Test method for {@link UserProfileManager#deleteUserListener()}
      * for specific unsuccessful scenario when a NullPointerException is thrown
      */
     @Test
@@ -765,6 +815,18 @@ public class UserProfileManagerTest {
         verify(mailService).notifyCurrentUser(anyString(), anyString(), any());
     }
 
+    /**
+     * Test method for {@link UserProfileManager#lockUserProcessing()}
+     * for specific unsuccessful scenario when a NullPointerException is thrown
+     */
+    @Test
+    public void testLockUserProcessing(){
+        when(userSession.getUser()).then(user -> systemUser);
+        doReturn(true).when(userRESTServiceAccess).updateUser(systemUser);
+
+        assertEquals("pretty:index", userProfileManager.lockUserProcessing());
+        assertEquals(true, userProfileManager.getClonedLogInUser().isProcessingLocked());
+    }
     @Test
     public void testSendDataRequestOptInException() throws SystemException {
         when(JSFUtil.getBaseUrl()).thenReturn(Optional.of("baseUrl"));
@@ -784,5 +846,6 @@ public class UserProfileManagerTest {
         FacesMessage captured = facesMessageCaptor.getValue();
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
         assertEquals("request_data_error", captured.getSummary());
+
     }
 }

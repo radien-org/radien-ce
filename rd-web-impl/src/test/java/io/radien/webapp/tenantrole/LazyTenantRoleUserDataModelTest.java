@@ -99,7 +99,7 @@ public class LazyTenantRoleUserDataModelTest {
         ids.forEach(id -> {
             String valueAsString = String.valueOf(id);
             SystemUser user = UserFactory.create(valueAsString, valueAsString, valueAsString,
-                        valueAsString, valueAsString, valueAsString, null);
+                        valueAsString, valueAsString, valueAsString, null, false);
             user.setId(id);
             users.add(user);
         });

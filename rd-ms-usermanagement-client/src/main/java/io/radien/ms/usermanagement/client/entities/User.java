@@ -41,6 +41,8 @@ public class User extends AbstractUserModel implements SystemUser {
 	private boolean enabled;
 	private boolean delegatedCreation;
 
+	private boolean processingLocked;
+
 	/**
 	 * User empty constructor
 	 */
@@ -58,6 +60,7 @@ public class User extends AbstractUserModel implements SystemUser {
 		this.lastname = u.getLastname();
 		this.mobileNumber = u.getMobileNumber();
 		this.sub = u.getSub();
+		this.processingLocked = u.isProcessingLocked();
 		if (u.getTerminationDate() != null) {
 			this.terminationDate = (Date) u.getTerminationDate().clone();
 		}
@@ -234,5 +237,25 @@ public class User extends AbstractUserModel implements SystemUser {
 	 */
 	public void setDelegatedCreation(boolean delegatedCreation) {
 		this.delegatedCreation = delegatedCreation;
+	}
+
+	/**
+	 * Has user processing locked getter method
+	 *
+	 * @return true if user has processing locked
+	 */
+	@Override
+	public boolean isProcessingLocked() {
+		return processingLocked;
+	}
+
+	/**
+	 * Has user been processing locked setter method
+	 *
+	 * @param processingLocked to be set
+	 */
+	@Override
+	public void setProcessingLocked(boolean processingLocked) {
+		this.processingLocked = processingLocked;
 	}
 }

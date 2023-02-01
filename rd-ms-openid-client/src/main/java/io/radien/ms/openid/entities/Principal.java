@@ -37,6 +37,8 @@ public class Principal implements SystemUser {
     private boolean enabled;
     private boolean delegatedCreation;
 
+    private boolean processingLocked;
+
     private Date createDate;
     private Date lastUpdate;
     private Long createUser;
@@ -60,6 +62,7 @@ public class Principal implements SystemUser {
         this.sub = p.getSub();
         this.terminationDate = p.getTerminationDate();
         this.enabled = p.enabled;
+        this.processingLocked = p.isProcessingLocked();
         this.setCreateDate(p.getCreateDate());
         this.setCreateUser(p.getCreateUser());
         this.setLastUpdateUser(p.getLastUpdateUser());
@@ -228,6 +231,26 @@ public class Principal implements SystemUser {
      */
     public void setDelegatedCreation(boolean delegatedCreation) {
         this.delegatedCreation = delegatedCreation;
+    }
+
+    /**
+     * System user is processing locked getter
+     *
+     * @return System user delegated creation
+     */
+    @Override
+    public boolean isProcessingLocked() {
+        return processingLocked;
+    }
+
+    /**
+     * System user processing locked setter
+     *
+     * @param processingLocked to be set
+     */
+    @Override
+    public void setProcessingLocked(boolean processingLocked) {
+        this.processingLocked = processingLocked;
     }
 
     /**

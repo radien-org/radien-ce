@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.event.ValueChangeEvent;
 
 import org.junit.AfterClass;
@@ -47,6 +48,7 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -61,10 +63,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.*;
+
 /**
  * Class that aggregates UnitTest cases for UserTenantRolesManager
  *
@@ -304,6 +305,23 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
 
         userTenantRolesManager.assignOrUnassignedRolesToUserTenant();
     }
+
+    /**
+     * Test method assignOrUnassignedRolesToUserTenant() if user processing is locked
+     * @throws SystemException if any error
+     */
+    @Test
+    public void testAssignOrUnassignedWhenProcessingIsLocked() throws SystemException {
+        SystemUser user = new User();
+        user.setProcessingLocked(true);
+        when(userDataModel.getSelectedUser()).thenReturn(user);
+
+        userTenantRolesManager.assignOrUnassignedRolesToUserTenant();
+
+        verify(tenantRoleRESTServiceAccess, never()).exists(anyLong(),anyLong());
+        verify(tenantRoleUserRESTServiceAccess, never()).unAssignUser(anyLong(), anyCollection(), anyLong());
+    }
+
 
     /**
      * Test method clearAssignableOrUnAssignedRoles()

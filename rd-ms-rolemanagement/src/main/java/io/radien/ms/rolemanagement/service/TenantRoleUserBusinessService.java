@@ -25,20 +25,19 @@ import io.radien.api.service.role.exception.RoleException;
 import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
-import io.radien.exception.BadRequestException;
-import io.radien.exception.GenericErrorCodeMessage;
-import io.radien.exception.InvalidArgumentException;
-import io.radien.exception.SystemException;
+import io.radien.api.service.user.UserRESTServiceAccess;
+import io.radien.exception.*;
 import io.radien.api.service.role.exception.TenantRoleNotFoundException;
 import io.radien.api.service.role.exception.TenantRoleUserNotFoundException;
-import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import io.radien.ms.rolemanagement.entities.TenantRoleUserEntity;
+
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util .Optional;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -64,6 +63,8 @@ public class TenantRoleUserBusinessService implements Serializable {
     @Inject
     private TenantRESTServiceAccess tenantRESTService;
 
+    @Inject
+    private UserRESTServiceAccess userRESTServiceAccess;
 
     /**
      * Retrieves TenantRoleUser by given id
@@ -122,21 +123,34 @@ public class TenantRoleUserBusinessService implements Serializable {
      * @throws BadRequestException if arguments are invalid or association already exists
      * @throws RoleException in case of duplicate data
      */
+
     public void assignUser(TenantRoleUser tru) {
-        SystemTenantRole tenantRole = tenantRoleService.getById(tru.getTenantRoleId());
-        try {
-            if (tenantRoleUserServiceAccess.isAssociationAlreadyExistent(tru.getUserId(), tru.getTenantRoleId(), tru.getId())) {
-                throw new BadRequestException(
-                        GenericErrorCodeMessage.TENANT_ROLE_USER_IS_ALREADY_ASSOCIATED.toString(
-                                String.valueOf(tenantRole.getTenantId()),
-                                String.valueOf(tenantRole.getRoleId()))
-                );
+        if (!checkIfUserIsLocked(tru.getUserId())) {
+            SystemTenantRole tenantRole = tenantRoleService.getById(tru.getTenantRoleId());
+            try {
+                if (tenantRoleUserServiceAccess.isAssociationAlreadyExistent(tru.getUserId(), tru.getTenantRoleId(), tru.getId())) {
+                    throw new BadRequestException(
+                            GenericErrorCodeMessage.TENANT_ROLE_USER_IS_ALREADY_ASSOCIATED.toString(
+                                    String.valueOf(tenantRole.getTenantId()),
+                                    String.valueOf(tenantRole.getRoleId()))
+                    );
+                }
+                this.tenantRoleUserServiceAccess.create(new TenantRoleUserEntity(tru));
+            } catch (InvalidArgumentException e) {
+                throw new BadRequestException(e.getMessage());
+            } catch (UniquenessConstraintException e) {
+                throw new RoleException(e.getMessage(), Response.Status.BAD_REQUEST);
             }
-            this.tenantRoleUserServiceAccess.create(new TenantRoleUserEntity(tru));
-        } catch (InvalidArgumentException e) {
-            throw new BadRequestException(e.getMessage());
-        } catch (UniquenessConstraintException e) {
-            throw new RoleException(e.getMessage(), Response.Status.BAD_REQUEST);
+        } else {
+            throw new ProcessingLockedException();
+        }
+    }
+
+    protected boolean checkIfUserIsLocked (Long userId){
+        try {
+            return userRESTServiceAccess.isProcessingLocked(userId);
+        } catch (SystemException e) {
+            throw new InternalServerErrorException(e.getMessage());
         }
     }
 
@@ -148,22 +162,27 @@ public class TenantRoleUserBusinessService implements Serializable {
      * @throws RoleException in case of duplicate data
      */
     public void update(Long id, TenantRoleUser tru) {
-        tru.setId(id);
-        SystemTenantRole tenantRole = tenantRoleService.getById(tru.getTenantRoleId());
-        try {
-            if (tenantRoleUserServiceAccess.isAssociationAlreadyExistent(tru.getUserId(), tru.getTenantRoleId(), tru.getId())) {
-                throw new BadRequestException(
-                        GenericErrorCodeMessage.TENANT_ROLE_USER_IS_ALREADY_ASSOCIATED.toString(
-                                String.valueOf(tenantRole.getTenantId()),
-                                String.valueOf(tenantRole.getRoleId()))
-                );
+        if (!checkIfUserIsLocked(tru.getUserId())){
+            tru.setId(id);
+            SystemTenantRole tenantRole = tenantRoleService.getById(tru.getTenantRoleId());
+            try {
+                if (tenantRoleUserServiceAccess.isAssociationAlreadyExistent(tru.getUserId(), tru.getTenantRoleId(), tru.getId())) {
+                    throw new BadRequestException(
+                            GenericErrorCodeMessage.TENANT_ROLE_USER_IS_ALREADY_ASSOCIATED.toString(
+                                    String.valueOf(tenantRole.getTenantId()),
+                                    String.valueOf(tenantRole.getRoleId()))
+                    );
+                }
+                this.tenantRoleUserServiceAccess.update(new TenantRoleUserEntity(tru));
+            } catch (InvalidArgumentException e) {
+                throw new BadRequestException(e.getMessage());
+            } catch (UniquenessConstraintException e) {
+                throw new RoleException(e.getMessage(), Response.Status.BAD_REQUEST);
             }
-            this.tenantRoleUserServiceAccess.update(new TenantRoleUserEntity(tru));
-        } catch (InvalidArgumentException e) {
-            throw new BadRequestException(e.getMessage());
-        } catch (UniquenessConstraintException e) {
-            throw new RoleException(e.getMessage(), Response.Status.BAD_REQUEST);
-        }    }
+        } else {
+            throw new ProcessingLockedException();
+        }
+    }
 
     /**
      * Deletes a Tenant Role Permission association
@@ -174,11 +193,16 @@ public class TenantRoleUserBusinessService implements Serializable {
      */
     public void delete(Long id) {
         SystemTenantRoleUser systemTenantRoleUser = get(id);
-        SystemTenantRole tenantRole = tenantRoleService.getById(systemTenantRoleUser.getTenantRoleId());
-        if(tenantRoleUserServiceAccess.delete(id)) {
-            deleteActiveTenant(systemTenantRoleUser.getUserId(), tenantRole.getTenantId());
+        if (!checkIfUserIsLocked(systemTenantRoleUser.getUserId())){
+
+            SystemTenantRole tenantRole = tenantRoleService.getById(systemTenantRoleUser.getTenantRoleId());
+            if(tenantRoleUserServiceAccess.delete(id)) {
+                deleteActiveTenant(systemTenantRoleUser.getUserId(), tenantRole.getTenantId());
+            } else {
+                throw new TenantRoleUserNotFoundException(MessageFormat.format("No tenant role user found for id {0}", id));
+            }
         } else {
-            throw new TenantRoleUserNotFoundException(MessageFormat.format("No tenant role user found for id {0}", id));
+            throw new ProcessingLockedException();
         }
     }
 
@@ -192,17 +216,22 @@ public class TenantRoleUserBusinessService implements Serializable {
      * @throws RoleException if it was not possible to delete active tenant
      */
     public void unAssignUser(Long tenant, Collection<Long> roles, Long user) {
-        try {
-            Collection<Long> ids = tenantRoleUserServiceAccess.getTenantRoleUserIds(tenant, roles, user);
-            if (ids.isEmpty()) {
-                throw new TenantRoleUserNotFoundException(
-                        TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR_PARAMS.toString(String.valueOf(tenant), String.valueOf(roles), String.valueOf(user))
-                );
+        if (!checkIfUserIsLocked(user)){
+
+            try {
+                Collection<Long> ids = tenantRoleUserServiceAccess.getTenantRoleUserIds(tenant, roles, user);
+                if (ids.isEmpty()) {
+                    throw new TenantRoleUserNotFoundException(
+                            TENANT_ROLE_NO_ASSOCIATION_FOUND_FOR_PARAMS.toString(String.valueOf(tenant), String.valueOf(roles), String.valueOf(user))
+                    );
+                }
+                tenantRoleUserServiceAccess.delete(ids);
+                deleteActiveTenant(user, tenant);
+            } catch (InvalidArgumentException e) {
+                throw new BadRequestException(e.getMessage());
             }
-            tenantRoleUserServiceAccess.delete(ids);
-            deleteActiveTenant(user, tenant);
-        } catch (InvalidArgumentException e) {
-            throw new BadRequestException(e.getMessage());
+        } else {
+            throw new ProcessingLockedException();
         }
     }
 

@@ -121,7 +121,7 @@ public class UserSession implements UserSessionEnabled, TokensPlaceHolder {
 			Optional<SystemUser> existingUser = userClientService.getUserBySub(userIdSubject);
 			SystemUser systemUser;
 			if (!existingUser.isPresent()) {
-				systemUser = UserFactory.create(givenname, familyName, preferredUserName, userIdSubject, email, mobileNumber, getOAF().getSystemAdminUserId());
+				systemUser = UserFactory.create(givenname, familyName, preferredUserName, userIdSubject, email, mobileNumber, getOAF().getSystemAdminUserId(), false);
 				userClientService.create(systemUser, true);
 				Optional<SystemUser> userBySub = userClientService.getUserBySub(userIdSubject);
 				if(userBySub.isPresent()) {
@@ -153,7 +153,7 @@ public class UserSession implements UserSessionEnabled, TokensPlaceHolder {
 			log.error(exception.getMessage());
 		}
 		if (this.user == null){
-			this.user = UserFactory.create(givenname,familyName,preferredUserName, userIdSubject,email, mobileNumber, -1L);
+			this.user = UserFactory.create(givenname,familyName,preferredUserName, userIdSubject,email, mobileNumber, -1L, false);
 		}
 		String msg = String.format("userId:%d",getUserId());
 		log.info(msg);

@@ -15,30 +15,29 @@
  */
 package io.radien.ms.rolemanagement.service;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
+import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.role.RoleServiceAccess;
 import io.radien.api.service.role.exception.RoleException;
 import io.radien.api.service.role.exception.TenantRoleUserNotFoundException;
 import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserServiceAccess;
-import io.radien.exception.BadRequestException;
-import io.radien.exception.InvalidArgumentException;
-import io.radien.exception.SystemException;
-import io.radien.exception.UniquenessConstraintException;
+import io.radien.api.service.user.UserRESTServiceAccess;
+import io.radien.exception.*;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUserSearchFilter;
 import io.radien.ms.rolemanagement.entities.TenantRoleEntity;
 import io.radien.ms.rolemanagement.entities.TenantRoleUserEntity;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
+
+import java.util.*;
+
+import io.radien.ms.usermanagement.client.entities.User;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -54,9 +53,8 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+
 /**
  * Class that aggregates UnitTest cases for
  * TenantRoleUserBusinessService
@@ -81,6 +79,9 @@ class TenantRoleUserBusinessServiceTest {
     private ActiveTenantRESTServiceAccess activeTenantRESTServiceAccess;
     @Mock
     private TenantRESTServiceAccess tenantRESTService;
+
+    @Mock
+    private UserRESTServiceAccess userRESTServiceAccess;
 
     Long userId = 1L;
     Long tenantId = 2L;
@@ -207,6 +208,23 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
+    void testAssignUserIfProcessingIsLocked() throws SystemException {
+        SystemTenantRole tenantRole = new TenantRoleEntity();
+        tenantRole.setRoleId(1L);
+        tenantRole.setTenantId(1L);
+        when(userRESTServiceAccess.isProcessingLocked(anyLong())).thenReturn(true);
+
+        TenantRoleUser tenantRoleUser = new TenantRoleUser();
+        tenantRoleUser.setTenantRoleId(1L);
+        tenantRoleUser.setUserId(1L);
+
+        assertThrows(ProcessingLockedException.class, () -> {
+                tenantRoleUserBusinessService.assignUser(tenantRoleUser);
+        });
+        verify(tenantRoleService,never()).getById(anyLong());
+    }
+
+    @Test
     void testUpdate() throws InvalidArgumentException, UniquenessConstraintException {
         SystemTenantRole tenantRole = new TenantRoleEntity();
         tenantRole.setRoleId(1L);
@@ -221,6 +239,22 @@ class TenantRoleUserBusinessServiceTest {
         tenantRoleUser.setUserId(1L);
         tenantRoleUserBusinessService.update(2L, tenantRoleUser);
         verify(tenantRoleUserServiceAccess).update(any(TenantRoleUserEntity.class));
+    }
+
+    @Test
+    void testUpdateIfProcessingIsLocked() throws SystemException {
+        SystemTenantRole tenantRole = new TenantRoleEntity();
+        tenantRole.setRoleId(1L);
+        tenantRole.setTenantId(1L);
+        when(userRESTServiceAccess.isProcessingLocked(1L)).thenReturn(true);
+        TenantRoleUser tenantRoleUser = new TenantRoleUser();
+        tenantRoleUser.setTenantRoleId(1L);
+        tenantRoleUser.setUserId(1L);
+
+        assertThrows(ProcessingLockedException.class, () -> {
+            tenantRoleUserBusinessService.update(2L, tenantRoleUser);
+        });
+        verify(tenantRoleService,never()).getById(anyLong());
     }
 
     @Test
@@ -376,6 +410,19 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
+    void testDeleteIfProcessingIsLocked() throws SystemException {
+        TenantRoleUser tenantRoleUser = new TenantRoleUser();
+        tenantRoleUser.setTenantRoleId(1L);
+        tenantRoleUser.setUserId(1L);
+        when(tenantRoleUserServiceAccess.get(anyLong()))
+                .thenReturn(tenantRoleUser);
+
+        when(userRESTServiceAccess.isProcessingLocked(anyLong())).thenReturn(true);
+        assertThrows(ProcessingLockedException.class, () -> tenantRoleUserBusinessService.delete(1L));
+        verify(tenantRoleService,never()).getById(anyLong());
+    }
+
+    @Test
     void testUnAssignUser() throws InvalidArgumentException {
         when(tenantRoleUserServiceAccess.getTenantRoleUserIds(anyLong(), anyList(), anyLong()))
                 .thenReturn(Collections.singletonList(1L));
@@ -418,6 +465,16 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
+    void testUnAssignUserIfProcessingIsLocked() throws SystemException, InvalidArgumentException {
+        when(userRESTServiceAccess.isProcessingLocked(anyLong())).thenReturn(true);
+        Collection<Long> roles = Collections.singletonList(1L);
+        assertThrows(ProcessingLockedException.class, () -> {
+            tenantRoleUserBusinessService.unAssignUser(1L, roles, 1L);
+        });
+        verify(tenantRoleUserServiceAccess,never()).getTenantRoleUserIds(1L, Collections.singletonList(1L), 1L);
+    }
+
+    @Test
     void testGetTenantsSystemException() throws InvalidArgumentException, SystemException {
         List<Long> tenantIds = Arrays.asList(1L, 2L);
         when(tenantRoleUserServiceAccess.getTenants(anyLong(), anyLong()))
@@ -447,4 +504,20 @@ class TenantRoleUserBusinessServiceTest {
         assertEquals(10L, tenantRoleUserBusinessService.getCount());
     }
 
+    @Test
+    void testCheckIfUserIsLocked() throws SystemException {
+        when(userRESTServiceAccess.isProcessingLocked(0L)).thenReturn(false);
+        assertEquals(false, tenantRoleUserBusinessService.checkIfUserIsLocked(0L));
+
+        when(userRESTServiceAccess.isProcessingLocked(0L)).thenReturn(true);
+        assertEquals(true, tenantRoleUserBusinessService.checkIfUserIsLocked(0L));
+    }
+
+
+    @Test
+    void testCheckIfUserIsLockedThrowsException() throws SystemException, RuntimeException {
+        when(userRESTServiceAccess.isProcessingLocked(0L)).thenThrow(new SystemException());
+        Assert.assertThrows(RuntimeException.class, () ->
+                tenantRoleUserBusinessService.checkIfUserIsLocked(0L));
+    }
 }

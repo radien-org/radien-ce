@@ -75,7 +75,8 @@
 											  tooltip="#{msg.rd_delete_existent_user_info}"
 											  iconAwesome="fa-trash"
 											  rendered="#{userDataModel.allowedDeleteUser}"
-											  action="#{userDataModel.deleteRecord}"/>
+											  action="#{userDataModel.deleteRecord}"
+											  disabled="#{userDataModel.selectedUser!=null and userDataModel.selectedUser.processingLocked}"/>
 
 							<b:navCommandLink value="#{msg.edit}"
 											 tooltip="#{msg.rd_edit_existent_user_info}"
@@ -86,7 +87,9 @@
 							<b:navCommandLink value="#{msg.profile}"
 											 tooltip="#{msg.rd_profile_existent_user}"
 											 iconAwesome="fa-user-plus"
-											 action="#{userDataModel.userProfile}"/>
+											 action="#{userDataModel.userProfile}"
+										     disabled="#{userDataModel.selectedUser!=null and userDataModel.selectedUser.processingLocked}"/>
+
 
 							<b:navCommandLink value="#{msg.rd_user_email_update}"
 											  tooltip="#{msg.rd_select_user_email_update}"
@@ -94,17 +97,21 @@
 											  rendered="#{userDataModel.allowedToUpdateUserEmail}"
 											  action="#{userDataModel.userEmailUpdate}"/>
 
+
 							<b:navCommandLink value="#{msg.rd_role_assignment}"
 											  tooltip="#{msg.rd_select_user_to_assign_unassigned_user_tenant_roles}"
 											  iconAwesome="fa-expand"
 											  action="#{userDataModel.userRoles}"
-											  actionListener="#{userTenantRolesManager.clearAssignableOrUnAssignedRoles}"/>
+											  actionListener="#{userTenantRolesManager.clearAssignableOrUnAssignedRoles}"
+											  disabled="#{userDataModel.selectedUser!=null and userDataModel.selectedUser.processingLocked}"/>
+
 
 							<b:navCommandLink value="#{msg.rd_unAssign}"
 											  tooltip="#{msg.rd_select_unAssign_user_activeTenant}"
 											  iconAwesome="fa-remove"
 											  action="#{userDataModel.userUnAssign}"
-											  actionListener="#{unAssignTenantUser.setTenantUserFieldsAsNull}"/>
+											  actionListener="#{unAssignTenantUser.setTenantUserFieldsAsNull}"
+											  disabled="#{userDataModel.selectedUser!=null and userDataModel.selectedUser.processingLocked}"/>
 
 						</b:dropButton>
 
@@ -134,6 +141,10 @@
 
 				<p:column headerText="#{msg.email}" sortBy="#{user.userEmail}">
 					<h:outputText value="#{user.userEmail}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.processingLocked}" sortBy="#{user.processingLocked}">
+					<h:outputText value="#{user.processingLocked}"/>
 				</p:column>
 			</p:dataTable>
 

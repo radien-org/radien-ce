@@ -84,7 +84,8 @@
             <b:commandButton value="#{msg.add} #{msg.association}"
                              action="#{tenantRoleAssociationManager.prepareToCreateTenantRole}"
                              iconAwesome="fa-user"
-                             iconAlign="center"/>
+                             iconAlign="center"
+                             disabled="#{userDataModel.selectedUser.processingLocked}"/>
 
         </h:form>
 

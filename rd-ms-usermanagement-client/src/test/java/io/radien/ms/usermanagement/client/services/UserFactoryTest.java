@@ -28,7 +28,7 @@ public class UserFactoryTest {
 
     User user;
     JsonObject json;
-
+    
     /**
      * Constructor class method were we are going to create the JSON and the user for
      * testing purposes.
@@ -46,10 +46,11 @@ public class UserFactoryTest {
         builder.add("delegatedCreation", false);
         builder.add("mobileNumber", "951");
         builder.add("enabled", true);
+        builder.add("processingLocked", false);
 
         json = builder.build();
 
-        user = UserFactory.create("testFirstName", "testLastname", "logonTest", "sub", "emailtest@emailtest.pt", "951", 2L);
+        user = UserFactory.create("testFirstName", "testLastname", "logonTest", "sub", "emailtest@emailtest.pt", "951", 2L, false);
     }
 
     /**
@@ -58,7 +59,7 @@ public class UserFactoryTest {
     @Test
     public void create() {
         UserFactory userFactory = new UserFactory();
-        User constructedNewUser = userFactory.create("testFirstName", "testLastname", "logonTest", "sub", "emailtest@emailtest.pt","951", 2L);
+        User constructedNewUser = userFactory.create("testFirstName", "testLastname", "logonTest", "sub", "emailtest@emailtest.pt","951", 2L, false);
 
         assertEquals(user.getId(), constructedNewUser.getId());
         assertEquals(user.getLogon(), constructedNewUser.getLogon());
@@ -103,10 +104,11 @@ public class UserFactoryTest {
         builder.add("delegatedCreation", true);
         builder.add("firstname", "testFirstName");
         builder.add("lastname", "testLastname");
+        builder.add("processingLocked", false);
 
         JsonObject json2 = builder.build();
 
-        user = UserFactory.create("testFirstName", "testLastname", "logonTest", "sub", "emailtest@emailtest.pt","951", 2L);
+        user = UserFactory.create("testFirstName", "testLastname", "logonTest", "sub", "emailtest@emailtest.pt","951", 2L, false);
 
         User constructedNewUser = UserFactory.convert(json2);
 

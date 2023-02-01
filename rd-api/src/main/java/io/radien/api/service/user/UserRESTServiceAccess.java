@@ -140,4 +140,12 @@ public interface UserRESTServiceAccess extends Appframeable{
      * @throws SystemException in case of any issue regarding communication with User endpoint
      */
     boolean updatePassword(String sub, SystemUserPasswordChanging change) throws SystemException;
+
+    /**
+    * Checks if the user is locked
+     * @param id of the user to be deleted
+     * @return true if user is locked
+     * @throws SystemException
+     */
+    boolean isProcessingLocked(long id) throws SystemException;
 }

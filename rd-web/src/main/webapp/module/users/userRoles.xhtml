@@ -111,7 +111,8 @@
 
                   <b:button onclick="$('.formValidationModalUserTenantRoles').modal('show')"
                             value="#{msg.confirm}"
-                            iconAwesome="fa-save"/>
+                            iconAwesome="fa-save"
+                            disabled="#{userDataModel.selectedUser.processingLocked}"/>
 
                   <b:modal id="model"
                            title="#{msg.confirmation}"

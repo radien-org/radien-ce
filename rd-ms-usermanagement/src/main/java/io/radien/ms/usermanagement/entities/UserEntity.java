@@ -140,4 +140,14 @@ public class UserEntity extends io.radien.ms.usermanagement.client.entities.User
 	public Date getTerminationDate() {
 		return super.getTerminationDate();
 	}
+
+	/**
+	 * User entity processing locked table field
+	 * @return processing locked
+	 */
+	@Column(columnDefinition = "boolean default false")
+	@Override
+	public boolean isProcessingLocked() {
+		return super.isProcessingLocked();
+	}
 }

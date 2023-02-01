@@ -77,7 +77,8 @@
 												 value="#{msg.save}"
 												 tooltip="#{msg.save}"
 												 iconAwesome="fa-save"
-												 action="#{tenantRoleAssociationManager.associateTenantRole}"/>
+												 action="#{tenantRoleAssociationManager.associateTenantRole}"
+												 disabled="#{userDataModel.selectedUser.processingLocked}"/>
 							</b:buttonGroup>
 						</b:tab>
 

@@ -42,7 +42,7 @@ public class KeycloakFactoryTest {
     @Test
     public void convertToUserRepresentation() {
         SystemUser user = UserFactory.create("firstName", "lastName",
-                "logon", "sub", "email", "951",2L);
+                "logon", "sub", "email", "951",2L,false);
 
         UserRepresentation representations = KeycloakFactory.convertToUserRepresentation(user);
 
@@ -75,7 +75,7 @@ public class KeycloakFactoryTest {
      */
     private void mockUserRepresentationEmailVerify(boolean emailVerify){
         SystemUser user = UserFactory.create("firstName", "lastName",
-                "logon", "sub", "email@email.com","951", 2L);
+                "logon", "sub", "email@email.com","951", 2L, false);
 
         UserRepresentation representations = KeycloakFactory.convertUpdateEmailToUserRepresentation(user.getUserEmail(), emailVerify);
         representations.setEmailVerified(emailVerify);

@@ -164,13 +164,17 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
      * and performs assignable/unassailable association among User Tenant Role(s)
      */
     public void assignOrUnassignedRolesToUserTenant() {
-        if(assignableUserTenantRoles != null && !assignableUserTenantRoles.isEmpty()) {
-            doAssignedRolesForUserTenant();
-            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.USER_RD_TENANT_ROLE_ASSIGNED_SUCCESS.getValue()));
-        }
+        if (!userDataModel.getSelectedUser().isProcessingLocked()) {
+            if(assignableUserTenantRoles != null && !assignableUserTenantRoles.isEmpty()) {
+                doAssignedRolesForUserTenant();
+                JSFUtil.addSuccessMessage(DataModelEnum.USER_RD_TENANT_ROLE_ASSIGNED_SUCCESS.getValue());
+            }
 
-        if(unassignedUserTenantRoles != null && !unassignedUserTenantRoles.isEmpty()) {
-            doUnassignedRolesForUserTenant();
+            if(unassignedUserTenantRoles != null && !unassignedUserTenantRoles.isEmpty()) {
+                doUnassignedRolesForUserTenant();
+            }
+        } else {
+            JSFUtil.addErrorMessage(DataModelEnum.PROCESSINGLOCKED_BLOCKS_ACTION.getValue());
         }
         clearAssignableOrUnAssignedRoles();
     }

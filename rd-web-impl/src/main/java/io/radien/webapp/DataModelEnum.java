@@ -41,6 +41,7 @@ public enum DataModelEnum {
     UPDATE_ERROR_MESSAGE("rd_update_error"),
     SELECT_RECORD_FIRST("rd_select_record_first"),
     DELETE_SUCCESS("rd_delete_success"),
+    PROCESSINGLOCKED_BLOCKS_ACTION("rd_processingLocked_blocks_action"),
     ERROR_SELECT_RECORD_TO_DELETE("rd_delete_select_record_first"),
     DELETE_ERROR("rd_delete_error"),
     ACTIVE_TENANT_HAS_BEEN_REMOVED("rd_removed_active_tenant"),

@@ -198,7 +198,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * Sets a user with a given user object information
      * @param user object to be set
      */
-    public void setUser(SystemUser user) { this.user = user; }
+    public void setUser(SystemUser user) { this.user = user;}
 
     /**
      * Retrieves the active User Rest Service Access information
@@ -239,24 +239,31 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @param saveUser new user information to be saved (create or update)
      */
     @ActiveTenantMandatory
-    public void saveUser(SystemUser saveUser){
+    public boolean saveUser(SystemUser saveUser, boolean checkForProcessingLocked){
         try{
             if(saveUser != null){
-                if (saveUser.getId() == null) {
-                    saveUser.setCreateUser(userSessionEnabled.getUserId());
-                    service.create(saveUser, saveUser.isDelegatedCreation());
+                if (!checkForProcessingLocked || !saveUser.isProcessingLocked()) {
+                    if (saveUser.getId() == null) {
+                        saveUser.setCreateUser(userSessionEnabled.getUserId());
+                        service.create(saveUser, saveUser.isDelegatedCreation());
+                    } else {
+                        saveUser.setLastUpdateUser(userSessionEnabled.getUserId());
+                        service.updateUser(saveUser);
+                    }
+                    handleMessage(FacesMessage.SEVERITY_INFO,
+                            saveUser.getId() == null ? JSFUtil.getMessage(DataModelEnum.SAVE_SUCCESS_MESSAGE.getValue()) :
+                                    JSFUtil.getMessage(DataModelEnum.EDIT_SUCCESS.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
+                    return true;
                 } else {
-                    saveUser.setLastUpdateUser(userSessionEnabled.getUserId());
-                    service.updateUser(saveUser);
+                    
+                    handleMessage(FacesMessage.SEVERITY_ERROR, JSFUtil.getMessage(DataModelEnum.PROCESSINGLOCKED_BLOCKS_ACTION.getValue()));
                 }
-                handleMessage(FacesMessage.SEVERITY_INFO,
-                        saveUser.getId() == null ? JSFUtil.getMessage(DataModelEnum.SAVE_SUCCESS_MESSAGE.getValue()) :
-                        JSFUtil.getMessage(DataModelEnum.EDIT_SUCCESS.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
             }
         }catch (Exception e){
             handleError(e, saveUser.getId() == null ? JSFUtil.getMessage(DataModelEnum.SAVE_ERROR_MESSAGE.getValue()) :
                     JSFUtil.getMessage(DataModelEnum.EDIT_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
         }
+        return false;
     }
 
     /**
@@ -265,25 +272,34 @@ public class UserDataModel extends AbstractManager implements Serializable {
     @ActiveTenantMandatory
     public void deleteUser(){
         try{
-            if(selectedUser != null){
-                Long userId = selectedUser.getId();
-                service.deleteUser(userId);
-                
-                List <? extends SystemTenantRoleUser> tenantRolesUser = tenantRoleUserRESTServiceAccess.getTenantRoleUsers(null, userId, false);
-                for(SystemTenantRoleUser systemTenantRoleUser : tenantRolesUser) {
-                    tenantRoleUserRESTServiceAccess.delete(systemTenantRoleUser.getTenantRoleId());
-                }
+            if(selectedUser != null) {
+                if (!selectedUser.isProcessingLocked()) {
+                    Long userId = selectedUser.getId();
+                    service.deleteUser(userId);
 
-                List<? extends SystemActiveTenant> activeTenants = activeTenantRESTServiceAccess.getActiveTenantByFilter(userId, null);
-                for(SystemActiveTenant systemActiveTenant : activeTenants) {
-                    activeTenantRESTServiceAccess.delete(systemActiveTenant.getId());
+                    List<? extends SystemTenantRoleUser> tenantRolesUser = tenantRoleUserRESTServiceAccess.getTenantRoleUsers(null, userId, false);
+                    for (SystemTenantRoleUser systemTenantRoleUser : tenantRolesUser) {
+                        tenantRoleUserRESTServiceAccess.delete(systemTenantRoleUser.getTenantRoleId());
+                    }
+
+                    List<? extends SystemActiveTenant> activeTenants = activeTenantRESTServiceAccess.getActiveTenantByFilter(userId, null);
+                    for (SystemActiveTenant systemActiveTenant : activeTenants) {
+                        activeTenantRESTServiceAccess.delete(systemActiveTenant.getId());
+                    }
+
+                    handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.DELETE_SUCCESS.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
+                }else {
+                    handleMessage(FacesMessage.SEVERITY_ERROR, JSFUtil.getMessage(DataModelEnum.PROCESSINGLOCKED_BLOCKS_ACTION.getValue()), "");
                 }
-                
-                handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.DELETE_SUCCESS.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
             }
         }catch (Exception e){
             handleError(e, JSFUtil.getMessage(DataModelEnum.DELETE_ERROR.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
         }
+    }
+
+    public void changeProcessingLocked(SystemUser saveUser){
+        saveUser.setProcessingLocked(!saveUser.isProcessingLocked());
+        saveUser(saveUser, false);
     }
 
     /**
@@ -330,7 +346,9 @@ public class UserDataModel extends AbstractManager implements Serializable {
      */
     @ActiveTenantMandatory
     public String deleteRecord() {
-        if (selectedUser != null) {
+        if (checkProcessingLocked()) {
+            handleMessage(FacesMessage.SEVERITY_ERROR, JSFUtil.getMessage(DataModelEnum.PROCESSINGLOCKED_BLOCKS_ACTION.getValue()));
+        } else if (selectedUser != null) {
             return DataModelEnum.USER_DELETE_PATH.getValue();
         }
         return DataModelEnum.USERS_PATH.getValue();
@@ -353,7 +371,9 @@ public class UserDataModel extends AbstractManager implements Serializable {
      */
     @ActiveTenantMandatory
     public String userProfile() {
-        if(selectedUser != null) {
+        if (checkProcessingLocked()) {
+            handleMessage(FacesMessage.SEVERITY_ERROR, JSFUtil.getMessage(DataModelEnum.PROCESSINGLOCKED_BLOCKS_ACTION.getValue()));
+        } else if(selectedUser != null) {
             return DataModelEnum.USERS_PROFILE_PATH.getValue();
         }
         return DataModelEnum.USERS_PATH.getValue();
@@ -365,8 +385,12 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @return users HTML page
      */
     public String userRoles() {
-        if(selectedUser != null) {
+
+        if (checkProcessingLocked()) {
+            handleMessage(FacesMessage.SEVERITY_ERROR, JSFUtil.getMessage(DataModelEnum.PROCESSINGLOCKED_BLOCKS_ACTION.getValue()));
+        } else if (selectedUser != null) {
             return DataModelEnum.USERS_ROLES_PATH.getValue();
+
         }
         return DataModelEnum.USERS_PATH.getValue();
     }
@@ -377,7 +401,9 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @return users HTML page
      */
     public String userUnAssign() {
-        if (selectedUser != null) {
+        if (checkProcessingLocked()) {
+            handleMessage(FacesMessage.SEVERITY_ERROR, JSFUtil.getMessage(DataModelEnum.PROCESSINGLOCKED_BLOCKS_ACTION.getValue()));
+        } else if (selectedUser != null) {
             return DataModelEnum.USER_UN_ASSIGN_PATH.getValue();
         }
         return DataModelEnum.USERS_PATH.getValue();
@@ -455,7 +481,13 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @return url mapping that refers Tenant association screen
      */
     public String prepareTenantAssociation() {
-        return DataModelEnum.USER_ASSIGNING_TENANT_ASSOCIATION_PATH.getValue();
+        if (checkProcessingLocked()) {
+            handleMessage(FacesMessage.SEVERITY_ERROR, JSFUtil.getMessage(DataModelEnum.PROCESSINGLOCKED_BLOCKS_ACTION.getValue()));
+            JSFUtil.addErrorMessage(DataModelEnum.PROCESSINGLOCKED_BLOCKS_ACTION.getValue());
+            return DataModelEnum.USER_PATH.getValue();
+        }  else {
+            return DataModelEnum.USER_ASSIGNING_TENANT_ASSOCIATION_PATH.getValue();
+        }
     }
 
     public boolean isAllowedReadUser() {
@@ -585,5 +617,8 @@ public class UserDataModel extends AbstractManager implements Serializable {
         this.updateEmail = updateEmail;
     }
 
+    public boolean checkProcessingLocked() {
+        return (selectedUser != null && selectedUser.isProcessingLocked() || selectedUser == null && user.isProcessingLocked());
+    }
 
 }

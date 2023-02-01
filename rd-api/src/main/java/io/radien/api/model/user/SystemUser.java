@@ -134,4 +134,16 @@ public interface SystemUser extends Model {
 	 */
 	public void setDelegatedCreation(boolean delegatedCreation);
 
+	/**
+	 * System user is processing locked getter
+	 * @return System user delegated creation
+	 */
+	public boolean isProcessingLocked();
+
+	/**
+	 * System user processing locked setter
+	 * @param processingLocked to be set
+	 */
+	public void setProcessingLocked(boolean processingLocked);
+
 }

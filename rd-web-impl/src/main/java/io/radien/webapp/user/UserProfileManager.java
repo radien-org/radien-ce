@@ -129,30 +129,38 @@ public class UserProfileManager extends AbstractManager {
      * to be saved
      * @return home HTML page if success otherwise user profile
      */
-    public String updateProfile(SystemUser updateUserProfile) {
-        try{
-            if(updateUserProfile != null && updateUserProfile.getId() != null) {
-                boolean isUpdated = userService.updateUser(updateUserProfile);
 
-                if(isUpdated){
-                    handleMessage(
-                            FacesMessage.SEVERITY_INFO,
-                            JSFUtil.getMessage("rd_user_profile_save_success"),
-                            JSFUtil.getMessage("rd_user"),
-                            updateUserProfile.getLogon());
 
-                    userSession.setUser(updateUserProfile);
+    public String updateProfile(SystemUser updateUserProfile, boolean checkForProcessingLocked) {
+        if (!checkForProcessingLocked || !clonedLogInUser.isProcessingLocked())
+        {
+            try{
+                if(updateUserProfile != null && updateUserProfile.getId() != null) {
+                    boolean isUpdated = userService.updateUser(updateUserProfile);
+
+                    if(isUpdated){
+                        handleMessage(
+                                FacesMessage.SEVERITY_INFO,
+                                JSFUtil.getMessage("rd_user_profile_save_success"),
+                                JSFUtil.getMessage("rd_user"),
+                                updateUserProfile.getLogon());
+
+                        userSession.setUser(updateUserProfile);
+                    }
                 }
-            }
-        } catch(Exception e) {
-            handleError(e,
-                    JSFUtil.getMessage("rd_user_profile_save_error"),
-                    JSFUtil.getMessage("rd_user"),
-                    updateUserProfile.getLogon());
+            } catch(Exception e) {
+                handleError(e,
+                        JSFUtil.getMessage("rd_user_profile_save_error"),
+                        JSFUtil.getMessage("rd_user"),
+                        updateUserProfile.getLogon());
 
+                return DataModelEnum.PRETTY_PROFILE.getValue();
+            }
+            return DataModelEnum.PRETTY_INDEX.getValue();
+        } else {
+            JSFUtil.addErrorMessage(DataModelEnum.PROCESSINGLOCKED_BLOCKS_ACTION.getValue());
             return DataModelEnum.PRETTY_PROFILE.getValue();
         }
-        return DataModelEnum.PRETTY_INDEX.getValue();
     }
 
     /**
@@ -211,22 +219,27 @@ public class UserProfileManager extends AbstractManager {
      * the current logged user from a Tenant
      */
     public String dissociateUserTenant() {
-        try {
-            if (selectedTenantToUnAssign == null || selectedTenantToUnAssign.getId() == null) {
-                throw new ProcessingException(JSFUtil.getMessage("rd_tenant_not_selected"));
+        if (!clonedLogInUser.isProcessingLocked()){
+            try {
+                if (selectedTenantToUnAssign == null || selectedTenantToUnAssign.getId() == null) {
+                    throw new ProcessingException(JSFUtil.getMessage("rd_tenant_not_selected"));
+                }
+                // Invoking backend method to delete tenant associations (once its approved and merged)
+                tenantRoleUserRESTServiceAccess.unAssignUser(selectedTenantToUnAssign.getId(), null,
+                        userSession.getUserId());
+                selectedTenantToUnAssign = null;
+                this.assignedTenants = retrieveAssignedTenants();
+                setTabIndex(0L);
+                handleMessage(FacesMessage.SEVERITY_INFO,
+                        JSFUtil.getMessage("rd_tenant_user_dissociation_success"));
             }
-            // Invoking backend method to delete tenant associations (once its approved and merged)
-            tenantRoleUserRESTServiceAccess.unAssignUser(selectedTenantToUnAssign.getId(), null,
-                    userSession.getUserId());
-            selectedTenantToUnAssign = null;
-            this.assignedTenants = retrieveAssignedTenants();
-            setTabIndex(0L);
-            handleMessage(FacesMessage.SEVERITY_INFO,
-                    JSFUtil.getMessage("rd_tenant_user_dissociation_success"));
-        }
-        catch (Exception e) {
-            setTabIndex(1L);
-            handleError(e, JSFUtil.getMessage("rd_tenant_user_dissociation_error"));
+            catch (Exception e) {
+                setTabIndex(1L);
+                handleError(e, JSFUtil.getMessage("rd_tenant_user_dissociation_error"));
+                return DataModelEnum.PRETTY_PROFILE.getValue();
+            }
+        } else {
+            JSFUtil.addErrorMessage(DataModelEnum.PROCESSINGLOCKED_BLOCKS_ACTION.getValue());
             return DataModelEnum.PRETTY_PROFILE.getValue();
         }
         return DataModelEnum.PRETTY_INDEX.getValue();
@@ -372,34 +385,53 @@ public class UserProfileManager extends AbstractManager {
     }
 
     public void deleteUserListener() {
-        Long id = userSession.getUserId();
-        try {
-            log.info("Starting to delete user {}", id);
+        if (!clonedLogInUser.isProcessingLocked())
+        {
+            Long id = userSession.getUserId();
+            try {
+                log.info("Starting to delete user {}", id);
 
-            if(userService.deleteUser(id)){
-               userSession.logout();
-               log.info("User {} succesfully deleted", id);
+                if(userService.deleteUser(id)){
+                   userSession.logout();
+                   log.info("User {} succesfully deleted", id);
 
-                log.info("Starting to unassign all tenants from user {}", id);
-                for(SystemTenant tenant: assignedTenants) {
-                    tenantRoleUserRESTServiceAccess.unAssignUser(tenant.getId(), null, userSession.getUserId());
-                }
-                log.info("Succesfully unasigned all tenants from user {}", id);
+                    log.info("Starting to unassign all tenants from user {}", id);
+                    for(SystemTenant tenant: assignedTenants) {
+                        tenantRoleUserRESTServiceAccess.unAssignUser(tenant.getId(), null, userSession.getUserId());
+                    }
+                    log.info("Succesfully unasigned all tenants from user {}", id);
 
-                handleMessage(
-                        FacesMessage.SEVERITY_INFO,
-                        JSFUtil.getMessage("rd_user_profile_delete_success"));
-           }else {
-                log.info("Failed to delete user: {}", id);
-                handleMessage(FacesMessage.SEVERITY_ERROR,
+                    handleMessage(
+                            FacesMessage.SEVERITY_INFO,
+                            JSFUtil.getMessage("rd_user_profile_delete_success"));
+               }else {
+                    log.info("Failed to delete user: {}", id);
+                    handleMessage(FacesMessage.SEVERITY_ERROR,
+                            JSFUtil.getMessage("rd_user_profile_delete_error"));
+               }
+            } catch (Exception e) {
+                log.info("A exception occured while trying to delete user: {}", id);
+                handleError(e,
                         JSFUtil.getMessage("rd_user_profile_delete_error"));
-           }
-        } catch (Exception e) {
-            log.info("A exception occured while trying to delete user: {}", id);
-            handleError(e,
-                    JSFUtil.getMessage("rd_user_profile_delete_error"));
+            }
+        } else {
+            JSFUtil.addErrorMessage(DataModelEnum.PROCESSINGLOCKED_BLOCKS_ACTION.getValue());
         }
     }
+
+    /**
+     * Gets the user from the current session and sets processingLocked for it to true
+     * @return site to which the user should be redirect as a string
+     */
+    public String lockUserProcessing(){
+        clonedLogInUser.setProcessingLocked(true);
+        String result = updateProfile(clonedLogInUser, false);
+        if (!result.equals(DataModelEnum.PRETTY_INDEX.getValue())) {
+            clonedLogInUser.setProcessingLocked(false);
+        }
+        return result;
+    }
+
 
     /**
      * Listener/Validator to check if password and confirmation password matches

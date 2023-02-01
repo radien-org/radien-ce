@@ -520,6 +520,18 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
     }
 
     /**
+     *
+     * @param id
+     * @return the if the user processing is locked
+     * @throws SystemException in case it founds multiple users or if URL is malformed
+     */
+    @Override
+    public boolean isProcessingLocked(long id) throws SystemException {
+        Optional<SystemUser> user = getUserById(id);
+        return user.isPresent() && user.get().isProcessingLocked();
+    }
+
+    /**
      * Main method invoked that changes user password
      * @param sub OpenId user identifier (subject)
      * @param change pojo/bean containing credential information (Not plain text, data encoded on base64)

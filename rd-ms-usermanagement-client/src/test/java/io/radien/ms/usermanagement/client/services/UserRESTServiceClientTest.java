@@ -317,7 +317,7 @@ public class UserRESTServiceClientTest {
     public void testGetAll() throws MalformedURLException {
         List<User> list = new ArrayList<>();
         list.add(UserFactory.create("test1", "lastname1",
-                "logon1", "sub", "email", "951", 2L));
+                "logon1", "sub", "email", "951", 2L, false));
         Page<SystemUser> page = new Page<>(list, 1, 1, 1);
 
         JsonObjectBuilder objectBuilder = Json.createObjectBuilder()
@@ -365,7 +365,7 @@ public class UserRESTServiceClientTest {
     public void testGetAllRefreshTokenExpiration() throws MalformedURLException {
         List<User> list = new ArrayList<>();
         list.add(UserFactory.create("test1", "lastname1",
-                "logon1", "sub",  "email", "951", 2L));
+                "logon1", "sub",  "email", "951", 2L, false));
         Page<SystemUser> page = new Page<>(list, 1, 1, 1);
 
         JsonObjectBuilder objectBuilder = Json.createObjectBuilder()
@@ -397,7 +397,7 @@ public class UserRESTServiceClientTest {
     public void testGetAllRefreshTokenExpirationReAttempt() throws MalformedURLException {
         List<User> list = new ArrayList<>();
         list.add(UserFactory.create("test1", "lastname1",
-                "logon1", "sub",  "email", "951", 2L));
+                "logon1", "sub",  "email", "951", 2L, false));
         Page<SystemUser> page = new Page<>(list, 1, 1, 1);
 
         JsonObjectBuilder objectBuilder = Json.createObjectBuilder()
@@ -498,7 +498,7 @@ public class UserRESTServiceClientTest {
     @Test
     public void testGetUserBySubWithResults() throws Exception {
         String a = "a";
-        User user = UserFactory.create(null, null, "logon", null, null, null, null);
+        User user = UserFactory.create(null, null, "logon", null, null, null, null, false);
         user.setSub(a);
 
         JsonArrayBuilder builder = Json.createArrayBuilder();
@@ -1237,10 +1237,10 @@ public class UserRESTServiceClientTest {
      */
     @Test
     public void testGetUsersByIdsWithResults() throws MalformedURLException, SystemException {
-        User user1 = UserFactory.create(null, null, "logon1", null, null,null, null);
+        User user1 = UserFactory.create(null, null, "logon1", null, null,null, null, false);
         user1.setId(1L);
 
-        User user2 = UserFactory.create(null, null, "logon2", null, null,null, null);
+        User user2 = UserFactory.create(null, null, "logon2", null, null,null, null, false);
         user2.setId(2L);
 
         List<Long> ids = Arrays.asList(user1.getId(), user2.getId());
@@ -1319,7 +1319,7 @@ public class UserRESTServiceClientTest {
      */
     @Test
     public void testGetUsersByIdsByReattempt() throws MalformedURLException, SystemException {
-        User user3 = UserFactory.create(null, null, "logon1", null, null,null, null);
+        User user3 = UserFactory.create(null, null, "logon1", null, null,null, null, false);
         user3.setId(999L);
 
         List<Long> ids = Collections.singletonList(user3.getId());

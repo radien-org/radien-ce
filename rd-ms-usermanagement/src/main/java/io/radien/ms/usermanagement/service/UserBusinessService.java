@@ -20,10 +20,7 @@ import io.radien.api.model.user.SystemUser;
 import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.user.UserServiceAccess;
-import io.radien.exception.BadRequestException;
-import io.radien.exception.SystemException;
-import io.radien.exception.UniquenessConstraintException;
-import io.radien.exception.UserNotFoundException;
+import io.radien.exception.*;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
@@ -117,10 +114,14 @@ public class UserBusinessService implements Serializable {
 	 */
 	public void delete(long id) {
 		SystemUser u = userServiceAccess.get(id);
-		if(u.getSub() != null) {
-			keycloakBusinessService.deleteUser(u.getSub());
+		if (!u.isProcessingLocked()) {
+			if(u.getSub() != null) {
+				keycloakBusinessService.deleteUser(u.getSub());
+			}
+			userServiceAccess.delete(id);
+		}  else {
+			throw new ProcessingLockedException();
 		}
-		userServiceAccess.delete(id);
 	}
 
 	/**
@@ -153,19 +154,23 @@ public class UserBusinessService implements Serializable {
 	 * @throws RemoteResourceException on empty logon, email, first and last name
 	 */
 	public void update(User user,boolean skipKeycloak) throws UniquenessConstraintException {
-		basicValidation(user);
-		try {
-			userServiceAccess.update(user);
-		} catch (SystemException e) {
-			throw new UserNotFoundException(e.getMessage());
-		}
-		if(!skipKeycloak){
-			try{
-				keycloakBusinessService.updateUser(user);
-			} catch (RemoteResourceException e) {
-				delete(user.getId());
-				throw e;
+		if (!user.isProcessingLocked() || user.isProcessingLocked() && !userServiceAccess.get(user.getId()).isProcessingLocked()) {
+			basicValidation(user);
+			try {
+				userServiceAccess.update(user);
+			} catch (SystemException e) {
+				throw new UserNotFoundException(e.getMessage());
 			}
+			if(!skipKeycloak){
+				try{
+					keycloakBusinessService.updateUser(user);
+				} catch (RemoteResourceException e) {
+					delete(user.getId());
+					throw e;
+				}
+			}
+		} else {
+			throw new ProcessingLockedException();
 		}
 	}
 
