@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import {QueryKeys} from "@/consts";
 import {Box} from "@cloudscape-design/components";
 import {useRouter} from "next/router";
+import UserDetailsView from "@/components/UserDetailsView/UserDetailsView";
 
 export default function UserManagement() {
     const PaginatedTable = dynamic(
@@ -66,7 +67,9 @@ export default function UserManagement() {
                         setSelectedItem: setSelectedUser
                     }
                 }
-                viewActionProps={{}}
+                viewActionProps={{
+                    ViewComponent: UserDetailsView,
+                }}
                 createActionProps={{
                     createLabel: "Create user",
                     createAction: () => {

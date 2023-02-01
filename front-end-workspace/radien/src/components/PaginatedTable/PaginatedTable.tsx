@@ -33,7 +33,7 @@ interface CreateActionProps {
 }
 
 interface ViewActionDetails {
-    viewComponent?: React.ReactNode
+    ViewComponent?: React.FunctionComponent<{data: any}>
 }
 
 interface EmptyProps {
@@ -64,7 +64,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
         selectedItemDetails: {selectedItem, setSelectedItem},
         deleteActionProps: {deleteLabel, deleteConfirmationText, deleteAction},
         createActionProps: {createLabel, hideCreate, createAction},
-        viewActionProps: { viewComponent },
+        viewActionProps: { ViewComponent },
         emptyProps: {emptyMessage, emptyActionLabel }
     } = props;
     const { userInSession } = useContext(RadienContext);
@@ -156,13 +156,13 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
                     </Box>
                 }
                 header="View">
-                {viewComponent}
+                {ViewComponent && <ViewComponent data={selectedItem} />}
             </Modal>
 
 
             <div className="flex justify-end py-6 gap-2">
                 { !hideCreate && <Button onClick={createResource} variant={"primary"}>{createLabel || 'Create'}</Button> }
-                {viewComponent && <Button disabled={!selectedItem} onClick={() => setViewModalVisible(true)}>View</Button>}
+                {ViewComponent && <Button disabled={!selectedItem} onClick={() => setViewModalVisible(true)}>View</Button>}
                 <Button onClick={() => setDeleteModalVisible(true)} disabled={!selectedItem}>{deleteLabel || 'Delete'}</Button>
             </div>
         </>

@@ -5,9 +5,10 @@ import Button from "@cloudscape-design/components/button";
 import Header from "@cloudscape-design/components/header";
 import {Alert, Box, Container, FormField, Input} from "@cloudscape-design/components";
 import axios from "axios";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {Loader} from "@/components/Loader/Loader";
 import {User} from "radien";
+import {RadienContext} from "@/context/RadienContextProvider";
 
 
 export default function CreateUser() {
@@ -26,7 +27,9 @@ export default function CreateUser() {
 
     const [formError, setFormError] = useState("");
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
+
+    const {addSuccessMessage, addErrorMessage} = useContext(RadienContext);
+
 
     useEffect(() => {
         validateAll();
@@ -73,31 +76,28 @@ export default function CreateUser() {
         }
         setFormError("");
         setLoading(true);
-        setSuccess(false);
         try {
-            const newUser: User = {
-                sub: "",
+            const newUser = {
                 firstname: firstName,
                 lastname: lastName,
                 userEmail: email,
                 logon: email,
-                mobileNumber: '',
                 enabled: true,
-                delegatedCreation: true,
+                delegatedCreation: false,
                 terminationDate: new Date(),
                 createDate: new Date(),
                 lastUpdate: new Date()
             }
             await axios.post("/api/user/createUser", newUser);
-            setSuccess(true);
+            addSuccessMessage("User created successfully")
         } catch (e) {
             console.log(e);
             // @ts-ignore
             if (e.response.status === 401) {
-                setFormError("Error: You are not logged in, please login again");
+                addErrorMessage("Error: You are not logged in, please login again");
             } else {
                 // @ts-ignore
-                setFormError(`Error: ${e.message}`);
+                addErrorMessage(`Error: ${e.message}`);
             }
         }
         setLoading(false);
@@ -106,18 +106,11 @@ export default function CreateUser() {
 
 
     return (
-        <Box padding="xl">
-            <Container>
+        <>
+            <Box padding="xl">
+                <Container>
                     {loading && <Loader/>}
-                    {success && <Alert
-                        dismissAriaLabel="Close alert"
-                        dismissible
-                        statusIconAriaLabel="Success"
-                        type="success"
-                        onDismiss={() => setSuccess(false)}
-                    >
-                        User created successfully
-                    </Alert>}
+
                     <form onSubmit={e => {
                         e.preventDefault();
                         handleSubmit();
@@ -167,7 +160,8 @@ export default function CreateUser() {
                             </SpaceBetween>
                         </Form>
                     </form>
-            </Container>
-        </Box>
+                </Container>
+            </Box>
+        </>
     );
 }
