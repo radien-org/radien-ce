@@ -69,7 +69,7 @@ export default function PermissionManagement() {
                 createActionProps={{
                     createLabel: "Create permission",
                     createAction: () => {
-                        router.push('/permission/permission/createPermission');
+                        router.push('/permission/createPermission');
                     }
                 }}
                 deleteActionProps={

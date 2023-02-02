@@ -10,7 +10,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         return;
     }
 
-    const path = `${process.env.RADIEN_PERMISSION_URL}/resource/${req.query.pid}`;
+    const path = `${process.env.RADIEN_PERMISSION_URL}/permission/${req.query.pid}`;
     try {
         const result: AxiosResponse = await axios
             .delete(path, {

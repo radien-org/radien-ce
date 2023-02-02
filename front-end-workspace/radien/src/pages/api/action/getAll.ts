@@ -11,14 +11,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         return;
     }
 
-    const path = `${process.env.RADIEN_PERMISSION_URL}/action`;
+    const path = `${process.env.RADIEN_PERMISSION_URL}/action/find`;
     try {
         const result: AxiosResponse = await axios
             .get(path, {
-                params: {
-                    pageNo: page,
-                    pageSize
-                },
                 headers: {
                     "Authorization": `Bearer ${session.accessToken}`
                 }

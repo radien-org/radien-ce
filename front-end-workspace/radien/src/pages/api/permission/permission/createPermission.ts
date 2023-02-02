@@ -11,12 +11,15 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     const path = `${process.env.RADIEN_PERMISSION_URL}/permission`;
-    const result: AxiosResponse = await axios
-        .post(path, req.body, {
-            headers: {
-                "Authorization": `Bearer ${session.accessToken}`
-            },
-        });
-
-    res.status(201).json(result.data);
+    try {
+        const result: AxiosResponse = await axios
+            .post(path, req.body, {
+                headers: {
+                    "Authorization": `Bearer ${session.accessToken}`
+                },
+            });
+        res.status(201).json(result.data);
+    } catch (e) {
+        res.status(500).json(e);
+    }
 }

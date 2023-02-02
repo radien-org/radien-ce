@@ -15,9 +15,9 @@ export default function useCheckPermissions(userId: number, tenantId: number) {
     }
 
     return [
-        useQuery([permissions.roles.resource, tenantId], async () => (await checkPermission(userId, permissions.roles.resource, permissions.roles.action, tenantId)).data, { enabled: !!tenantId}),
-        useQuery([permissions.user.resource, tenantId], async () => (await checkPermission(userId, permissions.user.resource, permissions.user.action, tenantId)).data, { enabled: !!tenantId}),
-        useQuery([permissions.permission.resource, tenantId], async () => (await checkPermission(userId, permissions.permission.resource, permissions.permission.action, tenantId)).data, { enabled: !!tenantId}),
-        useQuery([permissions.tenant.resource, tenantId], async () => (await checkPermission(userId, permissions.tenant.resource, permissions.tenant.action, tenantId)).data, { enabled: !!tenantId})
+        useQuery([permissions.roles.resource, tenantId], async () => (await checkPermission(userId, permissions.roles.resource, permissions.roles.action, tenantId)).data, { enabled: !!tenantId, refetchInterval: 60000}),
+        useQuery([permissions.user.resource, tenantId], async () => (await checkPermission(userId, permissions.user.resource, permissions.user.action, tenantId)).data, { enabled: !!tenantId, refetchInterval: 60000}),
+        useQuery([permissions.permission.resource, tenantId], async () => (await checkPermission(userId, permissions.permission.resource, permissions.permission.action, tenantId)).data, { enabled: !!tenantId, refetchInterval: 60000}),
+        useQuery([permissions.tenant.resource, tenantId], async () => (await checkPermission(userId, permissions.tenant.resource, permissions.tenant.action, tenantId)).data, { enabled: !!tenantId, refetchInterval: 60000})
     ]
 }
