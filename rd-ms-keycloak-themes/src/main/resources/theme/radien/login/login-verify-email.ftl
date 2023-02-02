@@ -10,7 +10,7 @@
     
                     <div class="panel-heading">
                         <div align="center">
-                            <img src="${url.resourcesPath}/img/ProTecSports_Logo_Wortmarke.png" class="login-logo-form"/>
+                            <img src="${url.resourcesPath}/img/bg.png" class="login-logo-form"/>
                         </div>
                     </div>
     

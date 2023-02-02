@@ -188,7 +188,7 @@
 
                     <div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
                         <input 
-                            class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}" 
+                            class="${properties.kcButtonClass!}"
                             type="submit" 
                             value="${msg("doRegister")}"
                         />
