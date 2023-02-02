@@ -14,18 +14,15 @@ import {OptionDefinition} from "@cloudscape-design/components/internal/component
 
 export default function createPermission() {
     const [name, setName] = useState("");
-    const [selectedAction, setSelectedAction] = useState<any>(null);
-    const [selectedResource, setSelectedResource] = useState<any>(null);
+    const [selectedAction, setSelectedAction] = useState<OptionDefinition | null>(null);
+    const [selectedResource, setSelectedResource] = useState<OptionDefinition | null>(null);
 
     const [isNameValid, setIsNameValid] = useState(false);
-    const [isNameTouched, setIsNameTouched] = useState(false);
     const [isActionValid, setIsActionValid] = useState(false);
-    const [isActionTouched, setIsActionTouched] = useState(false);
     const [isResourceValid, setIsResourceValid] = useState(false);
-    const [isResourceTouched, setIsResourceTouched] = useState(false);
+    const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
     const [isFormValid, setIsFormValid] = useState(false);
-    const [formError, setFormError] = useState("");
     const [loading, setLoading] = useState(false);
 
     const {addSuccessMessage, addErrorMessage} = useContext(RadienContext);
@@ -70,21 +67,17 @@ export default function createPermission() {
     }
 
     const handleSubmit = async () => {
-        setIsNameTouched(true);
-        setIsActionTouched(true);
-        setIsResourceTouched(true);
+        setIsFormSubmitted(true);
 
         if (!isFormValid) {
-            setFormError("Please fill out all required fields");
             return;
         }
-        setFormError("");
         setLoading(true);
         try {
             const permission = {
                 name,
-                actionId: selectedAction.value,
-                resourceId: selectedResource.value
+                actionId: selectedAction?.value,
+                resourceId: selectedResource?.value
             }
             await axios.post("/api/permission/permission/createPermission", permission);
             addSuccessMessage("Permission created successfully")
@@ -133,12 +126,11 @@ export default function createPermission() {
                                     <Button variant="primary">Create</Button>
                                 </SpaceBetween>
                             }
-                            errorText={formError}
                             header={<Header variant="h1">Create permission</Header>}
                         >
                             <SpaceBetween direction="vertical" size="l">
                                 <FormField key="cu-form-3" label={"Name *"}
-                                           errorText={!isNameValid && isNameTouched ? "Please enter a valid name" : null}>
+                                           errorText={!isNameValid && isFormSubmitted ? "Please enter a valid name" : null}>
                                     <Input
                                         value={name}
                                         onChange={(event) => {
@@ -147,28 +139,28 @@ export default function createPermission() {
                                         }}
                                     />
                                 </FormField>
-                                <FormField key={"per-form--2"} label={"Action *"} errorText={!isActionValid && isActionTouched ? "Please select an action" : null}>
+                                <FormField key={"per-form--2"} label={"Action *"} errorText={!isActionValid && isFormSubmitted ? "Please select an action" : null}>
                                     <Select
                                         selectedOption={selectedAction}
                                         onChange={({ detail }) => {
                                             setSelectedAction(detail.selectedOption)
                                             validateAction(detail.selectedOption)
                                         }}
-                                        options={actions?.data ? [...actions?.data.map((action: any) => {return {label: action.name, value: action.id}})] : []}
+                                        options={actions?.data && Array.isArray(actions?.data) ? [...actions?.data.map((action: any) => {return {label: action.name, value: action.id}})] : []}
                                         loadingText="Loading actions..."
                                         placeholder="Choose an action"
                                         selectedAriaLabel="Selected action"
                                         statusType={actionsLoading ? "loading" : (actionLoadError ? "error" : "finished")}
                                     />
                                 </FormField>
-                                <FormField key={"per-form--3"} label={"Resource *"} errorText={!isResourceValid && isResourceTouched ? "Please select a resource" : null}>
+                                <FormField key={"per-form--3"} label={"Resource *"} errorText={!isResourceValid && isFormSubmitted ? "Please select a resource" : null}>
                                     <Select
                                         selectedOption={selectedResource}
                                         onChange={({ detail }) => {
                                             setSelectedResource(detail.selectedOption);
                                             validateResource(detail.selectedOption)
                                         }}
-                                        options={resources?.data ? [...resources?.data.map((resource: any) => {return {label: resource.name, value: resource.id}})] : []}
+                                        options={resources?.data && Array.isArray(resources?.data) ? [...resources?.data.map((resource: any) => {return {label: resource.name, value: resource.id}})] : []}
                                         loadingText="Loading resources..."
                                         placeholder="Choose a resource"
                                         selectedAriaLabel="Selected resource"

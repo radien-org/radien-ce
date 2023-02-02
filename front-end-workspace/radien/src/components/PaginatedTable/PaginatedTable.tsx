@@ -15,9 +15,9 @@ import {UseMutateFunction, useQuery} from "react-query";
 import {RadienContext} from "@/context/RadienContextProvider";
 
 
-interface DeleteActionProps {
+interface DeleteActionProps<T> {
     deleteLabel?: string,
-    deleteConfirmationText: (val: any) => string,
+    deleteConfirmationText: (val: T) => string,
     deleteAction?: (UseMutateFunction<AxiosResponse<any, any>, unknown, any, unknown>)
 }
 
@@ -50,7 +50,7 @@ export interface PaginatedTableProps<T> {
     getPaginated: (pageNumber?: number, pageSize?: number) => Promise<AxiosResponse<Page<T>, Error>>,
     viewActionProps: ViewActionDetails,
     createActionProps: CreateActionProps,
-    deleteActionProps: DeleteActionProps,
+    deleteActionProps: DeleteActionProps<T>,
     emptyProps: EmptyProps,
 }
 
@@ -69,7 +69,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
     const { userInSession } = useContext(RadienContext);
     const [ pageSize, setPageSize ] = useState<number>(10);
     const [ deleteModalVisible, setDeleteModalVisible ] = useState(false);
-    const [ selectedItem, setSelectedItem ] = useState<any>();
+    const [ selectedItem, setSelectedItem ] = useState<T>();
     const [currentPage, setCurrentPage ] = useState<number>(1);
     const [ viewModalVisible, setViewModalVisible ] = useState(false);
     const { isLoading, data } = useQuery([queryKey, currentPage], () => getPaginated(currentPage, pageSize))
