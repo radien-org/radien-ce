@@ -54,9 +54,10 @@ public enum SystemVariables {
     ROLE_TENANT_ID("roleTenantId", "Role Tenant ID"),
     ACCESS_TOKEN("accessToken", "Access Token"),
     REFRESH_TOKEN("refreshToken", "Refresh Token"),
+    TICKET_TYPE("ticketType", "Ticket Type"),
     TOKEN("token", "Token"),
-
     EXPIRATION_DATE("expireDate", "Expiration Date"),
+    DATA("data", "Data"),
     OLD_PASSWORD("oldPassword", "Old Password"),
     NEW_PASSWORD("newPassword", "New Password"),
     CONFIRM_NEW_PASSWORD("confirmNewPassword", "Confirm New Password"),

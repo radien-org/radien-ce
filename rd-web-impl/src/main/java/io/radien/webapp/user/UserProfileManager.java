@@ -265,7 +265,7 @@ public class UserProfileManager extends AbstractManager {
             args.put("confirmationURL", url);
             mailService.notify(newEmail, "email-3", userSession.getLanguage(), args);
         } catch (Exception e) {
-            log.info("An exception has occurred when attempting to send an email change request. Stack trace: {}", e.toString());
+            log.error("An exception has occurred when attempting to send an email change request. Stack trace: {}", e.toString());
         }
     }
 
@@ -283,7 +283,7 @@ public class UserProfileManager extends AbstractManager {
 
             mailService.notify(clonedLogInUser.getUserEmail(), emailViewId, userSession.getLanguage(), argumentsMap);
         } catch (SystemException e) {
-            log.info("A exception occured while trying to request data for the user {}. The exception message is: {}", userSession.getUserId(), e.getMessage());
+            log.error("A exception occured while trying to request data for the user {}. The exception message is: {}", userSession.getUserId(), e.getMessage());
             handleMessage(FacesMessage.SEVERITY_ERROR,
                     JSFUtil.getMessage("request_data_error"));
         }

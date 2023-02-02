@@ -77,10 +77,10 @@ public class TicketFactory {
     public static Ticket convert(JsonObject jsonTicket) {
         Long id = FactoryUtilService.getLongFromJson(SystemVariables.ID.getFieldName(), jsonTicket);
         Long userId = FactoryUtilService.getLongFromJson(SystemVariables.USER_ID.getFieldName(), jsonTicket);
-        Long ticketTypeId = FactoryUtilService.getLongFromJson("ticketType", jsonTicket);
+        Long ticketTypeId = FactoryUtilService.getLongFromJson(SystemVariables.TICKET_TYPE.getFieldName(), jsonTicket);
         String token = FactoryUtilService.getStringFromJson(SystemVariables.TOKEN.getFieldName(), jsonTicket);
         LocalDateTime expirationDate = FactoryUtilService.getLocalDateTimeFromJson(SystemVariables.EXPIRATION_DATE.getFieldName(), jsonTicket);
-        String data = FactoryUtilService.getStringFromJson("data", jsonTicket);
+        String data = FactoryUtilService.getStringFromJson(SystemVariables.DATA.getFieldName(), jsonTicket);
 
 
         Long createUser = FactoryUtilService.getLongFromJson(SystemVariables.CREATE_USER.getFieldName(), jsonTicket);
