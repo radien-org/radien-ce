@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import io.radien.webapp.security.UserSession;
 import org.apache.commons.lang3.StringUtils;
@@ -64,7 +65,7 @@ public class TicketConfirmationServlet extends HttpServlet {
             if(ticket.getTicketType().equals(TicketType.GDPR_DATA_REQUEST.getId())) {
                 processDataRequest(resp, ticket.getUserId());
             }else if(ticket.getTicketType().equals(TicketType.EMAIL_CHANGE.getId())){
-                processEmailChangeRequest(ticket);
+                processEmailChangeRequest(ticket, resp);
             }
             ticketService.delete(ticket.getId());
         } catch (SystemException | IOException e) {
@@ -107,10 +108,11 @@ public class TicketConfirmationServlet extends HttpServlet {
         }
     }
 
-    private void processEmailChangeRequest(SystemTicket ticket) throws IllegalStateException, SystemException{
+    private void processEmailChangeRequest(SystemTicket ticket, HttpServletResponse resp) throws IllegalStateException, SystemException, IOException {
         if(LocalDateTime.now().isAfter(ticket.getExpireDate())){
             ticketService.delete(ticket.getId());
-            throw new IllegalStateException("The email change request ticket with ID '".concat(ticket.getId().toString()).concat("' has expired and as such the request could not be fulfilled."));
+            resp.sendError(Response.Status.GONE.getStatusCode(), "The email change request ticket with ID '".concat(ticket.getId().toString()).concat("' has expired and as such the request could not be fulfilled."));
+            return;
         }
         SystemUser user = userService.getUserById(ticket.getUserId()).orElseThrow(() -> new IllegalStateException("No user found"));
         user.setUserEmail(ticket.getData());
