@@ -42,6 +42,11 @@ interface EmptyProps {
     emptyActionLabel?: string,
 }
 
+export interface DeleteParams {
+    tenantId: string,
+    userId: string
+}
+
 export interface PaginatedTableProps<T> {
     tableHeader: string,
     tableVariant?: 'embedded' | 'container' | 'stacked' | 'full-page'

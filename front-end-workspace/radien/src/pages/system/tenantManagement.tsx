@@ -1,7 +1,7 @@
 import React, {useContext, useState} from "react";
 import {RadienModel, Tenant} from "radien";
 import axios from "axios";
-import {PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
+import {DeleteParams, PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
 import {Box, TableProps} from "@cloudscape-design/components";
 import dynamic from "next/dynamic";
 import {QueryKeys} from "@/consts";
@@ -105,10 +105,9 @@ export default function TenantManagement() {
         });
     }
 
-    // @ts-ignore
-    const deleteTenant = async ({tenantId, userId}) => {
+    const deleteTenant = async (data: DeleteParams) => {
        try {
-           await axios.delete(`/api/tenant/delete/${tenantId}`);
+           await axios.delete(`/api/tenant/delete/${data.tenantId}`);
            addSuccessMessage("Tenant deleted successfully");
        } catch (e) {
            addErrorMessage("Failed to delete tenant");
