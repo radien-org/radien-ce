@@ -14,8 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -33,28 +33,25 @@ public class EmailNotificationRESTServiceClientTest {
     @Mock
     private ClientServiceUtil clientServiceUtil;
 
-    @Test(expected = SystemException.class)
-    public void testNotifyCurrentUserException() throws MalformedURLException, SystemException {
-        when(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_NOTIFICATIONMANAGEMENT))
-                .thenReturn("http://a.url.com");
-        when(clientServiceUtil.getEmailNotificationResourceClient(anyString()))
-                .thenThrow(new MalformedURLException());
+    @Test
+    public void testNotify() throws SystemException, MalformedURLException {
+        Response response = mock(Response.class);
+        EmailNotificationResourceClient mockClient = mock(EmailNotificationResourceClient.class);
 
-        client.notifyCurrentUser("", "", new HashMap<>());
+        when(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_NOTIFICATIONMANAGEMENT)).thenReturn("http://a.url.com");
+        when(clientServiceUtil.getEmailNotificationResourceClient(anyString())).thenReturn(mockClient);
+        when(mockClient.notify(anyString(), anyString(), anyString(), any())).thenReturn(response);
+        when(response.getStatus()).thenReturn(Response.Status.OK.getStatusCode());
+
+        assertTrue(client.notify("", "", "", new HashMap<>()));
     }
 
-    @Test
-    public void testNotifyCurrentUser() throws MalformedURLException, SystemException {
-        EmailNotificationResourceClient mockClient = mock(EmailNotificationResourceClient.class);
-        Response mockResponse = mock(Response.class);
-        when(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_NOTIFICATIONMANAGEMENT))
-                .thenReturn("http://a.url.com");
-        when(clientServiceUtil.getEmailNotificationResourceClient(anyString()))
-                .thenReturn(mockClient);
-        when(mockClient.notifyCurrentUser(anyString(), anyString(), any())).thenReturn(mockResponse);
-        when(mockResponse.getStatus()).thenReturn(200);
+    @Test(expected = SystemException.class)
+    public void testNotifyException() throws SystemException, MalformedURLException {
+        when(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_NOTIFICATIONMANAGEMENT)).thenReturn("http://a.url.com");
+        when(clientServiceUtil.getEmailNotificationResourceClient(anyString())).thenThrow(MalformedURLException.class);
 
-        assertEquals(true, client.notifyCurrentUser("", "", new HashMap<>()));
+        client.notify("", "", "", new HashMap<>());
     }
 
     /**

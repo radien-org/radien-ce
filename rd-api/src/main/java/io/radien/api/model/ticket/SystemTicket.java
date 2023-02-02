@@ -13,10 +13,7 @@ package io.radien.api.model.ticket;
 
 import io.radien.api.Model;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public interface SystemTicket extends Model {
 
@@ -24,7 +21,7 @@ public interface SystemTicket extends Model {
 
     public Long getTicketType();
 
-    public LocalDate getExpireDate();
+    public LocalDateTime getExpireDate();
 
     public String getToken();
 
@@ -38,6 +35,6 @@ public interface SystemTicket extends Model {
 
     public void setData(String data);
 
-    public void setExpireDate(LocalDate expireDate);
+    public void setExpireDate(LocalDateTime expireDate);
 
 }

@@ -1,15 +1,12 @@
 package io.radien.ms.notificationmanagement.service;
 
 
-import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.mail.MailServiceAccess;
-import io.radien.api.service.mail.model.Mail;
 import io.radien.exception.BadRequestException;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.ms.ecm.client.services.ContentRESTServiceClient;
-import io.radien.ms.email.lib.MailTemplate;
 import java.util.HashMap;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,7 +17,6 @@ import org.mockito.junit.MockitoRule;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -36,45 +32,30 @@ public class EmailNotificationBusinessServiceTest {
     public ContentRESTServiceClient contentService;
 
     @Test(expected = BadRequestException.class)
-    public void testNotifyUserIsNull() {
-        businessService.notifyUser(null, "", "", new HashMap<>());
+    public void testNotifyEmailIsNull() {
+        businessService.notify(null, "", "", new HashMap<>());
     }
 
     @Test(expected = BadRequestException.class)
-    public void testNotifyUserNoEmail() {
-        SystemUser user = mock(SystemUser.class);
-        when(user.getUserEmail()).thenReturn("");
-
-        businessService.notifyUser(user, "", "", new HashMap<>());
+    public void testNotifyNoEmail() {
+        businessService.notify("", "", "", new HashMap<>());
     }
 
     @Test(expected = NotFoundException.class)
-    public void testNotifyUserNoContent() throws SystemException {
-        SystemUser user = mock(SystemUser.class);
-        when(user.getUserEmail()).thenReturn("userEmail");
+    public void testNotifyNoContent() throws SystemException {
         when(contentService.getByViewIdAndLanguage(anyString(), anyString())).thenReturn(null);
-
-        businessService.notifyUser(user, "viewId", "en", new HashMap<>());
+        businessService.notify("e@mail.com", "viewId", "en", new HashMap<>());
     }
 
     @Test
-    public void testNotifyUser() throws SystemException {
-        SystemUser user = mock(SystemUser.class);
-        when(user.getUserEmail()).thenReturn("userEmail");
-        when(contentService.getByViewIdAndLanguage(anyString(), anyString())).thenReturn(mock(EnterpriseContent.class));
-        when(mailService.create(any(SystemUser.class), any(MailTemplate.class))).thenReturn(mock(Mail.class));
-
-        assertTrue(businessService.notifyUser(user, "viewId", "en", new HashMap<>()));
-    }
-
-    @Test
-    public void testNotifyUserFail() throws SystemException {
-        SystemUser user = mock(SystemUser.class);
-        when(user.getUserEmail()).thenReturn("userEmail");
+    public void testNotifyFail() throws SystemException {
         when(contentService.getByViewIdAndLanguage(anyString(), anyString())).thenThrow(new SystemException("ERROR"));
-
-        assertFalse(businessService.notifyUser(user, "viewId", "en", new HashMap<>()));
+        assertFalse(businessService.notify("e@mail.com", "viewId", "en", new HashMap<>()));
     }
 
-
+    @Test
+    public void testNotify() throws SystemException {
+        when(contentService.getByViewIdAndLanguage(anyString(), anyString())).thenReturn(mock(EnterpriseContent.class));
+        assertTrue(businessService.notify("e@mail.com", "", "", new HashMap<>()));
+    }
 }

@@ -29,7 +29,6 @@ import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
-import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.security.UserSession;
 import java.util.ArrayList;
@@ -45,7 +44,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.Flash;
 import javax.faces.event.ComponentSystemEvent;
 
-import javax.inject.Inject;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -392,8 +390,9 @@ public class UserProfileManagerTest {
     @Test
     public void testUpdateProfile() {
         systemUser.setFirstname("firstname-update");
+        userProfileManager.getClonedLogInUser().setUserEmail("email-update");
         doReturn(true).when(userRESTServiceAccess).updateUser(systemUser);
-
+        when(userSession.getUser()).thenReturn(systemUser);
         assertEquals("pretty:index", userProfileManager.updateProfile(systemUser,true));
     }
 
@@ -812,7 +811,7 @@ public class UserProfileManagerTest {
         when(userSession.getLanguage()).thenReturn("en");
 
         userProfileManager.sendDataRequestOptIn();
-        verify(mailService).notifyCurrentUser(anyString(), anyString(), any());
+        verify(mailService).notify(anyString(), anyString(), anyString(), any());
     }
 
     /**
@@ -821,6 +820,7 @@ public class UserProfileManagerTest {
      */
     @Test
     public void testLockUserProcessing(){
+        userProfileManager.getClonedLogInUser().setUserEmail("e@mail.com");
         when(userSession.getUser()).then(user -> systemUser);
         doReturn(true).when(userRESTServiceAccess).updateUser(systemUser);
 
@@ -837,7 +837,7 @@ public class UserProfileManagerTest {
 
         when(userSession.getLanguage()).thenReturn("en");
 
-        when(mailService.notifyCurrentUser(anyString(),anyString(),any())).thenThrow(new SystemException());
+        when(mailService.notify(anyString(), anyString(),anyString(),any())).thenThrow(new SystemException());
         userProfileManager.sendDataRequestOptIn();
 
         ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
@@ -847,5 +847,64 @@ public class UserProfileManagerTest {
         assertEquals(FacesMessage.SEVERITY_ERROR, captured.getSeverity());
         assertEquals("request_data_error", captured.getSummary());
 
+    }
+
+    @Test
+    public void testSendEmailModificationConfirmation() throws SystemException {
+        systemUser.setUserEmail("old@mail.com");
+        when(userSession.getUser()).thenReturn(systemUser);
+        userProfileManager.setClonedLogInUser(new User((User) systemUser));
+        userProfileManager.getClonedLogInUser().setUserEmail("new@mail.com");
+
+        when(userSession.getLanguage()).thenReturn("en");
+
+        userProfileManager.sendEmailModificationConfirmation();
+        verify(mailService).notify(anyString(), anyString(), anyString(), any());
+    }
+
+    @Test
+    public void testSendEmailModificationConfirmationNoEdit() throws SystemException {
+        systemUser.setUserEmail("old@mail.com");
+        when(userSession.getUser()).thenReturn(systemUser);
+        userProfileManager.setClonedLogInUser(new User((User) systemUser));
+        userProfileManager.getClonedLogInUser().setUserEmail(systemUser.getUserEmail());
+
+        when(userSession.getLanguage()).thenReturn("en");
+
+        userProfileManager.sendEmailModificationConfirmation();
+        verify(mailService, never()).notify(anyString(), anyString(), anyString(), any());
+    }
+
+    @Test(expected = Exception.class)
+    public void testSendEmailModificationConfirmationException() throws SystemException {
+        systemUser.setUserEmail("old@mail.com");
+        when(userSession.getUser()).thenReturn(systemUser);
+        userProfileManager.setClonedLogInUser(new User((User) systemUser));
+        userProfileManager.getClonedLogInUser().setUserEmail(systemUser.getUserEmail());
+
+        when(userSession.getLanguage()).thenReturn("en");
+        when(mailService.notify(anyString(), anyString(), anyString(), any())).thenThrow(Exception.class);
+
+        userProfileManager.sendEmailModificationConfirmation();
+    }
+
+    @Test
+    public void testSetEmailControlEnabled(){
+        boolean enabled = userProfileManager.isEmailControlEnabled();
+        userProfileManager.setEmailControlEnabled(!enabled);
+        assertNotEquals(userProfileManager.isEmailControlEnabled(), enabled);
+    }
+
+    @Test
+    public void testIsEmailControlEnabled(){
+        userProfileManager.setEmailControlEnabled(true);
+        assertTrue(userProfileManager.isEmailControlEnabled());
+    }
+
+    @Test
+    public void testEmailControlToggle(){
+        userProfileManager.setEmailControlEnabled(false);
+        userProfileManager.emailControlToggle();
+        assertTrue(userProfileManager.isEmailControlEnabled());
     }
 }

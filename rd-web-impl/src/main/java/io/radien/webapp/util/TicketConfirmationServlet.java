@@ -14,6 +14,7 @@ import io.radien.exception.SystemException;
 import io.radien.ms.ticketmanagement.client.entities.TicketType;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -23,6 +24,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
+
+import io.radien.webapp.security.UserSession;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +40,9 @@ public class TicketConfirmationServlet extends HttpServlet {
     private TicketRESTServiceAccess ticketService;
     @Inject
     private UserRESTServiceAccess userService;
+
+    @Inject
+    private UserSession userSession;
     @Inject
     private TenantRoleUserRESTServiceAccess tenantRoleUserService;
     @Inject
@@ -57,6 +63,8 @@ public class TicketConfirmationServlet extends HttpServlet {
             SystemTicket ticket = ticketService.getTicketByToken(ticketUuid);
             if(ticket.getTicketType().equals(TicketType.GDPR_DATA_REQUEST.getId())) {
                 processDataRequest(resp, ticket.getUserId());
+            }else if(ticket.getTicketType().equals(TicketType.EMAIL_CHANGE.getId())){
+                processEmailChangeRequest(ticket);
             }
             ticketService.delete(ticket.getId());
         } catch (SystemException | IOException e) {
@@ -97,5 +105,16 @@ public class TicketConfirmationServlet extends HttpServlet {
             log.error(e.getMessage());
             resp.sendError(500, "Could not retrieve information");
         }
+    }
+
+    private void processEmailChangeRequest(SystemTicket ticket) throws IllegalStateException, SystemException{
+        if(LocalDateTime.now().isAfter(ticket.getExpireDate())){
+            ticketService.delete(ticket.getId());
+            throw new IllegalStateException("The email change request ticket with ID '".concat(ticket.getId().toString()).concat("' has expired and as such the request could not be fulfilled."));
+        }
+        SystemUser user = userService.getUserById(ticket.getUserId()).orElseThrow(() -> new IllegalStateException("No user found"));
+        user.setUserEmail(ticket.getData());
+        userService.updateUser(user);
+        userSession.setUser(user);
     }
 }

@@ -31,7 +31,7 @@ import org.junit.Test;
 
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -108,7 +108,7 @@ public class TicketServiceTest {
         c.setToken(null);
         Exception exception = assertThrows(TicketException.class, () ->
                 ticketServiceAccess.update(new TicketEntity(new io.radien.ms.ticketmanagement.client.entities.Ticket(
-                        1L, 2L, LocalDate.now(), null, "data"))));
+                        1L, 2L, LocalDateTime.now(), null, "data"))));
         String expectedMessage = GenericErrorCodeMessage.TICKET_FIELD_NOT_PROVIDED.toString(SystemVariables.TOKEN.getFieldName());
         String actualMessage = exception.getMessage();
 
@@ -135,7 +135,7 @@ public class TicketServiceTest {
     public void testGetById() throws SystemException, TicketException, UniquenessConstraintException {
         String data = "myData";
         SystemTicket c = new TicketEntity(new io.radien.ms.ticketmanagement.client.entities.Ticket(
-                1L, 2L, LocalDate.now(), RandomStringUtils.random(12, true, true), data));
+                1L, 2L, LocalDateTime.now(), RandomStringUtils.random(12, true, true), data));
         ticketServiceAccess.create(c);
         SystemTicket result = ticketServiceAccess.get(c.getId());
         assertNotNull(result);
@@ -280,7 +280,7 @@ public class TicketServiceTest {
      */
     @Test
     public void testUpdateDuplicated() {
-        TicketEntity duplicated = new TicketEntity(new io.radien.ms.ticketmanagement.client.entities.Ticket(2L, 2L, LocalDate.now(), systemTicket.getToken(), "dataaaa"));
+        TicketEntity duplicated = new TicketEntity(new io.radien.ms.ticketmanagement.client.entities.Ticket(2L, 2L, LocalDateTime.now(), systemTicket.getToken(), "dataaaa"));
         Exception exception = assertThrows(UniquenessConstraintException.class, () ->
                 ticketServiceAccess.update(duplicated));
         String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString(SystemVariables.TOKEN.getFieldName());
@@ -291,7 +291,7 @@ public class TicketServiceTest {
 
     @Test
     public void testCreateDuplicated() {
-        TicketEntity duplicated = new TicketEntity(new io.radien.ms.ticketmanagement.client.entities.Ticket(2L, 2L, LocalDate.now(), systemTicket.getToken(), "dataaaa"));
+        TicketEntity duplicated = new TicketEntity(new io.radien.ms.ticketmanagement.client.entities.Ticket(2L, 2L, LocalDateTime.now(), systemTicket.getToken(), "dataaaa"));
         Exception exception = assertThrows(UniquenessConstraintException.class, () ->
                 ticketServiceAccess.create(duplicated));
         String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString(SystemVariables.TOKEN.getFieldName());
@@ -303,7 +303,7 @@ public class TicketServiceTest {
     @Test
     public void testCreateEmptyTokenTicket() {
         Exception exception = assertThrows(TicketException.class, () ->
-                ticketServiceAccess.create(new TicketEntity(new io.radien.ms.ticketmanagement.client.entities.Ticket(2L, 2L, LocalDate.now(), null, "dataaaa"))));
+                ticketServiceAccess.create(new TicketEntity(new io.radien.ms.ticketmanagement.client.entities.Ticket(2L, 2L, LocalDateTime.now(), null, "dataaaa"))));
         String expectedMessage = GenericErrorCodeMessage.TICKET_FIELD_NOT_PROVIDED.toString(SystemVariables.TOKEN.getFieldName());
         String actualMessage = exception.getMessage();
 

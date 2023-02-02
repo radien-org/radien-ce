@@ -47,10 +47,10 @@ public class EmailNotificationRESTServiceClient extends AuthorizationChecker imp
     }
 
     @Override
-    public boolean notifyCurrentUser(String notificationViewId, String language, Map<String, String> arguments) throws SystemException {
+    public boolean notify(String email, String notificationViewId, String language, Map<String, String> arguments) throws SystemException {
         try {
             EmailNotificationResourceClient client = getResourceClient();
-            Response response = client.notifyCurrentUser(notificationViewId, language, arguments);
+            Response response = client.notify(email, notificationViewId, language, arguments);
             return response.getStatus() == 200;
         } catch (MalformedURLException e){
             throw new SystemException(e.getMessage());

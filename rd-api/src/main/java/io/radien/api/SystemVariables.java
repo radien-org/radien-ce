@@ -55,6 +55,8 @@ public enum SystemVariables {
     ACCESS_TOKEN("accessToken", "Access Token"),
     REFRESH_TOKEN("refreshToken", "Refresh Token"),
     TOKEN("token", "Token"),
+
+    EXPIRATION_DATE("expireDate", "Expiration Date"),
     OLD_PASSWORD("oldPassword", "Old Password"),
     NEW_PASSWORD("newPassword", "New Password"),
     CONFIRM_NEW_PASSWORD("confirmNewPassword", "Confirm New Password"),

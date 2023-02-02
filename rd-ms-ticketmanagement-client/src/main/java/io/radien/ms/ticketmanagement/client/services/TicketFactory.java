@@ -30,7 +30,7 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -46,12 +46,12 @@ public class TicketFactory {
     private static Logger log = LoggerFactory.getLogger(TicketFactory.class);
 
     public static Ticket create(Long userId, String token, Long type,
-                                String data, Long createdUser){
+                                String data, LocalDateTime expirationDate, Long createdUser){
         Ticket ticket = new Ticket();
         ticket.setUserId(userId);
         ticket.setToken(token);
         ticket.setTicketType(type);
-        ticket.setExpireDate(setExpirationDate(type));
+        ticket.setExpireDate(expirationDate);
         ticket.setData(data);
 
         ticket.setCreateUser(createdUser);
@@ -60,6 +60,10 @@ public class TicketFactory {
         ticket.setLastUpdate(now);
         ticket.setCreateDate(now);
         return ticket;
+    }
+
+    public static Ticket create(Long userId, String token, Long type, String data, Long createdUser){
+        return create(userId, token, type, data, setExpirationDate(type), createdUser);
     }
 
     /**
@@ -75,6 +79,7 @@ public class TicketFactory {
         Long userId = FactoryUtilService.getLongFromJson(SystemVariables.USER_ID.getFieldName(), jsonTicket);
         Long ticketTypeId = FactoryUtilService.getLongFromJson("ticketType", jsonTicket);
         String token = FactoryUtilService.getStringFromJson(SystemVariables.TOKEN.getFieldName(), jsonTicket);
+        LocalDateTime expirationDate = FactoryUtilService.getLocalDateTimeFromJson(SystemVariables.EXPIRATION_DATE.getFieldName(), jsonTicket);
         String data = FactoryUtilService.getStringFromJson("data", jsonTicket);
 
 
@@ -83,7 +88,7 @@ public class TicketFactory {
         String createDate = FactoryUtilService.getStringFromJson("createDate", jsonTicket);
         String lastUpdate = FactoryUtilService.getStringFromJson("lastUpdate", jsonTicket);
 
-        Ticket ticket = create(userId, token, ticketTypeId, data, createUser);
+        Ticket ticket = create(userId, token, ticketTypeId, data, expirationDate, createUser);
 
         ticket.setId(id);
 
@@ -130,10 +135,9 @@ public class TicketFactory {
         return ticketType;
     }
 
-    private static LocalDate setExpirationDate(Long typeId){
+    private static LocalDateTime setExpirationDate(Long typeId){
         TicketType ticketType = getTypeFromId(typeId);
-
-        return LocalDate.now().plusDays(ticketType.getExpirationPeriod());
+        return LocalDateTime.now().plusMinutes(ticketType.getExpirationPeriod());
     }
 
     /**

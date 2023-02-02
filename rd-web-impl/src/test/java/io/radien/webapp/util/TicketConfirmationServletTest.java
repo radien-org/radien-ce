@@ -13,6 +13,7 @@ import io.radien.ms.ticketmanagement.client.entities.Ticket;
 import io.radien.ms.ticketmanagement.client.entities.TicketType;
 import io.radien.ms.usermanagement.client.entities.User;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
+
+import io.radien.webapp.security.UserSession;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -42,6 +45,8 @@ public class TicketConfirmationServletTest {
     private TicketRESTServiceAccess ticketService;
     @Mock
     private UserRESTServiceAccess userService;
+    @Mock
+    private UserSession userSession;
     @Mock
     private TenantRoleUserRESTServiceAccess tenantRoleUserService;
     @Mock
@@ -119,5 +124,43 @@ public class TicketConfirmationServletTest {
 
         servlet.doGet(req, res);
         verify(res).sendError(500, "Could not retrieve information");
+    }
+
+    @Test
+    public void testProcessEmailChangeRequest() throws SystemException {
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        HttpServletResponse res = mock(HttpServletResponse.class);
+
+        SystemUser user = new User();
+        user.setId(1L);
+
+        SystemTicket ticket = new Ticket();
+        ticket.setId(2L);
+        ticket.setUserId(user.getId());
+        ticket.setExpireDate(LocalDateTime.MAX);
+        ticket.setTicketType(TicketType.EMAIL_CHANGE.getId());
+
+        when(req.getParameter("ticket")).thenReturn("ticketUuid");
+        when(ticketService.getTicketByToken("ticketUuid")).thenReturn(ticket);
+        when(userService.getUserById(ticket.getUserId())).thenReturn(Optional.of(user));
+
+        servlet.doGet(req, res);
+        verify(userService).updateUser(user);
+        verify(userSession).setUser(user);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testProcessEmailChangeRequestExpired() throws SystemException {
+        SystemTicket ticket = new Ticket();
+        ticket.setId(1L);
+        ticket.setExpireDate(LocalDateTime.of(1, 1, 1, 1, 1));
+        ticket.setTicketType(TicketType.EMAIL_CHANGE.getId());
+
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        HttpServletResponse res = mock(HttpServletResponse.class);
+        when(req.getParameter("ticket")).thenReturn("ticketUuid");
+        when(ticketService.getTicketByToken("ticketUuid")).thenReturn(ticket);
+
+        servlet.doGet(req, res);
     }
 }

@@ -86,6 +86,8 @@ public class UserProfileManager extends AbstractManager {
     private SystemUser clonedLogInUser;
 
     private UserPasswordChanging changing = new UserPasswordChanging();
+
+    private boolean emailControlEnabled = false;
     private String confirmationInfo;
 
     /**
@@ -103,6 +105,7 @@ public class UserProfileManager extends AbstractManager {
         } catch (Exception e){
             handleError(e, JSFUtil.getMessage("rd_retrieving_logged_user_error"));
         }
+        setEmailControlEnabled(false);
     }
 
     /**
@@ -136,6 +139,8 @@ public class UserProfileManager extends AbstractManager {
         {
             try{
                 if(updateUserProfile != null && updateUserProfile.getId() != null) {
+                    sendEmailModificationConfirmation();
+                    updateUserProfile.setUserEmail(userSession.getUser().getUserEmail());
                     boolean isUpdated = userService.updateUser(updateUserProfile);
 
                     if(isUpdated){
@@ -245,6 +250,25 @@ public class UserProfileManager extends AbstractManager {
         return DataModelEnum.PRETTY_INDEX.getValue();
     }
 
+    public void sendEmailModificationConfirmation(){
+        setEmailControlEnabled(false);
+        String currentEmail = userSession.getUser().getUserEmail();
+        String newEmail = clonedLogInUser.getUserEmail();
+        if(newEmail.equalsIgnoreCase(currentEmail)){
+            return;
+        }
+        try {
+            String url = JSFUtil.getBaseUrl().orElse("#").concat("/confirmData?ticket=").concat(createTicket(TicketType.EMAIL_CHANGE, newEmail));
+            Map<String, String> args = new HashMap<>();
+            args.put("currentEmail", currentEmail);
+            args.put("newEmail", newEmail);
+            args.put("confirmationURL", url);
+            mailService.notify(newEmail, "email-3", userSession.getLanguage(), args);
+        } catch (Exception e) {
+            log.info("An exception has occurred when attempting to send an email change request. Stack trace: {}", e.toString());
+        }
+    }
+
     public void sendDataRequestOptIn(){
         try {
             String ticketUuid = createDataRequestTicket();
@@ -257,7 +281,7 @@ public class UserProfileManager extends AbstractManager {
             argumentsMap.put("portalUrl", "radien");
             argumentsMap.put("targetUrl", referenceUrl);
 
-            mailService.notifyCurrentUser(emailViewId, userSession.getLanguage(), argumentsMap);
+            mailService.notify(clonedLogInUser.getUserEmail(), emailViewId, userSession.getLanguage(), argumentsMap);
         } catch (SystemException e) {
             log.info("A exception occured while trying to request data for the user {}. The exception message is: {}", userSession.getUserId(), e.getMessage());
             handleMessage(FacesMessage.SEVERITY_ERROR,
@@ -267,8 +291,12 @@ public class UserProfileManager extends AbstractManager {
     }
 
     private String createDataRequestTicket() throws SystemException {
+        return createTicket(TicketType.GDPR_DATA_REQUEST, "");
+    }
+
+    private String createTicket(TicketType type, String data) throws SystemException{
         UUID uuid = UUID.randomUUID();
-        SystemTicket ticket = TicketFactory.create(clonedLogInUser.getId(), uuid.toString(), TicketType.GDPR_DATA_REQUEST.getId(), "", clonedLogInUser.getId());
+        SystemTicket ticket = TicketFactory.create(clonedLogInUser.getId(), uuid.toString(), type.getId(), data, clonedLogInUser.getId());
         ticketService.create(ticket);
         return uuid.toString();
     }
@@ -349,6 +377,29 @@ public class UserProfileManager extends AbstractManager {
      */
     public void setConfirmationInfo(String confirmationInfo) {
         this.confirmationInfo = confirmationInfo;
+    }
+
+    /**
+     * Getter method used by the frontend to verify whether the email field is 'locked'.
+     * @return boolean value for emailControlEnabled
+     */
+    public boolean isEmailControlEnabled(){
+        return emailControlEnabled;
+    }
+
+    /**
+     * Setter method used to declare whether the email field in the frontend is open for editing.
+     * @param enabled boolean value for emailControlEnabled
+     */
+    public void setEmailControlEnabled(boolean enabled){
+        emailControlEnabled = enabled;
+    }
+
+    /**
+     * Toggles whether the email field in the frontend is open for editing.
+     */
+    public void emailControlToggle(){
+        emailControlEnabled = !emailControlEnabled;
     }
 
     /**

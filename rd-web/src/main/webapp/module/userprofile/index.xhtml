@@ -6,6 +6,9 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 template="/WEB-INF/templates/tpl_oaf.xhtml">
+	<f:metadata>
+		<f:viewAction action="#{userProfileManager.init()}"/>
+	</f:metadata>
     <ui:define name="content">
 		<link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
 		<h:form id="userProfileManager" styleClass="tableContainer">
@@ -33,7 +36,10 @@
 								<b:inputText id="userLogon" value="#{userProfileManager.clonedLogInUser.logon}" disabled="false" span="6"/>
 
 								<h:outputLabel value="#{msg.email}"/>
-								<b:inputText id="userEmail" value="#{userProfileManager.clonedLogInUser.userEmail}" disabled="true" span="6"/>
+								<h:panelGroup>
+									<b:inputText id="userEmail" styleClass="userEmail" value="#{userProfileManager.clonedLogInUser.userEmail}" disabled="#{!userProfileManager.emailControlEnabled}" span="6"/>
+									<h:commandLink value="#{msg.rd_user_email_update}" action="#{userProfileManager.emailControlToggle()}" update="@form" rendered="#{!userProfileManager.emailControlEnabled}"/>
+								</h:panelGroup>
 
 								<h:outputLabel value="#{msg.sub}"/>
 								<b:inputText id="userSub" value="#{userProfileManager.clonedLogInUser.sub}" disabled="true" span="6"/>

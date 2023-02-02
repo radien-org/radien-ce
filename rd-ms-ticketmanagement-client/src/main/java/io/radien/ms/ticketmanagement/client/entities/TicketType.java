@@ -17,9 +17,9 @@ import java.util.Arrays;
 
 public enum TicketType implements SystemTicketType {
 
-    EMAIL_CHANGE(1L, "email_change", 30),
-    REFERENCE_LINK(2L, "reference_link", 10),
-    GDPR_DATA_REQUEST(3L, "gdpr_data_request", 24);
+    EMAIL_CHANGE(1L, "email_change", 5),
+    REFERENCE_LINK(2L, "reference_link", 14400),
+    GDPR_DATA_REQUEST(3L, "gdpr_data_request", 34560);
 
     TicketType(Long id, String type, int expirationPeriod){
         this.id = id;

@@ -20,8 +20,8 @@ public class EmailNotificationResource extends AuthorizationChecker implements E
     private EmailNotificationBusinessServiceAccess emailNotificationService;
 
     @POST
-    public Response notifyCurrentUser(@QueryParam("viewId")String notificationViewId, @QueryParam("language") String language, Map<String, String> args) {
-        return Response.ok(emailNotificationService.notifyUser(getInvokerUser(), notificationViewId, language, args)).build();
+    public Response notify(@QueryParam("email") String email, @QueryParam("viewId")String notificationViewId, @QueryParam("language") String language, Map<String, String> args) {
+        return Response.ok(emailNotificationService.notify(email, notificationViewId, language, args)).build();
     }
 
 }

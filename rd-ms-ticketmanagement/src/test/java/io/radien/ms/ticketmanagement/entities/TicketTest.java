@@ -17,7 +17,7 @@ package io.radien.ms.ticketmanagement.entities;
 
 import org.junit.Test;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.junit.Assert.assertEquals;
 
@@ -43,8 +43,8 @@ public class TicketTest {
         ticket.setToken("myToken1");
         ticket2.setToken("myToken2");
 
-        ticket.setExpireDate(LocalDate.of(1900,1,1));
-        ticket2.setExpireDate(LocalDate.of(1900,1,4));
+        ticket.setExpireDate(LocalDateTime.of(1900,1, 1, 1, 1));
+        ticket2.setExpireDate(LocalDateTime.of(1900,1,4, 1, 1));
 
     }
 
@@ -80,8 +80,8 @@ public class TicketTest {
 
     @Test
     public void getExpireDate() {
-        assertEquals(LocalDate.of(1900,1,1), ticket.getExpireDate());
-        assertEquals(LocalDate.of(1900,1,4), ticket2.getExpireDate());
+        assertEquals(LocalDateTime.of(1900,1,1, 1, 1), ticket.getExpireDate());
+        assertEquals(LocalDateTime.of(1900,1,4, 1, 1), ticket2.getExpireDate());
     }
 
 }

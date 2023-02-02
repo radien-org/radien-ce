@@ -18,7 +18,7 @@ import javax.persistence.TableGenerator;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Column;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "TIC01")
@@ -52,7 +52,7 @@ public class TicketEntity extends io.radien.ms.ticketmanagement.client.entities.
 
     @Column
     @Override
-    public LocalDate getExpireDate() {
+    public LocalDateTime getExpireDate() {
         return super.getExpireDate();
     }
 

@@ -21,6 +21,6 @@ import java.util.Map;
 
 public interface EmailNotificationRESTServiceAccess extends Appframeable {
 
-    boolean notifyCurrentUser(String notificationViewId, String language, Map<String, String> arguments) throws SystemException;
+    boolean notify(String email, String notificationViewId, String language, Map<String, String> arguments) throws SystemException;
 
 }

@@ -18,5 +18,5 @@ import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 public interface EmailNotificationResourceClient {
 
     @POST
-    Response notifyCurrentUser(@QueryParam("viewId")String notificationViewId, @QueryParam("language") String language, Map<String, String> args);
+    Response notify(@QueryParam("email") String email, @QueryParam("viewId") String notificationViewId, @QueryParam("language") String language, Map<String, String> args);
 }

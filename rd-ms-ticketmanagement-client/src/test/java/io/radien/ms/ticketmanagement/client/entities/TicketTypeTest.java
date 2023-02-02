@@ -32,7 +32,7 @@ public class TicketTypeTest extends TestCase {
     @Test
     public void testGetExpirationPeriod() {
         TicketType ticketType = TicketType.EMAIL_CHANGE;
-        assertEquals(java.util.Optional.of(30), java.util.Optional.of(ticketType.getExpirationPeriod()));
+        assertEquals(java.util.Optional.of(5), java.util.Optional.of(ticketType.getExpirationPeriod()));
     }
 
     @Test

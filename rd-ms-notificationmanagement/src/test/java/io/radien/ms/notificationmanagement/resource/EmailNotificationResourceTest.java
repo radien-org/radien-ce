@@ -1,10 +1,10 @@
 package io.radien.ms.notificationmanagement.resource;
 
 import io.radien.api.service.notification.email.EmailNotificationBusinessServiceAccess;
-import io.radien.ms.notificationmanagement.service.EmailNotificationBusinessService;
 import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -28,8 +28,8 @@ public class EmailNotificationResourceTest {
     private HttpServletRequest servletRequest;
 
     @Test
-    public void testNotifyCurrentUser() {
-        when(businessService.notifyUser(any(), anyString(), anyString(), any())).thenReturn(true);
-        assertEquals(200, notificationResource.notifyCurrentUser("", "", new HashMap<>()).getStatus());
+    public void testNotify(){
+        when(businessService.notify(anyString(), anyString(), anyString(), any())).thenReturn(true);
+        assertEquals(Response.Status.OK.getStatusCode(), notificationResource.notify("e@mail.com", "", "", new HashMap<>()).getStatus());
     }
 }

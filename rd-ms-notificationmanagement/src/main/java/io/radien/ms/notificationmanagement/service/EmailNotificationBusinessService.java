@@ -1,6 +1,5 @@
 package io.radien.ms.notificationmanagement.service;
 
-import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.mail.MailServiceAccess;
 import io.radien.api.service.mail.model.Mail;
@@ -26,11 +25,9 @@ public class EmailNotificationBusinessService implements EmailNotificationBusine
     private ContentRESTServiceClient contentService;
 
     @Override
-    public boolean notifyUser(SystemUser user, String notificationViewId, String language, Map<String, String> arguments) {
-        if(user == null) {
-            throw new BadRequestException("Current user not set");
-        } else if(StringUtils.isEmpty(user.getUserEmail())) {
-            throw new BadRequestException("User's email incorrectly configured");
+    public boolean notify(String email, String notificationViewId, String language, Map<String, String> arguments) {
+        if(email == null || StringUtils.isEmpty(email.trim())) {
+            throw new BadRequestException("Email not defined.");
         }
         EnterpriseContent emailContent = null;
         try {
@@ -38,7 +35,7 @@ public class EmailNotificationBusinessService implements EmailNotificationBusine
             if(emailContent == null) {
                 throw new NotFoundException(MessageFormat.format("No email found for view id {0}", notificationViewId));
             }
-            Mail optInEmail = mailService.create(user, new MailTemplate(emailContent, arguments));
+            Mail optInEmail = mailService.create(email, new MailTemplate(emailContent, arguments));
             mailService.send(optInEmail);
             return true;
         } catch (SystemException e) {

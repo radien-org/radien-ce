@@ -13,19 +13,19 @@ package io.radien.ms.ticketmanagement.client.entities;
 
 import io.radien.api.model.AbstractModel;
 import io.radien.api.model.ticket.SystemTicket;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Ticket extends AbstractModel implements SystemTicket {
 
     private Long userId;
     private Long ticketType;
-    private LocalDate expireDate;
+    private LocalDateTime expireDate;
     private String token;
     private String data;
 
     public Ticket(){}
 
-    public Ticket(Long userId, Long ticketType, LocalDate expireDate, String token, String data) {
+    public Ticket(Long userId, Long ticketType, LocalDateTime expireDate, String token, String data) {
         this.userId = userId;
         this.ticketType = ticketType;
         this.expireDate = expireDate;
@@ -52,7 +52,7 @@ public class Ticket extends AbstractModel implements SystemTicket {
     }
 
     @Override
-    public LocalDate getExpireDate() {
+    public LocalDateTime getExpireDate() {
         return expireDate;
     }
 
@@ -74,7 +74,7 @@ public class Ticket extends AbstractModel implements SystemTicket {
         this.ticketType = ticketType;
     }
 
-    public void setExpireDate(LocalDate expireDate) {
+    public void setExpireDate(LocalDateTime expireDate) {
         this.expireDate = expireDate;
     }
 

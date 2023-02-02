@@ -16,14 +16,13 @@
 package io.radien.ms.ticketmanagement.client.providers;
 
 import io.radien.ms.ticketmanagement.client.entities.Ticket;
+import io.radien.ms.ticketmanagement.client.entities.TicketType;
 import io.radien.ms.ticketmanagement.client.services.TicketFactory;
 import junit.framework.TestCase;
 import org.junit.Test;
 
-import javax.json.Json;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.time.LocalDate;
 
 /**
  * @author Rui Soares
@@ -44,16 +43,21 @@ public class TicketMessageBodyWriterTest extends TestCase {
 
     @Test
     public void testWriteTo() throws IOException {
+        TicketType ticketType = TicketType.getById(1L);
+        long userId = 2L;
+        long createUser = 3L;
+        Ticket ticket = TicketFactory.create(userId,"token", ticketType.getId(),null, createUser);
+
         String result = "{\"id\":null," +
-                "\"userId\":1," +
+                "\"userId\":" + ticket.getUserId() +  "," +
                 "\"token\":\"token\"," +
                 "\"data\":null," +
-                "\"ticketType\":1," +
-                "\"expireDate\":" + Json.createValue(LocalDate.now().plusDays(30).toString()) + "," +
-                "\"createUser\":1," +
-                "\"lastUpdateUser\":1}";
+                "\"ticketType\":" + ticketType.getId() + "," +
+                "\"expireDate\":\"" + ticket.getExpireDate() + "\"," +
+                "\"createUser\":" + ticket.getCreateUser() +  "," +
+                "\"lastUpdateUser\":" + ticket.getCreateUser() +  "}";
+
         TicketMessageBodyWriter target = new TicketMessageBodyWriter();
-        Ticket ticket = TicketFactory.create(1L,"token", 1L,null, 1L);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         target.writeTo(ticket,null,null,null, null,null, baos);
 
