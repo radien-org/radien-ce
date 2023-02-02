@@ -107,6 +107,7 @@ export default function TenantManagement() {
     }
 
 
+
     const deleteTenant = async (data: DeleteParams) => {
        try {
            await axios.delete(`/api/tenant/delete/${data.tenantId}`);
