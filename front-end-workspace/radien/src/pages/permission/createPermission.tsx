@@ -3,14 +3,19 @@ import Form from "@cloudscape-design/components/form";
 import SpaceBetween from "@cloudscape-design/components/space-between";
 import Button from "@cloudscape-design/components/button";
 import Header from "@cloudscape-design/components/header";
-import {Box, Container, FormField, Input, Select} from "@cloudscape-design/components";
+import {Box, Container, Input, Select} from "@cloudscape-design/components";
 import axios from "axios";
 import {useContext, useEffect, useState} from "react";
 import {Loader} from "@/components/Loader/Loader";
 import {RadienContext} from "@/context/RadienContextProvider";
 import {useQuery} from "react-query";
 import {OptionDefinition} from "@cloudscape-design/components/internal/components/option/interfaces";
+import dynamic from "next/dynamic";
 
+const FormField = dynamic(
+    () => import("@cloudscape-design/components/form-field"),
+    { ssr: false}
+);
 
 export default function createPermission() {
     const [name, setName] = useState("");

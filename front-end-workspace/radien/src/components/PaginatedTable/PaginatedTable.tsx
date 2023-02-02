@@ -1,3 +1,5 @@
+"use client"
+
 import React, {useContext, useState} from "react";
 import {Page, Permission, RadienModel} from "radien";
 import {AxiosResponse} from "axios";
@@ -9,10 +11,12 @@ import {
     Pagination,
     PaginationProps,
     SpaceBetween,
-    Table, TableProps
+    TableProps
 } from "@cloudscape-design/components";
 import {UseMutateFunction, useQuery} from "react-query";
 import {RadienContext} from "@/context/RadienContextProvider";
+import dynamic from "next/dynamic";
+import {TableForwardRefType} from "@cloudscape-design/components/table/interfaces";
 
 
 interface DeleteActionProps<T> {
@@ -54,6 +58,11 @@ export interface PaginatedTableProps<T> {
     emptyProps: EmptyProps,
 }
 
+const Table = dynamic(
+    () => import("@cloudscape-design/components/table"),
+    { ssr: false}
+) as TableForwardRefType
+
 export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
     const {
         tableHeader,
@@ -72,7 +81,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
     const [ selectedItem, setSelectedItem ] = useState<T>();
     const [currentPage, setCurrentPage ] = useState<number>(1);
     const [ viewModalVisible, setViewModalVisible ] = useState(false);
-    const { isLoading, data } = useQuery([queryKey, currentPage], () => getPaginated(currentPage, pageSize))
+    const { isLoading, data, refetch } = useQuery([queryKey, currentPage], () => getPaginated(currentPage, pageSize))
 
     const clickTargetUserPage = async (event: NonCancelableCustomEvent<PaginationProps.ChangeDetail>) => {
         let targetPage = event.detail.currentPageIndex;
@@ -83,6 +92,14 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
         if (createAction) {
             createAction();
         }
+    }
+
+    const onDelete = async () => {
+        if(deleteAction) {
+            await deleteAction({tenantId: selectedItem ? (selectedItem as RadienModel).id! : -1, userId: userInSession?.id});
+            await refetch();
+        }
+        setDeleteModalVisible(false);
     }
 
     return (
@@ -130,12 +147,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
                     <Box float="right">
                         <SpaceBetween direction="horizontal" size="xs">
                             <Button variant="link" onClick={() => setDeleteModalVisible(false)}>Cancel</Button>
-                            <Button variant="primary" onClick={() => {
-                                if(deleteAction) {
-                                    deleteAction({tenantId: selectedItem ? (selectedItem as RadienModel).id! : -1, userId: userInSession?.id});
-                                }
-                                setDeleteModalVisible(false)
-                            }}>Ok</Button>
+                            <Button variant="primary" onClick={() => onDelete()}>Ok</Button>
                         </SpaceBetween>
                     </Box>
                 }

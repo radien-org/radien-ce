@@ -1,20 +1,12 @@
-import React, {useContext, useState} from "react";
-import {RadienModel, Tenant} from "radien";
+import React, {useContext} from "react";
+import {Tenant} from "radien";
 import axios from "axios";
-import {DeleteParams, PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
+import PaginatedTable, {DeleteParams, } from "@/components/PaginatedTable/PaginatedTable";
 import {Box, TableProps} from "@cloudscape-design/components";
-import dynamic from "next/dynamic";
 import {QueryKeys} from "@/consts";
 import {RadienContext} from "@/context/RadienContextProvider";
 
 export default function TenantManagement() {
-    const PaginatedTable = dynamic(
-        () => import("@/components/PaginatedTable/PaginatedTable"),
-        { ssr: false}
-    ) as React.ComponentType<PaginatedTableProps<Tenant>>
-
-
-
     const {addSuccessMessage, addErrorMessage} = useContext(RadienContext);
 
     const colDefinition: TableProps.ColumnDefinition<Tenant>[] = [

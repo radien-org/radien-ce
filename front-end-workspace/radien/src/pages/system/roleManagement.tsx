@@ -1,17 +1,11 @@
-import React, {useState} from "react";
+import React from "react";
 import {Role} from "radien";
 import axios from "axios";
-import {PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
+import PaginatedTable from "@/components/PaginatedTable/PaginatedTable";
 import {Box, TableProps} from "@cloudscape-design/components";
-import dynamic from "next/dynamic";
 import {QueryKeys} from "@/consts";
 
 export default function RoleManagement() {
-    const PaginatedTable = dynamic(
-        () => import("@/components/PaginatedTable/PaginatedTable"),
-        { ssr: false}
-    ) as React.ComponentType<PaginatedTableProps<Role>>
-
     const colDefinition: TableProps.ColumnDefinition<Role>[] = [
         {
             id: "name",

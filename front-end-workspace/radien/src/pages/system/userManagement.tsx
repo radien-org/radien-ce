@@ -1,25 +1,18 @@
-import React, {useState} from "react";
+import React from "react";
 import {User} from "radien";
-import axios, {AxiosResponse} from "axios";
-import {PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
-import dynamic from "next/dynamic";
+import axios from "axios";
+import PaginatedTable from "@/components/PaginatedTable/PaginatedTable";
 import {QueryKeys} from "@/consts";
-import {Box} from "@cloudscape-design/components";
+import {Box, TableProps} from "@cloudscape-design/components";
 import {useRouter} from "next/router";
 import UserDetailsView from "@/components/UserDetailsView/UserDetailsView";
 
-
 export default function UserManagement() {
-    const PaginatedTable = dynamic(
-        () => import("@/components/PaginatedTable/PaginatedTable"),
-        { ssr: false}
-    ) as React.ComponentType<PaginatedTableProps<User>>
 
-    const [ selectedUser, setSelectedUser ] = useState<User>()
     const router = useRouter();
 
 
-    const colDefinition = [
+    const colDefinition: TableProps.ColumnDefinition<User>[] = [
         {
             id: "logon",
             header: "Username",

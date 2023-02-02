@@ -1,7 +1,7 @@
-import React, {useContext, useState} from "react";
+import React, {useContext} from "react";
 import {Permission} from "radien";
 import axios from "axios";
-import {DeleteParams, PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
+import PaginatedTable, {DeleteParams} from "@/components/PaginatedTable/PaginatedTable";
 import {Box, TableProps} from "@cloudscape-design/components";
 import dynamic from "next/dynamic";
 import {QueryKeys} from "@/consts";
@@ -9,11 +9,6 @@ import {RadienContext} from "@/context/RadienContextProvider";
 import {useRouter} from "next/router";
 
 export default function PermissionManagement() {
-    const PaginatedTable = dynamic(
-        () => import("@/components/PaginatedTable/PaginatedTable"),
-        { ssr: false}
-    ) as React.ComponentType<PaginatedTableProps<Permission>>
-
     const pageSize = 10;
     const router = useRouter();
 

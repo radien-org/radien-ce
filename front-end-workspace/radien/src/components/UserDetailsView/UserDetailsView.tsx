@@ -57,7 +57,7 @@ const UserDetailsView: FunctionComponent<{data: User}> =  ({data}) => {
                         </SpaceBetween>
                         <SpaceBetween key="view-form-8" direction={"horizontal"} size={"l"}>
                             Delegated creation
-                            <Toggle
+                            <Toggle key="space-between-key-1"
                                 disabled={true}
                                 checked={data!.delegatedCreation}
                             />
