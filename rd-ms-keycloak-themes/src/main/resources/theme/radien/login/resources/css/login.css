@@ -155,8 +155,11 @@ textarea.pf-c-form-control {
 
 /* default - IE compatibility */
 .pf-m-primary:hover {
-    background-color: #004080;
-    background-color: var(--pf-global--primary-color--200);
+    /*background-color: #004080;
+    background-color: var(--pf-global--primary-color--200);*/
+    background-color: #E7411D !important;
+    color: #fefffe;
+    cursor: pointer;
 }
 
 /* default - IE compatibility */
