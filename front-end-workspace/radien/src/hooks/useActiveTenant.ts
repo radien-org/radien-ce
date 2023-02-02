@@ -10,5 +10,5 @@ const getActiveTenant = (userId?: number)  => {
 export default function useActiveTenant(userId?: number) {
     return useQuery<ActiveTenant, Error>(QueryKeys.ACTIVE_TENANT,
         async () => { const {data} = await getActiveTenant(userId); return data ? data[0] : undefined;},
-        { refetchInterval: 10000, enabled: !!userId});
+        { enabled: !!userId});
 }

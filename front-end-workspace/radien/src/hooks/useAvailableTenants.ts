@@ -9,5 +9,5 @@ const getAvailableTenants = (userId?: number)  => {
 
 export default function useAvailableTenants(userId?: number) {
     return useQuery<Page<Tenant>, Error>(QueryKeys.AVAILABLE_TENANTS, async () => { const {data} = await getAvailableTenants(userId); return data;},
-        { refetchInterval: 20000, enabled: !!userId});
+        { enabled: !!userId});
 }

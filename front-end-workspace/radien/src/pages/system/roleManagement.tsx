@@ -12,8 +12,6 @@ export default function RoleManagement() {
         { ssr: false}
     ) as React.ComponentType<PaginatedTableProps<Role>>
 
-    const [ selectedRole, setSelectedRole ] = useState<Role>();
-
     const colDefinition: TableProps.ColumnDefinition<Role>[] = [
         {
             id: "name",
@@ -50,18 +48,12 @@ export default function RoleManagement() {
                 queryKey={QueryKeys.ROLE_MANAGEMENT}
                 columnDefinitions={colDefinition}
                 getPaginated={getRolePage}
-                selectedItemDetails={
-                    {
-                        selectedItem: selectedRole,
-                        setSelectedItem: setSelectedRole
-                    }
-                }
                 viewActionProps={{}}
                 createActionProps={{}}
                 deleteActionProps={
                     {
                         deleteLabel: "Delete Role",
-                        deleteConfirmationText: `Are you sure you would like to delete ${selectedRole?.name}`
+                        deleteConfirmationText: (selectedRole) => `Are you sure you would like to delete ${selectedRole?.name}`
                     }
                 }
                 emptyProps={

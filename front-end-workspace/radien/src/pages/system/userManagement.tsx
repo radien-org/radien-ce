@@ -67,19 +67,12 @@ export default function UserManagement() {
 
 
     return (
-
         <Box padding={"xl"}>
             <PaginatedTable
-                tableHeader={"User Manage‚ment"}
+                tableHeader={"User Management"}
                 queryKey={QueryKeys.USER_MANAGEMENT}
                 columnDefinitions={colDefinition}
                 getPaginated={getUserPage}
-                selectedItemDetails={
-                    {
-                        selectedItem: selectedUser,
-                        setSelectedItem: setSelectedUser
-                    }
-                }
                 viewActionProps={{
                     ViewComponent: UserDetailsView,
                     viewTitle: "User details"
@@ -87,14 +80,13 @@ export default function UserManagement() {
                 createActionProps={{
                     createLabel: "Create user",
                     createAction: () => {
-                        console.log("Create User");
                         router.push('/user/createUser');
                     }
                 }}
                 deleteActionProps={
                     {
                         deleteLabel: "Delete User",
-                        deleteConfirmationText: `Are you sure you would like to delete ${selectedUser?.firstname} ${selectedUser?.lastname}`,
+                        deleteConfirmationText: (selectedUser) => `Are you sure you would like to delete ${selectedUser?.firstname} ${selectedUser?.lastname}`,
                         deleteAction: deleteAction
                     }
                 }

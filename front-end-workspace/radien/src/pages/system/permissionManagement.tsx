@@ -1,10 +1,12 @@
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import {Permission} from "radien";
 import axios from "axios";
-import {PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
+import {DeleteParams, PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
 import {Box, TableProps} from "@cloudscape-design/components";
 import dynamic from "next/dynamic";
 import {QueryKeys} from "@/consts";
+import {RadienContext} from "@/context/RadienContextProvider";
+import {useRouter} from "next/router";
 
 export default function PermissionManagement() {
     const PaginatedTable = dynamic(
@@ -12,7 +14,10 @@ export default function PermissionManagement() {
         { ssr: false}
     ) as React.ComponentType<PaginatedTableProps<Permission>>
 
-    const [ selectedPermission, setSelectedPermission ] = useState<Permission>();
+    const pageSize = 10;
+    const router = useRouter();
+
+    const {addSuccessMessage, addErrorMessage} = useContext(RadienContext);
 
     const colDefinition: TableProps.ColumnDefinition<Permission>[] = [
         {
@@ -43,6 +48,16 @@ export default function PermissionManagement() {
         });
     }
 
+    const deletePermission = async (data: DeleteParams) => {
+        try {
+            console.log('deletePermission', data);
+            await axios.delete(`/api/permission/permission/delete/${data.tenantId}`);
+            addSuccessMessage("Permission deleted successfully");
+        } catch (e) {
+            addErrorMessage("Failed to delete permission");
+        }
+    }
+
     return (
         <Box padding={"xl"}>
             <PaginatedTable
@@ -50,18 +65,18 @@ export default function PermissionManagement() {
                 queryKey={QueryKeys.PERMISSION_MANAGEMENT}
                 columnDefinitions={colDefinition}
                 getPaginated={getPermissionPage}
-                selectedItemDetails={
-                    {
-                        selectedItem: selectedPermission,
-                        setSelectedItem: setSelectedPermission
-                    }
-                }
                 viewActionProps={{}}
-                createActionProps={{}}
+                createActionProps={{
+                    createLabel: "Create permission",
+                    createAction: () => {
+                        router.push('/permission/permission/createPermission');
+                    }
+                }}
                 deleteActionProps={
                     {
                         deleteLabel: "Delete Permission",
-                        deleteConfirmationText: `Are you sure you would like to delete ${selectedPermission?.name}`
+                        deleteConfirmationText: (selectedPermission) => `Are you sure you would like to delete ${selectedPermission?.name}`,
+                        deleteAction: deletePermission
                     }
                 }
                 emptyProps={

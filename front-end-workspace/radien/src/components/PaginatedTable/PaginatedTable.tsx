@@ -1,6 +1,6 @@
 import React, {useContext, useState} from "react";
-import {Page, RadienModel} from "radien";
-import axios, {AxiosResponse} from "axios";
+import {Page, Permission, RadienModel} from "radien";
+import {AxiosResponse} from "axios";
 import {
     Box,
     Button,
@@ -12,17 +12,12 @@ import {
     Table, TableProps
 } from "@cloudscape-design/components";
 import {UseMutateFunction, useQuery} from "react-query";
-import {useRouter} from "next/router";
 import {RadienContext} from "@/context/RadienContextProvider";
 
-interface SelectedItemDetails<T> {
-    selectedItem: T | undefined,
-    setSelectedItem: (value: T) => void
-}
 
 interface DeleteActionProps {
     deleteLabel?: string,
-    deleteConfirmationText: string,
+    deleteConfirmationText: (val: any) => string,
     deleteAction?: (UseMutateFunction<AxiosResponse<any, any>, unknown, any, unknown>)
 }
 
@@ -53,7 +48,6 @@ export interface PaginatedTableProps<T> {
     queryKey: string,
     columnDefinitions: TableProps.ColumnDefinition<T>[],
     getPaginated: (pageNumber?: number, pageSize?: number) => Promise<AxiosResponse<Page<T>, Error>>,
-    selectedItemDetails: SelectedItemDetails<T>
     viewActionProps: ViewActionDetails,
     createActionProps: CreateActionProps,
     deleteActionProps: DeleteActionProps,
@@ -67,20 +61,18 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
         columnDefinitions,
         queryKey,
         getPaginated,
-        selectedItemDetails: {selectedItem, setSelectedItem},
         deleteActionProps: {deleteLabel, deleteConfirmationText, deleteAction},
         createActionProps: {createLabel, hideCreate, createAction},
         viewActionProps: { ViewComponent, viewTitle },
         emptyProps: {emptyMessage, emptyActionLabel }
     } = props;
     const { userInSession } = useContext(RadienContext);
-    const [ currentPage, setCurrentPage ] = useState<number>(1);
     const [ pageSize, setPageSize ] = useState<number>(10);
     const [ deleteModalVisible, setDeleteModalVisible ] = useState(false);
+    const [ selectedItem, setSelectedItem ] = useState<any>();
+    const [currentPage, setCurrentPage ] = useState<number>(1);
     const [ viewModalVisible, setViewModalVisible ] = useState(false);
-    const router = useRouter();
     const { isLoading, data } = useQuery([queryKey, currentPage], () => getPaginated(currentPage, pageSize))
-
 
     const clickTargetUserPage = async (event: NonCancelableCustomEvent<PaginationProps.ChangeDetail>) => {
         let targetPage = event.detail.currentPageIndex;
@@ -148,7 +140,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
                     </Box>
                 }
                 header={deleteLabel}>
-                {deleteConfirmationText}
+                {deleteConfirmationText(selectedItem)}
             </Modal>
             <Modal
                 onDismiss={() => setViewModalVisible(false)}

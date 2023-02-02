@@ -13,7 +13,6 @@ export default function TenantManagement() {
         { ssr: false}
     ) as React.ComponentType<PaginatedTableProps<Tenant>>
 
-    const [ selectedTenant, setSelectedTenant ] = useState<Tenant>();
     const {addSuccessMessage, addErrorMessage} = useContext(RadienContext);
 
     const colDefinition: TableProps.ColumnDefinition<Tenant>[] = [
@@ -121,18 +120,12 @@ export default function TenantManagement() {
                 queryKey={QueryKeys.TENANT_MANAGEMENT}
                 columnDefinitions={colDefinition}
                 getPaginated={getTenantPage}
-                selectedItemDetails={
-                    {
-                        selectedItem: selectedTenant,
-                        setSelectedItem: setSelectedTenant
-                    }
-                }
                 viewActionProps={{}}
                 createActionProps={{}}
                 deleteActionProps={
                     {
                         deleteLabel: "Delete Tenant",
-                        deleteConfirmationText: `Are you sure you would like to delete ${selectedTenant?.name}`,
+                        deleteConfirmationText: (selectedTenant) => `Are you sure you would like to delete ${selectedTenant?.name}`,
                         deleteAction: deleteTenant
                     }
                 }
