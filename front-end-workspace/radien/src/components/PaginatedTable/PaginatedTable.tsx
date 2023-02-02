@@ -1,6 +1,6 @@
 import React, {useContext, useState} from "react";
 import {Page, RadienModel} from "radien";
-import {AxiosResponse} from "axios";
+import axios, {AxiosResponse} from "axios";
 import {
     Box,
     Button,

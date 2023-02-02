@@ -1,12 +1,13 @@
 import React, {useState} from "react";
 import {User} from "radien";
-import axios from "axios";
+import axios, {AxiosResponse} from "axios";
 import {PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
 import dynamic from "next/dynamic";
 import {QueryKeys} from "@/consts";
 import {Box} from "@cloudscape-design/components";
 import {useRouter} from "next/router";
 import UserDetailsView from "@/components/UserDetailsView/UserDetailsView";
+
 
 export default function UserManagement() {
     const PaginatedTable = dynamic(
@@ -53,11 +54,23 @@ export default function UserManagement() {
         });
     }
 
+    //@ts-ignore
+    const deleteAction = async ({tenantId, userId}) => {
+        try{
+            console.log(tenantId)
+            await  axios.post(`/api/user/deleteUser`,{id:tenantId})
+        }
+        catch (e){
+            console.log(e)
+        }
+    }
+
+
     return (
 
         <Box padding={"xl"}>
             <PaginatedTable
-                tableHeader={"User Management"}
+                tableHeader={"User Manage‚ment"}
                 queryKey={QueryKeys.USER_MANAGEMENT}
                 columnDefinitions={colDefinition}
                 getPaginated={getUserPage}
@@ -81,7 +94,8 @@ export default function UserManagement() {
                 deleteActionProps={
                     {
                         deleteLabel: "Delete User",
-                        deleteConfirmationText: `Are you sure you would like to delete ${selectedUser?.firstname} ${selectedUser?.lastname}`
+                        deleteConfirmationText: `Are you sure you would like to delete ${selectedUser?.firstname} ${selectedUser?.lastname}`,
+                        deleteAction: deleteAction
                     }
                 }
                 emptyProps={
