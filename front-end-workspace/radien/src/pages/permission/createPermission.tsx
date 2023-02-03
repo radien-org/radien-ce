@@ -4,7 +4,7 @@ import SpaceBetween from "@cloudscape-design/components/space-between";
 import Button from "@cloudscape-design/components/button";
 import Header from "@cloudscape-design/components/header";
 import {Box, Container, Input, Select} from "@cloudscape-design/components";
-import axios from "axios";
+import axios, {AxiosError} from "axios";
 import {useContext, useEffect, useState} from "react";
 import {Loader} from "@/components/Loader/Loader";
 import {RadienContext} from "@/context/RadienContextProvider";
@@ -30,7 +30,7 @@ export default function createPermission() {
     const [isFormValid, setIsFormValid] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const {addSuccessMessage, addErrorMessage} = useContext(RadienContext);
+    const {addSuccessMessage, addErrorMessage, i18n} = useContext(RadienContext);
 
     const loadActions = async () => {
         return await axios.get("/api/action/getAll");
@@ -85,15 +85,17 @@ export default function createPermission() {
                 resourceId: selectedResource?.value
             }
             await axios.post("/api/permission/permission/createPermission", permission);
-            addSuccessMessage("Permission created successfully")
+            addSuccessMessage(i18n?.permission_creation_success || "Permission created successfully")
         } catch (e) {
             console.log(e);
-            // @ts-ignore
-            if (e.response.status === 401) {
-                addErrorMessage("Error: You are not logged in, please login again");
-            } else {
-                // @ts-ignore
-                addErrorMessage(`Error: ${e.message}`);
+            if(e instanceof AxiosError) {
+                let error = i18n?.generic_message_error || "Error";
+                if (e.response?.status === 401) {
+                    error = `${error}: ${i18n?.error_not_logged_in || "Error: You are not logged in, please login again"}`
+                    addErrorMessage(error);
+                } else {
+                    addErrorMessage(`${error}: ${e.message}`);
+                }
             }
         }
         setLoading(false);
@@ -103,11 +105,12 @@ export default function createPermission() {
     const {data: resources, isLoading: resourcesLoading, error: resourceLoadError} = useQuery("resources", loadResources);
 
     useEffect(() => {
+        let error = i18n?.generic_message_error || "Error";
         if (actionLoadError) {
-            addErrorMessage("Error: Could not load actions");
+            addErrorMessage(`${error}: ${i18n?.error_loading_actions || "Could not load actions"}`);
         }
         if (resourceLoadError) {
-            addErrorMessage("Error: Could not load resources");
+            addErrorMessage(`${error}: ${i18n?.error_loading_resources || "Could not load resources"}`);
         }
     }, [actionLoadError, resourceLoadError]);
 
@@ -128,14 +131,14 @@ export default function createPermission() {
                                     <Button formAction="none" variant="link" href={"/system/permissionManagement"}>
                                         Cancel
                                     </Button>
-                                    <Button variant="primary">Create</Button>
+                                    <Button variant="primary">{i18n?.button_create || "Create"}</Button>
                                 </SpaceBetween>
                             }
-                            header={<Header variant="h1">Create permission</Header>}
+                            header={<Header variant="h1">{i18n?.permission_creation_header || "Create permission"}</Header>}
                         >
                             <SpaceBetween direction="vertical" size="l">
-                                <FormField key="cu-form-3" label={"Name *"}
-                                           errorText={!isNameValid && isFormSubmitted ? "Please enter a valid name" : null}>
+                                <FormField key="cu-form-3" label={i18n?.permission_creation_name || "Name *"}
+                                           errorText={!isNameValid && isFormSubmitted ? i18n?.permission_creation_name_error || "Please enter a valid name" : null}>
                                     <Input
                                         value={name}
                                         onChange={(event) => {
@@ -144,7 +147,8 @@ export default function createPermission() {
                                         }}
                                     />
                                 </FormField>
-                                <FormField key={"per-form--2"} label={"Action *"} errorText={!isActionValid && isFormSubmitted ? "Please select an action" : null}>
+                                <FormField key={"per-form--2"} label={i18n?.permission_creation_action || "Action *"}
+                                           errorText={!isActionValid && isFormSubmitted ? i18n?.permission_creation_action_error || "Please select an action" : null}>
                                     <Select
                                         selectedOption={selectedAction}
                                         onChange={({ detail }) => {
@@ -152,13 +156,14 @@ export default function createPermission() {
                                             validateAction(detail.selectedOption)
                                         }}
                                         options={actions?.data && Array.isArray(actions?.data) ? [...actions?.data.map((action: any) => {return {label: action.name, value: action.id}})] : []}
-                                        loadingText="Loading actions..."
-                                        placeholder="Choose an action"
-                                        selectedAriaLabel="Selected action"
+                                        loadingText={i18n?.permission_creation_action_loading || "Loading actions..."}
+                                        placeholder={i18n?.permission_creation_action_placeholder || "Choose an action"}
+                                        selectedAriaLabel={i18n?.permission_creation_action_selected_aria || "Selected action"}
                                         statusType={actionsLoading ? "loading" : (actionLoadError ? "error" : "finished")}
                                     />
                                 </FormField>
-                                <FormField key={"per-form--3"} label={"Resource *"} errorText={!isResourceValid && isFormSubmitted ? "Please select a resource" : null}>
+                                <FormField key={"per-form--3"} label={i18n?.permission_creation_resource || "Resource *"}
+                                           errorText={!isResourceValid && isFormSubmitted ? i18n?.permission_creation_resource_error || "Please select a resource" : null}>
                                     <Select
                                         selectedOption={selectedResource}
                                         onChange={({ detail }) => {
@@ -166,9 +171,9 @@ export default function createPermission() {
                                             validateResource(detail.selectedOption)
                                         }}
                                         options={resources?.data && Array.isArray(resources?.data) ? [...resources?.data.map((resource: any) => {return {label: resource.name, value: resource.id}})] : []}
-                                        loadingText="Loading resources..."
-                                        placeholder="Choose a resource"
-                                        selectedAriaLabel="Selected resource"
+                                        loadingText={i18n?.permission_creation_resource_loading || "Loading resources..."}
+                                        placeholder={i18n?.permission_creation_resource_placeholder || "Choose a resource"}
+                                        selectedAriaLabel={i18n?.permission_creation_resource_selected_aria || "Selected resource"}
                                         statusType={resourcesLoading ? "loading" : (resourceLoadError ? "error" : "finished")}
                                     />
                                 </FormField>

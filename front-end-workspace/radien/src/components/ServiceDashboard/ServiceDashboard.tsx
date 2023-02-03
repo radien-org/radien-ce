@@ -2,9 +2,11 @@ import React, {useContext} from 'react';
 import Card from "@/components/Card/Card";
 import useCheckPermissions from "@/hooks/useCheckPermissions";
 import {RadienContext} from "@/context/RadienContextProvider";
+import {useRouter} from "next/router";
 
 export default function ServiceDashboard() {
-    const { userInSession: radienUser, activeTenant: { data: activeTenantData}} = useContext(RadienContext);
+    const { userInSession: radienUser, activeTenant: { data: activeTenantData}, i18n} = useContext(RadienContext);
+    const { locale } = useRouter();
     const [
         { data: rolesViewPermission },
         { data: usersViewPermission },
@@ -12,29 +14,30 @@ export default function ServiceDashboard() {
         { data: tenantViewPermission },
     ] = useCheckPermissions(radienUser?.id!, activeTenantData?.tenantId!);
 
+
     const cards = [
         {
-            title: "User Management",
-            description: "This service allows you to see and check your users data as so as delete them.",
-            href: "/system/userManagement",
+            title: i18n?.user_management_title ||  "User Management",
+            description: i18n?.user_management_description ||  "This service allows you to see and check your users data as so as delete them.",
+            href: `${locale ? "/" + locale : ''}/system/userManagement`,
             hasPermission: usersViewPermission
         },
         {
-            title: "Role Management",
-            description: "In here you can create and assign roles to a specific user in a specific tenant.",
-            href: "/system/roleManagement",
+            title: i18n?.role_management_title || "Role Management",
+            description: i18n?.role_management_description ||  "In here you can create and assign roles to a specific user in a specific tenant.",
+            href: `${locale ? "/" + locale : ''}/system/roleManagement`,
             hasPermission: rolesViewPermission
         },
         {
-            title: "Permission Management",
-            description: "Which permissions are going to be allowed? In here you can define them.",
-            href: "/system/permissionManagement",
+            title: i18n?.permission_management_title || "Permission Management",
+            description: i18n?.permission_management_description ||  "Which permissions are going to be allowed? In here you can define them.",
+            href: `${locale ? "/" + locale : ''}/system/permissionManagement`,
             hasPermission: permissionViewPermission
         },
         {
-            title: "Tenant Management",
-            description: "Which tenant are going to exist.",
-            href: "/system/tenantManagement",
+            title: i18n?.tenant_management_title || "Tenant Management",
+            description: i18n?.tenant_management_description ||  "Which tenant are going to exist.",
+            href: `${locale ? "/" + locale : ''}/system/tenantManagement`,
             hasPermission: tenantViewPermission
         }
     ];

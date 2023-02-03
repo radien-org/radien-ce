@@ -4,10 +4,9 @@ import {v4 as uuidv4} from 'uuid';
 import {useUserInSession} from "@/hooks/useUserInSession";
 import {FlashbarProps} from "@cloudscape-design/components";
 import {ActiveTenant, Tenant, User} from "radien";
-import useAvailableTenants from "@/hooks/useAvailableTenants";
 import useActiveTenant from "@/hooks/useActiveTenant";
 import {UseQueryResult} from "react-query";
-import {add} from "unload";
+import useI18N from "@/hooks/useI18N";
 
 export const RadienContext = React.createContext({
     values: [] as FlashbarProps.MessageDefinition[], addSuccessMessage: (message: string, dismissedAfter?: number) => {},
@@ -17,6 +16,7 @@ export const RadienContext = React.createContext({
     isLoadingUserInSession: true,
     userInSession: {} as User | undefined,
     activeTenant: {} as UseQueryResult<ActiveTenant, Error>,
+    i18n: {} as any
 })
 
 type RadienProviderProps = {
@@ -27,6 +27,7 @@ export default function RadienProvider({ children }: RadienProviderProps) {
     const [messages, setMessages] = useState<FlashbarProps.MessageDefinition[]>([]);
     const { userInSession: radienUser, isLoadingUserInSession } = useUserInSession();
     const activeTenant: UseQueryResult<ActiveTenant, Error> = useActiveTenant(radienUser?.data.id);
+    const {data: i18nData } = useI18N();
 
     const deleteMessage = (id: string) => {
         setMessages((old: FlashbarProps.MessageDefinition[]) => {
@@ -64,6 +65,7 @@ export default function RadienProvider({ children }: RadienProviderProps) {
         isLoadingUserInSession,
         userInSession: radienUser?.data,
         activeTenant,
+        i18n: i18nData
     }
 
     return (

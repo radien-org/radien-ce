@@ -7,83 +7,83 @@ import {QueryKeys} from "@/consts";
 import {RadienContext} from "@/context/RadienContextProvider";
 
 export default function TenantManagement() {
-    const {addSuccessMessage, addErrorMessage} = useContext(RadienContext);
+    const {addSuccessMessage, addErrorMessage, i18n} = useContext(RadienContext);
 
     const colDefinition: TableProps.ColumnDefinition<Tenant>[] = [
         {
             id: "name",
-            header: "Name",
+            header: i18n?.tenant_management_column_name || "Name",
             cell: (item: Tenant) => item?.name || "-",
             sortingField: "name"
         },{
             id: "tenantKey",
-            header: "Key",
+            header: i18n?.tenant_management_column_key || "Key",
             cell: (item: Tenant) => item?.tenantKey || "-",
             sortingField: "tenantKey"
         },
         {
             id: "tenantType",
-            header: "Type",
+            header: i18n?.tenant_management_column_type || "Type",
             cell: (item: Tenant) => item?.tenantType || "-",
             sortingField: "tenantType"
         },
         {
             id: "tenantStart",
-            header: "Start Date",
+            header: i18n?.tenant_management_column_start_date || "Start Date",
             cell: (item: Tenant) => item?.tenantStart.toString() || "-",
             sortingField: "tenantStart"
         },
         {
             id: "tenantEnd",
-            header: "End Date",
+            header: i18n?.tenant_management_column_end_date || "End Date",
             cell: (item: Tenant) => item?.tenantEnd.toString() || "-",
             sortingField: "tenantEnd"
         },
         {
             id: "clientAddress",
-            header: "Address",
+            header: i18n?.tenant_management_column_address || "Address",
             cell: (item: Tenant) => item?.clientAddress || "-",
             sortingField: "clientAddress"
         },
         {
             id: "clientZipCode",
-            header: "Zip Code",
+            header: i18n?.tenant_management_column_zip_code || "Zip Code",
             cell: (item: Tenant) => item?.clientZipCode || "-",
             sortingField: "clientZipCode"
         },
         {
             id: "clientCity",
-            header: "City",
+            header: i18n?.tenant_management_column_city || "City",
             cell: (item: Tenant) => item?.clientCity || "-",
             sortingField: "clientCity"
         },
         {
             id: "clientCountry",
-            header: "Country",
+            header: i18n?.tenant_management_column_country || "Country",
             cell: (item: Tenant) => item?.clientCountry || "-",
             sortingField: "clientCountry"
         },
         {
             id: "clientPhoneNumber",
-            header: "Phone Number",
+            header: i18n?.tenant_management_column_phone_number || "Phone Number",
             cell: (item: Tenant) => item?.clientPhoneNumber || "-",
             sortingField: "clientPhoneNumber"
         },
         {
             id: "clientEmail",
-            header: "Email",
+            header: i18n?.tenant_management_column_email || "Email",
             cell: (item: Tenant) => item?.clientEmail || "-",
             sortingField: "clientEmail"
         },
         {
             id: "parentId",
-            header: "Parent Tenant",
+            header: i18n?.tenant_management_column_parent_tenant || "Parent Tenant",
             cell: (item: Tenant) => item?.parentId || "-",
             sortingField: "parentId"
         },
         {
             id: "clientId",
-            header: "Client Tenant",
+            header: i18n?.tenant_management_column_client_tenant || "Client Tenant",
             cell: (item: Tenant) => item?.clientId || "-",
             sortingField: "clientId"
         },
@@ -103,16 +103,18 @@ export default function TenantManagement() {
     const deleteTenant = async (data: DeleteParams) => {
        try {
            await axios.delete(`/api/tenant/delete/${data.tenantId}`);
-           addSuccessMessage("Tenant deleted successfully");
+           let message = `${i18n?.generic_message_success || "Success"}: ${i18n?.tenant_management_delete_success || "Tenant deleted successfully"}`
+           addSuccessMessage(message);
        } catch (e) {
-           addErrorMessage("Failed to delete tenant");
+           let message = `${i18n?.generic_message_error || "Error"}: ${i18n?.tenant_management_delete_error || "Failed to delete tenant"}`
+           addErrorMessage(message);
        }
     }
 
     return (
         <Box padding={"xl"}>
             <PaginatedTable
-                tableHeader={"Tenant Management"}
+                tableHeader={i18n?.tenant_management_header || "Tenant Management"}
                 queryKey={QueryKeys.TENANT_MANAGEMENT}
                 columnDefinitions={colDefinition}
                 getPaginated={getTenantPage}
@@ -120,15 +122,15 @@ export default function TenantManagement() {
                 createActionProps={{}}
                 deleteActionProps={
                     {
-                        deleteLabel: "Delete Tenant",
-                        deleteConfirmationText: (selectedTenant) => `Are you sure you would like to delete ${selectedTenant?.name}`,
+                        deleteLabel: i18n?.tenant_management_delete_label || "Delete Tenant",
+                        deleteConfirmationText: (selectedTenant) => `${i18n?.tenant_management_delete_confirmation ||  "Are you sure you would like to delete ${}"}`.replace("${}", selectedTenant?.name),
                         deleteAction: deleteTenant
                     }
                 }
                 emptyProps={
                     {
-                        emptyMessage: "No tenants available",
-                        emptyActionLabel: "Create Tenant"
+                        emptyMessage: i18n?.tenant_management_empty_label || "No tenants available",
+                        emptyActionLabel: i18n?.tenant_management_empty_action || "Create Tenant"
                     }
                 }
             />

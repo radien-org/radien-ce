@@ -1,5 +1,6 @@
 enum QueryKeys {
     ME = "userInSession",
+    I18N = "i18n",
     ACTIVE_TENANT = "activeTenant",
     AVAILABLE_TENANTS = "availableTenants",
     ROLE_MANAGEMENT = "roleManagement",

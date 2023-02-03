@@ -4,6 +4,11 @@ const withTM = require('next-transpile-modules')(['@cloudscape-design/components
 const nextConfig = {
     reactStrictMode: true,
     swcMinify: true,
+    i18n: {
+        localeDetection: true,
+        defaultLocale: "en",
+        locales: ["en", "de", "pt"]
+    }
 }
 
 const buildConfig = _phase => {

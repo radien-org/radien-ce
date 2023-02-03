@@ -1,4 +1,3 @@
-import Head from 'next/head'
 import { Inter } from '@next/font/google'
 import React from "react";
 import {useSession} from "next-auth/react";
@@ -9,7 +8,6 @@ const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
     const { data: session } = useSession();
-
   return (
     <main>
         { !session &&

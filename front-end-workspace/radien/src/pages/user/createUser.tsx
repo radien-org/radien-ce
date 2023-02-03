@@ -3,11 +3,10 @@ import Form from "@cloudscape-design/components/form";
 import SpaceBetween from "@cloudscape-design/components/space-between";
 import Button from "@cloudscape-design/components/button";
 import Header from "@cloudscape-design/components/header";
-import {Alert, Box, Container, FormField, Input} from "@cloudscape-design/components";
-import axios from "axios";
+import {Box, Container, FormField, Input} from "@cloudscape-design/components";
+import axios, {AxiosError} from "axios";
 import {useContext, useEffect, useState} from "react";
 import {Loader} from "@/components/Loader/Loader";
-import {User} from "radien";
 import {RadienContext} from "@/context/RadienContextProvider";
 
 
@@ -25,10 +24,9 @@ export default function CreateUser() {
     const [isLastNameValid, setIsLastNameValid] = useState(false);
     const [isFormValid, setIsFormValid] = useState(false);
 
-    const [formError, setFormError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const {addSuccessMessage, addErrorMessage} = useContext(RadienContext);
+    const {addSuccessMessage, addErrorMessage, i18n} = useContext(RadienContext);
 
 
     useEffect(() => {
@@ -71,10 +69,8 @@ export default function CreateUser() {
         setIsLastNameTouched(true);
 
         if (!isFormValid) {
-            setFormError("Please fill out all required fields");
             return;
         }
-        setFormError("");
         setLoading(true);
         try {
             const newUser = {
@@ -89,21 +85,21 @@ export default function CreateUser() {
                 lastUpdate: new Date()
             }
             await axios.post("/api/user/createUser", newUser);
-            addSuccessMessage("User created successfully")
+            let message = `${i18n?.generic_message_success || "Success"}: ${i18n?.create_user_success || "User created successfully"}`;
+            addSuccessMessage(message)
         } catch (e) {
-            console.log(e);
-            // @ts-ignore
-            if (e.response.status === 401) {
-                addErrorMessage("Error: You are not logged in, please login again");
-            } else {
-                // @ts-ignore
-                addErrorMessage(`Error: ${e.message}`);
+            if(e instanceof AxiosError) {
+                let message = i18n?.generic_message_error || "Error";
+                if (e.response?.status === 401) {
+                    message = `${message}: ${i18n?.error_not_logged_in || "You are not logged in, please login again"}`
+                    addErrorMessage(message);
+                } else {
+                    addErrorMessage(`${message}: ${e.message}`);
+                }
             }
         }
         setLoading(false);
     }
-
-
 
     return (
         <>
@@ -111,25 +107,22 @@ export default function CreateUser() {
                 <Container>
                     {loading && <Loader/>}
 
-                    <form onSubmit={e => {
-                        e.preventDefault();
-                        handleSubmit();
-                    }}
+                    <form onSubmit={e => {e.preventDefault(); handleSubmit(); }}
                           className={"create-form--container"}>
                         <Form
                             actions={
                                 <SpaceBetween direction="horizontal" size="xs">
                                     <Button formAction="none" variant="link" href={"/system/userManagement"}>
-                                        Cancel
+                                        {i18n?.create_user_cancel_action || "Cancel"}
                                     </Button>
-                                    <Button variant="primary">Create</Button>
+                                    <Button variant="primary">${i18n?.create_user_create_action || "Create"}</Button>
                                 </SpaceBetween>
                             }
-                            errorText={formError}
-                            header={<Header variant="h1">Create user</Header>}
-                        >
+                            header={<Header variant="h1">{i18n?.create_user_form_header || "Create user"}</Header>}>
                             <SpaceBetween direction="vertical" size="l">
-                                <FormField key="cu-form-1" label={"Email *"} errorText={!isEmailValid && isEmailTouched ? "Please enter a valid email address" : null} >
+                                <FormField key="cu-form-1"
+                                           label={i18n?.create_user_email || "Email *"}
+                                           errorText={!isEmailValid && isEmailTouched ? i18n?.create_user_email_error || "Please enter a valid email address" : null} >
                                     <Input
                                         value={email}
                                         onChange={(event) => {
@@ -138,7 +131,9 @@ export default function CreateUser() {
                                         }}
                                     />
                                 </FormField>
-                                <FormField key="cu-form-2" label={"Firstname *"} errorText={!isFirstNameValid && isFirstNameTouched ? "Please enter a valid first name" : null} >
+                                <FormField key="cu-form-2"
+                                           label={i18n?.create_user_firstname || "Firstname *"}
+                                           errorText={!isFirstNameValid && isFirstNameTouched ? i18n?.create_user_firstname_error || "Please enter a valid first name" : null} >
                                     <Input
                                         value={firstName}
                                         onChange={(event) => {
@@ -147,7 +142,9 @@ export default function CreateUser() {
                                         }}
                                     />
                                 </FormField>
-                                <FormField key="cu-form-3" label={"Lastname *"} errorText={!isLastNameValid && isLastNameTouched ? "Please enter a valid last name" : null} >
+                                <FormField key="cu-form-3"
+                                           label={i18n?.create_user_lastname || "Lastname *"}
+                                           errorText={!isLastNameValid && isLastNameTouched ? i18n?.create_user_lastname_error || "Please enter a valid last name" : null} >
                                     <Input
                                         value={lastName}
                                         onChange={(event) => {

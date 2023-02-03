@@ -12,23 +12,23 @@ export default function PermissionManagement() {
     const pageSize = 10;
     const router = useRouter();
 
-    const {addSuccessMessage, addErrorMessage} = useContext(RadienContext);
+    const {addSuccessMessage, addErrorMessage, i18n} = useContext(RadienContext);
 
     const colDefinition: TableProps.ColumnDefinition<Permission>[] = [
         {
             id: "name",
-            header: "Name",
+            header: i18n?.permission_management_column_name || "Name",
             cell: (item: Permission) => item?.name || "-",
             sortingField: "name"
         },{
             id: "actionId",
-            header: "Action",
+            header: i18n?.permission_management_column_action || "Action",
             cell: (item: Permission) => item?.actionId.toString() || "-",
             sortingField: "actionId"
         },
         {
             id: "resourceId",
-            header: "Resource",
+            header: i18n?.permission_management_column_resource || "Resource",
             cell: (item: Permission) => item?.resourceId.toString() || "-",
             sortingField: "resourceId"
         }
@@ -45,39 +45,40 @@ export default function PermissionManagement() {
 
     const deletePermission = async (data: DeleteParams) => {
         try {
-            console.log('deletePermission', data);
             await axios.delete(`/api/permission/permission/delete/${data.tenantId}`);
-            addSuccessMessage("Permission deleted successfully");
+            let message = `${i18n?.generic_message_success || "Success"}: ${i18n?.permission_management_delete_success || "Permission deleted successfully"}`
+            addSuccessMessage(message);
         } catch (e) {
-            addErrorMessage("Failed to delete permission");
+            let message = `${i18n?.generic_message_error || "Error"}: ${i18n?.permission_management_delete_error || "Failed to delete permission"}`
+            addErrorMessage(message);
         }
     }
 
     return (
         <Box padding={"xl"}>
             <PaginatedTable
-                tableHeader={"User Management"}
+                tableHeader={i18n?.permission_management_header || "Permission Management"}
                 queryKey={QueryKeys.PERMISSION_MANAGEMENT}
                 columnDefinitions={colDefinition}
                 getPaginated={getPermissionPage}
                 viewActionProps={{}}
                 createActionProps={{
-                    createLabel: "Create permission",
+                    createLabel: i18n?.permission_management_create_label || "Create permission",
                     createAction: () => {
                         router.push('/permission/createPermission');
                     }
                 }}
                 deleteActionProps={
                     {
-                        deleteLabel: "Delete Permission",
-                        deleteConfirmationText: (selectedPermission) => `Are you sure you would like to delete ${selectedPermission?.name}`,
+                        deleteLabel: i18n?.permission_management_delete_label || "Delete Permission",
+                        deleteConfirmationText: (selectedPermission) => `${i18n?.permission_management_delete_confirmation ||  "Are you sure you would like to delete ${}"}`.replace("${}", selectedPermission?.name),
                         deleteAction: deletePermission
                     }
                 }
                 emptyProps={
                     {
-                        emptyMessage: "No permissions available",
-                        emptyActionLabel: "Create Permission"
+                        emptyMessage: i18n?.permission_management_empty_label || "No permissions available",
+                        emptyActionLabel: i18n?.permission_management_empty_action || "Create Permission"
                     }
                 }
             />

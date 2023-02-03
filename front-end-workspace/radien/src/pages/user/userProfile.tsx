@@ -20,6 +20,7 @@ import {PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
 import useUpdateUser from "@/hooks/useUpdateUser";
 import useDissociateTenant from "@/hooks/useDissociateTenant";
 import {RadienContext} from "@/context/RadienContextProvider";
+import {useRouter} from "next/router";
 
 const FormField = dynamic(
     () => import("@cloudscape-design/components/form-field"),
@@ -31,7 +32,8 @@ const PaginatedTable = dynamic(
 ) as React.ComponentType<PaginatedTableProps<Tenant>>
 
 export default function UserProfile() {
-    const { addSuccessMessage, userInSession: radienUser, isLoadingUserInSession } = React.useContext(RadienContext);
+    const { addSuccessMessage, userInSession: radienUser, isLoadingUserInSession, i18n } = React.useContext(RadienContext);
+    const { locale } = useRouter();
     const updateUser = useUpdateUser()
     const dissociateUser = useDissociateTenant();
 
@@ -69,19 +71,19 @@ export default function UserProfile() {
     const colDefinition: TableProps.ColumnDefinition<Tenant>[] = [
         {
             id: "key",
-            header: "Key",
+            header: i18n?.user_profile_tenants_column_key || "Key",
             cell: (item: Tenant) => item?.tenantKey || "-",
             sortingField: "key"
         },
         {
             id: "name",
-            header: "Name",
+            header: i18n?.user_profile_tenants_column_name || "Name",
             cell: (item: Tenant) => item?.name || "-",
             sortingField: "name"
         },
         {
             id: "type",
-            header: "Type",
+            header: i18n?.user_profile_tenants_column_type || "Type",
             cell: (item: Tenant) => item?.tenantType || "-",
             sortingField: "type"
         }
@@ -97,8 +99,6 @@ export default function UserProfile() {
 
     const dropdownClickEvent = async (event: CustomEvent<ButtonDropdownProps.ItemClickDetails>) => {
         if(event.detail.id == "dataReq") {
-            // TODO: Figure out replacement for JSF servlet!
-            // TODO: Include language
             const uuid = uuidv4();
             const ticket: Ticket = {
                 userId: Number(radienUser?.id),
@@ -121,10 +121,10 @@ export default function UserProfile() {
             await axios.post("/api/notification/notifyCurrentUser", args, {
                 params: {
                     viewId,
-                    language: "en"
+                    language: locale
                 }
             })
-            addSuccessMessage("Successfully requested data. Please check your email for more details.");
+            addSuccessMessage(i18n?.user_profile_user_data_request_success || "Successfully requested data. Please check your email for more details.");
         }
     }
 
@@ -143,13 +143,13 @@ export default function UserProfile() {
                     header={
                         <Header
                             variant="h1"
-                            description="Here you can manage your profile details"
+                            description={i18n?.user_profile_header_description || "Here you can manage your profile details"}
                             actions={
                                 <ButtonDropdown variant="icon" onItemClick={(event) => dropdownClickEvent(event)}
                                                 items={[
-                                                    { text: "Delete", id: "delUser", disabled: false },
-                                                    { text: "Request Tenant", id: "tenantReq", disabled: false },
-                                                    { text: "Request User Data", id: "dataReq", disabled: false }
+                                                    { text: i18n?.user_profile_delete_label || "Delete", id: "delUser", disabled: false },
+                                                    { text: i18n?.user_profile_request_tenant || "Request Tenant", id: "tenantReq", disabled: false },
+                                                    { text: i18n?.user_profile_request_user_data || "Request User Data", id: "dataReq", disabled: false }
                                                 ]}>
                                 </ButtonDropdown>
                             }>
@@ -160,32 +160,32 @@ export default function UserProfile() {
                         <Form actions={
                             <SpaceBetween direction="horizontal" size="xs">
                                 <Button formAction="none" variant="link">
-                                    Cancel
+                                    {i18n?.user_profile_cancel_action || "Cancel"}
                                 </Button>
-                                <Button variant="primary" formAction={"submit"}>Submit</Button>
+                                <Button variant="primary" formAction={"submit"}>{i18n?.user_profile_submit_action || "Submit"}</Button>
                             </SpaceBetween>
                         }>
-                            <FormField label="First name" stretch={false}>
+                            <FormField label={i18n?.user_profile_firstname || "First name"} stretch={false}>
                                 <Input value={firstName}
                                     onChange={event => setFirstName(event.detail.value)}
                                 />
                             </FormField>
-                            <FormField label="Last name" stretch={false}>
+                            <FormField label={i18n?.user_profile_lastname || "Last name"} stretch={false}>
                                 <Input value={lastName}
                                     onChange={event => setLastName(event.detail.value)}
                                 />
                             </FormField>
-                            <FormField label="Username" stretch={false}>
+                            <FormField label={i18n?.user_profile_username || "Username"} stretch={false}>
                                 <Input value={logon}
                                     onChange={event => setLogon(event.detail.value)}
                                 />
                             </FormField>
-                            <FormField label="Email" stretch={false}>
+                            <FormField label={i18n?.user_profile_email || "Email"} stretch={false}>
                                 <Input value={userEmail} disabled={true}
                                     onChange={event => setUserEmail(event.detail.value)}
                                 />
                             </FormField>
-                            <FormField label="Subject Id" stretch={false}>
+                            <FormField label={i18n?.user_profile_subject || "Subject Id"} stretch={false}>
                                 <Input value={sub} disabled={true}
                                     onChange={event => setSub(event.detail.value)}
                                 />
@@ -197,39 +197,29 @@ export default function UserProfile() {
             <Box padding={"xl"}>
                 <Container>
                     <PaginatedTable
-                        tableHeader={"Associated Tenants"}
+                        tableHeader={i18n?.user_profile_tenants_table_header || "Associated Tenants"}
                         tableVariant={"embedded"}
                         queryKey={QueryKeys.AVAILABLE_TENANTS}
                         columnDefinitions={colDefinition}
                         getPaginated={getTenantPage}
-                        selectedItemDetails={
-                            {
-                                selectedItem: selectedTenant,
-                                setSelectedItem: setSelectedTenant
-                            }
-                        }
-                        viewActionProps={
-                            {
-                                viewComponent: tenantDetailsView
-                            }
-                        }
+                        viewActionProps={{}}
                         createActionProps={
                             {
-                                createLabel: "Request Tenant"
+                                createLabel: i18n?.user_profile_tenants_create_label || "Request Tenant"
                             }
                         }
                         deleteActionProps={
                             {
-                                deleteLabel: "Dissociate Tenant",
-                                deleteConfirmationText: `Are you sure you would like to dissociate ${selectedTenant?.name}`,
+                                deleteLabel: i18n?.user_profile_tenants_delete_label || "Dissociate Tenant",
+                                deleteConfirmationText: (selectedTenant) => `${i18n?.user_profile_tenants_delete_confirmation || "Are you sure you would like to dissociate ${}"}`.replace("${}", selectedTenant?.name),
                                 deleteAction: dissociateUser.mutate
 
                             }
                         }
                         emptyProps={
                             {
-                                emptyMessage: "No tenants available",
-                                emptyActionLabel: "Request Tenant"
+                                emptyMessage: i18n?.user_profile_tenants_empty_label || "No tenants available",
+                                emptyActionLabel: i18n?.user_profile_tenants_empty_action || "Request Tenant"
                             }
                         }
                     />
