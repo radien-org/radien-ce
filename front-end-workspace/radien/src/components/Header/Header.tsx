@@ -19,7 +19,6 @@ React.useLayoutEffect = React.useEffect;
 interface LoggedOutProps {
     i18n: any,
     router: NextRouter
-
 }
 
 interface LoggedInProps {

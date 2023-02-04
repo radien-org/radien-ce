@@ -19,26 +19,30 @@ export default function ServiceDashboard() {
         {
             title: i18n?.user_management_title ||  "User Management",
             description: i18n?.user_management_description ||  "This service allows you to see and check your users data as so as delete them.",
-            href: `${locale ? "/" + locale : ''}/system/userManagement`,
-            hasPermission: usersViewPermission
+            href: `/system/userManagement`,
+            hasPermission: usersViewPermission,
+            locale
         },
         {
             title: i18n?.role_management_title || "Role Management",
             description: i18n?.role_management_description ||  "In here you can create and assign roles to a specific user in a specific tenant.",
-            href: `${locale ? "/" + locale : ''}/system/roleManagement`,
-            hasPermission: rolesViewPermission
+            href: `/system/roleManagement`,
+            hasPermission: rolesViewPermission,
+            locale
         },
         {
             title: i18n?.permission_management_title || "Permission Management",
             description: i18n?.permission_management_description ||  "Which permissions are going to be allowed? In here you can define them.",
-            href: `${locale ? "/" + locale : ''}/system/permissionManagement`,
-            hasPermission: permissionViewPermission
+            href: `/system/permissionManagement`,
+            hasPermission: permissionViewPermission,
+            locale
         },
         {
             title: i18n?.tenant_management_title || "Tenant Management",
             description: i18n?.tenant_management_description ||  "Which tenant are going to exist.",
-            href: `${locale ? "/" + locale : ''}/system/tenantManagement`,
-            hasPermission: tenantViewPermission
+            href: `/system/tenantManagement`,
+            hasPermission: tenantViewPermission,
+            locale
         }
     ];
 
