@@ -50,7 +50,7 @@ export default function RoleManagement() {
                 deleteActionProps={
                     {
                         deleteLabel: i18n?.role_management_delete_label || "Delete Role",
-                        deleteConfirmationText: (selectedRole) => `${i18n?.role_management_delete_confirmation ||  "Are you sure you would like to delete ${}"}`.replace("${}", selectedRole?.name)
+                        deleteConfirmationText: (selectedRole) => `${i18n?.role_management_delete_confirmation ||  "Are you sure you would like to delete ${}"}`.replace("${}", selectedRole?.name!)
                     }
                 }
                 emptyProps={

@@ -211,7 +211,7 @@ export default function UserProfile() {
                         deleteActionProps={
                             {
                                 deleteLabel: i18n?.user_profile_tenants_delete_label || "Dissociate Tenant",
-                                deleteConfirmationText: (selectedTenant) => `${i18n?.user_profile_tenants_delete_confirmation || "Are you sure you would like to dissociate ${}"}`.replace("${}", selectedTenant?.name),
+                                deleteConfirmationText: (selectedTenant) => `${i18n?.user_profile_tenants_delete_confirmation || "Are you sure you would like to dissociate ${}"}`.replace("${}", selectedTenant?.name!),
                                 deleteAction: dissociateUser.mutate
 
                             }

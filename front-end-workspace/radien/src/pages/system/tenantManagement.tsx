@@ -112,7 +112,7 @@ export default function TenantManagement() {
                 deleteActionProps={
                     {
                         deleteLabel: i18n?.tenant_management_delete_label || "Delete Tenant",
-                        deleteConfirmationText: (selectedTenant) => `${i18n?.tenant_management_delete_confirmation ||  "Are you sure you would like to delete ${}"}`.replace("${}", selectedTenant?.name),
+                        deleteConfirmationText: (selectedTenant) => `${i18n?.tenant_management_delete_confirmation ||  "Are you sure you would like to delete ${}"}`.replace("${}", selectedTenant?.name!),
                         deleteAction: deleteTenant.mutate
                     }
                 }

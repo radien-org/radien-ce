@@ -62,7 +62,7 @@ export default function PermissionManagement() {
                 deleteActionProps={
                     {
                         deleteLabel: i18n?.permission_management_delete_label || "Delete Permission",
-                        deleteConfirmationText: (selectedPermission) => `${i18n?.permission_management_delete_confirmation ||  "Are you sure you would like to delete ${}"}`.replace("${}", selectedPermission?.name),
+                        deleteConfirmationText: (selectedPermission) => `${i18n?.permission_management_delete_confirmation ||  "Are you sure you would like to delete ${}"}`.replace("${}", selectedPermission?.name!),
                         deleteAction: deletePermission.mutate
                     }
                 }

@@ -21,7 +21,7 @@ import {TableForwardRefType} from "@cloudscape-design/components/table/interface
 
 interface DeleteActionProps<T> {
     deleteLabel?: string,
-    deleteConfirmationText: (val: T) => string,
+    deleteConfirmationText: (val?: T) => string,
     deleteAction?: (UseMutateFunction<AxiosResponse<any, any>, unknown, any, unknown>)
 }
 
