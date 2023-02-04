@@ -4,10 +4,11 @@ import SpaceBetween from "@cloudscape-design/components/space-between";
 import Button from "@cloudscape-design/components/button";
 import Header from "@cloudscape-design/components/header";
 import {Box, Container, FormField, Input} from "@cloudscape-design/components";
-import axios, {AxiosError} from "axios";
 import {useContext, useEffect, useState} from "react";
 import {Loader} from "@/components/Loader/Loader";
 import {RadienContext} from "@/context/RadienContextProvider";
+import useCreateUser from "@/hooks/useCreateUser";
+import {User} from "radien";
 
 
 export default function CreateUser() {
@@ -26,7 +27,8 @@ export default function CreateUser() {
 
     const [loading, setLoading] = useState(false);
 
-    const {addSuccessMessage, addErrorMessage, i18n} = useContext(RadienContext);
+    const {i18n} = useContext(RadienContext);
+    const createUser = useCreateUser();
 
 
     useEffect(() => {
@@ -72,32 +74,19 @@ export default function CreateUser() {
             return;
         }
         setLoading(true);
-        try {
-            const newUser = {
-                firstname: firstName,
-                lastname: lastName,
-                userEmail: email,
-                logon: email,
-                enabled: true,
-                delegatedCreation: false,
-                terminationDate: new Date(),
-                createDate: new Date(),
-                lastUpdate: new Date()
-            }
-            await axios.post("/api/user/createUser", newUser);
-            let message = `${i18n?.generic_message_success || "Success"}: ${i18n?.create_user_success || "User created successfully"}`;
-            addSuccessMessage(message)
-        } catch (e) {
-            if(e instanceof AxiosError) {
-                let message = i18n?.generic_message_error || "Error";
-                if (e.response?.status === 401) {
-                    message = `${message}: ${i18n?.error_not_logged_in || "You are not logged in, please login again"}`
-                    addErrorMessage(message);
-                } else {
-                    addErrorMessage(`${message}: ${e.message}`);
-                }
-            }
+        const newUser: Omit<User, "sub" | "mobileNumber"> = {
+            firstname: firstName,
+            lastname: lastName,
+            userEmail: email,
+            logon: email,
+            enabled: true,
+            delegatedCreation: false,
+            terminationDate: new Date(),
+            createDate: new Date(),
+            lastUpdate: new Date()
         }
+
+        createUser.mutate(newUser);
         setLoading(false);
     }
 

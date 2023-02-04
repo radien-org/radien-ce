@@ -5,19 +5,21 @@ import {authOptions} from "@/pages/api/auth/[...nextauth]";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
     const session = await getServerSession(req, res, authOptions);
-    const id = req.body.id;
     if(!session) {
         res.status(401).json({});
         return;
     }
 
-    const path = `${process.env.RADIEN_USER_URL}/user/${id}`;
-    const result: AxiosResponse = await axios
-        .delete(path, {
-            headers: {
-                "Authorization": `Bearer ${session.accessToken}`
-            }
-        });
-
-    res.status(200).json(result.data);
+    const path = `${process.env.RADIEN_USER_URL}/user/${req.query.pid}`;
+    try {
+        const result: AxiosResponse = await axios
+            .delete(path, {
+                headers: {
+                    "Authorization": `Bearer ${session.accessToken}`
+                }
+            });
+        res.status(200).json(result.data);
+    } catch(e) {
+        res.status(500).json(e);
+    }
 }

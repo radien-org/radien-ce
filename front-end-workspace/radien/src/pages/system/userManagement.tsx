@@ -1,17 +1,18 @@
 import React, {useContext} from "react";
 import {User} from "radien";
-import axios, {AxiosResponse} from "axios";
-import PaginatedTable, {PaginatedTableProps} from "@/components/PaginatedTable/PaginatedTable";
-import dynamic from "next/dynamic";
+import axios from "axios";
+import PaginatedTable from "@/components/PaginatedTable/PaginatedTable";
 import {QueryKeys} from "@/consts";
 import {Box, TableProps} from "@cloudscape-design/components";
 import {useRouter} from "next/router";
 import UserDetailsView from "@/components/UserDetailsView/UserDetailsView";
 import {RadienContext} from "@/context/RadienContextProvider";
+import useDeleteUser from "@/hooks/useDeleteUser";
 
 export default function UserManagement() {
 
     const { i18n } = useContext(RadienContext);
+    const deleteUser = useDeleteUser();
     const router = useRouter();
 
 
@@ -50,18 +51,6 @@ export default function UserManagement() {
         });
     }
 
-    //@ts-ignore
-    const deleteAction = async ({tenantId, userId}) => {
-        try{
-            console.log(tenantId)
-            await  axios.post(`/api/user/deleteUser`,{id:tenantId})
-        }
-        catch (e){
-            console.log(e)
-        }
-    }
-
-
     return (
         <Box padding={"xl"}>
             <PaginatedTable
@@ -83,7 +72,7 @@ export default function UserManagement() {
                     {
                         deleteLabel: i18n?.user_management_delete_label || "Delete User",
                         deleteConfirmationText: (selectedUser) => `${i18n?.user_management_delete_confirmation || "Are you sure you would like to delete ${}"}`.replace("${}", `${selectedUser?.firstname} ${selectedUser?.lastname}`),
-                        deleteAction: deleteAction
+                        deleteAction: deleteUser.mutate
                     }
                 }
                 emptyProps={

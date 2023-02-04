@@ -5,9 +5,11 @@ import PaginatedTable, {DeleteParams, } from "@/components/PaginatedTable/Pagina
 import {Box, TableProps} from "@cloudscape-design/components";
 import {QueryKeys} from "@/consts";
 import {RadienContext} from "@/context/RadienContextProvider";
+import useDeleteTenant from "@/hooks/useDeleteTenant";
 
 export default function TenantManagement() {
-    const {addSuccessMessage, addErrorMessage, i18n} = useContext(RadienContext);
+    const {i18n} = useContext(RadienContext);
+    const deleteTenant = useDeleteTenant();
 
     const colDefinition: TableProps.ColumnDefinition<Tenant>[] = [
         {
@@ -98,19 +100,6 @@ export default function TenantManagement() {
         });
     }
 
-
-
-    const deleteTenant = async (data: DeleteParams) => {
-       try {
-           await axios.delete(`/api/tenant/delete/${data.tenantId}`);
-           let message = `${i18n?.generic_message_success || "Success"}: ${i18n?.tenant_management_delete_success || "Tenant deleted successfully"}`
-           addSuccessMessage(message);
-       } catch (e) {
-           let message = `${i18n?.generic_message_error || "Error"}: ${i18n?.tenant_management_delete_error || "Failed to delete tenant"}`
-           addErrorMessage(message);
-       }
-    }
-
     return (
         <Box padding={"xl"}>
             <PaginatedTable
@@ -124,7 +113,7 @@ export default function TenantManagement() {
                     {
                         deleteLabel: i18n?.tenant_management_delete_label || "Delete Tenant",
                         deleteConfirmationText: (selectedTenant) => `${i18n?.tenant_management_delete_confirmation ||  "Are you sure you would like to delete ${}"}`.replace("${}", selectedTenant?.name),
-                        deleteAction: deleteTenant
+                        deleteAction: deleteTenant.mutate
                     }
                 }
                 emptyProps={

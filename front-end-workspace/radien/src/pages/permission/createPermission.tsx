@@ -11,6 +11,8 @@ import {RadienContext} from "@/context/RadienContextProvider";
 import {useQuery} from "react-query";
 import {OptionDefinition} from "@cloudscape-design/components/internal/components/option/interfaces";
 import dynamic from "next/dynamic";
+import {Permission} from "radien";
+import useCreatePermission from "@/hooks/useCreatePermission";
 
 const FormField = dynamic(
     () => import("@cloudscape-design/components/form-field"),
@@ -30,7 +32,8 @@ export default function createPermission() {
     const [isFormValid, setIsFormValid] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const {addSuccessMessage, addErrorMessage, i18n} = useContext(RadienContext);
+    const createPermissionMut = useCreatePermission();
+    const {addErrorMessage, i18n} = useContext(RadienContext);
 
     const loadActions = async () => {
         return await axios.get("/api/action/getAll");
@@ -78,26 +81,13 @@ export default function createPermission() {
             return;
         }
         setLoading(true);
-        try {
-            const permission = {
-                name,
-                actionId: selectedAction?.value,
-                resourceId: selectedResource?.value
-            }
-            await axios.post("/api/permission/permission/createPermission", permission);
-            addSuccessMessage(i18n?.permission_creation_success || "Permission created successfully")
-        } catch (e) {
-            console.log(e);
-            if(e instanceof AxiosError) {
-                let error = i18n?.generic_message_error || "Error";
-                if (e.response?.status === 401) {
-                    error = `${error}: ${i18n?.error_not_logged_in || "Error: You are not logged in, please login again"}`
-                    addErrorMessage(error);
-                } else {
-                    addErrorMessage(`${error}: ${e.message}`);
-                }
-            }
+        const permission: Permission = {
+            name,
+            actionId: Number(selectedAction?.value),
+            resourceId: Number(selectedResource?.value)
         }
+        createPermissionMut.mutate(permission)
+
         setLoading(false);
     }
 

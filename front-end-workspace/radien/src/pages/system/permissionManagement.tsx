@@ -7,12 +7,14 @@ import dynamic from "next/dynamic";
 import {QueryKeys} from "@/consts";
 import {RadienContext} from "@/context/RadienContextProvider";
 import {useRouter} from "next/router";
+import useDeletePermission from "@/hooks/useDeletePermission";
 
 export default function PermissionManagement() {
     const pageSize = 10;
     const router = useRouter();
 
-    const {addSuccessMessage, addErrorMessage, i18n} = useContext(RadienContext);
+    const {i18n} = useContext(RadienContext);
+    const deletePermission = useDeletePermission()
 
     const colDefinition: TableProps.ColumnDefinition<Permission>[] = [
         {
@@ -43,17 +45,6 @@ export default function PermissionManagement() {
         });
     }
 
-    const deletePermission = async (data: DeleteParams) => {
-        try {
-            await axios.delete(`/api/permission/permission/delete/${data.tenantId}`);
-            let message = `${i18n?.generic_message_success || "Success"}: ${i18n?.permission_management_delete_success || "Permission deleted successfully"}`
-            addSuccessMessage(message);
-        } catch (e) {
-            let message = `${i18n?.generic_message_error || "Error"}: ${i18n?.permission_management_delete_error || "Failed to delete permission"}`
-            addErrorMessage(message);
-        }
-    }
-
     return (
         <Box padding={"xl"}>
             <PaginatedTable
@@ -72,7 +63,7 @@ export default function PermissionManagement() {
                     {
                         deleteLabel: i18n?.permission_management_delete_label || "Delete Permission",
                         deleteConfirmationText: (selectedPermission) => `${i18n?.permission_management_delete_confirmation ||  "Are you sure you would like to delete ${}"}`.replace("${}", selectedPermission?.name),
-                        deleteAction: deletePermission
+                        deleteAction: deletePermission.mutate
                     }
                 }
                 emptyProps={

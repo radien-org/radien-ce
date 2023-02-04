@@ -21,6 +21,8 @@ import useUpdateUser from "@/hooks/useUpdateUser";
 import useDissociateTenant from "@/hooks/useDissociateTenant";
 import {RadienContext} from "@/context/RadienContextProvider";
 import {useRouter} from "next/router";
+import useCreateTicket from "@/hooks/useCreateTicket";
+import useNotifyCurrentUser from "@/hooks/useNotifyCurrentUser";
 
 const FormField = dynamic(
     () => import("@cloudscape-design/components/form-field"),
@@ -36,6 +38,8 @@ export default function UserProfile() {
     const { locale } = useRouter();
     const updateUser = useUpdateUser()
     const dissociateUser = useDissociateTenant();
+    const createTicket = useCreateTicket();
+    const notifyCurrentUser = useNotifyCurrentUser();
 
     const [ selectedTenant, setSelectedTenant ] = useState<Tenant>();
 
@@ -108,7 +112,7 @@ export default function UserProfile() {
                 createUser: Number(radienUser?.id),
                 expireDate: moment().add(24, "hours").toDate()
             }
-            await axios.post("/api/ticket/createTicket", ticket);
+            createTicket.mutate(ticket);
 
             const referenceUrl: string = `${process.env.NEXTAUTH_URL}/api/data-privacy/dataRequest?ticket=${uuid}")`;
             const viewId: string = "email-7";
@@ -118,12 +122,8 @@ export default function UserProfile() {
                 portalUrl: "radien",
                 targetUrl: referenceUrl
             }
-            await axios.post("/api/notification/notifyCurrentUser", args, {
-                params: {
-                    viewId,
-                    language: locale
-                }
-            })
+
+            notifyCurrentUser.mutate({params: args, viewId, language: locale})
             addSuccessMessage(i18n?.user_profile_user_data_request_success || "Successfully requested data. Please check your email for more details.");
         }
     }
