@@ -25,13 +25,13 @@ export default function PermissionManagement() {
         },{
             id: "actionId",
             header: i18n?.permission_management_column_action || "Action",
-            cell: (item: Permission) => item?.actionId.toString() || "-",
+            cell: (item: Permission) => item?.action?.name.toString() || "-",
             sortingField: "actionId"
         },
         {
             id: "resourceId",
             header: i18n?.permission_management_column_resource || "Resource",
-            cell: (item: Permission) => item?.resourceId.toString() || "-",
+            cell: (item: Permission) => item?.resource?.name.toString() || "-",
             sortingField: "resourceId"
         }
     ]

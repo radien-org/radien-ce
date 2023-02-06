@@ -80,13 +80,13 @@ export default function TenantManagement() {
         {
             id: "parentId",
             header: i18n?.tenant_management_column_parent_tenant || "Parent Tenant",
-            cell: (item: Tenant) => item?.parentId || "-",
+            cell: (item: Tenant) => item?.parentData?.name || "-",
             sortingField: "parentId"
         },
         {
             id: "clientId",
             header: i18n?.tenant_management_column_client_tenant || "Client Tenant",
-            cell: (item: Tenant) => item?.clientId || "-",
+            cell: (item: Tenant) => item?.clientData?.name || "-",
             sortingField: "clientId"
         },
     ]

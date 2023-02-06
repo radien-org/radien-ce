@@ -30,7 +30,9 @@ declare module "radien" {
         clientPhoneNumber: number,
         clientEmail: string,
         parentId: number,
-        clientId: number
+        clientId: number,
+        parentData?: Tenant,
+        clientData?: Tenant,
     }
 
     interface ActiveTenant extends RadienModel {
@@ -44,11 +46,20 @@ declare module "radien" {
         terminationDate: Date
     }
 
+    interface Action extends RadienModel {
+        name: string,
+    }
+    interface Resource extends RadienModel {
+        name: string,
+    }
+
     interface Permission {
         id?: number,
         name: string,
         actionId: number,
-        resourceId: number
+        resourceId: number,
+        action?: Action,
+        resource?: Resource,
     }
 
     interface Ticket extends RadienModel {
