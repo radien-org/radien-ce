@@ -3,6 +3,9 @@ import Card from "@/components/Card/Card";
 import useCheckPermissions from "@/hooks/useCheckPermissions";
 import { RadienContext } from "@/context/RadienContextProvider";
 import { useRouter } from "next/router";
+import {Box, Container} from "@cloudscape-design/components";
+import Button from "@cloudscape-design/components/button";
+import NoTenantDashboard from "@/components/NoTenantDashboard/NoTenantDashboard";
 
 export default function ServiceDashboard() {
     const {
@@ -46,6 +49,8 @@ export default function ServiceDashboard() {
     ];
 
     return (
+        <>
+        {activeTenantData != undefined &&
         <div className="container my-12 mx-auto px-4 md:px-12">
             <div className="flex flex-wrap -mx-1 lg:-mx-4">
                 {cards
@@ -54,6 +59,10 @@ export default function ServiceDashboard() {
                         <Card key={c.title} title={c.title} description={c.description} href={c.href} />
                     ))}
             </div>
-        </div>
+        </div> }
+        {activeTenantData === undefined &&
+            <NoTenantDashboard/>
+        }
+        </>
     );
 }

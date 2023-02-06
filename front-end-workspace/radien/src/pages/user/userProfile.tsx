@@ -1,6 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { Box, Button, ButtonDropdown, ButtonDropdownProps, Container, Form, Header, Input, SpaceBetween, TableProps } from "@cloudscape-design/components";
-import { Tenant, Ticket, User } from "radien";
+import React, {useEffect, useState} from "react";
+import {
+    Box,
+    Button,
+    ButtonDropdown, ButtonDropdownProps,
+    Container,
+    Form,
+    Header,
+    Input, Modal, Multiselect,
+    SpaceBetween,
+    TableProps
+} from "@cloudscape-design/components";
+import {Tenant, Ticket, User} from "radien";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
@@ -10,6 +20,7 @@ import { PaginatedTableProps } from "@/components/PaginatedTable/PaginatedTable"
 import useUpdateUser from "@/hooks/useUpdateUser";
 import useDissociateTenant from "@/hooks/useDissociateTenant";
 import { RadienContext } from "@/context/RadienContextProvider";
+import useAllTenantListed from "@/hooks/useAllTenantListed";
 import { useRouter } from "next/router";
 import useCreateTicket from "@/hooks/useCreateTicket";
 import useNotifyCurrentUser from "@/hooks/useNotifyCurrentUser";
@@ -24,6 +35,10 @@ export default function UserProfile() {
     const dissociateUser = useDissociateTenant();
     const createTicket = useCreateTicket();
     const notifyCurrentUser = useNotifyCurrentUser();
+
+    const [ requestTenant, setRequestTenantModalVisible ] = useState(false);
+    const [ selectedOptions, setSelectedOptions ] = useState();
+    const { data } = useAllTenantListed();
 
     const [selectedTenant, setSelectedTenant] = useState<Tenant>();
 
@@ -85,6 +100,10 @@ export default function UserProfile() {
         });
     };
 
+    const sendEmailToAdministrator = () => {
+        console.log("Carreguei no ok");
+    }
+
     const dropdownClickEvent = async (event: CustomEvent<ButtonDropdownProps.ItemClickDetails>) => {
         if (event.detail.id == "dataReq") {
             const uuid = uuidv4();
@@ -106,6 +125,15 @@ export default function UserProfile() {
                 portalUrl: "radien",
                 targetUrl: referenceUrl,
             };
+            await axios.post("/api/notification/notifyCurrentUser", args, {
+                params: {
+                    viewId,
+                    language: "en"
+                }
+            })
+            addSuccessMessage("Successfully requested data. Please check your email for more details.");
+        } else if(event.detail.id == "tenantReq") {
+            setRequestTenantModalVisible(true)
 
             notifyCurrentUser.mutate({ params: args, viewId, language: locale });
             addSuccessMessage(i18n?.user_profile_user_data_request_success || "Successfully requested data. Please check your email for more details.");
@@ -128,6 +156,31 @@ export default function UserProfile() {
 
     return (
         <>
+            <Modal
+                onDismiss={() => setRequestTenantModalVisible(false)}
+                visible={requestTenant}
+                closeAriaLabel="Close modal"
+                footer={
+                    <Box float="right">
+                        <SpaceBetween direction="horizontal" size="xs">
+                            <Button variant="primary" onClick={() => sendEmailToAdministrator()}>Ok</Button>
+                            <Button variant="link" onClick={() => setRequestTenantModalVisible(false)}>Cancel</Button>
+                        </SpaceBetween>
+                    </Box>
+                }
+                header="Request tenant">
+                <Multiselect
+                    selectedOptions={selectedOptions}
+                    onChange={({ detail }) =>
+                        setSelectedOptions(detail.selectedOptions)
+                    }
+                    deselectAriaLabel={e => `Remove ${e.label}`}
+                    options={ data?.map(t => { return {label: t.name, value: String(t.id)} }) }
+                    placeholder="Choose options"
+                    selectedAriaLabel="Selected"
+                />
+            </Modal>
+
             <Box padding="xl">
                 <Container
                     header={
@@ -190,6 +243,16 @@ export default function UserProfile() {
                         queryKey={QueryKeys.AVAILABLE_TENANTS}
                         columnDefinitions={colDefinition}
                         getPaginated={getTenantPage}
+                        selectedItemDetails={
+                            {
+                                selectedItem: selectedTenant,
+                                setSelectedItem: setSelectedTenant
+                            }
+                        }
+                        viewActionProps={
+                            {
+                            }
+                        }
                         viewActionProps={{}}
                         createActionProps={{
                             createLabel: i18n?.user_profile_tenants_create_label || "Request Tenant",
