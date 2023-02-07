@@ -1,6 +1,7 @@
 package io.radien.ms.notificationmanagement.client.services;
 
 import io.radien.ms.openid.entities.GlobalHeaders;
+import java.util.List;
 import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -19,4 +20,8 @@ public interface EmailNotificationResourceClient {
 
     @POST
     Response notify(@QueryParam("email") String email, @QueryParam("viewId") String notificationViewId, @QueryParam("language") String language, Map<String, String> args);
+
+    @POST
+    @Path("/users")
+    Response notifyUsers(@QueryParam("userIds") List<Long> userIds, @QueryParam("viewId") String notificationViewId, @QueryParam("language") String language, Map<String, String> args);
 }

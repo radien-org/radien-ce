@@ -24,6 +24,7 @@ import useAllTenantListed from "@/hooks/useAllTenantListed";
 import { useRouter } from "next/router";
 import useCreateTicket from "@/hooks/useCreateTicket";
 import useNotifyCurrentUser from "@/hooks/useNotifyCurrentUser";
+import {OptionDefinition} from "@cloudscape-design/components/internal/components/option/interfaces";
 
 const FormField = dynamic(() => import("@cloudscape-design/components/form-field"), { ssr: false });
 const PaginatedTable = dynamic(() => import("@/components/PaginatedTable/PaginatedTable"), { ssr: false }) as React.ComponentType<PaginatedTableProps<Tenant>>;
@@ -37,7 +38,7 @@ export default function UserProfile() {
     const notifyCurrentUser = useNotifyCurrentUser();
 
     const [ requestTenant, setRequestTenantModalVisible ] = useState(false);
-    const [ selectedOptions, setSelectedOptions ] = useState();
+    const [ selectedOptions, setSelectedOptions ] = useState<OptionDefinition[]>([]);
     const { data } = useAllTenantListed();
 
     const [selectedTenant, setSelectedTenant] = useState<Tenant>();
@@ -134,25 +135,8 @@ export default function UserProfile() {
             addSuccessMessage("Successfully requested data. Please check your email for more details.");
         } else if(event.detail.id == "tenantReq") {
             setRequestTenantModalVisible(true)
-
-            notifyCurrentUser.mutate({ params: args, viewId, language: locale });
-            addSuccessMessage(i18n?.user_profile_user_data_request_success || "Successfully requested data. Please check your email for more details.");
         }
-    };
-
-    const tenantDetailsView = (
-        <div>
-            <div>
-                <b>Tenant Key:</b> {selectedTenant?.tenantKey}
-            </div>
-            <div>
-                <b>Tenant Name:</b> {selectedTenant?.name}
-            </div>
-            <div>
-                <b>Tenant Type:</b> {selectedTenant?.tenantType}
-            </div>
-        </div>
-    );
+    }
 
     return (
         <>
@@ -172,7 +156,7 @@ export default function UserProfile() {
                 <Multiselect
                     selectedOptions={selectedOptions}
                     onChange={({ detail }) =>
-                        setSelectedOptions(detail.selectedOptions)
+                        setSelectedOptions(() => [...detail.selectedOptions])
                     }
                     deselectAriaLabel={e => `Remove ${e.label}`}
                     options={ data?.map(t => { return {label: t.name, value: String(t.id)} }) }
@@ -243,16 +227,6 @@ export default function UserProfile() {
                         queryKey={QueryKeys.AVAILABLE_TENANTS}
                         columnDefinitions={colDefinition}
                         getPaginated={getTenantPage}
-                        selectedItemDetails={
-                            {
-                                selectedItem: selectedTenant,
-                                setSelectedItem: setSelectedTenant
-                            }
-                        }
-                        viewActionProps={
-                            {
-                            }
-                        }
                         viewActionProps={{}}
                         createActionProps={{
                             createLabel: i18n?.user_profile_tenants_create_label || "Request Tenant",
