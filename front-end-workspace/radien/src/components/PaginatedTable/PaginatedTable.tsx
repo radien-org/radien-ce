@@ -14,7 +14,7 @@ import {
     SpaceBetween,
     TableProps
 } from "@cloudscape-design/components";
-import {UseMutateFunction, useQuery} from "react-query";
+import {UseMutateFunction, useQuery, UseQueryResult} from "react-query";
 import {RadienContext} from "@/context/RadienContextProvider";
 import dynamic from "next/dynamic";
 import {TableForwardRefType} from "@cloudscape-design/components/table/interfaces";
@@ -32,10 +32,12 @@ interface CreateActionProps {
     createAction?: () => void
 }
 
-interface aggregateProps<T> {
-    aggregates: ((loadedData: any, data: T[]) => T[])[],
-    loaders : (() => Promise<AxiosResponse<any, any>>)[],
-    queryKeys: string[][]
+interface AggregateProps<T> {
+    aggregators?: {
+        mapper: ((foreignData: any, tableData: T[]) => T[]),
+        loader: (() => Promise<AxiosResponse<any, any>>),
+        queryKey: string[]
+    }[]
 }
 
 interface ViewActionDetails {
@@ -63,7 +65,7 @@ export interface PaginatedTableProps<T> {
     createActionProps: CreateActionProps,
     deleteActionProps: DeleteActionProps<T>,
     emptyProps: EmptyProps,
-    aggregateProps?: aggregateProps<T>
+    aggregateProps?: AggregateProps<T>
 }
 
 const Table = dynamic(
@@ -90,33 +92,30 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
     const [ selectedItem, setSelectedItem ] = useState<T>();
     const [currentPage, setCurrentPage ] = useState<number>(1);
     const [ viewModalVisible, setViewModalVisible ] = useState(false);
-    const { isLoading, data: _data, refetch } = useQuery([queryKey, currentPage], () => getPaginated(currentPage, pageSize))
-    let loadedData: any = null;
-    if (aggregateProps) {
-        const { loaders, queryKeys } = aggregateProps;
-        loadedData = loaders.map((loader, index) => {
-            return useQuery(queryKeys[index], loader);
-        });
-    }
+    const { isLoading, data, refetch } = useQuery([queryKey, currentPage], () => getPaginated(currentPage, pageSize))
+    let loadedData: {query: UseQueryResult, mapper: (foreignData: any, tableData: T[]) => T[]}[] | undefined;
 
-    let data = null;
-
-    if (loadedData && loadedData.length > 0 && aggregateProps) {
-        let res = [];
-        const aggregates = aggregateProps.aggregates;
-        loadedData.forEach((query: any, index: number) => {
-            if (query.data && _data && _data.data) {
-                _data.data.results = aggregates[index](query.data, _data.data.results);
+    if(aggregateProps) {
+        loadedData = aggregateProps.aggregators?.map(aggregator =>{
+            return {
+                query: useQuery(aggregator.queryKey, aggregator.loader),
+                mapper: aggregator.mapper
             }
-        })
-        data = _data;
-    } else {
-        if (_data) {
-            data = _data;
+        });
+        if (loadedData && loadedData.length > 0) {
+            loadedData.forEach(refData => {
+                const {query, mapper} = refData;
+                if (query.data && data && data.data) {
+                    data.data.results = mapper(query.data, data.data.results);
+                }
+            })
         }
     }
 
-    const loading = isLoading || (aggregateProps && aggregateProps.loaders.length > 0 && loadedData && loadedData.length > 0 && loadedData.some((query: any) => query.isLoading));
+    const loading = isLoading || (
+        aggregateProps && aggregateProps.aggregators && aggregateProps.aggregators.length > 0 &&
+        loadedData && loadedData.length > 0 && loadedData.some((query: any) => query.isLoading)
+    );
 
     const clickTargetUserPage = async (event: NonCancelableCustomEvent<PaginationProps.ChangeDetail>) => {
         let targetPage = event.detail.currentPageIndex;

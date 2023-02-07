@@ -26,7 +26,7 @@ export default function PermissionManagement() {
         return await axios.get("/api/resource/getAll");
     }
 
-    const aggregateActions = (actions: any, data: Permission[]) => {
+    const aggregateActions = (actions: any, data: Permission[]): Permission[] => {
         return data.map((permission: any) => ({
             ...permission,
             action: actions.data.find((action: any) => action.id === permission.actionId),
@@ -69,7 +69,6 @@ export default function PermissionManagement() {
             }
         });
     }
-
     return (
         <Box padding={"xl"}>
             <PaginatedTable
@@ -78,9 +77,16 @@ export default function PermissionManagement() {
                 columnDefinitions={colDefinition}
                 getPaginated={getPermissionPage}
                 aggregateProps={{
-                    aggregates: [aggregateActions, aggregateResources],
-                    loaders: [loadActions, loadResources],
-                    queryKeys: [[QueryKeys.PERMISSION_MANAGEMENT, 'actions'], [QueryKeys.PERMISSION_MANAGEMENT, 'resources']]
+                    aggregators: [
+                        {
+                            mapper: aggregateActions, loader: loadActions,
+                            queryKey: [QueryKeys.PERMISSION_MANAGEMENT, 'actions']
+                        },
+                        {
+                            mapper: aggregateResources, loader: loadResources,
+                            queryKey: [QueryKeys.PERMISSION_MANAGEMENT, 'resources']
+                        }
+                    ]
                 }}
                 viewActionProps={{}}
                 createActionProps={{

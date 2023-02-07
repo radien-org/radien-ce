@@ -121,9 +121,13 @@ export default function TenantManagement() {
                 queryKey={QueryKeys.TENANT_MANAGEMENT}
                 columnDefinitions={colDefinition}
                 aggregateProps={{
-                    aggregates: [aggregateTenant],
-                    loaders: [loadTenant],
-                    queryKeys: [[QueryKeys.TENANT_MANAGEMENT, 'all']]
+                    aggregators: [
+                        {
+                            mapper: aggregateTenant,
+                            loader: loadTenant,
+                            queryKey: [QueryKeys.TENANT_MANAGEMENT, 'references']
+                        }
+                    ]
                 }}
                 getPaginated={getTenantPage}
                 viewActionProps={{}}
