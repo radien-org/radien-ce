@@ -11,6 +11,20 @@ export default function TenantManagement() {
     const {i18n} = useContext(RadienContext);
     const deleteTenant = useDeleteTenant();
 
+    const findTenant = (tenantId: number, tenants: any[]) => {
+        return tenants.find((tenant: any) => tenant.id === tenantId);
+    }
+    const loadTenant = async () => {
+        return await axios.get("/api/tenant/tenant/getAllNoPage");
+    }
+    const aggregateTenant = (tenants: any, data: Tenant[]) => {
+        return data.map((tenant: any) => ({
+            ...tenant,
+            parentData: findTenant(tenant.parentId, tenants.data),
+            clientData: findTenant(tenant.clientId, tenants.data),
+        }));
+    }
+
     const colDefinition: TableProps.ColumnDefinition<Tenant>[] = [
         {
             id: "name",
@@ -106,6 +120,11 @@ export default function TenantManagement() {
                 tableHeader={i18n?.tenant_management_header || "Tenant Management"}
                 queryKey={QueryKeys.TENANT_MANAGEMENT}
                 columnDefinitions={colDefinition}
+                aggregateProps={{
+                    aggregates: [aggregateTenant],
+                    loaders: [loadTenant],
+                    queryKeys: [[QueryKeys.TENANT_MANAGEMENT, 'all']]
+                }}
                 getPaginated={getTenantPage}
                 viewActionProps={{}}
                 createActionProps={{}}

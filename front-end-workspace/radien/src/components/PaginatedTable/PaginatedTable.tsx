@@ -1,12 +1,13 @@
 "use client"
 
 import React, {useContext, useState} from "react";
-import {Page, Permission, RadienModel} from "radien";
+import {Page, RadienModel} from "radien";
 import {AxiosResponse} from "axios";
 import {
     Box,
     Button,
-    Header, Modal,
+    Header,
+    Modal,
     NonCancelableCustomEvent,
     Pagination,
     PaginationProps,
@@ -29,6 +30,12 @@ interface CreateActionProps {
     hideCreate?: boolean,
     createLabel?: string,
     createAction?: () => void
+}
+
+interface aggregateProps<T> {
+    aggregates: ((loadedData: any, data: T[]) => T[])[],
+    loaders : (() => Promise<AxiosResponse<any, any>>)[],
+    queryKeys: string[][]
 }
 
 interface ViewActionDetails {
@@ -56,6 +63,7 @@ export interface PaginatedTableProps<T> {
     createActionProps: CreateActionProps,
     deleteActionProps: DeleteActionProps<T>,
     emptyProps: EmptyProps,
+    aggregateProps?: aggregateProps<T>
 }
 
 const Table = dynamic(
@@ -73,7 +81,8 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
         deleteActionProps: {deleteLabel, deleteConfirmationText, deleteAction},
         createActionProps: {createLabel, hideCreate, createAction},
         viewActionProps: { ViewComponent, viewTitle },
-        emptyProps: {emptyMessage, emptyActionLabel }
+        emptyProps: {emptyMessage, emptyActionLabel },
+        aggregateProps
     } = props;
     const { userInSession } = useContext(RadienContext);
     const [ pageSize, setPageSize ] = useState<number>(10);
@@ -81,7 +90,33 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
     const [ selectedItem, setSelectedItem ] = useState<T>();
     const [currentPage, setCurrentPage ] = useState<number>(1);
     const [ viewModalVisible, setViewModalVisible ] = useState(false);
-    const { isLoading, data, refetch } = useQuery([queryKey, currentPage], () => getPaginated(currentPage, pageSize))
+    const { isLoading, data: _data, refetch } = useQuery([queryKey, currentPage], () => getPaginated(currentPage, pageSize))
+    let loadedData: any = null;
+    if (aggregateProps) {
+        const { loaders, queryKeys } = aggregateProps;
+        loadedData = loaders.map((loader, index) => {
+            return useQuery(queryKeys[index], loader);
+        });
+    }
+
+    let data = null;
+
+    if (loadedData && loadedData.length > 0 && aggregateProps) {
+        let res = [];
+        const aggregates = aggregateProps.aggregates;
+        loadedData.forEach((query: any, index: number) => {
+            if (query.data && _data && _data.data) {
+                _data.data.results = aggregates[index](query.data, _data.data.results);
+            }
+        })
+        data = _data;
+    } else {
+        if (_data) {
+            data = _data;
+        }
+    }
+
+    const loading = isLoading || (aggregateProps && aggregateProps.loaders.length > 0 && loadedData && loadedData.length > 0 && loadedData.some((query: any) => query.isLoading));
 
     const clickTargetUserPage = async (event: NonCancelableCustomEvent<PaginationProps.ChangeDetail>) => {
         let targetPage = event.detail.currentPageIndex;
@@ -110,7 +145,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
                 selectedItems={[selectedItem!]}
                 columnDefinitions={columnDefinitions}
                 items={data?.data?.results!}
-                loading={isLoading}
+                loading={loading}
                 loadingText="Loading resources"
                 sortingDisabled
                 variant={tableVariant || "container"}
@@ -122,7 +157,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
                             variant="p"
                             color="inherit"
                         >
-                        <Button onClick={createResource}>{emptyActionLabel || "Create resource"}</Button>
+                            <Button onClick={createResource}>{emptyActionLabel || "Create resource"}</Button>
                         </Box>
                     </Box>
                 }

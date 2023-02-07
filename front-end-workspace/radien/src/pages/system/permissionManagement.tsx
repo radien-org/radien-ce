@@ -8,6 +8,7 @@ import {QueryKeys} from "@/consts";
 import {RadienContext} from "@/context/RadienContextProvider";
 import {useRouter} from "next/router";
 import useDeletePermission from "@/hooks/useDeletePermission";
+import {useQuery} from "react-query";
 
 export default function PermissionManagement() {
     const pageSize = 10;
@@ -16,25 +17,49 @@ export default function PermissionManagement() {
     const {i18n} = useContext(RadienContext);
     const deletePermission = useDeletePermission()
 
-    const colDefinition: TableProps.ColumnDefinition<Permission>[] = [
-        {
-            id: "name",
-            header: i18n?.permission_management_column_name || "Name",
-            cell: (item: Permission) => item?.name || "-",
-            sortingField: "name"
-        },{
-            id: "actionId",
-            header: i18n?.permission_management_column_action || "Action",
-            cell: (item: Permission) => item?.action?.name.toString() || "-",
-            sortingField: "actionId"
-        },
-        {
-            id: "resourceId",
-            header: i18n?.permission_management_column_resource || "Resource",
-            cell: (item: Permission) => item?.resource?.name.toString() || "-",
-            sortingField: "resourceId"
-        }
-    ]
+
+    const loadActions = async () => {
+        return await axios.get("/api/action/getAll");
+    }
+
+    const loadResources = async () => {
+        return await axios.get("/api/resource/getAll");
+    }
+
+    const aggregateActions = (actions: any, data: Permission[]) => {
+        return data.map((permission: any) => ({
+            ...permission,
+            action: actions.data.find((action: any) => action.id === permission.actionId),
+        }));
+    }
+    const aggregateResources = (resources: any, data: Permission[]) => {
+        return data.map((permission: any) => ({
+            ...permission,
+            resource: resources.data.find((action: any) => action.id === permission.actionId),
+        }));
+    }
+
+    const colDefinition: TableProps.ColumnDefinition<Permission>[] =  [
+            {
+                id: "name",
+                header: i18n?.permission_management_column_name || "Name",
+                cell: (item: Permission) => item?.name || "-",
+                sortingField: "name"
+            },{
+                id: "actionId",
+                header: i18n?.permission_management_column_action || "Action",
+                cell: (item: Permission) => item?.action?.name.toString() || "-",
+                sortingField: "actionId"
+            },
+            {
+                id: "resourceId",
+                header: i18n?.permission_management_column_resource || "Resource",
+                cell: (item: Permission) => item?.resource?.name.toString() || "-",
+                sortingField: "resourceId"
+            }
+        ]
+
+
 
     const getPermissionPage = async (pageNumber: number = 1, pageSize: number = 10) => {
         return await axios.get("/api/permission/permission/getAll", {
@@ -52,6 +77,11 @@ export default function PermissionManagement() {
                 queryKey={QueryKeys.PERMISSION_MANAGEMENT}
                 columnDefinitions={colDefinition}
                 getPaginated={getPermissionPage}
+                aggregateProps={{
+                    aggregates: [aggregateActions, aggregateResources],
+                    loaders: [loadActions, loadResources],
+                    queryKeys: [[QueryKeys.PERMISSION_MANAGEMENT, 'actions'], [QueryKeys.PERMISSION_MANAGEMENT, 'resources']]
+                }}
                 viewActionProps={{}}
                 createActionProps={{
                     createLabel: i18n?.permission_management_create_label || "Create permission",

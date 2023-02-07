@@ -11,9 +11,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         return;
     }
 
-    const findTenant = (tenantId: number, tenants: any[]) => {
-        return tenants.find((tenant: any) => tenant.id === tenantId);
-    }
     const path = `${process.env.RADIEN_TENANT_URL}/tenant`;
     try {
         const result: AxiosResponse = await axios
@@ -26,12 +23,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                     "Authorization": `Bearer ${session.accessToken}`
                 }
             });
-        let resp = result.data;
-        resp.results = resp.results.map((tenant: any) => ({
-            ...tenant,
-            parentData: findTenant(tenant.parentId, resp.results),
-            clientData: findTenant(tenant.clientId, resp.results)
-        }));
         res.status(200).json(result.data);
     } catch(e) {
         res.status(500).json(e);
