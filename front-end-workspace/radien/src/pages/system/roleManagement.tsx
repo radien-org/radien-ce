@@ -5,9 +5,11 @@ import PaginatedTable from "@/components/PaginatedTable/PaginatedTable";
 import {Box, TableProps} from "@cloudscape-design/components";
 import {QueryKeys} from "@/consts";
 import {RadienContext} from "@/context/RadienContextProvider";
+import {useRouter} from "next/router";
 
 export default function RoleManagement() {
     const { i18n } = useContext(RadienContext);
+    const router = useRouter();
 
     const colDefinition: TableProps.ColumnDefinition<Role>[] = [
         {
@@ -46,7 +48,12 @@ export default function RoleManagement() {
                 columnDefinitions={colDefinition}
                 getPaginated={getRolePage}
                 viewActionProps={{}}
-                createActionProps={{}}
+                createActionProps={{
+                    createLabel: i18n?.permission_management_create_label || "Create Role",
+                    createAction: () => {
+                        router.push('/role/createRole');
+                    }
+                }}
                 deleteActionProps={
                     {
                         deleteLabel: i18n?.role_management_delete_label || "Delete Role",
