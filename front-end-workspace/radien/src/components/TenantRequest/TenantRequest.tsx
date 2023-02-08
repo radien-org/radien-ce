@@ -18,9 +18,8 @@ interface TenantRequestProps {
 
 const TARGET_ROLES = ["Tenant Administrator", "System Administrator"];
 
-//TODO: ADD I18N
 export default function TenantRequest(props: TenantRequestProps) {
-    const { userInSession: radienUser, addSuccessMessage, addErrorMessage } = useContext(RadienContext);
+    const { userInSession: radienUser, i18n, addSuccessMessage, addErrorMessage } = useContext(RadienContext);
     const createTicket = useCreateTicket();
     const notifyTenantRoles = useNotifyTenantRoles();
     const { data } = useAvailableTenants();
@@ -30,6 +29,7 @@ export default function TenantRequest(props: TenantRequestProps) {
 
     const onClickAction = () => {
         setModalVisible(false);
+        const referenceUrl: string = `${process.env.NEXTAUTH_URL}/system/userManagement")`;
         selectedOptions.forEach(option => {
             const uuid = uuidv4();
             const ticket:  Ticket = {
@@ -46,7 +46,7 @@ export default function TenantRequest(props: TenantRequestProps) {
                 firstName: radienUser?.firstname,
                 lastName: radienUser?.lastname,
                 userId: String(radienUser?.id),
-                targetUrl: "banana"
+                targetUrl: referenceUrl
             }
             notifyTenantRoles.mutate(
                 {
@@ -57,10 +57,16 @@ export default function TenantRequest(props: TenantRequestProps) {
                     roles: TARGET_ROLES
                 },
                 {
-                    onSuccess: () => addSuccessMessage(`Administrators of ${option.label} have been notified`),
+                    onSuccess: () => {
+                        const message = `${i18n?.generic_success_message || "Success"}: ${i18n.tenant_request_admins_notified || "Administrators of ${} have been notified"}`
+                            .replace("${}", option.label!)
+                        addSuccessMessage(message)
+                    },
                     onError: (e) => {
                         if(e instanceof AxiosError && e.response?.status === 404) {
-                            addErrorMessage(`Error: No users with the necessary roles were found in ${option.label}`)
+                            const message = `${i18n?.generic_error_message || "Error"}: ${i18n.tenant_request_no_admins_found || "No users with the necessary roles were found in ${}"}`
+                                .replace("${}", option.label!)
+                            addErrorMessage(message)
                         }
                     }
                 }
@@ -76,21 +82,19 @@ export default function TenantRequest(props: TenantRequestProps) {
             footer={
                 <Box float="right">
                     <SpaceBetween direction="horizontal" size="xs">
-                        <Button variant="primary" onClick={() => onClickAction()}>Ok</Button>
-                        <Button variant="link" onClick={() => setModalVisible(false)}>Cancel</Button>
+                        <Button variant="primary" onClick={() => onClickAction()}>{i18n?.request_tenant_button_primary || "Ok"}</Button>
+                        <Button variant="link" onClick={() => setModalVisible(false)}>{i18n?.request_tenant_button_cancel || "Cancel"}</Button>
                     </SpaceBetween>
                 </Box>
             }
-            header="Request tenant">
+            header={i18n?.request_tenant_header || "Request tenant"}>
             <Multiselect
                 selectedOptions={selectedOptions}
                 onChange={({ detail }) =>
                     setSelectedOptions(() => [...detail.selectedOptions])
                 }
-                deselectAriaLabel={e => `Remove ${e.label}`}
                 options={ data?.map(t => { return {label: t.name, value: String(t.id)} }) }
-                placeholder="Choose options"
-                selectedAriaLabel="Selected"
+                placeholder={i18n?.request_tenant_options_placeholder || "Choose tenant(s)"}
             />
         </Modal>
     )
