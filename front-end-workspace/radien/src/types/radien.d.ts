@@ -65,7 +65,7 @@ declare module "radien" {
     interface Ticket extends RadienModel {
         userId: number;
         ticketType: number;
-        expireDate: Date;
+        expireDate: Date | string;
         token: string;
         data: string;
         createUser: number;

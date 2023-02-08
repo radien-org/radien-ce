@@ -16,7 +16,7 @@ import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
 import dynamic from "next/dynamic";
 import { QueryKeys, TicketType } from "@/consts";
-import { PaginatedTableProps } from "@/components/PaginatedTable/PaginatedTable";
+import PaginatedTable, { PaginatedTableProps } from "@/components/PaginatedTable/PaginatedTable";
 import useUpdateUser from "@/hooks/useUpdateUser";
 import useDissociateTenant from "@/hooks/useDissociateTenant";
 import { RadienContext } from "@/context/RadienContextProvider";
@@ -25,9 +25,9 @@ import { useRouter } from "next/router";
 import useCreateTicket from "@/hooks/useCreateTicket";
 import useNotifyCurrentUser from "@/hooks/useNotifyCurrentUser";
 import {OptionDefinition} from "@cloudscape-design/components/internal/components/option/interfaces";
+import useNotifyTenantRoles from "@/hooks/useNotifyTenantRoles";
 
 const FormField = dynamic(() => import("@cloudscape-design/components/form-field"), { ssr: false });
-const PaginatedTable = dynamic(() => import("@/components/PaginatedTable/PaginatedTable"), { ssr: false }) as React.ComponentType<PaginatedTableProps<Tenant>>;
 
 export default function UserProfile() {
     const { addSuccessMessage, userInSession: radienUser, isLoadingUserInSession, i18n } = React.useContext(RadienContext);
@@ -36,6 +36,7 @@ export default function UserProfile() {
     const dissociateUser = useDissociateTenant();
     const createTicket = useCreateTicket();
     const notifyCurrentUser = useNotifyCurrentUser();
+    const notifyTenantRoles = useNotifyTenantRoles();
 
     const [ requestTenant, setRequestTenantModalVisible ] = useState(false);
     const [ selectedOptions, setSelectedOptions ] = useState<OptionDefinition[]>([]);
@@ -102,7 +103,39 @@ export default function UserProfile() {
     };
 
     const sendEmailToAdministrator = () => {
-        console.log("Carreguei no ok");
+        setRequestTenantModalVisible(false);
+        selectedOptions.forEach(option => {
+            const uuid = uuidv4();
+            const ticket:  Ticket = {
+                userId: Number(radienUser?.id),
+                token: uuid,
+                ticketType: TicketType.TENANT_REQUEST,
+                data: `${option.value!}`,
+                createUser: Number(radienUser?.id),
+                expireDate: moment().add(7, "days").format("yyyy-MM-DDTHH:mm:ss")
+            }
+            createTicket.mutate(ticket);
+            const args = {
+                tenantName: option.label,
+                firstName: radienUser?.firstname,
+                lastName: radienUser?.lastname,
+                userId: String(radienUser?.id),
+                targetUrl: "banana"
+            }
+            notifyTenantRoles.mutate(
+                {
+                    params: args,
+                    viewId: "email-8",
+                    language: "en",
+                    tenantId: Number(option.value!),
+                    roles: ["Tenant Administrator", "System Administrator"]
+                },
+                {
+                    onSuccess: () => addSuccessMessage(`Administrators of ${option.label} have been notified`)
+                }
+            )
+        })
+
     }
 
     const dropdownClickEvent = async (event: CustomEvent<ButtonDropdownProps.ItemClickDetails>) => {

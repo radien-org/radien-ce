@@ -19,7 +19,8 @@ public enum TicketType implements SystemTicketType {
 
     EMAIL_CHANGE(1L, "email_change", 5),
     REFERENCE_LINK(2L, "reference_link", 14400),
-    GDPR_DATA_REQUEST(3L, "gdpr_data_request", 34560);
+    GDPR_DATA_REQUEST(3L, "gdpr_data_request", 34560),
+    TENANT_REQUEST(4L, "tenant_request", 10080 /* 7 DAYS */);
 
     TicketType(Long id, String type, int expirationPeriod){
         this.id = id;

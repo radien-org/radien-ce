@@ -45,6 +45,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         .filter(result => result.totalResults >= 1)
         .map(result => result.results).flat(1);
 
+    if(userIds.length == 0) {
+        res.status(404).json({error: "Error: No Administrators to notify were found"})
+    }
+
     const path = `${process.env.RADIEN_NOTIFICATION_URL}/email/users`;
 
     const result: AxiosResponse = await axios

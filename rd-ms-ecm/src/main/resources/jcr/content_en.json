@@ -42,6 +42,21 @@
     ]
   },
   {
+    "viewId": "email-8",
+    "contentType": "html",
+    "language": "en",
+    "active": "true",
+    "system": "true",
+    "name": "radien - Tenant Request",
+    "htmlContent": "Dear Administrator of $tenantName$, </br>user $firstName$ $lastName$ with UID $userId$ has requested access to $tenantName$ Tenant. </br>Please take required action in <a href='$targetUrl$'>Approvals Page</a>",
+    "image": "logo.png",
+    "tags": [
+      "Radien",
+      "email",
+      "GDPR"
+    ]
+  },
+  {
     "viewId": "TaC",
     "contentType": "document",
     "language": "en",
