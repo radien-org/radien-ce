@@ -4,7 +4,7 @@ import useCheckPermissions from "@/hooks/useCheckPermissions";
 import {RadienContext} from "@/context/RadienContextProvider";
 import Button from "@cloudscape-design/components/button";
 import {Box, Container, Modal, Multiselect, SpaceBetween} from "@cloudscape-design/components";
-import useAllTenantListed from "@/hooks/useAllTenantListed";
+import useAllTenantListed from "@/hooks/useAvailableTenants";
 
 export default function NoTenantDashboard() {
 

@@ -11,7 +11,7 @@ export default function useDeleteTenant() {
         mutationFn: ({ tenantId, userId }: DeleteParams) => axios.delete(`/api/tenant/delete/${tenantId}`),
         onSuccess: () => {
             queryClient.invalidateQueries(QueryKeys.TENANT_MANAGEMENT);
-            queryClient.invalidateQueries(QueryKeys.AVAILABLE_TENANTS);
+            queryClient.invalidateQueries(QueryKeys.ASSIGNED_TENANTS);
             queryClient.invalidateQueries(QueryKeys.ACTIVE_TENANT);
 
             let message = `${i18n?.generic_message_success || "Success"}: ${i18n?.tenant_management_delete_success || "Tenant deleted successfully"}`;

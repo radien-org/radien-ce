@@ -6,7 +6,7 @@ import { ButtonDropdownProps } from "@cloudscape-design/components";
 import { ActiveTenant, Tenant, User } from "radien";
 import ItemOrGroup = ButtonDropdownProps.ItemOrGroup;
 import Utility = TopNavigationProps.Utility;
-import useAvailableTenants from "@/hooks/useAvailableTenants";
+import useAssignedTenants from '@/hooks/useAssignedTenants';
 import useCheckPermissions from "@/hooks/useCheckPermissions";
 import { QueryClient } from "react-query";
 import { QueryKeys } from "@/consts";
@@ -118,7 +118,7 @@ function LoggedOutHeader({ i18n, router }: LoggedOutProps) {
 
 function LoggedInHeader(props: LoggedInProps) {
     const { radienUser, i18n, router } = props;
-    const { isLoading: loadingAvailableTenants, data: availableTenants } = useAvailableTenants(radienUser.id);
+    const { isLoading: loadingAssignedTenants, data: assignedTenants } = useAssignedTenants(radienUser.id);
     const {
         activeTenant: { data: activeTenant, refetch: refetchActiveTenant, isLoading: activeTenantLoading },
     } = useContext(RadienContext);
@@ -140,7 +140,7 @@ function LoggedInHeader(props: LoggedInProps) {
     };
 
     let utilities: TopNavigationProps.Utility[];
-    if (loadingAvailableTenants || activeTenantLoading) {
+    if (loadingAssignedTenants || activeTenantLoading) {
         utilities = [
             {
                 type: "menu-dropdown",
@@ -195,20 +195,19 @@ function LoggedInHeader(props: LoggedInProps) {
                 type: "menu-dropdown",
                 iconName: "multiscreen",
                 ariaLabel:
-                    availableTenants?.results.find((t: Tenant) => t.id == activeTenant?.tenantId)?.name ||
+                    assignedTenants?.results.find((t: Tenant) => t.id == activeTenant?.tenantId)?.name ||
                     i18n?.active_tenant_no_active_tenant ||
                     "No tenant selected....",
                 text:
-                    availableTenants?.results.find((t: Tenant) => t.id == activeTenant?.tenantId)?.name ||
+                    assignedTenants?.results.find((t: Tenant) => t.id == activeTenant?.tenantId)?.name ||
                     i18n?.active_tenant_no_active_tenant ||
                     "No tenant selected....",
                 title:
-                    availableTenants?.results.find((t: Tenant) => t.id == activeTenant?.tenantId)?.name ||
+                    assignedTenants?.results.find((t: Tenant) => t.id == activeTenant?.tenantId)?.name ||
                     i18n?.active_tenant_no_active_tenant ||
                     "No tenant selected....",
                 onItemClick: (event) => tenantClicked(event),
-                items: availableTenants
-                    ? availableTenants.results.map((tenant: Tenant) => {
+                items: assignedTenants ? assignedTenants.results.map((tenant: Tenant) => {
                           return { id: `${tenant.id}`, text: tenant.name };
                       })
                     : [],

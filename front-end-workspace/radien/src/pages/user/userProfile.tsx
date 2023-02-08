@@ -6,7 +6,7 @@ import {
     Container,
     Form,
     Header,
-    Input, Modal, Multiselect,
+    Input,
     SpaceBetween,
     TableProps
 } from "@cloudscape-design/components";
@@ -16,16 +16,13 @@ import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
 import dynamic from "next/dynamic";
 import { QueryKeys, TicketType } from "@/consts";
-import PaginatedTable, { PaginatedTableProps } from "@/components/PaginatedTable/PaginatedTable";
+import PaginatedTable from "@/components/PaginatedTable/PaginatedTable";
 import useUpdateUser from "@/hooks/useUpdateUser";
 import useDissociateTenant from "@/hooks/useDissociateTenant";
 import { RadienContext } from "@/context/RadienContextProvider";
-import useAllTenantListed from "@/hooks/useAllTenantListed";
 import { useRouter } from "next/router";
 import useCreateTicket from "@/hooks/useCreateTicket";
-import useNotifyCurrentUser from "@/hooks/useNotifyCurrentUser";
-import {OptionDefinition} from "@cloudscape-design/components/internal/components/option/interfaces";
-import useNotifyTenantRoles from "@/hooks/useNotifyTenantRoles";
+import TenantRequest from "@/components/TenantRequest/TenantRequest";
 
 const FormField = dynamic(() => import("@cloudscape-design/components/form-field"), { ssr: false });
 
@@ -35,20 +32,14 @@ export default function UserProfile() {
     const updateUser = useUpdateUser();
     const dissociateUser = useDissociateTenant();
     const createTicket = useCreateTicket();
-    const notifyCurrentUser = useNotifyCurrentUser();
-    const notifyTenantRoles = useNotifyTenantRoles();
-
-    const [ requestTenant, setRequestTenantModalVisible ] = useState(false);
-    const [ selectedOptions, setSelectedOptions ] = useState<OptionDefinition[]>([]);
-    const { data } = useAllTenantListed();
-
-    const [selectedTenant, setSelectedTenant] = useState<Tenant>();
 
     const [firstName, setFirstName] = useState<string>(radienUser?.firstname || "");
     const [lastName, setLastName] = useState<string>(radienUser?.lastname || "");
     const [logon, setLogon] = useState<string>(radienUser?.logon || "");
     const [userEmail, setUserEmail] = useState<string>(radienUser?.userEmail || "");
     const [sub, setSub] = useState<string>(radienUser?.sub || "");
+
+    const [ requestTenantVisibility, setRequestTenantVisibility ] = useState(false);
 
     useEffect(() => {
         setFirstName(radienUser?.firstname || "");
@@ -102,42 +93,6 @@ export default function UserProfile() {
         });
     };
 
-    const sendEmailToAdministrator = () => {
-        setRequestTenantModalVisible(false);
-        selectedOptions.forEach(option => {
-            const uuid = uuidv4();
-            const ticket:  Ticket = {
-                userId: Number(radienUser?.id),
-                token: uuid,
-                ticketType: TicketType.TENANT_REQUEST,
-                data: `${option.value!}`,
-                createUser: Number(radienUser?.id),
-                expireDate: moment().add(7, "days").format("yyyy-MM-DDTHH:mm:ss")
-            }
-            createTicket.mutate(ticket);
-            const args = {
-                tenantName: option.label,
-                firstName: radienUser?.firstname,
-                lastName: radienUser?.lastname,
-                userId: String(radienUser?.id),
-                targetUrl: "banana"
-            }
-            notifyTenantRoles.mutate(
-                {
-                    params: args,
-                    viewId: "email-8",
-                    language: "en",
-                    tenantId: Number(option.value!),
-                    roles: ["Tenant Administrator", "System Administrator"]
-                },
-                {
-                    onSuccess: () => addSuccessMessage(`Administrators of ${option.label} have been notified`)
-                }
-            )
-        })
-
-    }
-
     const dropdownClickEvent = async (event: CustomEvent<ButtonDropdownProps.ItemClickDetails>) => {
         if (event.detail.id == "dataReq") {
             const uuid = uuidv4();
@@ -162,42 +117,16 @@ export default function UserProfile() {
             await axios.post("/api/notification/notifyCurrentUser", args, {
                 params: {
                     viewId,
-                    language: "en"
+                    language: locale
                 }
             })
             addSuccessMessage("Successfully requested data. Please check your email for more details.");
-        } else if(event.detail.id == "tenantReq") {
-            setRequestTenantModalVisible(true)
         }
     }
 
     return (
         <>
-            <Modal
-                onDismiss={() => setRequestTenantModalVisible(false)}
-                visible={requestTenant}
-                closeAriaLabel="Close modal"
-                footer={
-                    <Box float="right">
-                        <SpaceBetween direction="horizontal" size="xs">
-                            <Button variant="primary" onClick={() => sendEmailToAdministrator()}>Ok</Button>
-                            <Button variant="link" onClick={() => setRequestTenantModalVisible(false)}>Cancel</Button>
-                        </SpaceBetween>
-                    </Box>
-                }
-                header="Request tenant">
-                <Multiselect
-                    selectedOptions={selectedOptions}
-                    onChange={({ detail }) =>
-                        setSelectedOptions(() => [...detail.selectedOptions])
-                    }
-                    deselectAriaLabel={e => `Remove ${e.label}`}
-                    options={ data?.map(t => { return {label: t.name, value: String(t.id)} }) }
-                    placeholder="Choose options"
-                    selectedAriaLabel="Selected"
-                />
-            </Modal>
-
+            <TenantRequest modalVisible={requestTenantVisibility} setModalVisible={setRequestTenantVisibility}/>
             <Box padding="xl">
                 <Container
                     header={
@@ -210,8 +139,8 @@ export default function UserProfile() {
                                     onItemClick={(event) => dropdownClickEvent(event)}
                                     items={[
                                         { text: i18n?.user_profile_delete_label || "Delete", id: "delUser", disabled: false },
-                                        { text: i18n?.user_profile_request_tenant || "Request Tenant", id: "tenantReq", disabled: false },
-                                        { text: i18n?.user_profile_request_user_data || "Request User Data", id: "dataReq", disabled: false },
+                                        { text: i18n?.user_profile_request_user_data || "Request User Data", id: "dataReq", disabled: false }
+                                                ,
                                     ]}></ButtonDropdown>
                             }>
                             User Profile
@@ -257,12 +186,13 @@ export default function UserProfile() {
                     <PaginatedTable
                         tableHeader={i18n?.user_profile_tenants_table_header || "Associated Tenants"}
                         tableVariant={"embedded"}
-                        queryKey={QueryKeys.AVAILABLE_TENANTS}
+                        queryKey={QueryKeys.ASSIGNED_TENANTS}
                         columnDefinitions={colDefinition}
                         getPaginated={getTenantPage}
                         viewActionProps={{}}
                         createActionProps={{
                             createLabel: i18n?.user_profile_tenants_create_label || "Request Tenant",
+                            createAction: () => setRequestTenantVisibility(true)
                         }}
                         deleteActionProps={{
                             deleteLabel: i18n?.user_profile_tenants_delete_label || "Dissociate Tenant",

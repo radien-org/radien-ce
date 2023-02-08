@@ -2,12 +2,12 @@ enum QueryKeys {
     ME = "userInSession",
     I18N = "i18n",
     ACTIVE_TENANT = "activeTenant",
-    AVAILABLE_TENANTS = "availableTenants",
+    ASSIGNED_TENANTS = "assignedTenants",
     ROLE_MANAGEMENT = "roleManagement",
     USER_MANAGEMENT = "userManagement",
     PERMISSION_MANAGEMENT = "permissionManagement",
     TENANT_MANAGEMENT = "tenantManagement",
-    COMPLETE_TENANT_LIST = "completeTenantList"
+    AVAILABLE_TENANTS = "availableTenants"
 }
 
 enum TicketType {
