@@ -3,19 +3,22 @@ import Card from "@/components/Card/Card";
 import useCheckPermissions from "@/hooks/useCheckPermissions";
 import { RadienContext } from "@/context/RadienContextProvider";
 import { useRouter } from "next/router";
-import {Box, Container} from "@cloudscape-design/components";
-import Button from "@cloudscape-design/components/button";
 import NoTenantDashboard from "@/components/NoTenantDashboard/NoTenantDashboard";
+import useAssignedTenants from "@/hooks/useAssignedTenants";
+import {Loader} from "@/components/Loader/Loader";
 
 export default function ServiceDashboard() {
     const {
         userInSession: radienUser,
-        activeTenant: { data: activeTenantData },
-        i18n,
-    } = useContext(RadienContext);
+        activeTenant: { data: activeTenantData , isLoading: isLoadingActiveTenant }, i18n,} = useContext(RadienContext);
+    const { data: assignedTenants, isLoading: isLoadingAssignedTenants } = useAssignedTenants();
     const { locale } = useRouter();
     const [{ data: rolesViewPermission }, { data: usersViewPermission }, { data: permissionViewPermission }, { data: tenantViewPermission }] =
         useCheckPermissions(radienUser?.id!, activeTenantData?.tenantId!);
+
+    if(isLoadingAssignedTenants || isLoadingActiveTenant) {
+        return <Loader/>
+    }
 
     const cards = [
         {
@@ -50,19 +53,19 @@ export default function ServiceDashboard() {
 
     return (
         <>
-        {activeTenantData != undefined &&
-        <div className="container my-12 mx-auto px-4 md:px-12">
-            <div className="flex flex-wrap -mx-1 lg:-mx-4">
-                {cards
-                    .filter((c) => c.hasPermission)
+            {assignedTenants && assignedTenants.totalResults > 0 != undefined &&
+                <div className="container my-12 mx-auto px-4 md:px-12">
+                    <div className="flex flex-wrap -mx-1 lg:-mx-4">
+                        {cards.filter((c) => c.hasPermission)
                     .map((c) => (
                         <Card key={c.title} title={c.title} description={c.description} href={c.href} />
                     ))}
-            </div>
-        </div> }
-        {activeTenantData === undefined &&
-            <NoTenantDashboard/>
-        }
+                    </div>
+                </div>
+            }
+            {(!assignedTenants || assignedTenants.totalResults == 0) &&
+                <NoTenantDashboard/>
+            }
         </>
     );
 }

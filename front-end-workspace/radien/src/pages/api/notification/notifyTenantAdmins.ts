@@ -28,7 +28,7 @@ const getUserIds = async (roleIds: number[], tenantId: number, token: string) =>
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
     const session = await getServerSession(req, res, authOptions);
-    const { tenantId, viewId, language } = req.query;
+    const { tenantId, tenantName, viewId, language } = req.query;
     const { args, roles }  = req.body;
     if(!session) {
         res.status(401).json({});
@@ -46,7 +46,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         .map(result => result.results).flat(1);
 
     if(userIds.length == 0) {
-        res.status(404).json({error: "Error: No Administrators to notify were found"})
+        res.status(404).json({})
     }
 
     const path = `${process.env.RADIEN_NOTIFICATION_URL}/email/users`;

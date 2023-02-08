@@ -9,6 +9,7 @@ import {RadienContext} from "@/context/RadienContextProvider";
 import useCreateTicket from "@/hooks/useCreateTicket";
 import useNotifyTenantRoles from "@/hooks/useNotifyTenantRoles";
 import useAvailableTenants from "@/hooks/useAvailableTenants";
+import {AxiosError} from "axios";
 
 interface TenantRequestProps {
     modalVisible: boolean,
@@ -16,6 +17,8 @@ interface TenantRequestProps {
 }
 
 const TARGET_ROLES = ["Tenant Administrator", "System Administrator"];
+
+//TODO: ADD I18N
 export default function TenantRequest(props: TenantRequestProps) {
     const { userInSession: radienUser, addSuccessMessage, addErrorMessage } = useContext(RadienContext);
     const createTicket = useCreateTicket();
@@ -54,7 +57,12 @@ export default function TenantRequest(props: TenantRequestProps) {
                     roles: TARGET_ROLES
                 },
                 {
-                    onSuccess: () => addSuccessMessage(`Administrators of ${option.label} have been notified`)
+                    onSuccess: () => addSuccessMessage(`Administrators of ${option.label} have been notified`),
+                    onError: (e) => {
+                        if(e instanceof AxiosError && e.response?.status === 404) {
+                            addErrorMessage(`Error: No users with the necessary roles were found in ${option.label}`)
+                        }
+                    }
                 }
             )
         })
