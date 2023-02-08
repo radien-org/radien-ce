@@ -47,6 +47,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     if(userIds.length == 0) {
         res.status(404).json({})
+        return;
     }
 
     const path = `${process.env.RADIEN_NOTIFICATION_URL}/email/users`;
