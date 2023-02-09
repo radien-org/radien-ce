@@ -53,19 +53,18 @@ export default function ServiceDashboard() {
 
     return (
         <>
-            {assignedTenants && assignedTenants.totalResults > 0 != undefined &&
-                <div className="container my-12 mx-auto px-4 md:px-12">
-                    <div className="flex flex-wrap -mx-1 lg:-mx-4">
-                        {cards.filter((c) => c.hasPermission)
+            {assignedTenants && assignedTenants.totalResults > 0  ?
+                (
+                    <div className="container my-12 mx-auto px-4 md:px-12">
+                        <div className="flex flex-wrap -mx-1 lg:-mx-4">
+                            {cards.filter((c) => c.hasPermission)
                     .map((c) => (
                         <Card key={c.title} title={c.title} description={c.description} href={c.href} />
                     ))}
+                        </div>
                     </div>
-                </div>
-            }
-            {(!assignedTenants || assignedTenants.totalResults == 0) &&
-                <NoTenantDashboard/>
-            }
+                )
+            : <NoTenantDashboard />}
         </>
     );
 }
