@@ -119,7 +119,7 @@ export default function createPermission() {
                             actions={
                                 <SpaceBetween direction="horizontal" size="xs">
                                     <Button formAction="none" variant="link" href={"/system/permissionManagement"}>
-                                        Cancel
+                                        {i18n?.button_cancel || "Cancel" }
                                     </Button>
                                     <Button variant="primary">{i18n?.button_create || "Create"}</Button>
                                 </SpaceBetween>
