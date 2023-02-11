@@ -14,7 +14,7 @@ import { useRouter } from "next/router";
 
 const FormField = dynamic(() => import("@cloudscape-design/components/form-field"), { ssr: false });
 
-export default function createRole() {
+export default function CreateRole() {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [terminationDate, setTerminationDate] = useState("");

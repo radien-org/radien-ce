@@ -1,0 +1,12 @@
+**/.git
+**/.svn
+**/.hg
+**/node_modules
+
+# Ignore artifacts:
+build
+coverage
+.next
+
+# Ignore all HTML files:
+*.html

@@ -1,14 +1,14 @@
-import React from 'react';
+import React from "react";
 import Link from "next/link";
 
 interface CardProps {
-    title: string,
-    description: string,
-    href: string,
-    locale?: string
+    title: string;
+    description: string;
+    href: string;
+    locale?: string;
 }
 
-export default function Card(props : CardProps) {
+export default function Card(props: CardProps) {
     const { title, description, href, locale } = props;
 
     return (
@@ -16,17 +16,13 @@ export default function Card(props : CardProps) {
             <Link href={href} locale={locale}>
                 <article className="overflow-hidden rounded-lg shadow-lg bg-[#faf7f7] text-[#00142b] hover:bg-[#00142b] hover:text-[#faf7f7]">
                     <header className="flex items-center justify-between leading-tight p-2 md:p-4">
-                        <h1 className="text-xxl font-semibold">
-                                {title}
-                        </h1>
+                        <h1 className="text-xxl font-semibold">{title}</h1>
                     </header>
                     <footer className="flex items-center justify-between leading-none md:p-4">
-                        <p className="text-sm">
-                            {description}
-                        </p>
+                        <p className="text-sm">{description}</p>
                     </footer>
                 </article>
             </Link>
         </div>
-);
+    );
 }

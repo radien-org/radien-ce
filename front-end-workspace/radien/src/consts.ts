@@ -12,7 +12,7 @@ enum QueryKeys {
 enum TicketType {
     EMAIL_CHANGE = 1,
     REFERENCE_LINK = 2,
-    GDPR_DATA_REQUEST = 3
+    GDPR_DATA_REQUEST = 3,
 }
 
-export {QueryKeys, TicketType};
+export { QueryKeys, TicketType };

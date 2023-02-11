@@ -1,118 +1,119 @@
-import React, {useContext} from "react";
-import {Tenant} from "radien";
+import React, { useContext } from "react";
+import { Tenant } from "radien";
 import axios from "axios";
-import PaginatedTable, {DeleteParams, } from "@/components/PaginatedTable/PaginatedTable";
-import {Box, TableProps} from "@cloudscape-design/components";
-import {QueryKeys} from "@/consts";
-import {RadienContext} from "@/context/RadienContextProvider";
+import PaginatedTable, { DeleteParams } from "@/components/PaginatedTable/PaginatedTable";
+import { Box, TableProps } from "@cloudscape-design/components";
+import { QueryKeys } from "@/consts";
+import { RadienContext } from "@/context/RadienContextProvider";
 import useDeleteTenant from "@/hooks/useDeleteTenant";
 
 export default function TenantManagement() {
-    const {i18n} = useContext(RadienContext);
+    const { i18n } = useContext(RadienContext);
     const deleteTenant = useDeleteTenant();
 
     const findTenant = (tenantId: number, tenants: any[]) => {
         return tenants.find((tenant: any) => tenant.id === tenantId);
-    }
+    };
     const loadTenant = async () => {
         return await axios.get("/api/tenant/tenant/getAllNoPage");
-    }
+    };
     const aggregateTenant = (tenants: any, data: Tenant[]) => {
         return data.map((tenant: any) => ({
             ...tenant,
             parentData: findTenant(tenant.parentId, tenants.data),
             clientData: findTenant(tenant.clientId, tenants.data),
         }));
-    }
+    };
 
     const colDefinition: TableProps.ColumnDefinition<Tenant>[] = [
         {
             id: "name",
             header: i18n?.tenant_management_column_name || "Name",
             cell: (item: Tenant) => item?.name || "-",
-            sortingField: "name"
-        },{
+            sortingField: "name",
+        },
+        {
             id: "tenantKey",
             header: i18n?.tenant_management_column_key || "Key",
             cell: (item: Tenant) => item?.tenantKey || "-",
-            sortingField: "tenantKey"
+            sortingField: "tenantKey",
         },
         {
             id: "tenantType",
             header: i18n?.tenant_management_column_type || "Type",
             cell: (item: Tenant) => item?.tenantType || "-",
-            sortingField: "tenantType"
+            sortingField: "tenantType",
         },
         {
             id: "tenantStart",
             header: i18n?.tenant_management_column_start_date || "Start Date",
             cell: (item: Tenant) => item?.tenantStart.toString() || "-",
-            sortingField: "tenantStart"
+            sortingField: "tenantStart",
         },
         {
             id: "tenantEnd",
             header: i18n?.tenant_management_column_end_date || "End Date",
             cell: (item: Tenant) => item?.tenantEnd.toString() || "-",
-            sortingField: "tenantEnd"
+            sortingField: "tenantEnd",
         },
         {
             id: "clientAddress",
             header: i18n?.tenant_management_column_address || "Address",
             cell: (item: Tenant) => item?.clientAddress || "-",
-            sortingField: "clientAddress"
+            sortingField: "clientAddress",
         },
         {
             id: "clientZipCode",
             header: i18n?.tenant_management_column_zip_code || "Zip Code",
             cell: (item: Tenant) => item?.clientZipCode || "-",
-            sortingField: "clientZipCode"
+            sortingField: "clientZipCode",
         },
         {
             id: "clientCity",
             header: i18n?.tenant_management_column_city || "City",
             cell: (item: Tenant) => item?.clientCity || "-",
-            sortingField: "clientCity"
+            sortingField: "clientCity",
         },
         {
             id: "clientCountry",
             header: i18n?.tenant_management_column_country || "Country",
             cell: (item: Tenant) => item?.clientCountry || "-",
-            sortingField: "clientCountry"
+            sortingField: "clientCountry",
         },
         {
             id: "clientPhoneNumber",
             header: i18n?.tenant_management_column_phone_number || "Phone Number",
             cell: (item: Tenant) => item?.clientPhoneNumber || "-",
-            sortingField: "clientPhoneNumber"
+            sortingField: "clientPhoneNumber",
         },
         {
             id: "clientEmail",
             header: i18n?.tenant_management_column_email || "Email",
             cell: (item: Tenant) => item?.clientEmail || "-",
-            sortingField: "clientEmail"
+            sortingField: "clientEmail",
         },
         {
             id: "parentId",
             header: i18n?.tenant_management_column_parent_tenant || "Parent Tenant",
             cell: (item: Tenant) => item?.parentData?.name || "-",
-            sortingField: "parentId"
+            sortingField: "parentId",
         },
         {
             id: "clientId",
             header: i18n?.tenant_management_column_client_tenant || "Client Tenant",
             cell: (item: Tenant) => item?.clientData?.name || "-",
-            sortingField: "clientId"
+            sortingField: "clientId",
         },
-    ]
+    ];
 
     const getTenantPage = async (pageNumber: number = 1, pageSize: number = 10) => {
         return await axios.get("/api/tenant/tenant/getAll", {
             params: {
                 page: pageNumber,
-                pageSize: pageSize
-            }
+                pageSize: pageSize,
+            },
         });
-    }
+    };
 
     return (
         <Box padding={"xl"}>
@@ -125,27 +126,24 @@ export default function TenantManagement() {
                         {
                             mapper: aggregateTenant,
                             loader: loadTenant,
-                            queryKey: [QueryKeys.TENANT_MANAGEMENT, 'references']
-                        }
-                    ]
+                            queryKey: [QueryKeys.TENANT_MANAGEMENT, "references"],
+                        },
+                    ],
                 }}
                 getPaginated={getTenantPage}
                 viewActionProps={{}}
                 createActionProps={{}}
-                deleteActionProps={
-                    {
-                        deleteLabel: i18n?.tenant_management_delete_label || "Delete Tenant",
-                        deleteConfirmationText: (selectedTenant) => `${i18n?.tenant_management_delete_confirmation ||  "Are you sure you would like to delete ${}"}`.replace("${}", selectedTenant?.name!),
-                        deleteAction: deleteTenant.mutate
-                    }
-                }
-                emptyProps={
-                    {
-                        emptyMessage: i18n?.tenant_management_empty_label || "No tenants available",
-                        emptyActionLabel: i18n?.tenant_management_empty_action || "Create Tenant"
-                    }
-                }
+                deleteActionProps={{
+                    deleteLabel: i18n?.tenant_management_delete_label || "Delete Tenant",
+                    deleteConfirmationText: (selectedTenant) =>
+                        `${i18n?.tenant_management_delete_confirmation || "Are you sure you would like to delete ${}"}`.replace("${}", selectedTenant?.name!),
+                    deleteAction: deleteTenant.mutate,
+                }}
+                emptyProps={{
+                    emptyMessage: i18n?.tenant_management_empty_label || "No tenants available",
+                    emptyActionLabel: i18n?.tenant_management_empty_action || "Create Tenant",
+                }}
             />
         </Box>
-    )
+    );
 }

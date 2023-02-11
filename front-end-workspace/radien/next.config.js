@@ -1,4 +1,4 @@
-const withTM = require('next-transpile-modules')(['@cloudscape-design/components']);
+const withTM = require("next-transpile-modules")(["@cloudscape-design/components"]);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -7,16 +7,16 @@ const nextConfig = {
     i18n: {
         localeDetection: true,
         defaultLocale: "en",
-        locales: ["en", "de", "pt"]
-    }
-}
+        locales: ["en", "de", "pt"],
+    },
+};
 
-const buildConfig = _phase => {
-    const plugins = [withTM]
+const buildConfig = (_phase) => {
+    const plugins = [withTM];
     const config = plugins.reduce((acc, next) => next(acc), {
-        ...nextConfig
-    })
-    return config
-}
+        ...nextConfig,
+    });
+    return config;
+};
 
 module.exports = buildConfig();
