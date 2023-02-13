@@ -109,7 +109,7 @@ public class TicketRESTServiceClient extends AuthorizationChecker implements Tic
             try {
                 TicketResourceClient client = getClient();
                 Response response = client.getAll(filter.getUserId(), filter.getTicketType(), filter.getExpireDate(), filter.getToken(),
-                        filter.getData(), filter.isLogicalConjunction(), pageNo, pageSize, sortBy, isAscending);
+                        filter.getData(), filter.isLogicConjunction(), pageNo, pageSize, sortBy, isAscending);
                 return TicketModelMapper.mapToPage((InputStream) response.getEntity());
             } catch (IOException e) {
                 throw new SystemException(GenericErrorCodeMessage.ERROR_RETRIEVING_TICKETS.toString(), e);

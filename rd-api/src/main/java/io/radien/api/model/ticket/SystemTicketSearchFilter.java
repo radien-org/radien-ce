@@ -41,7 +41,7 @@ public interface SystemTicketSearchFilter {
 
     public void setData(String data);
 
-    public boolean isLogicalConjunction();
+    public boolean isLogicConjunction();
 
-    public void setIsLogicalConjunction(boolean isLogicalConjunction);
+    public void setLogicConjunction(boolean logicConjunction);
 }

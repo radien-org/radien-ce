@@ -227,7 +227,7 @@ public class TicketServiceTest {
         sortBy.add("data");
 
         SystemTicketSearchFilter filter = new TicketSearchFilter();
-        filter.setIsLogicalConjunction(false);
+        filter.setLogicConjunction(false);
         Page<SystemTicket> result = ticketServiceAccess.getAll(filter,1,10,sortBy,false);
         assertNotNull(result);
 

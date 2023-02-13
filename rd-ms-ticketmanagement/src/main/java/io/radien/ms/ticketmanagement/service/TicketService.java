@@ -26,6 +26,7 @@ import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.TicketException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.ticketmanagement.entities.TicketEntity;
+import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,12 +91,26 @@ public class TicketService implements TicketServiceAccess {
         Root<TicketEntity> ticketRoot = criteriaQuery.from(TicketEntity.class);
 
         criteriaQuery.select(ticketRoot);
-        Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
+        Predicate global = null;
         if(filter!= null) {
-            if(filter.isLogicalConjunction()) {
-                global = criteriaBuilder.and(criteriaBuilder.like(ticketRoot.get(SystemVariables.USER_ID.getFieldName()), filter.getUserId().toString()));
-                criteriaQuery.where(global);
+            List<Predicate> filtersList = new ArrayList<>();
+            if(filter.getUserId() != null) {
+                filtersList.add(criteriaBuilder.like(ticketRoot.get(SystemVariables.USER_ID.getFieldName()), filter.getUserId().toString()));
             }
+            if(filter.getData() != null) {
+                filtersList.add(criteriaBuilder.like(ticketRoot.get(SystemVariables.DATA.getFieldName()), filter.getData()));
+            }
+            if(filter.getTicketType() != null) {
+                filtersList.add(criteriaBuilder.like(ticketRoot.get(SystemVariables.TICKET_TYPE.getFieldName()), filter.getTicketType().toString()));
+            }
+            if(filter.isLogicConjunction()) {
+                filtersList.add(criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
+                global = criteriaBuilder.and(filtersList.toArray(new Predicate[0]));
+            } else {
+                filtersList.add(criteriaBuilder.isTrue(criteriaBuilder.literal(false)));
+                global = criteriaBuilder.or(filtersList.toArray(new Predicate[0]));
+            }
+            criteriaQuery.where(global);
         }
         if(sortBy != null && !sortBy.isEmpty()){
             List<Order> orders;

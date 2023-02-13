@@ -195,7 +195,7 @@ public class TicketRESTServiceClientTest {
         List<? extends SystemTicket> list = new ArrayList<>();
 
         SystemTicketSearchFilter filter = new TicketSearchFilter();
-        filter.setIsLogicalConjunction(false);
+        filter.setLogicConjunction(false);
         List<? extends SystemTicket> returnedList = target.getAll(filter,1, 10, null, false).getResults();
 
         assertEquals(list, returnedList);

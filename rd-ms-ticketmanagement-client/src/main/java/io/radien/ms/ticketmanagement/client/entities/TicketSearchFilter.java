@@ -30,8 +30,6 @@ public class TicketSearchFilter extends SearchFilterCriteria implements SystemTi
     private String token;
     private String data;
 
-    private boolean isLogicalConjunction;
-
     public TicketSearchFilter(){}
 
     public TicketSearchFilter(Long userId, Long ticketType, LocalDate expireDate, String token, String data, boolean isLogicalConjunction) {
@@ -91,15 +89,5 @@ public class TicketSearchFilter extends SearchFilterCriteria implements SystemTi
     @Override
     public void setData(String data) {
         this.data = data;
-    }
-
-    @Override
-    public boolean isLogicalConjunction() {
-        return isLogicalConjunction;
-    }
-
-    @Override
-    public void setIsLogicalConjunction(boolean isLogicalConjunction) {
-
     }
 }
