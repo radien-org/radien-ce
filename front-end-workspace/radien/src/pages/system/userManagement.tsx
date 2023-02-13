@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import UserDetailsView from "@/components/UserDetailsView/UserDetailsView";
 import { RadienContext } from "@/context/RadienContextProvider";
 import useDeleteUser from "@/hooks/useDeleteUser";
+import TenantRequestsTable from "@/components/TenantRequest/TenantRequestsTable";
 
 export default function UserManagement() {
     const { i18n } = useContext(RadienContext);
@@ -51,36 +52,39 @@ export default function UserManagement() {
     };
 
     return (
-        <Box padding={"xl"}>
-            <PaginatedTable
-                tableHeader={i18n?.user_management_header || "User Management"}
-                queryKey={QueryKeys.USER_MANAGEMENT}
-                columnDefinitions={colDefinition}
-                getPaginated={getUserPage}
-                viewActionProps={{
-                    ViewComponent: UserDetailsView,
-                    viewTitle: i18n?.user_management_view_label || "User details",
-                }}
-                createActionProps={{
-                    createLabel: i18n?.user_management_create_label || "Create User",
-                    createAction: () => {
-                        router.push("/user/createUser");
-                    },
-                }}
-                deleteActionProps={{
-                    deleteLabel: i18n?.user_management_delete_label || "Delete User",
-                    deleteConfirmationText: (selectedUser) =>
-                        `${i18n?.user_management_delete_confirmation || "Are you sure you would like to delete ${}"}`.replace(
-                            "${}",
-                            `${selectedUser?.firstname} ${selectedUser?.lastname}`
-                        ),
-                    deleteAction: deleteUser.mutate,
-                }}
-                emptyProps={{
-                    emptyMessage: i18n?.user_management_empty_label || "No users available",
-                    emptyActionLabel: i18n?.user_management_empty_action || "Create User",
-                }}
-            />
-        </Box>
+        <>
+            <TenantRequestsTable />
+            <Box padding={"xl"}>
+                <PaginatedTable
+                    tableHeader={i18n?.user_management_header || "User Management"}
+                    queryKey={QueryKeys.USER_MANAGEMENT}
+                    columnDefinitions={colDefinition}
+                    getPaginated={getUserPage}
+                    viewActionProps={{
+                        ViewComponent: UserDetailsView,
+                        viewTitle: i18n?.user_management_view_label || "User details",
+                    }}
+                    createActionProps={{
+                        createLabel: i18n?.user_management_create_label || "Create User",
+                        createAction: () => {
+                            router.push("/user/createUser");
+                        },
+                    }}
+                    deleteActionProps={{
+                        deleteLabel: i18n?.user_management_delete_label || "Delete User",
+                        deleteConfirmationText: (selectedUser) =>
+                            `${i18n?.user_management_delete_confirmation || "Are you sure you would like to delete ${}"}`.replace(
+                                "${}",
+                                `${selectedUser?.firstname} ${selectedUser?.lastname}`
+                            ),
+                        deleteAction: deleteUser.mutate,
+                    }}
+                    emptyProps={{
+                        emptyMessage: i18n?.user_management_empty_label || "No users available",
+                        emptyActionLabel: i18n?.user_management_empty_action || "Create User",
+                    }}
+                />
+            </Box>
+        </>
     );
 }

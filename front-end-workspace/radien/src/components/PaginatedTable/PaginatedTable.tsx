@@ -11,14 +11,17 @@ import { TableForwardRefType } from "@cloudscape-design/components/table/interfa
 
 interface DeleteActionProps<T> {
     deleteLabel?: string;
+    deleteNestedObj?: string;
     deleteConfirmationText: (val?: T) => string;
     deleteAction?: UseMutateFunction<AxiosResponse<any, any>, unknown, any, unknown>;
+    onDeleteSuccess?: () => void;
 }
 
-interface CreateActionProps {
+interface CreateActionProps<T> {
     hideCreate?: boolean;
     createLabel?: string;
-    createAction?: () => void;
+    createAction?: (selectedValue?: T) => void;
+    createButtonType?: "normal" | "primary" | "link" | "icon" | "inline-icon";
 }
 
 interface AggregateProps<T> {
@@ -32,6 +35,8 @@ interface AggregateProps<T> {
 interface ViewActionDetails {
     ViewComponent?: React.FunctionComponent<{ data: any }>;
     viewTitle?: string;
+    viewLabel?: string;
+    viewConfirmLabel?: string;
 }
 
 interface EmptyProps {
@@ -40,7 +45,7 @@ interface EmptyProps {
 }
 
 export interface DeleteParams {
-    tenantId: string;
+    objectId: string;
     userId: string;
 }
 
@@ -51,7 +56,7 @@ export interface PaginatedTableProps<T> {
     columnDefinitions: TableProps.ColumnDefinition<T>[];
     getPaginated: (pageNumber?: number, pageSize?: number) => Promise<AxiosResponse<Page<T>, Error>>;
     viewActionProps: ViewActionDetails;
-    createActionProps: CreateActionProps;
+    createActionProps: CreateActionProps<T>;
     deleteActionProps: DeleteActionProps<T>;
     emptyProps: EmptyProps;
     aggregateProps?: AggregateProps<T>;
@@ -66,9 +71,9 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
         columnDefinitions,
         queryKey,
         getPaginated,
-        deleteActionProps: { deleteLabel, deleteConfirmationText, deleteAction },
-        createActionProps: { createLabel, hideCreate, createAction },
-        viewActionProps: { ViewComponent, viewTitle },
+        deleteActionProps: { deleteLabel, deleteNestedObj, deleteConfirmationText, deleteAction, onDeleteSuccess },
+        createActionProps: { createLabel, createButtonType, hideCreate, createAction },
+        viewActionProps: { ViewComponent, viewTitle, viewLabel, viewConfirmLabel },
         emptyProps: { emptyMessage, emptyActionLabel },
         aggregateProps,
     } = props;
@@ -114,13 +119,23 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
 
     const createResource = () => {
         if (createAction) {
-            createAction();
+            createAction(selectedItem ? selectedItem : undefined);
         }
     };
 
     const onDelete = async () => {
-        if (deleteAction) {
-            await deleteAction({ tenantId: selectedItem ? (selectedItem as RadienModel).id! : -1, userId: userInSession?.id });
+        if (deleteAction && selectedItem) {
+            const field = deleteNestedObj ? ((selectedItem as any)[deleteNestedObj] as RadienModel).id : (selectedItem as RadienModel).id;
+            deleteAction(
+                { objectId: field, userId: userInSession?.id },
+                {
+                    onSuccess: () => {
+                        if (onDeleteSuccess) {
+                            onDeleteSuccess();
+                        }
+                    },
+                }
+            );
             await refetch();
         }
         setDeleteModalVisible(false);
@@ -142,7 +157,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
                     <Box textAlign="center" color="inherit">
                         <b>{emptyMessage || "No resources to display."}</b>
                         <Box padding={{ bottom: "s", top: "m" }} variant="p" color="inherit">
-                            <Button onClick={createResource}>{emptyActionLabel || "Create resource"}</Button>
+                            {emptyActionLabel && <Button onClick={createResource}>{emptyActionLabel || "Create resource"}</Button>}
                         </Box>
                     </Box>
                 }
@@ -191,7 +206,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
                                 onClick={() => {
                                     setViewModalVisible(false);
                                 }}>
-                                Ok
+                                {viewConfirmLabel || "Ok"}
                             </Button>
                         </SpaceBetween>
                     </Box>
@@ -202,13 +217,13 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
 
             <div className="flex justify-end py-6 gap-2">
                 {!hideCreate && (
-                    <Button onClick={createResource} variant={"primary"}>
+                    <Button onClick={createResource} variant={createButtonType || "primary"}>
                         {createLabel || "Create"}
                     </Button>
                 )}
                 {ViewComponent && (
                     <Button disabled={!selectedItem} onClick={() => setViewModalVisible(true)}>
-                        View
+                        {viewLabel || "View"}
                     </Button>
                 )}
                 <Button onClick={() => setDeleteModalVisible(true)} disabled={!selectedItem}>

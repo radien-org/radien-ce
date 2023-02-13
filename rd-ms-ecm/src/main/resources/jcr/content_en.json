@@ -57,6 +57,21 @@
     ]
   },
   {
+    "viewId": "email-9",
+    "contentType": "html",
+    "language": "en",
+    "active": "true",
+    "system": "true",
+    "name": "radien - Tenant Assignment",
+    "htmlContent": "Dear $firstName$ $lastName$, </br>You have been provided access to $tenantName$ Tenant with the following role(s): $roleList$.",
+    "image": "logo.png",
+    "tags": [
+      "Radien",
+      "email",
+      "GDPR"
+    ]
+  },
+  {
     "viewId": "TaC",
     "contentType": "document",
     "language": "en",

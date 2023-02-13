@@ -8,7 +8,7 @@ export default function useDeleteTenant() {
     const { addSuccessMessage, addErrorMessage, i18n } = useContext(RadienContext);
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: ({ tenantId, userId }: DeleteParams) => axios.delete(`/api/tenant/delete/${tenantId}`),
+        mutationFn: ({ objectId, userId }: DeleteParams) => axios.delete(`/api/tenant/delete/${objectId}`),
         onSuccess: () => {
             queryClient.invalidateQueries(QueryKeys.TENANT_MANAGEMENT);
             queryClient.invalidateQueries(QueryKeys.ASSIGNED_TENANTS);

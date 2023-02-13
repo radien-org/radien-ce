@@ -1,18 +1,16 @@
-import React, {useContext, useState} from 'react';
+import React, { useContext, useState } from "react";
 import Button from "@cloudscape-design/components/button";
-import {Box, Container} from "@cloudscape-design/components";
-import TenantRequest from "@/components/TenantRequest/TenantRequest";
-import {RadienContext} from "@/context/RadienContextProvider";
+import { Box, Container } from "@cloudscape-design/components";
+import TenantRequestModal from "@/components/TenantRequest/TenantRequestModal";
+import { RadienContext } from "@/context/RadienContextProvider";
 
-//TODO: ADD I18N
 export default function NoTenantDashboard() {
-
-    const { i18n } = useContext(RadienContext)
-    const [ requestTenant, setRequestTenant ] = useState(false);
+    const { i18n } = useContext(RadienContext);
+    const [requestTenant, setRequestTenant] = useState(false);
 
     return (
         <>
-            <TenantRequest modalVisible={requestTenant} setModalVisible={setRequestTenant} />
+            <TenantRequestModal modalVisible={requestTenant} setModalVisible={setRequestTenant} />
 
             <Box padding="m">
                 <Container>
@@ -20,10 +18,12 @@ export default function NoTenantDashboard() {
                         <h2>{i18n?.tenant_request_no_tenant_assigned || "No tenant is assigned to you, please request access to one."}</h2>
                     </div>
                     <div className="flex justify-center">
-                        <Button onClick={() => setRequestTenant(true)} variant="primary">{i18n?.tenant_request_button || "Request Tenant"}</Button>
+                        <Button onClick={() => setRequestTenant(true)} variant="primary">
+                            {i18n?.tenant_request_button || "Request Tenant"}
+                        </Button>
                     </div>
                 </Container>
             </Box>
         </>
-);
+    );
 }

@@ -7,7 +7,9 @@ enum QueryKeys {
     USER_MANAGEMENT = "userManagement",
     PERMISSION_MANAGEMENT = "permissionManagement",
     TENANT_MANAGEMENT = "tenantManagement",
-    AVAILABLE_TENANTS = "availableTenants"
+    AVAILABLE_TENANTS = "availableTenants",
+    TENANT_REQUESTS = "tenantRequests",
+    ASSIGNABLE_ROLES = "assignableRoles",
 }
 
 enum TicketType {

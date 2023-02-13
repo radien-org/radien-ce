@@ -3,9 +3,9 @@ import axios, { AxiosResponse } from "axios";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 
-export default async function notifyCurrentUser(req: NextApiRequest, res: NextApiResponse) {
+export default async function notifyUser(req: NextApiRequest, res: NextApiResponse) {
     const session = await getServerSession(req, res, authOptions);
-    const { viewId, language } = req.query;
+    const { email, viewId, language } = req.query;
     const args = req.body;
     if (!session) {
         res.status(401).json({});
@@ -15,6 +15,7 @@ export default async function notifyCurrentUser(req: NextApiRequest, res: NextAp
     const path = `${process.env.RADIEN_NOTIFICATION_URL}/email`;
     const result: AxiosResponse = await axios.post(path, args, {
         params: {
+            email,
             viewId,
             language,
         },

@@ -9,7 +9,7 @@ export default function useDeletePermission() {
     const { addSuccessMessage, addErrorMessage, i18n } = useContext(RadienContext);
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: ({ tenantId, userId }: DeleteParams) => axios.delete(`/api/permission/permission/delete/${tenantId}`),
+        mutationFn: ({ objectId, userId }: DeleteParams) => axios.delete(`/api/permission/permission/delete/${objectId}`),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: QueryKeys.PERMISSION_MANAGEMENT });
             let message = `${i18n?.generic_message_success || "Success"}: ${i18n?.permission_management_delete_success || "Permission deleted successfully"}`;

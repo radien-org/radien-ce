@@ -1,16 +1,6 @@
-import React, {useEffect, useState} from "react";
-import {
-    Box,
-    Button,
-    ButtonDropdown, ButtonDropdownProps,
-    Container,
-    Form,
-    Header,
-    Input,
-    SpaceBetween,
-    TableProps
-} from "@cloudscape-design/components";
-import {Tenant, Ticket, User} from "radien";
+import React, { useEffect, useState } from "react";
+import { Box, Button, ButtonDropdown, ButtonDropdownProps, Container, Form, Header, Input, SpaceBetween, TableProps } from "@cloudscape-design/components";
+import { Tenant, Ticket, User } from "radien";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
@@ -22,7 +12,8 @@ import useDissociateTenant from "@/hooks/useDissociateTenant";
 import { RadienContext } from "@/context/RadienContextProvider";
 import { useRouter } from "next/router";
 import useCreateTicket from "@/hooks/useCreateTicket";
-import TenantRequest from "@/components/TenantRequest/TenantRequest";
+import TenantRequestModal from "@/components/TenantRequest/TenantRequestModal";
+import useNotifyUser from "@/hooks/useNotifyUser";
 
 const FormField = dynamic(() => import("@cloudscape-design/components/form-field"), { ssr: false });
 
@@ -32,6 +23,7 @@ export default function UserProfile() {
     const updateUser = useUpdateUser();
     const dissociateUser = useDissociateTenant();
     const createTicket = useCreateTicket();
+    const notifyUser = useNotifyUser();
 
     const [firstName, setFirstName] = useState<string>(radienUser?.firstname || "");
     const [lastName, setLastName] = useState<string>(radienUser?.lastname || "");
@@ -39,7 +31,7 @@ export default function UserProfile() {
     const [userEmail, setUserEmail] = useState<string>(radienUser?.userEmail || "");
     const [sub, setSub] = useState<string>(radienUser?.sub || "");
 
-    const [ requestTenantVisibility, setRequestTenantVisibility ] = useState(false);
+    const [requestTenantVisibility, setRequestTenantVisibility] = useState(false);
 
     useEffect(() => {
         setFirstName(radienUser?.firstname || "");
@@ -107,26 +99,27 @@ export default function UserProfile() {
             createTicket.mutate(ticket);
 
             const referenceUrl: string = `${process.env.NEXTAUTH_URL}/api/data-privacy/dataRequest?ticket=${uuid}")`;
-            const viewId: string = "email-7";
+            const viewId: string = "email-9";
             const args = {
                 firstName: radienUser?.firstname,
                 lastName: radienUser?.lastname,
                 portalUrl: "radien",
                 targetUrl: referenceUrl,
             };
-            await axios.post("/api/notification/notifyCurrentUser", args, {
-                params: {
-                    viewId,
-                    language: locale
-                }
-            })
+
+            notifyUser.mutate({
+                email: radienUser?.userEmail!,
+                viewId,
+                language: locale,
+                params: args,
+            });
             addSuccessMessage("Successfully requested data. Please check your email for more details.");
         }
-    }
+    };
 
     return (
         <>
-            <TenantRequest modalVisible={requestTenantVisibility} setModalVisible={setRequestTenantVisibility}/>
+            <TenantRequestModal modalVisible={requestTenantVisibility} setModalVisible={setRequestTenantVisibility} />
             <Box padding="xl">
                 <Container
                     header={
@@ -139,8 +132,7 @@ export default function UserProfile() {
                                     onItemClick={(event) => dropdownClickEvent(event)}
                                     items={[
                                         { text: i18n?.user_profile_delete_label || "Delete", id: "delUser", disabled: false },
-                                        { text: i18n?.user_profile_request_user_data || "Request User Data", id: "dataReq", disabled: false }
-                                                ,
+                                        { text: i18n?.user_profile_request_user_data || "Request User Data", id: "dataReq", disabled: false },
                                     ]}></ButtonDropdown>
                             }>
                             User Profile
@@ -192,7 +184,7 @@ export default function UserProfile() {
                         viewActionProps={{}}
                         createActionProps={{
                             createLabel: i18n?.user_profile_tenants_create_label || "Request Tenant",
-                            createAction: () => setRequestTenantVisibility(true)
+                            createAction: () => setRequestTenantVisibility(true),
                         }}
                         deleteActionProps={{
                             deleteLabel: i18n?.user_profile_tenants_delete_label || "Dissociate Tenant",

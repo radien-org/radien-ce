@@ -155,12 +155,6 @@ services:
       args:
         - SOURCE_WAR_PATH=rd-ms-ecm/target/cms.war
         - EXT_PROPERTIES_PATH=tomee/local/system-ext.properties
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/cms/v1/health" ]
-      interval: 1m30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
     ports:
       - "8446:8443"
       - "8081:8080"
