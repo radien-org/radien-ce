@@ -157,7 +157,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
                     <Box textAlign="center" color="inherit">
                         <b>{emptyMessage || "No resources to display."}</b>
                         <Box padding={{ bottom: "s", top: "m" }} variant="p" color="inherit">
-                            {emptyActionLabel && <Button onClick={createResource}>{emptyActionLabel || "Create resource"}</Button>}
+                            {emptyActionLabel && <Button onClick={createResource}>emptyActionLabel</Button>}
                         </Box>
                     </Box>
                 }
