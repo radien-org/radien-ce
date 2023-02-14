@@ -5,11 +5,16 @@ export default async function getTranslationsByLanguage(req: NextApiRequest, res
     const { language } = req.query;
 
     const path = `${process.env.RADIEN_CMS_URL}/i18n/properties/${language}`;
-    const result: AxiosResponse = await axios.get(path, {
-        params: {
-            application: "radien",
-        },
-    });
+    const result: AxiosResponse | undefined = await axios
+        .get(path, {
+            params: {
+                application: "radien",
+            },
+        })
+        .catch((e) => {
+            console.log(e);
+            return undefined;
+        });
 
-    res.status(200).json(result.data);
+    res.status(200).json(result?.data);
 }

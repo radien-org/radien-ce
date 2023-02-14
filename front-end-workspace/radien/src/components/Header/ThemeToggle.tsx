@@ -6,9 +6,13 @@ import dynamic from "next/dynamic";
 const Toggle = dynamic(() => import("@cloudscape-design/components/toggle"), { ssr: false });
 
 export default function ThemeToggle() {
-    const { colorTheme, setTheme } = useDarkMode();
+    const { theme, setTheme } = useDarkMode();
     return (
-        <Toggle onChange={({ detail }) => (detail.checked ? setTheme("awsui-dark-mode") : setTheme("light"))} checked={colorTheme !== "awsui-dark-mode"}>
+        <Toggle
+            onChange={({ detail }) => {
+                detail.checked ? setTheme("awsui-dark-mode") : setTheme("light");
+            }}
+            checked={theme !== "light"}>
             <Icon
                 svg={
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">

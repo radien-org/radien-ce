@@ -11,7 +11,7 @@ export default function Header() {
     return (
         <footer className="p-4 rounded-lg md:px-6 md:py-8 fixed bottom-0 w-full">
             <div className="sm:flex sm:items-center sm:justify-between">
-                <Image className="mx-[1rem] max-h-[2rem]" src="/footer/trademark_black.svg" height={20} width={85} alt="Extra large avatar" />
+                <Image className="mx-[1rem]" src="/footer/trademark_black.svg" height={20} width={85} alt="Extra large avatar" />
                 <ul className="flex items-end mb-6 text-sm text-gray-500 sm:mb-0 text-gray-400">
                     <li>
                         <Link href="#" locale={locale} className="mr-4 hover:underline md:mr-6 ">
