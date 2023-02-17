@@ -1,5 +1,6 @@
 package io.radien.util;
 
+import com.google.inject.Singleton;
 import io.radien.api.OAFProperties;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.ms.ecm.client.services.EnterpriseContentMapper;
@@ -10,20 +11,27 @@ import org.json.simple.parser.ParseException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+@Singleton
 public class ContentService {
 
-    private static final String CONTENT_URL = System.getenv(OAFProperties.SYSTEM_MS_ENDPOINT_ECM.propKey());
+    private static final String CONTENT_PROPERTY = OAFProperties.SYSTEM_MS_ENDPOINT_ECM.propKey();
+    private static final String FALLBACK_URL = "http://host.docker.internal:8081/cms/v1";
 
-    private ContentService(){}
 
-    public static EnterpriseContent getContentByViewIdAndLanguage(String authorization, String viewId, String language) throws IOException, ParseException, java.text.ParseException {
-        System.out.println("auth=" + authorization);
-        HttpResponse<byte[]> request = Unirest.get(CONTENT_URL.concat("/content/metadata"))
+    public EnterpriseContent getContentByViewIdAndLanguage(String authorization, String viewId, String language) throws IOException, ParseException, java.text.ParseException {
+        HttpResponse<byte[]> request = Unirest.get(getContentUrl().concat("/content/metadata"))
                 .header("Authorization", authorization)
                 .queryString("viewId", viewId)
                 .queryString("lang", language)
                 .asBytes();
-        System.out.println("Request: " + request);
         return EnterpriseContentMapper.map(new ByteArrayInputStream(request.getBody()));
+    }
+
+    private String getContentUrl(){
+        String url;
+        if((url = System.getenv(CONTENT_PROPERTY)) != null){
+            return url;
+        }
+        return FALLBACK_URL;
     }
 }

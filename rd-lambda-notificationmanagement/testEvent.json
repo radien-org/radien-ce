@@ -1,7 +1,7 @@
 {
   "Records": [
     {
-      "body": "{\n  \"email\": \"t.gomes@rethink.com\",\n  \"notificationViewId\": \"email-3\",\n  \"language\": \"en\",\n  \"arguments\": {}\n}"
+      "body": "{\n  \"email\": \"t.gomes@rethink.de\",\n  \"notificationViewId\": \"email-3\",\n  \"language\": \"en\",\n  \"arguments\": {\"currentEmail\": \"a@b.pt\", \"newEmail\": \"t.gomes@rethink.de\", \"confirmationURL\": \"www.google.com\"}\n}"
     }
   ]
 }

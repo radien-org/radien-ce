@@ -16,6 +16,9 @@ public class EmailParams implements NotificationParams {
 
     private Map<String, String> arguments;
 
+    public EmailParams(){
+    }
+
     public EmailParams(@JsonProperty("email") String email,
                        @JsonProperty("notificationViewId") String notificationViewId,
                        @JsonProperty("language") String language,
