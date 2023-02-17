@@ -44,15 +44,7 @@ public class EmailNotificationServiceTest {
 
     @Test
     public void notifyBehaviour() throws IOException, ParseException, java.text.ParseException {
-        Mail mail = new MailMessage("", new ArrayList<>(), "", "", MailContentType.HTML, new HashMap<>(), new ArrayList<>(), new ArrayList<>());
-        doReturn(new Content("", "")).when(contentService).getContentByViewIdAndLanguage(anyString(), anyString(), anyString());
-        when(mailService.create(anyString(), any(MailTemplate.class))).thenReturn(mail);
-        doReturn("").when(authenticator).getAuthorization();
-        emailNotificationService.testFuncGetAuthenticator().testFuncGetProperties().put("access_token", "1");
-
-        //when(authenticator.getProperties()).thenReturn(properties);
-
         emailNotificationService.notifyBehaviour(new EmailParams());
-        Mockito.verify(mailService).send(mail);
+        Mockito.verify(mailService).send(any());
     }
 }

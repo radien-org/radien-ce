@@ -1,12 +1,10 @@
 package io.radien.email.params;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.radien.generic.params.NotificationParams;
 
 import java.util.Map;
 
-public class EmailParams implements NotificationParams {
-
+public class EmailParams {
 
     private String email;
 

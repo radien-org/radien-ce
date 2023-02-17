@@ -5,6 +5,9 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import io.radien.email.module.EmailModule;
 import io.radien.email.service.EmailNotificationService;
 import io.radien.email.params.EmailParams;
 
@@ -17,19 +20,23 @@ import io.radien.email.params.EmailParams;
 public class App implements RequestHandler<SQSEvent, Object> {
 
     private final EmailNotificationService emailService;
+    private final Authenticator authenticator;
 
     public App() {
-        emailService = new EmailNotificationService();
+        Injector injector = Guice.createInjector(new EmailModule());
+        emailService = injector.getInstance(EmailNotificationService.class);
+        authenticator = injector.getInstance(Authenticator.class);
     }
 
     @Override
     public Object handleRequest(final SQSEvent input, final Context context) {
+        authenticator.login();
         EmailParams params = null;
         for(SQSEvent.SQSMessage r : input.getRecords()){
             try {
                 ObjectMapper mapper = new ObjectMapper();
                 if((params = mapper.readValue(r.getBody(), EmailParams.class)) != null){
-                    break;
+                    emailService.notifyBehaviour(params);
                 }
             } catch (JsonProcessingException e) {
                 throw new IllegalArgumentException("Unable to extract email parameters from message body.");
@@ -38,7 +45,6 @@ public class App implements RequestHandler<SQSEvent, Object> {
         if(params == null){
             throw new IllegalArgumentException("No email notification present in message body.");
         }
-        emailService.notifyBehaviour(params);
         return input;
     }
 }
