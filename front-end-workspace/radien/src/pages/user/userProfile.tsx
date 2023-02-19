@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, ButtonDropdown, ButtonDropdownProps, Container, Form, Header, Input, SpaceBetween, TableProps } from "@cloudscape-design/components";
 import { Tenant, Ticket, User } from "radien";
-import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
 import dynamic from "next/dynamic";
@@ -14,6 +13,7 @@ import { useRouter } from "next/router";
 import useCreateTicket from "@/hooks/useCreateTicket";
 import TenantRequestModal from "@/components/TenantRequest/TenantRequestModal";
 import useNotifyUser from "@/hooks/useNotifyUser";
+import usePaginatedUserTenants from "@/hooks/usePaginatedUserTenants";
 
 const FormField = dynamic(() => import("@cloudscape-design/components/form-field"), { ssr: false });
 
@@ -76,14 +76,6 @@ export default function UserProfile() {
             sortingField: "type",
         },
     ];
-
-    const getTenantPage = (pageNumber: number = 1, pageSize: number = 10) => {
-        return axios.get("/api/role/tenantroleuser/getTenants", {
-            params: {
-                userId: radienUser?.id,
-            },
-        });
-    };
 
     const dropdownClickEvent = async (event: CustomEvent<ButtonDropdownProps.ItemClickDetails>) => {
         if (event.detail.id == "dataReq") {
@@ -180,7 +172,7 @@ export default function UserProfile() {
                         tableVariant={"embedded"}
                         queryKey={QueryKeys.ASSIGNED_TENANTS}
                         columnDefinitions={colDefinition}
-                        getPaginated={getTenantPage}
+                        getPaginated={() => usePaginatedUserTenants({ userId: radienUser?.id! })}
                         viewActionProps={{}}
                         createActionProps={{
                             createLabel: i18n?.user_profile_tenants_create_label || "Request Tenant",

@@ -13,8 +13,8 @@ import ThemeToggle from "@/components/Header/ThemeToggle";
 import { Tenant } from "radien";
 import TopNavigation from "@cloudscape-design/components/top-navigation";
 import { HeaderProps } from "@/components/Header/Header";
-import Utility = TopNavigationProps.Utility;
 import ItemOrGroup = ButtonDropdownProps.ItemOrGroup;
+import MenuDropdownUtility = TopNavigationProps.MenuDropdownUtility;
 
 export default function LoggedInHeader({ topNavigationProps, localeClicked, i18nStrings }: HeaderProps) {
     const router = useRouter();
@@ -24,12 +24,11 @@ export default function LoggedInHeader({ topNavigationProps, localeClicked, i18n
         activeTenant: { data: activeTenant, isLoading: activeTenantLoading },
     } = useContext(RadienContext);
     const { isLoading: loadingAssignedTenants, data: assignedTenants } = useAssignedTenants(radienUser!.id);
-    const [
-        { isLoading: isLoadingRoles, data: rolesViewPermission },
-        { isLoading: isLoadingUser, data: usersViewPermission },
-        { isLoading: isLoadingPermission, data: permissionViewPermission },
-        { isLoading: isLoadingTenant, data: tenantViewPermission },
-    ] = useCheckPermissions(radienUser?.id!, activeTenant?.tenantId!);
+    const {
+        user: { isLoading: isLoadingUser, data: usersViewPermission },
+        permission: { isLoading: isLoadingPermission, data: permissionViewPermission },
+        tenant: { isLoading: isLoadingTenant, data: tenantViewPermission },
+    } = useCheckPermissions(radienUser?.id!, activeTenant?.tenantId!);
     const setActiveTenant = useSetActiveTenant();
     const queryClient: QueryClient = new QueryClient();
 
@@ -160,7 +159,7 @@ export default function LoggedInHeader({ topNavigationProps, localeClicked, i18n
         ];
     }
 
-    let systemMenus: Utility = {
+    let systemMenus: MenuDropdownUtility = {
         type: "menu-dropdown",
         iconName: "settings",
         ariaLabel: i18n?.settings || "Settings",
@@ -176,14 +175,9 @@ export default function LoggedInHeader({ topNavigationProps, localeClicked, i18n
         };
         systemMenus.items = [item, ...systemMenus.items];
     }
-    if (!isLoadingRoles && rolesViewPermission) {
-        const item: ItemOrGroup = {
-            id: "roleManagement",
-            text: i18n?.system_role_management || "Role Management",
-            href: `${router.locale ? "/" + router.locale : ""}/system/roleManagement`,
-        };
-        systemMenus.items = [item, ...systemMenus.items];
-    }
+
+    systemMenus = generateSystemRoleMenu(systemMenus);
+
     if (!isLoadingTenant && tenantViewPermission) {
         const item: ItemOrGroup = {
             id: "tenantManagement",
@@ -208,3 +202,43 @@ export default function LoggedInHeader({ topNavigationProps, localeClicked, i18n
         </>
     );
 }
+
+const generateSystemRoleMenu = (systemMenus: MenuDropdownUtility) => {
+    const router = useRouter();
+    const {
+        userInSession: radienUser,
+        i18n,
+        activeTenant: { data: activeTenant },
+    } = useContext(RadienContext);
+    const {
+        roles: { isLoading: isLoadingRoles, data: rolesViewPermission },
+        tenantRoles: { isLoading: isLoadingTenantRoles, data: tenantRolesViewPermission },
+    } = useCheckPermissions(radienUser?.id!, activeTenant?.tenantId!);
+    const updatedSystemMenus = { ...systemMenus };
+
+    const roleGroup: ItemOrGroup = {
+        id: "rolesManagement",
+        text: i18n?.system_role_management || "Role Management",
+        items: [],
+    };
+    if (!isLoadingRoles && rolesViewPermission) {
+        const item: ItemOrGroup = {
+            id: "roleManagement",
+            text: i18n?.system_role_management || "Role Management",
+            href: `${router.locale ? "/" + router.locale : ""}/system/roleManagement`,
+        };
+        roleGroup.items = [...roleGroup.items, item];
+    }
+    if (!isLoadingTenantRoles && tenantRolesViewPermission) {
+        const item: ItemOrGroup = {
+            id: "tenantRoleManagement",
+            text: i18n?.system_tenant_role_management || "Tenant Role Management",
+            href: `${router.locale ? "/" + router.locale : ""}/system/tenantRoleManagement`,
+        };
+        roleGroup.items = [...roleGroup.items, item];
+    }
+    if (roleGroup.items.length > 0) {
+        updatedSystemMenus.items = [roleGroup, ...systemMenus.items];
+    }
+    return updatedSystemMenus;
+};

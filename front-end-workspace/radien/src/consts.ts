@@ -4,6 +4,7 @@ enum QueryKeys {
     ACTIVE_TENANT = "activeTenant",
     ASSIGNED_TENANTS = "assignedTenants",
     ROLE_MANAGEMENT = "roleManagement",
+    TENANT_ROLE_MANAGEMENT = "tenantRoleManagement",
     USER_MANAGEMENT = "userManagement",
     PERMISSION_MANAGEMENT = "permissionManagement",
     TENANT_MANAGEMENT = "tenantManagement",

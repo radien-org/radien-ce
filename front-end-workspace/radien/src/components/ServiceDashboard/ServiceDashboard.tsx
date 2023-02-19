@@ -5,19 +5,26 @@ import { RadienContext } from "@/context/RadienContextProvider";
 import { useRouter } from "next/router";
 import NoTenantDashboard from "@/components/NoTenantDashboard/NoTenantDashboard";
 import useAssignedTenants from "@/hooks/useAssignedTenants";
-import {Loader} from "@/components/Loader/Loader";
+import { Loader } from "@/components/Loader/Loader";
 
 export default function ServiceDashboard() {
     const {
         userInSession: radienUser,
-        activeTenant: { data: activeTenantData , isLoading: isLoadingActiveTenant }, i18n,} = useContext(RadienContext);
+        activeTenant: { data: activeTenantData, isLoading: isLoadingActiveTenant },
+        i18n,
+    } = useContext(RadienContext);
     const { data: assignedTenants, isLoading: isLoadingAssignedTenants } = useAssignedTenants();
     const { locale } = useRouter();
-    const [{ data: rolesViewPermission }, { data: usersViewPermission }, { data: permissionViewPermission }, { data: tenantViewPermission }] =
-        useCheckPermissions(radienUser?.id!, activeTenantData?.tenantId!);
+    const {
+        roles: { data: rolesViewPermission },
+        tenantRoles: { data: tenantRolesViewPermission },
+        user: { data: usersViewPermission },
+        permission: { data: permissionViewPermission },
+        tenant: { data: tenantViewPermission },
+    } = useCheckPermissions(radienUser?.id!, activeTenantData?.tenantId!);
 
-    if(isLoadingAssignedTenants || isLoadingActiveTenant) {
-        return <Loader/>
+    if (isLoadingAssignedTenants || isLoadingActiveTenant) {
+        return <Loader />;
     }
 
     const cards = [
@@ -33,6 +40,13 @@ export default function ServiceDashboard() {
             description: i18n?.role_management_description || "In here you can create and assign roles to a specific user in a specific tenant.",
             href: `/system/roleManagement`,
             hasPermission: rolesViewPermission,
+            locale,
+        },
+        {
+            title: i18n?.tenant_role_management_title || "Tenant Role Management",
+            description: i18n?.tenant_role_management_description || "In here you can create and assign Tenant Roles to a specific tenant.",
+            href: `/system/tenantRoleManagement`,
+            hasPermission: tenantRolesViewPermission,
             locale,
         },
         {
@@ -53,18 +67,19 @@ export default function ServiceDashboard() {
 
     return (
         <>
-            {assignedTenants && assignedTenants.totalResults > 0  ?
-                (
-                    <div className="container my-12 mx-auto px-4 md:px-12">
-                        <div className="flex flex-wrap -mx-1 lg:-mx-4">
-                            {cards.filter((c) => c.hasPermission)
-                    .map((c) => (
-                        <Card key={c.title} title={c.title} description={c.description} href={c.href} />
-                    ))}
-                        </div>
+            {assignedTenants && assignedTenants.totalResults > 0 ? (
+                <div className="container my-12 mx-auto px-4 md:px-12">
+                    <div className="flex flex-wrap -mx-1 lg:-mx-4">
+                        {cards
+                            .filter((c) => c.hasPermission)
+                            .map((c) => (
+                                <Card key={c.title} title={c.title} description={c.description} href={c.href} />
+                            ))}
                     </div>
-                )
-            : <NoTenantDashboard />}
+                </div>
+            ) : (
+                <NoTenantDashboard />
+            )}
         </>
     );
 }

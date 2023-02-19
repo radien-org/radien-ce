@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import { User } from "radien";
-import axios from "axios";
 import PaginatedTable from "@/components/PaginatedTable/PaginatedTable";
 import { QueryKeys } from "@/consts";
 import { Box, TableProps } from "@cloudscape-design/components";
@@ -9,6 +8,7 @@ import UserDetailsView from "@/components/UserDetailsView/UserDetailsView";
 import { RadienContext } from "@/context/RadienContextProvider";
 import useDeleteUser from "@/hooks/useDeleteUser";
 import TenantRequestsTable from "@/components/TenantRequest/TenantRequestsTable";
+import usePaginatedUsers from "@/hooks/usePaginatedUsers";
 
 export default function UserManagement() {
     const { i18n } = useContext(RadienContext);
@@ -42,15 +42,6 @@ export default function UserManagement() {
         },
     ];
 
-    const getUserPage = async (pageNumber: number = 1, pageSize: number = 10) => {
-        return await axios.get("/api/user/getAll", {
-            params: {
-                page: pageNumber,
-                pageSize: pageSize,
-            },
-        });
-    };
-
     return (
         <>
             <TenantRequestsTable />
@@ -59,7 +50,7 @@ export default function UserManagement() {
                     tableHeader={i18n?.user_management_header || "User Management"}
                     queryKey={QueryKeys.USER_MANAGEMENT}
                     columnDefinitions={colDefinition}
-                    getPaginated={getUserPage}
+                    getPaginated={(pageNumber, pageSize) => usePaginatedUsers({ pageNo: pageNumber, pageSize })}
                     viewActionProps={{
                         ViewComponent: UserDetailsView,
                         viewTitle: i18n?.user_management_view_label || "User details",

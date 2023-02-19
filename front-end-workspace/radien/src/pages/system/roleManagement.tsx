@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
 import { Role } from "radien";
-import axios from "axios";
 import PaginatedTable from "@/components/PaginatedTable/PaginatedTable";
 import { Box, TableProps } from "@cloudscape-design/components";
 import { QueryKeys } from "@/consts";
 import { RadienContext } from "@/context/RadienContextProvider";
 import { useRouter } from "next/router";
+import usePaginatedRoles from "@/hooks/usePaginatedRoles";
 
 export default function RoleManagement() {
     const { i18n } = useContext(RadienContext);
@@ -32,22 +32,13 @@ export default function RoleManagement() {
         },
     ];
 
-    const getRolePage = async (pageNumber: number = 1, pageSize: number = 10) => {
-        return await axios.get("/api/role/role/getAll", {
-            params: {
-                page: pageNumber,
-                pageSize: pageSize,
-            },
-        });
-    };
-
     return (
         <Box padding={"xl"}>
             <PaginatedTable
                 tableHeader={i18n?.role_management_header || "Role Management"}
                 queryKey={QueryKeys.ROLE_MANAGEMENT}
                 columnDefinitions={colDefinition}
-                getPaginated={getRolePage}
+                getPaginated={(pageNumber, pageSize) => usePaginatedRoles({ pageNo: pageNumber, pageSize })}
                 viewActionProps={{}}
                 createActionProps={{
                     createLabel: i18n?.permission_management_create_label || "Create Role",

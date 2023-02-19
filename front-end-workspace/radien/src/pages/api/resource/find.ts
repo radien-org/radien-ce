@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from "axios";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 
-export default async function getAll(req: NextApiRequest, res: NextApiResponse) {
+export default async function find(req: NextApiRequest, res: NextApiResponse) {
     const { page, pageSize } = req.query;
     const session = await getServerSession(req, res, authOptions);
     if (!session) {

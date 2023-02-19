@@ -24,14 +24,6 @@ interface CreateActionProps<T> {
     createButtonType?: "normal" | "primary" | "link" | "icon" | "inline-icon";
 }
 
-interface AggregateProps<T> {
-    aggregators?: {
-        mapper: (foreignData: any, tableData: T[]) => T[];
-        loader: () => Promise<AxiosResponse<any, any>>;
-        queryKey: string[];
-    }[];
-}
-
 interface ViewActionDetails {
     ViewComponent?: React.FunctionComponent<{ data: any }>;
     viewTitle?: string;
@@ -54,12 +46,11 @@ export interface PaginatedTableProps<T> {
     tableVariant?: "embedded" | "container" | "stacked" | "full-page";
     queryKey: string;
     columnDefinitions: TableProps.ColumnDefinition<T>[];
-    getPaginated: (pageNumber?: number, pageSize?: number) => Promise<AxiosResponse<Page<T>, Error>>;
+    getPaginated: (pageNumber?: number, pageSize?: number) => UseQueryResult<Page<T>, Error>;
     viewActionProps: ViewActionDetails;
     createActionProps: CreateActionProps<T>;
     deleteActionProps: DeleteActionProps<T>;
     emptyProps: EmptyProps;
-    aggregateProps?: AggregateProps<T>;
 }
 
 const Table = dynamic(() => import("@cloudscape-design/components/table"), { ssr: false }) as TableForwardRefType;
@@ -75,7 +66,6 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
         createActionProps: { createLabel, createButtonType, hideCreate, createAction },
         viewActionProps: { ViewComponent, viewTitle, viewLabel, viewConfirmLabel },
         emptyProps: { emptyMessage, emptyActionLabel },
-        aggregateProps,
     } = props;
     const { userInSession } = useContext(RadienContext);
     const [pageSize, setPageSize] = useState<number>(10);
@@ -83,34 +73,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
     const [selectedItem, setSelectedItem] = useState<T>();
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [viewModalVisible, setViewModalVisible] = useState(false);
-    const { isLoading, data, refetch } = useQuery([queryKey, currentPage], () => getPaginated(currentPage, pageSize));
-    let loadedData: { query: UseQueryResult; mapper: (foreignData: any, tableData: T[]) => T[] }[] | undefined;
-
-    if (aggregateProps) {
-        loadedData = aggregateProps.aggregators?.map((aggregator) => {
-            return {
-                query: useQuery(aggregator.queryKey, aggregator.loader),
-                mapper: aggregator.mapper,
-            };
-        });
-        if (loadedData && loadedData.length > 0) {
-            loadedData.forEach((refData) => {
-                const { query, mapper } = refData;
-                if (query.data && data && data.data) {
-                    data.data.results = mapper(query.data, data.data.results);
-                }
-            });
-        }
-    }
-
-    const loading =
-        isLoading ||
-        (aggregateProps &&
-            aggregateProps.aggregators &&
-            aggregateProps.aggregators.length > 0 &&
-            loadedData &&
-            loadedData.length > 0 &&
-            loadedData.some((query: any) => query.isLoading));
+    const { isLoading, data, refetch } = getPaginated(currentPage, pageSize);
 
     const clickTargetUserPage = async (event: NonCancelableCustomEvent<PaginationProps.ChangeDetail>) => {
         let targetPage = event.detail.currentPageIndex;
@@ -148,8 +111,8 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
                 onSelectionChange={({ detail }) => setSelectedItem(detail.selectedItems[0])}
                 selectedItems={[selectedItem!]}
                 columnDefinitions={columnDefinitions}
-                items={data?.data?.results!}
-                loading={loading}
+                items={data?.results!}
+                loading={isLoading}
                 loadingText="Loading resources"
                 sortingDisabled
                 variant={tableVariant || "container"}
@@ -164,8 +127,8 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
                 header={<Header key={queryKey}> {tableHeader} </Header>}
                 pagination={
                     <Pagination
-                        currentPageIndex={data?.data?.currentPage!}
-                        pagesCount={data?.data?.totalPages!}
+                        currentPageIndex={data?.currentPage!}
+                        pagesCount={data?.totalPages!}
                         onChange={(event) => clickTargetUserPage(event)}
                         ariaLabels={{
                             nextPageLabel: "Next page",

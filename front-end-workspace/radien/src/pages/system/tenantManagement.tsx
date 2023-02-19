@@ -1,29 +1,15 @@
 import React, { useContext } from "react";
 import { Tenant } from "radien";
-import axios from "axios";
-import PaginatedTable, { DeleteParams } from "@/components/PaginatedTable/PaginatedTable";
+import PaginatedTable from "@/components/PaginatedTable/PaginatedTable";
 import { Box, TableProps } from "@cloudscape-design/components";
 import { QueryKeys } from "@/consts";
 import { RadienContext } from "@/context/RadienContextProvider";
 import useDeleteTenant from "@/hooks/useDeleteTenant";
+import usePaginatedTenants from "@/hooks/usePaginatedTenants";
 
 export default function TenantManagement() {
     const { i18n } = useContext(RadienContext);
     const deleteTenant = useDeleteTenant();
-
-    const findTenant = (tenantId: number, tenants: any[]) => {
-        return tenants.find((tenant: any) => tenant.id === tenantId);
-    };
-    const loadTenant = async () => {
-        return await axios.get("/api/tenant/tenant/getAllNoPage");
-    };
-    const aggregateTenant = (tenants: any, data: Tenant[]) => {
-        return data.map((tenant: any) => ({
-            ...tenant,
-            parentData: findTenant(tenant.parentId, tenants.data),
-            clientData: findTenant(tenant.clientId, tenants.data),
-        }));
-    };
 
     const colDefinition: TableProps.ColumnDefinition<Tenant>[] = [
         {
@@ -106,31 +92,13 @@ export default function TenantManagement() {
         },
     ];
 
-    const getTenantPage = async (pageNumber: number = 1, pageSize: number = 10) => {
-        return await axios.get("/api/tenant/tenant/getAll", {
-            params: {
-                page: pageNumber,
-                pageSize: pageSize,
-            },
-        });
-    };
-
     return (
         <Box padding={"xl"}>
             <PaginatedTable
                 tableHeader={i18n?.tenant_management_header || "Tenant Management"}
                 queryKey={QueryKeys.TENANT_MANAGEMENT}
                 columnDefinitions={colDefinition}
-                aggregateProps={{
-                    aggregators: [
-                        {
-                            mapper: aggregateTenant,
-                            loader: loadTenant,
-                            queryKey: [QueryKeys.TENANT_MANAGEMENT, "references"],
-                        },
-                    ],
-                }}
-                getPaginated={getTenantPage}
+                getPaginated={(pageNumber, pageSize) => usePaginatedTenants({ pageNo: pageNumber, pageSize })}
                 viewActionProps={{}}
                 createActionProps={{}}
                 deleteActionProps={{

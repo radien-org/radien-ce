@@ -10,8 +10,6 @@ export default function useDarkMode() {
         root.classList.remove(colorTheme);
         root.classList.add(theme);
 
-        console.log(theme, colorTheme);
-
         if (typeof window !== "undefined") {
             localStorage.setItem("theme", theme);
         }

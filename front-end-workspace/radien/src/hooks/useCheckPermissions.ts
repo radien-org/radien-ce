@@ -9,31 +9,37 @@ const checkPermission = (resource: string, action: string, userId?: number, tena
 export default function useCheckPermissions(userId?: number, tenantId?: number) {
     const permissions = {
         roles: { resource: "Roles", action: "Read" },
+        tenantRoles: { resource: "Tenant Role", action: "Read" },
         user: { resource: "User", action: "Read" },
         permission: { resource: "Permission", action: "Read" },
         tenant: { resource: "Tenant", action: "Read" },
     };
 
-    return [
-        useQuery(
+    return {
+        roles: useQuery(
             [permissions.roles.resource, tenantId],
             async () => (await checkPermission(permissions.roles.resource, permissions.roles.action, userId, tenantId)).data,
             { enabled: !!tenantId && !!userId, refetchInterval: 60000 }
         ),
-        useQuery(
+        tenantRoles: useQuery(
+            [permissions.tenantRoles.resource, tenantId],
+            async () => (await checkPermission(permissions.tenantRoles.resource, permissions.tenantRoles.action, userId, tenantId)).data,
+            { enabled: !!tenantId && !!userId, refetchInterval: 60000 }
+        ),
+        user: useQuery(
             [permissions.user.resource, tenantId],
             async () => (await checkPermission(permissions.user.resource, permissions.user.action, userId, tenantId)).data,
             { enabled: !!tenantId && !!userId, refetchInterval: 60000 }
         ),
-        useQuery(
+        permission: useQuery(
             [permissions.permission.resource, tenantId],
             async () => (await checkPermission(permissions.permission.resource, permissions.permission.action, userId, tenantId)).data,
             { enabled: !!tenantId && !!userId, refetchInterval: 60000 }
         ),
-        useQuery(
+        tenant: useQuery(
             [permissions.tenant.resource, tenantId],
             async () => (await checkPermission(permissions.tenant.resource, permissions.tenant.action, userId, tenantId)).data,
             { enabled: !!tenantId && !!userId, refetchInterval: 60000 }
         ),
-    ];
+    };
 }

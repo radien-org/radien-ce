@@ -9,7 +9,7 @@
         "lint": "next lint"
     },
     "dependencies": {
-        "@cloudscape-design/components": "^3.0.198",
+        "@cloudscape-design/components": "^3.0.178",
         "@cloudscape-design/design-tokens": "^3.0.7",
         "@cloudscape-design/global-styles": "^1.0.7",
         "@next/font": "13.1.5",

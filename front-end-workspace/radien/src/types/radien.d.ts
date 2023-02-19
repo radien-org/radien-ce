@@ -56,6 +56,8 @@ declare module "radien" {
     interface TenantRole extends RadienModel {
         tenantId: number;
         roleId: number;
+        tenant?: Tenant;
+        role?: Role;
     }
 
     interface Permission {
