@@ -16,15 +16,17 @@ export default function ServiceDashboard() {
     const { data: assignedTenants, isLoading: isLoadingAssignedTenants } = useAssignedTenants();
     const { locale } = useRouter();
     const {
-        roles: { data: rolesViewPermission },
-        tenantRoles: { data: tenantRolesViewPermission },
-        user: { data: usersViewPermission },
-        permission: { data: permissionViewPermission },
-        tenant: { data: tenantViewPermission },
+        roles: { data: rolesViewPermission, isLoading: isLoadingRolesView },
+        tenantRoles: { data: tenantRolesViewPermission, isLoading: isLoadingTenantRolesView },
+        user: { data: usersViewPermission, isLoading: isLoadingUsersView },
+        permission: { data: permissionViewPermission, isLoading: isLoadingPermissionView },
+        tenant: { data: tenantViewPermission, isLoading: isLoadingTenantView },
+        tenantAdmin: { data: isTenantAdmin, isLoading: isTenantAdminLoading}
     } = useCheckPermissions(radienUser?.id!, activeTenantData?.tenantId!);
 
-    if (isLoadingAssignedTenants || isLoadingActiveTenant) {
-        return <Loader />;
+
+    if(isLoadingAssignedTenants || isLoadingActiveTenant || isLoadingRolesView || isLoadingUsersView || isLoadingPermissionView || isLoadingTenantView || isTenantAdminLoading || isLoadingTenantRolesView) {
+        return <Loader/>
     }
 
     const cards = [
@@ -61,6 +63,13 @@ export default function ServiceDashboard() {
             description: i18n?.tenant_management_description || "Which tenant are going to exist.",
             href: `/system/tenantManagement`,
             hasPermission: tenantViewPermission,
+            locale,
+        },
+        {
+            title: i18n?.tenant_management_title || "Tenant Administrator",
+            description: i18n?.tenant_management_description || "Manage tenant information",
+            href: `/system/tenantAdmin`,
+            hasPermission: isTenantAdmin,
             locale,
         },
     ];

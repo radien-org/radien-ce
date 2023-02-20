@@ -28,6 +28,7 @@ export default function LoggedInHeader({ topNavigationProps, localeClicked, i18n
         user: { isLoading: isLoadingUser, data: usersViewPermission },
         permission: { isLoading: isLoadingPermission, data: permissionViewPermission },
         tenant: { isLoading: isLoadingTenant, data: tenantViewPermission },
+        tenantAdmin: { data: isTenantAdmin, isLoading: isTenantAdminLoading}
     } = useCheckPermissions(radienUser?.id!, activeTenant?.tenantId!);
     const setActiveTenant = useSetActiveTenant();
     const queryClient: QueryClient = new QueryClient();
@@ -168,6 +169,15 @@ export default function LoggedInHeader({ topNavigationProps, localeClicked, i18n
     }
 
     systemMenus = generateSystemRoleMenu(systemMenus);
+
+    if (!isTenantAdminLoading && isTenantAdmin) {
+        const item: ItemOrGroup = {
+            id: "tenantAdmin",
+            text: i18n?.system_permission_management || "Tenant Administration",
+            href: `${router.locale ? "/" + router.locale : ""}/system/tenantAdmin`,
+        };
+        systemMenus.items = [item, ...systemMenus.items];
+    }
 
     if (!isLoadingTenant && tenantViewPermission) {
         const item: ItemOrGroup = {

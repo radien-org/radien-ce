@@ -3,7 +3,16 @@
 @tailwind utilities;
 
 html {
-    font-size: 10px;
+    font-size: 62.5%;
+}
+
+body {
+    font-size: 1.6rem;
+}
+
+.text-sm {
+    font-size: 1.4rem;
+    line-height: 1.6rem;
 }
 
 .flash-bar--container {

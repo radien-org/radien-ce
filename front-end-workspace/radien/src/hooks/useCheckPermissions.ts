@@ -13,6 +13,7 @@ export default function useCheckPermissions(userId?: number, tenantId?: number) 
         user: { resource: "User", action: "Read" },
         permission: { resource: "Permission", action: "Read" },
         tenant: { resource: "Tenant", action: "Read" },
+        isTenantAdmin: { resource: "Tenant", action: "Write" },
     };
 
     return {
@@ -39,6 +40,11 @@ export default function useCheckPermissions(userId?: number, tenantId?: number) 
         tenant: useQuery(
             [permissions.tenant.resource, tenantId],
             async () => (await checkPermission(permissions.tenant.resource, permissions.tenant.action, userId, tenantId)).data,
+            { enabled: !!tenantId && !!userId, refetchInterval: 60000 }
+        ),
+        tenantAdmin: useQuery(
+            [permissions.isTenantAdmin.resource, tenantId],
+            async () => (await checkPermission(permissions.isTenantAdmin.resource, permissions.isTenantAdmin.action, userId, tenantId)).data,
             { enabled: !!tenantId && !!userId, refetchInterval: 60000 }
         ),
     };
