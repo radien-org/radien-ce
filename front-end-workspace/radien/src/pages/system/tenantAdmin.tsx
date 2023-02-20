@@ -1,6 +1,6 @@
 import {RadienModel, Tenant, User} from "radien";
 import useActiveTenant from "@/hooks/useActiveTenant";
-import {Box, Container, DatePicker, FormField, Input} from "@cloudscape-design/components";
+import {Box, Container, DatePicker, FormField, Input, TableProps} from "@cloudscape-design/components";
 import {Loader} from "@/components/Loader/Loader";
 import Form from "@cloudscape-design/components/form";
 import SpaceBetween from "@cloudscape-design/components/space-between";
@@ -11,6 +11,15 @@ import {useContext, useEffect} from "react";
 import {RadienContext} from "@/context/RadienContextProvider";
 import useAssignedTenants from "@/hooks/useAssignedTenants";
 import useUpdateTenant from "@/hooks/useUpdateTenant";
+import PaginatedTable from "@/components/PaginatedTable/PaginatedTable";
+import {QueryKeys} from "@/consts";
+import usePaginatedUsers from "@/hooks/usePaginatedUsers";
+import UserDetailsView from "@/components/UserDetailsView/UserDetailsView";
+import usePaginatedUsersForTenant from "@/hooks/usePaginatedUsersForTenant";
+import {getColDefinitionUser} from "@/utils/tablesColDefinitions";
+import useDeleteUser from "@/hooks/useDeleteUser";
+import {useRouter} from "next/router";
+import useDissociateTenant from "@/hooks/useDissociateTenant";
 
 
 export default function TenantAdmin() {
@@ -45,6 +54,10 @@ export default function TenantAdmin() {
         const date = new Date(value);
         return date >= new Date();
     }
+    const colDefinition: TableProps.ColumnDefinition<User>[] = getColDefinitionUser(i18n);
+    const deleteUser = useDeleteUser();
+    const router = useRouter();
+    const dissociateUser = useDissociateTenant();
 
     const resetForm = () => {
         tenant = assignedTenants?.results.filter((tenant) => tenant.id === tenantId?.tenantId)[0];
@@ -266,6 +279,40 @@ export default function TenantAdmin() {
                     </Form>
                 </form>}
             </Container>
+        </Box>
+
+        <Box>
+            <Box padding={"xl"}>
+                <PaginatedTable
+                    tableHeader={i18n?.user_management_header || "Associated users"}
+                    queryKey={QueryKeys.USER_MANAGEMENT}
+                    columnDefinitions={colDefinition}
+                    getPaginated={(pageNumber, pageSize) => usePaginatedUsersForTenant({tenantId: tenantId?.tenantId!, pageNo: pageNumber, pageSize })}
+                    viewActionProps={{
+                        ViewComponent: UserDetailsView,
+                        viewTitle: i18n?.user_management_view_label || "User details",
+                    }}
+                    createActionProps={{
+                        createLabel: i18n?.user_management_create_label || "Add user",
+                        createAction: () => {
+                            router.push("/user/createUser");
+                        },
+                    }}
+                    deleteActionProps={{
+                        deleteLabel: i18n?.user_management_delete_label || "Dissociate User",
+                        deleteConfirmationText: (selectedUser) =>
+                            `${i18n?.user_management_delete_confirmation || "Are you sure you would like to dissociate ${}"}`.replace(
+                                "${}",
+                                `${selectedUser?.firstname} ${selectedUser?.lastname}`
+                            ),
+                        deleteAction: dissociateUser.mutate,
+                    }}
+                    emptyProps={{
+                        emptyMessage: i18n?.user_management_empty_label || "No users available",
+                        emptyActionLabel: i18n?.user_management_empty_action || "Create User",
+                    }}
+                />
+            </Box>
         </Box>
     </div>
 }

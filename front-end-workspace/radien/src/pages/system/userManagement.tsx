@@ -9,38 +9,14 @@ import { RadienContext } from "@/context/RadienContextProvider";
 import useDeleteUser from "@/hooks/useDeleteUser";
 import TenantRequestsTable from "@/components/TenantRequest/TenantRequestsTable";
 import usePaginatedUsers from "@/hooks/usePaginatedUsers";
+import {getColDefinitionUser} from "@/utils/tablesColDefinitions";
 
 export default function UserManagement() {
     const { i18n, addSuccessMessage } = useContext(RadienContext);
     const deleteUser = useDeleteUser();
     const router = useRouter();
 
-    const colDefinition: TableProps.ColumnDefinition<User>[] = [
-        {
-            id: "logon",
-            header: i18n?.user_management_column_username || "Username",
-            cell: (item: User) => item?.logon || "-",
-            sortingField: "logon",
-        },
-        {
-            id: "firstname",
-            header: i18n?.user_management_column_firstname || "First Name",
-            cell: (item: User) => item?.firstname || "-",
-            sortingField: "firstname",
-        },
-        {
-            id: "lastname",
-            header: i18n?.user_management_column_lastname || "Last Name",
-            cell: (item: User) => item?.lastname || "-",
-            sortingField: "lastname",
-        },
-        {
-            id: "userEmail",
-            header: i18n?.user_management_column_email || "User Email",
-            cell: (item: User) => item?.userEmail || "-",
-            sortingField: "userEmail",
-        },
-    ];
+    const colDefinition: TableProps.ColumnDefinition<User>[] = getColDefinitionUser(i18n);
 
     return (
         <>

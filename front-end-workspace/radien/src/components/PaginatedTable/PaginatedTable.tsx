@@ -67,7 +67,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
         viewActionProps: { ViewComponent, viewTitle, viewLabel, viewConfirmLabel },
         emptyProps: { emptyMessage, emptyActionLabel },
     } = props;
-    const { userInSession } = useContext(RadienContext);
+    const { userInSession, activeTenant: {data: activeTenantData} } = useContext(RadienContext);
     const [pageSize, setPageSize] = useState<number>(10);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [selectedItem, setSelectedItem] = useState<T>();
@@ -90,7 +90,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
         if (deleteAction && selectedItem) {
             const field = deleteNestedObj ? ((selectedItem as any)[deleteNestedObj] as RadienModel).id : (selectedItem as RadienModel).id;
             deleteAction(
-                { objectId: field, userId: userInSession?.id },
+                { objectId: field, userId: userInSession?.id, tenantId: activeTenantData?.tenantId!},
                 {
                     onSuccess: () => {
                         if (onDeleteSuccess) {
