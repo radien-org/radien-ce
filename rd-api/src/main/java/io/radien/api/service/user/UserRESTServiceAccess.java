@@ -93,7 +93,9 @@ public interface UserRESTServiceAccess extends Appframeable{
      * @return a page of all the requested system users
      * @throws MalformedURLException in case of any issue while attempting communication with the client side
      */
-    public Page<? extends SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws MalformedURLException;
+    public Page<? extends SystemUser> getAll(String sub, String email, String logon, String firstName, String lastName,
+                                             Boolean enabled, Boolean processingLocked, Collection<Long> ids, int pageNo, int pageSize, List<String> sortBy,
+                                             boolean isAscending, boolean isExact, boolean isLogicalConjunction) throws MalformedURLException;
 
     /**
      * Send the update password email to the active/requested user

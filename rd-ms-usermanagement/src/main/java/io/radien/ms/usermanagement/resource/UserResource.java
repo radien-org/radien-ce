@@ -15,11 +15,13 @@
  */
 package io.radien.ms.usermanagement.resource;
 
+import io.radien.api.model.user.SystemPagedUserSearchFilter;
 import io.radien.api.service.permission.SystemActionsEnum;
 import io.radien.api.service.permission.SystemResourcesEnum;
 import io.radien.exception.UserNotFoundException;
 import io.radien.ms.openid.entities.Authenticated;
 import io.radien.ms.openid.entities.Public;
+import io.radien.ms.usermanagement.client.entities.PagedUserSearchFilter;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import io.radien.ms.usermanagement.entities.UserEntity;
@@ -97,8 +99,10 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	 * @return Ok message if it has success. Returns error 500 Code to the user in case of resource is not existent.
 	 */
 	@Override
-	public Response getAll(String search, int pageNo, int pageSize,
-						   List<String> sortBy, boolean isAscending) {
+	public Response getAll(String sub, String email, String logon, String firstName, String lastName,
+						   Boolean enabled, Boolean processingLocked, Collection<Long> ids,
+						   int pageNo, int pageSize, List<String> sortBy, boolean isAscending,
+						   boolean isExact, boolean isLogicalConjunction) {
 		try {
 			if (!checkUserRoles()) {
 				return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
@@ -106,7 +110,8 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 		} catch (Exception e) {
 			return getResponseFromException(e);
 		}
-		return Response.ok(userBusinessService.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
+		SystemPagedUserSearchFilter filter = new PagedUserSearchFilter(isLogicalConjunction, ids, sub, firstName, lastName, email, logon, enabled, processingLocked);
+		return Response.ok(userBusinessService.getAll(filter, pageNo, pageSize, sortBy, isAscending)).build();
 	}
 
 	/**

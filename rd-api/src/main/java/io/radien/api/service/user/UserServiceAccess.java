@@ -15,6 +15,7 @@
  */
 package io.radien.api.service.user;
 
+import io.radien.api.model.user.SystemPagedUserSearchFilter;
 import io.radien.exception.SystemException;
 import java.util.Collection;
 import java.util.List;
@@ -65,7 +66,7 @@ public interface UserServiceAccess extends ServiceAccess {
      * @param isAscending if in case of true the records will come in ascending sorted
      * @return a page of requested users
      */
-    public Page<SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
+    public Page<SystemUser> getAll(SystemPagedUserSearchFilter filter, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
 
     /**
      * CREATE a User association

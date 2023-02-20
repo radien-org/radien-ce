@@ -3,7 +3,7 @@ import { useQuery } from "react-query";
 import { Action, Page, Permission, Resource } from "radien";
 import { QueryKeys } from "@/consts";
 
-interface TenantRoleParams {
+interface PermissionParams {
     pageNo?: number;
     pageSize?: number;
 }
@@ -38,7 +38,7 @@ const getPermissionPage = async (pageNumber: number = 1, pageSize: number = 10) 
     });
 };
 
-export default function usePaginatedPermissions({ pageNo, pageSize }: TenantRoleParams) {
+export default function usePaginatedPermissions({ pageNo, pageSize }: PermissionParams) {
     return useQuery<Page<Permission>, Error>(
         [QueryKeys.PERMISSION_MANAGEMENT, pageNo, pageSize],
         async () => {

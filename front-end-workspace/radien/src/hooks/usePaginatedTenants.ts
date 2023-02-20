@@ -3,7 +3,7 @@ import { useQuery } from "react-query";
 import { Page, Tenant } from "radien";
 import { QueryKeys } from "@/consts";
 
-interface TenantRoleParams {
+interface TenantParams {
     pageNo?: number;
     pageSize?: number;
 }
@@ -31,7 +31,7 @@ const getTenantPage = async (pageNumber: number = 1, pageSize: number = 10) => {
     });
 };
 
-export default function usePaginatedTenants({ pageNo, pageSize }: TenantRoleParams) {
+export default function usePaginatedTenants({ pageNo, pageSize }: TenantParams) {
     return useQuery<Page<Tenant>, Error>(
         [QueryKeys.TENANT_MANAGEMENT, pageNo, pageSize],
         async () => {

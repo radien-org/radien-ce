@@ -16,11 +16,13 @@
 package io.radien.ms.usermanagement.service;
 
 import io.radien.api.entity.Page;
+import io.radien.api.model.user.SystemPagedUserSearchFilter;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.*;
+import io.radien.ms.usermanagement.client.entities.PagedUserSearchFilter;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
@@ -89,12 +91,9 @@ public class UserBusinessServiceTest {
         assertThrows(UserNotFoundException.class, () -> userBusinessService.getUserId("sub2"));
     }
 
-    /**
-     * Test for method {@link UserBusinessService#getAll(String, int, int, List, boolean)}
-     */
     @Test
     public void testGetAll() {
-        String search = "";
+        SystemPagedUserSearchFilter search = new PagedUserSearchFilter();
         Page<SystemUser> p = new Page<>(new ArrayList<>(),-1,0,0);
         when(userServiceAccess.getAll(search,1,2,null,true)).thenReturn(p);
         Page<? extends SystemUser> result = userBusinessService.getAll(search,1,2,null,true);

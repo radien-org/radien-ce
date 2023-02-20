@@ -15,11 +15,14 @@
  */
 package io.radien.ms.usermanagement.client.services;
 
+import io.radien.api.model.user.SystemPagedUserSearchFilter;
 import io.radien.api.model.user.SystemUserPasswordChanging;
 import io.radien.exception.BadRequestException;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.InternalServerErrorException;
+import io.radien.ms.usermanagement.client.entities.PagedUserSearchFilter;
 import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
+import io.radien.ms.usermanagement.client.util.UserModelMapper;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.Collection;
@@ -40,7 +43,6 @@ import io.radien.exception.NotFoundException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.usermanagement.client.UserResponseExceptionMapper;
-import io.radien.ms.usermanagement.client.util.UserModelMapper;
 import org.apache.cxf.bus.extension.ExtensionException;
 
 import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
@@ -309,15 +311,17 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
      * @return a page of all the requested system users
      */
     @Override
-    public Page<? extends SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
+    public Page<? extends SystemUser> getAll(String sub, String email, String logon, String firstName, String lastName,
+                                             Boolean enabled, Boolean processingLocked, Collection<Long> ids, int pageNo, int pageSize, List<String> sortBy,
+                                             boolean isAscending, boolean isExact, boolean isLogicalConjunction) {
         Page<User> pageUsers = null;
         try {
-            pageUsers = getPageUsers(search, pageNo, pageSize, sortBy, isAscending);
+            pageUsers = getPageUsers(sub, email, logon, firstName, lastName, enabled, processingLocked, ids, pageNo, pageSize, sortBy, isAscending, isExact, isLogicalConjunction);
         } catch (TokenExpiredException e) {
 
             try {
                 refreshToken();
-                pageUsers = getPageUsers(search, pageNo, pageSize, sortBy, isAscending);
+                pageUsers = getPageUsers(sub, email, logon, firstName, lastName, enabled, processingLocked, ids, pageNo, pageSize, sortBy, isAscending, isExact, isLogicalConjunction);
             } catch (SystemException | TokenExpiredException tokenExpiredException) {
                 log.error(tokenExpiredException.getMessage(), tokenExpiredException);
             }
@@ -335,12 +339,14 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
      * @return a page of all the requested system users
      * @throws TokenExpiredException in case of any issue while attempting communication with the client side
      */
-    private Page<User> getPageUsers(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws TokenExpiredException {
+    private Page<User> getPageUsers(String sub, String email, String logon, String firstName, String lastName,
+                                    Boolean enabled, Boolean processingLocked, Collection<Long> ids, int pageNo, int pageSize, List<String> sortBy,
+                                    boolean isAscending, boolean isExact, boolean isLogicalConjunction) throws TokenExpiredException {
         Page<User> page = new Page<>();
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
             //WEB APPLICATION EXCEPTION jax rs
-            Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
+            Response response = client.getAll(sub, email, logon, firstName, lastName, enabled, processingLocked, ids, pageNo, pageSize, sortBy, isAscending, isExact, isLogicalConjunction);
 
             page = UserModelMapper.mapToPage((InputStream) response.getEntity());
 

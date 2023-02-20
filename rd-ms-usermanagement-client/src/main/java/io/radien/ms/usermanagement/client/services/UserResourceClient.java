@@ -65,12 +65,20 @@ public interface UserResourceClient {
      * @return Ok message if it has success. Returns error 500 Code to the user in case of resource is not existent.
      */
     @GET
-    public Response getAll(//@Context HttpSession session, @Context UriInfo uriInfo,
-                           @QueryParam("search") String search,
+    Response getAll(@QueryParam("sub") String sub,
+                           @QueryParam("userEmail") String email,
+                           @QueryParam("logon") String logon,
+                           @QueryParam("firstName") String firstName,
+                           @QueryParam("lastName") String lastName,
+                           @QueryParam("enabled") Boolean enabled,
+                           @QueryParam("processingLocked") Boolean processingLocked,
+                           @QueryParam("ids") Collection<Long> ids,
                            @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
                            @DefaultValue("10") @QueryParam("pageSize") int pageSize,
                            @QueryParam("sortBy") List<String> sortBy,
-                           @DefaultValue("true") @QueryParam("asc") boolean isAscending);
+                           @DefaultValue("true") @QueryParam("asc") boolean isAscending,
+                           @DefaultValue("true") @QueryParam("isExact") boolean isExact,
+                           @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
     /**
      * Retrieves multiple users into a response in base of a search filter criteria
@@ -84,7 +92,7 @@ public interface UserResourceClient {
      */
     @GET
     @Path("find")
-    public Response getUsers(@QueryParam("sub") String sub,
+    Response getUsers(@QueryParam("sub") String sub,
                              @QueryParam("userEmail") String email,
                              @QueryParam("logon") String logon,
                              @QueryParam("ids") Collection<Long> ids,
@@ -98,7 +106,7 @@ public interface UserResourceClient {
      */
     @GET
     @Path("/sub/{sub}")
-    public Response getUserIdBySub(@PathParam("sub") String sub);
+    Response getUserIdBySub(@PathParam("sub") String sub);
 
     /**
      * Returns JSON message with the specific required information search by the user ID.
@@ -107,7 +115,7 @@ public interface UserResourceClient {
      */
     @GET
     @Path("/{id}")
-    public Response getById(@PathParam("id") Long id);
+    Response getById(@PathParam("id") Long id);
 
     /**
      * Deletes requested user from the DB
@@ -116,7 +124,7 @@ public interface UserResourceClient {
      */
     @DELETE
     @Path("/{id}")
-    public Response delete(@NotNull @PathParam("id") long id);
+    Response delete(@NotNull @PathParam("id") long id);
 
     /**
      * Creates user into the DB.
@@ -152,7 +160,7 @@ public interface UserResourceClient {
      */
     @POST
     @Path("/multipleCreation")
-    public Response create(List<User> userList);
+    Response create(List<User> userList);
 
     /**
      * Will send the updated password via email to the user in case of success will return a 200 code message
@@ -161,7 +169,7 @@ public interface UserResourceClient {
      */
     @POST
     @Path("/{id}/sendUpdatePasswordEmail")
-    public Response sendUpdatePasswordEmail(@NotNull @PathParam("id") long id);
+    Response sendUpdatePasswordEmail(@NotNull @PathParam("id") long id);
 
     /**
      * Will updated email and also send email to verify to the user in case of success will return a 204 code message
@@ -171,7 +179,7 @@ public interface UserResourceClient {
      */
     @PATCH
     @Path("/{id}")
-    public Response updateEmailAndExecuteActionEmailVerify(@PathParam("id") long id, User user,
+    Response updateEmailAndExecuteActionEmailVerify(@PathParam("id") long id, User user,
                                                            @DefaultValue("true") @QueryParam("emailVerify") boolean emailVerify);
 
     /**
@@ -181,7 +189,7 @@ public interface UserResourceClient {
      */
     @POST
     @Path("/refresh")
-    public Response refreshToken(String refreshToken);
+    Response refreshToken(String refreshToken);
 
     /**
      * Endpoint to change user password

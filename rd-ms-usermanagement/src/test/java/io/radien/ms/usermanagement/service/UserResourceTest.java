@@ -126,7 +126,7 @@ public class UserResourceTest {
         doReturn(expectedAuthGranted).when(tenantRoleClient).checkPermissions(
                 1001L, roleList, null);
 
-        Response response = userResource.getAll(null,1,10,null,true);
+        Response response = userResource.getAll(null, null, null, null, null,null, null, null, 1,10, null, true, false, false);
         assertEquals(200,response.getStatus());
     }
 
@@ -146,7 +146,7 @@ public class UserResourceTest {
         doReturn(expectedAuthGranted).when(tenantRoleClient).checkPermissions(
                 1001L, roleList, null);
 
-        Response response = userResource.getAll(null,1,10,null,true);
+        Response response = userResource.getAll(null, null, null, null, null,null, null, null, 1,10, null, true, false, false);
         assertEquals(403,response.getStatus());
     }
 
@@ -160,7 +160,7 @@ public class UserResourceTest {
         when(servletRequest.getSession()).thenReturn(session);
         when(userBusinessService.getAll(null,1,10,null,true))
                 .thenThrow(new RuntimeException());
-        Response response = userResource.getAll(null,1,10,null,true);
+        Response response = userResource.getAll(null, null, null, null, null,null, null, null, 1,10, null, true, false, false);
         assertEquals(500,response.getStatus());
     }
 

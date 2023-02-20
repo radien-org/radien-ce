@@ -15,6 +15,7 @@
  */
 package io.radien.ms.usermanagement.datalayer;
 
+import io.radien.api.model.user.SystemPagedUserSearchFilter;
 import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
@@ -143,22 +144,18 @@ public class UserService extends ModelServiceUtil implements UserServiceAccess {
 	 * @return a page of system users.
 	 */
 	@Override
-	public Page<SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
+	public Page<SystemUser> getAll(SystemPagedUserSearchFilter filter, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<UserEntity> criteriaQuery = criteriaBuilder.createQuery( UserEntity.class);
 		Root<UserEntity> userRoot = criteriaQuery.from(UserEntity.class);
 
 		criteriaQuery.select(userRoot);
 
-		Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
-		if(search!= null) {
-			global = criteriaBuilder.and(criteriaBuilder.or(criteriaBuilder.like(
-							userRoot.get(SystemVariables.LOGON.getFieldName()), search),
-					criteriaBuilder.like(userRoot.get(SystemVariables.USER_EMAIL.getFieldName()), search),
-					criteriaBuilder.like(userRoot.get(SystemVariables.FIRST_NAME.getFieldName()), search),
-					criteriaBuilder.like(userRoot.get(SystemVariables.LAST_NAME.getFieldName()), search)));
-			criteriaQuery.where(global);
+		Predicate global = generateFilterPredicate(filter, criteriaBuilder, userRoot);
+		if(global == null) {
+			global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
 		}
+		criteriaQuery.where(global);
 
 		if(sortBy != null && !sortBy.isEmpty()){
 			List<Order> orders = getListOrderSortBy(isAscending, userRoot, criteriaBuilder, sortBy);
@@ -176,6 +173,45 @@ public class UserService extends ModelServiceUtil implements UserServiceAccess {
 		int totalPages = totalRecords%pageSize==0 ? totalRecords/pageSize : totalRecords/pageSize+1;
 
 		return new Page<>(systemUsers, pageNo, totalRecords, totalPages);
+	}
+
+	private static Predicate generateFilterPredicate(SystemPagedUserSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<UserEntity> userRoot) {
+		Predicate global = null;
+		if(filter != null) {
+			List<Predicate> filtersList = new ArrayList<>();
+			if(filter.getIds() != null && !filter.getIds().isEmpty()) {
+				filtersList.add(userRoot.get(SystemVariables.ID.getFieldName()).in(filter.getIds()));
+			}
+			if(filter.getFirstName() != null) {
+				filtersList.add(criteriaBuilder.like(userRoot.get(SystemVariables.FIRST_NAME.getFieldName()), filter.getFirstName()));
+			}
+			if(filter.getLastName() != null) {
+				filtersList.add(criteriaBuilder.like(userRoot.get(SystemVariables.LAST_NAME.getFieldName()), filter.getLastName()));
+			}
+			if(filter.getSub() != null) {
+				filtersList.add(criteriaBuilder.like(userRoot.get(SystemVariables.SUB.getFieldName()), filter.getSub()));
+			}
+			if(filter.getEmail() != null) {
+				filtersList.add(criteriaBuilder.like(userRoot.get(SystemVariables.USER_EMAIL.getFieldName()), filter.getEmail()));
+			}
+			if(filter.getLogon() != null) {
+				filtersList.add(criteriaBuilder.like(userRoot.get(SystemVariables.LOGON.getFieldName()), filter.getLogon()));
+			}
+			if(filter.isEnabled() != null) {
+				filtersList.add(criteriaBuilder.equal(userRoot.get(SystemVariables.USER_ENABLED.getFieldName()), filter.isEnabled()));
+			}
+			if(filter.isProcessingLocked() != null) {
+				filtersList.add(criteriaBuilder.equal(userRoot.get(SystemVariables.PROCESSING_LOCKED.getFieldName()), filter.isProcessingLocked()));
+			}
+			if(filter.isLogicConjunction()) {
+				filtersList.add(criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
+				global = criteriaBuilder.and(filtersList.toArray(new Predicate[0]));
+			} else {
+				filtersList.add(criteriaBuilder.isTrue(criteriaBuilder.literal(false)));
+				global = criteriaBuilder.or(filtersList.toArray(new Predicate[0]));
+			}
+		}
+		return global;
 	}
 
 	/**

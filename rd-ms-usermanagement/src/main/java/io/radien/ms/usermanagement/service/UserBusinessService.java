@@ -16,6 +16,7 @@
 package io.radien.ms.usermanagement.service;
 
 import io.radien.api.entity.Page;
+import io.radien.api.model.user.SystemPagedUserSearchFilter;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.api.service.batch.BatchSummary;
@@ -72,7 +73,7 @@ public class UserBusinessService implements Serializable {
 	 * @param isAscending boolean value to show the values ascending or descending way
 	 * @return Ok message if it has success. Returns error 500 Code to the user in case of resource is not existent.
 	 */
-	public Page<? extends SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending){
+	public Page<? extends SystemUser> getAll(SystemPagedUserSearchFilter search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending){
 		return userServiceAccess.getAll(search,pageNo,pageSize,sortBy,isAscending);
 	}
 

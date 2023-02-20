@@ -25,6 +25,7 @@ import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.exception.UserNotFoundException;
+import io.radien.ms.usermanagement.client.entities.PagedUserSearchFilter;
 import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import io.radien.ms.usermanagement.client.services.UserFactory;
 import io.radien.ms.usermanagement.datalayer.UserService;
@@ -542,7 +543,9 @@ public class UserServiceTest {
         assertEquals("zzz",userPage.getResults().get(0).getFirstname());
 
         List<String> stringList = new ArrayList<>();
-        Page<? extends SystemUser> userPageWhere = userServiceAccess.getAll("aGetAllSort@email.pt", 1, 10, stringList, true);
+        PagedUserSearchFilter filter = new PagedUserSearchFilter();
+        filter.setEmail("aGetAllSort@email.pt");
+        Page<? extends SystemUser> userPageWhere = userServiceAccess.getAll(filter, 1, 10, stringList, true);
         assertEquals(1, userPageWhere.getTotalResults());
 
         assertEquals("a",userPageWhere.getResults().get(0).getFirstname());
@@ -617,7 +620,9 @@ public class UserServiceTest {
         assertNotNull(batchSummary.getNonProcessedItems());
         assertEquals(0, batchSummary.getNonProcessedItems().size());
 
-        Page<? extends SystemUser> page = userServiceAccess.getAll("userb.%", 1, 200, null, true);
+        PagedUserSearchFilter filter = new PagedUserSearchFilter();
+        filter.setLogon("userb.%");
+        Page<? extends SystemUser> page = userServiceAccess.getAll(filter, 1, 200, null, true);
         assertNotNull(page);
         assertEquals(batchSummary.getTotalProcessed(), page.getTotalResults());
     }
@@ -694,7 +699,9 @@ public class UserServiceTest {
         assertEquals(11L, issue.get().getRowId());
         assertEquals(3, issue.get().getReasons().size());
 
-        Page<? extends SystemUser> page = userServiceAccess.getAll("userbatch%", 1, 200, null, true);
+        PagedUserSearchFilter filter = new PagedUserSearchFilter();
+        filter.setSub("userbatch%");
+        Page<? extends SystemUser> page = userServiceAccess.getAll(filter, 1, 200, null, true);
         assertNotNull(page);
         assertEquals((firstSetSize + secondSetSize) - 6, page.getTotalResults());
 

@@ -45,6 +45,7 @@ import java.net.MalformedURLException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -334,10 +335,10 @@ public class UserRESTServiceClientTest {
 
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.getAll(any(), anyInt(), anyInt(), any(), anyBoolean()))
+        when(resourceClient.getAll(any(), any(), any(), any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), anyBoolean(), anyBoolean(), anyBoolean()))
                 .thenReturn(expectedResponse);
 
-        Page<? extends SystemUser> receivedPage = target.getAll(null, 1, 10, null, false);
+        Page<? extends SystemUser> receivedPage = target.getAll(null, null, null, null, null, null, null, null, 1, 10, null, false, false, false);
 
         assertEquals(1, receivedPage.getTotalPages());
         assertEquals(1, receivedPage.getCurrentPage());
@@ -352,7 +353,7 @@ public class UserRESTServiceClientTest {
     public void testGetAllMalformedException() throws MalformedURLException {
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenThrow(new MalformedURLException());
 
-        Page<? extends SystemUser> receivedPage = target.getAll(null, 1, 10, null, false);
+        Page<? extends SystemUser> receivedPage = target.getAll(null, null, null, null, null, null, null, null, 1, 10, null, false, false, false);
 
         assertEquals(0, receivedPage.getTotalPages());
         assertEquals(0, receivedPage.getCurrentPage());
@@ -382,13 +383,13 @@ public class UserRESTServiceClientTest {
 
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.getAll(any(), anyInt(), anyInt(), any(), anyBoolean()))
+        when(resourceClient.getAll(any(), any(), any(), any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), anyBoolean(), anyBoolean(), anyBoolean()))
                 .thenThrow(new TokenExpiredException());
 
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
         when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
 
-        assertNull(target.getAll(null, 1, 10, null, false));
+        assertNull(target.getAll(null, null, null, null, null, null, null, null, 1, 10, null, false, false, false));
     }
 
     /**
@@ -414,13 +415,13 @@ public class UserRESTServiceClientTest {
 
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.getAll(any(), anyInt(), anyInt(), any(), anyBoolean()))
+        when(resourceClient.getAll(any(), any(), any(), any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), anyBoolean(), anyBoolean(), anyBoolean()))
                 .thenThrow(new TokenExpiredException()).thenReturn(expectedResponse);
 
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
         when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
 
-        assertNotNull(target.getAll(null, 1, 10, null, false));
+        assertNotNull(target.getAll(null, null, null, null, null, null, null, null, 1, 10, null, false, false, false));
     }
 
     /**
