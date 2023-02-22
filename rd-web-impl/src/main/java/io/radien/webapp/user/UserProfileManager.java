@@ -19,7 +19,7 @@ import io.radien.api.SystemVariables;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.ticket.SystemTicket;
 import io.radien.api.model.user.SystemUser;
-import io.radien.api.service.notification.SQSAccessAccess;
+import io.radien.api.service.notification.SQSProducerAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.ticket.TicketRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
@@ -70,7 +70,7 @@ public class UserProfileManager extends AbstractManager {
     private UserSession userSession;
 
     @Inject
-    private SQSAccessAccess sqsService;
+    private SQSProducerAccess sqsService;
 
     @Inject
     private TicketRESTServiceAccess ticketService;

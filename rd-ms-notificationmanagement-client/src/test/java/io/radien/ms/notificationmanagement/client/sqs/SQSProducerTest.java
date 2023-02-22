@@ -1,4 +1,4 @@
-package io.radien.ms.notificationmanagement.sqs;
+package io.radien.ms.notificationmanagement.client.sqs;
 
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;

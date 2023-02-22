@@ -1,11 +1,11 @@
-package io.radien.ms.notificationmanagement.sqs;
+package io.radien.ms.notificationmanagement.client.sqs;
 
 import com.amazon.sqs.javamessaging.ProviderConfiguration;
 import com.amazon.sqs.javamessaging.SQSConnection;
 import com.amazon.sqs.javamessaging.SQSConnectionFactory;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
-import io.radien.api.service.notification.SQSAccessAccess;
+import io.radien.api.service.notification.SQSProducerAccess;
 import io.radien.api.service.notification.email.EmailNotificationRESTServiceAccess;
 import io.radien.exception.SystemException;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +28,7 @@ import java.text.MessageFormat;
 import java.util.Map;
 
 @RequestScoped
-public class SQSProducer implements SQSAccessAccess {
+public class SQSProducer implements SQSProducerAccess {
 
     private static final Logger log = LoggerFactory.getLogger(SQSProducer.class);
 
@@ -38,7 +38,6 @@ public class SQSProducer implements SQSAccessAccess {
 
     private Session session;
     private SQSConnection connection;
-
 
     @Inject
     private OAFAccess oaf;

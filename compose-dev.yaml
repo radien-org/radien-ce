@@ -15,6 +15,18 @@ services:
     ports:
       - "8180:8080"
       - "8343:8443"
+  localstack:
+    container_name: localstack
+    image: localstack/localstack:latest
+    environment:
+      - SERVICES=sqs
+      - AWS_DEFAULT_REGION=eu-west-1
+      - EDGE_PORT=4566
+    ports:
+      - '4566-4597:4566-4597'
+    volumes:
+      - "${TMPDIR:-/tmp/localstack}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
   mail-hog:
     container_name: mailHog
     image: mailhog/mailhog
