@@ -35,6 +35,8 @@
 		<module>rd-ms-ticketmanagement-client</module>
         <module>rd-ms-doctypemanagement</module>
         <module>rd-ms-doctypemanagement-client</module>
+        <module>rd-ms-notificationmanagement</module>
+        <module>rd-ms-notificationmanagement-client</module>
         <module>rd-ms-keycloak-themes</module>
     	<module>rd-lambda-notificationmanagement</module>
   	</modules>
