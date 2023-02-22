@@ -1,27 +1,29 @@
-package io.radien.email.service;
+package io.radien.lambda.notificationmanagement.util.email.service;
 
 
 import io.radien.api.service.mail.MailServiceAccess;
-import io.radien.email.params.EmailParams;
+import io.radien.lambda.notificationmanagement.util.email.params.EmailParams;
+import io.radien.lambda.notificationmanagement.util.email.service.EmailNotificationService;
 import io.radien.exception.InternalServerErrorException;
-import io.radien.util.ContentService;
+import io.radien.lambda.notificationmanagement.util.ContentService;
 import org.json.simple.parser.ParseException;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnit;
 
 import java.io.IOException;
+import org.mockito.junit.MockitoRule;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 
-@RunWith(MockitoJUnitRunner.class)
 public class EmailNotificationServiceTest {
-
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
     @Mock
     private MailServiceAccess mailService;
 

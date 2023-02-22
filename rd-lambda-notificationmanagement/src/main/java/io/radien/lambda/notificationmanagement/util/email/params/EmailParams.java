@@ -1,4 +1,4 @@
-package io.radien.email.params;
+package io.radien.lambda.notificationmanagement.util.email.params;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

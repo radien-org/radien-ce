@@ -1,4 +1,4 @@
-package io.radien;
+package io.radien.lambda.notificationmanagement.util;
 
 import com.google.inject.Singleton;
 import io.radien.api.KeycloakConfigs;
@@ -41,7 +41,8 @@ public class Authenticator {
                     .field("password", oaf.getProperty(KeycloakConfigs.RADIEN_PASSWORD))
                     .asObject(HashMap.class);
             if(!response.isSuccess()){
-                throw new InternalServerErrorException("Error on keycloak login: " + response.getBody().toString());
+                String error = response.getBody() != null ? response.getBody().toString() : response.getStatusText();
+                throw new InternalServerErrorException("Error on keycloak login: " + error);
             }
             properties = (Map<String, String>) response.getBody();
             initialized = true;

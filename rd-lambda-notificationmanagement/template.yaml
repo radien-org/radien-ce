@@ -7,7 +7,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Runtime: java8.al2
-      Handler: io.radien.App::handleRequest
+      Handler: io.radien.lambda.notificationmanagement.App::handleRequest
       Timeout: 60
       MemorySize: 512
       CodeUri: ./target/rd-lambda-notificationmanagement.jar

@@ -1,12 +1,12 @@
-package io.radien.email.service;
+package io.radien.lambda.notificationmanagement.util.email.service;
 
 import com.google.inject.Singleton;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.mail.MailServiceAccess;
 import io.radien.exception.InternalServerErrorException;
 import io.radien.ms.email.lib.MailTemplate;
-import io.radien.email.params.EmailParams;
-import io.radien.util.ContentService;
+import io.radien.lambda.notificationmanagement.util.email.params.EmailParams;
+import io.radien.lambda.notificationmanagement.util.ContentService;
 import javax.inject.Inject;
 import org.json.simple.parser.ParseException;
 

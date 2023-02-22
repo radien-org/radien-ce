@@ -1,28 +1,31 @@
-package io.radien.util;
+package io.radien.lambda.notificationmanagement.util;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.radien.Authenticator;
+import io.radien.lambda.notificationmanagement.util.Authenticator;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.service.ecm.model.Content;
 import io.radien.api.service.ecm.model.EnterpriseContent;
+import io.radien.lambda.notificationmanagement.util.ContentService;
 import kong.unirest.HttpMethod;
 import kong.unirest.MockClient;
 import org.json.simple.parser.ParseException;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnit;
 
 import java.io.IOException;
+import org.mockito.junit.MockitoRule;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public class ContentServiceTest {
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
 
     @Mock
     private OAFAccess oaf;

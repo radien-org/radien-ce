@@ -1,4 +1,4 @@
-package io.radien;
+package io.radien.lambda.notificationmanagement;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -7,9 +7,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import io.radien.email.module.EmailModule;
-import io.radien.email.service.EmailNotificationService;
-import io.radien.email.params.EmailParams;
+import io.radien.lambda.notificationmanagement.util.email.module.EmailModule;
+import io.radien.lambda.notificationmanagement.util.email.service.EmailNotificationService;
+import io.radien.lambda.notificationmanagement.util.email.params.EmailParams;
 
 /**
  * Lambda function entry point. You can change to use other pojo type or implement
@@ -39,13 +39,6 @@ public class App implements RequestHandler<SQSEvent, Object> {
                 throw new IllegalArgumentException("Unable to extract email parameters from message body.");
             }
         }
-        if(params == null){
-            throw new IllegalArgumentException("No email notification present in message body.");
-        }
         return input;
-    }
-
-    public EmailNotificationService getEmailService() {
-        return emailService;
     }
 }

@@ -1,7 +1,6 @@
-package io.radien.util;
+package io.radien.lambda.notificationmanagement.util;
 
 import com.google.inject.Singleton;
-import io.radien.Authenticator;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.service.ecm.model.EnterpriseContent;
