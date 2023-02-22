@@ -1,7 +1,6 @@
 package io.radien.email.service;
 
 import com.google.inject.Singleton;
-import io.radien.Authenticator;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.mail.MailServiceAccess;
 import io.radien.exception.InternalServerErrorException;
@@ -18,21 +17,18 @@ public class EmailNotificationService implements EmailNotificationServiceAccess 
 
     private final MailServiceAccess mailService;
 
-    private final Authenticator authenticator;
-
     private final ContentService contentService;
 
 
     @Inject
-    public EmailNotificationService(MailServiceAccess mailService, Authenticator authenticator, ContentService contentService){
+    public EmailNotificationService(MailServiceAccess mailService, ContentService contentService){
         this.mailService = mailService;
-        this.authenticator = authenticator;
         this.contentService = contentService;
     }
 
     public void notifyBehaviour(EmailParams params){
         try {
-            EnterpriseContent content = contentService.getContentByViewIdAndLanguage(authenticator.getAuthorization(), params.getNotificationViewId(), params.getLanguage());
+            EnterpriseContent content = contentService.getContentByViewIdAndLanguage(params.getNotificationViewId(), params.getLanguage());
             mailService.send(mailService.create(params.getEmail(), new MailTemplate(content, params.getArguments())));
         } catch (IOException | ParseException | java.text.ParseException e) {
             throw new InternalServerErrorException("Error obtaining mail content.");

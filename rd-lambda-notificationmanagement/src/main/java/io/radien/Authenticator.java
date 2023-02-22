@@ -16,7 +16,9 @@ import java.util.Map;
 
 @Singleton
 public class Authenticator {
-    private Map<String, String> properties = new HashMap<>(); //init for testing
+    private Map<String, String> properties;
+    private boolean initialized = false;
+
     private final OAFAccess oaf;
 
     @Inject
@@ -25,25 +27,32 @@ public class Authenticator {
     }
 
     public void login(){
-        if(oaf.getProperty(OAFProperties.RADIEN_ENV, "PROD").equalsIgnoreCase("LOCAL")){
-            Unirest.config().verifySsl(false);
+        if(!initialized){
+            if(oaf.getProperty(OAFProperties.RADIEN_ENV, "PROD").equalsIgnoreCase("LOCAL")){
+                Unirest.config().verifySsl(false);
+            }
+            HttpResponse<?> response = Unirest.post(oaf.getProperty(KeycloakConfigs.IDP_URL).concat(
+                            oaf.getProperty(KeycloakConfigs.TOKEN_PATH)))
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED)
+                    .field("client_id", oaf.getProperty(KeycloakConfigs.ADMIN_CLIENT_ID))
+                    .field("grant_type", "password")
+                    .field("client_secret", oaf.getProperty(KeycloakConfigs.ADMIN_CLIENT_SECRET))
+                    .field("username", oaf.getProperty(KeycloakConfigs.RADIEN_USERNAME))
+                    .field("password", oaf.getProperty(KeycloakConfigs.RADIEN_PASSWORD))
+                    .asObject(HashMap.class);
+            if(!response.isSuccess()){
+                throw new InternalServerErrorException("Error on keycloak login: " + response.getBody().toString());
+            }
+            properties = (Map<String, String>) response.getBody();
+            initialized = true;
         }
-        HttpResponse<?> response = Unirest.post(oaf.getProperty(KeycloakConfigs.IDP_URL).concat(
-                                                oaf.getProperty(KeycloakConfigs.TOKEN_PATH)))
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED)
-                .field("client_id", oaf.getProperty(KeycloakConfigs.ADMIN_CLIENT_ID))
-                .field("grant_type", "password")
-                .field("client_secret", oaf.getProperty(KeycloakConfigs.ADMIN_CLIENT_SECRET))
-                .field("username", oaf.getProperty(KeycloakConfigs.RADIEN_USERNAME))
-                .field("password", oaf.getProperty(KeycloakConfigs.RADIEN_PASSWORD))
-                .asObject(HashMap.class);
-        if(!response.isSuccess()){
-            throw new InternalServerErrorException("Error on keycloak login: " + response.getBody().toString());
-        }
-        properties = (Map<String, String>) response.getBody();
     }
 
     public String getAuthorization(){
-        return "Bearer ".concat(properties.get("access_token"));
+        return "Bearer ".concat(getAccessToken());
+    }
+
+    public String getAccessToken(){
+        return properties.get("access_token");
     }
 }

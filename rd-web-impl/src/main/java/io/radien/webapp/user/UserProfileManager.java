@@ -19,7 +19,7 @@ import io.radien.api.SystemVariables;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.ticket.SystemTicket;
 import io.radien.api.model.user.SystemUser;
-import io.radien.api.service.notification.email.EmailNotificationRESTServiceAccess;
+import io.radien.api.service.notification.SQSAccessAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.ticket.TicketRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
@@ -70,7 +70,7 @@ public class UserProfileManager extends AbstractManager {
     private UserSession userSession;
 
     @Inject
-    private EmailNotificationRESTServiceAccess mailService;
+    private SQSAccessAccess sqsService;
 
     @Inject
     private TicketRESTServiceAccess ticketService;
@@ -263,7 +263,7 @@ public class UserProfileManager extends AbstractManager {
             args.put("currentEmail", currentEmail);
             args.put("newEmail", newEmail);
             args.put("confirmationURL", url);
-            mailService.notify(newEmail, "email-3", userSession.getLanguage(), args);
+            sqsService.emailNotification(newEmail, "email-3", userSession.getLanguage(), args);
         } catch (Exception e) {
             log.error("An exception has occurred when attempting to send an email change request. Stack trace: {}", e.toString());
         }
@@ -281,7 +281,7 @@ public class UserProfileManager extends AbstractManager {
             argumentsMap.put("portalUrl", "radien");
             argumentsMap.put("targetUrl", referenceUrl);
 
-            mailService.notify(clonedLogInUser.getUserEmail(), emailViewId, userSession.getLanguage(), argumentsMap);
+            sqsService.emailNotification(clonedLogInUser.getUserEmail(), emailViewId, userSession.getLanguage(), argumentsMap);
         } catch (SystemException e) {
             log.error("A exception occured while trying to request data for the user {}. The exception message is: {}", userSession.getUserId(), e.getMessage());
             handleMessage(FacesMessage.SEVERITY_ERROR,

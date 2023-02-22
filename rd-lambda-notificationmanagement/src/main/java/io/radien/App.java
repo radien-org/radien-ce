@@ -20,17 +20,14 @@ import io.radien.email.params.EmailParams;
 public class App implements RequestHandler<SQSEvent, Object> {
 
     private final EmailNotificationService emailService;
-    private final Authenticator authenticator;
 
     public App() {
         Injector injector = Guice.createInjector(new EmailModule());
         emailService = injector.getInstance(EmailNotificationService.class);
-        authenticator = injector.getInstance(Authenticator.class);
     }
 
     @Override
     public Object handleRequest(final SQSEvent input, final Context context) {
-        authenticator.login();
         EmailParams params = null;
         for(SQSEvent.SQSMessage r : input.getRecords()){
             try {
@@ -46,5 +43,9 @@ public class App implements RequestHandler<SQSEvent, Object> {
             throw new IllegalArgumentException("No email notification present in message body.");
         }
         return input;
+    }
+
+    public EmailNotificationService getEmailService() {
+        return emailService;
     }
 }
