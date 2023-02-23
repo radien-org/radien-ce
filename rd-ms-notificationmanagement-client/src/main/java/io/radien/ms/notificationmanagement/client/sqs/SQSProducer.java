@@ -30,7 +30,7 @@ import java.util.Map;
 @RequestScoped
 public class SQSProducer implements SQSProducerAccess {
 
-    private static final Logger log = LoggerFactory.getLogger(SQSProducer.class);
+    private static Logger log;
 
     private static final String ENDPOINT = "http://host.docker.internal:4566";
     private static final String QUEUE_NAME = "NotificationQueue";
@@ -50,6 +50,7 @@ public class SQSProducer implements SQSProducerAccess {
 
     @PostConstruct
     public void init(){
+        log = LoggerFactory.getLogger(SQSProducer.class);
         try {
             SQSConnectionFactory connectionFactory = new SQSConnectionFactory(
                     new ProviderConfiguration(),
