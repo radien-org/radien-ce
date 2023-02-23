@@ -114,8 +114,9 @@
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.tomee/openejb-mockito -->
         <dependency>
-            <groupId>org.apache.tomee</groupId>
-            <artifactId>openejb-mockito</artifactId>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
+            <version>${version.mockito.inline}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
