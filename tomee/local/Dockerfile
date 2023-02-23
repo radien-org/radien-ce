@@ -25,6 +25,9 @@ ENV KEYCLOAK_USER_PATH=/auth/admin/realms/radien/users
 ENV SCRIPT_CLIENT_ID_VALUE=radien
 ENV SCRIPT_CLIENT_SECRET_VALUE=86c27042-b3a2-48ea-a936-025103144844
 ENV REALMS_TOKEN_PATH=/auth/realms/radien/protocol/openid-connect/token
+ENV AWS_ACCESS_KEY_ID=test
+ENV AWS_SECRET_ACCESS_KEY=test
+ENV AWS_REGION=eu-west-1
 
 ENV auth_redirectUri=https://localhost:8443/web/login
 

@@ -32,9 +32,11 @@ public class SQSProducer implements SQSProducerAccess {
 
     private static final Logger log = LoggerFactory.getLogger(SQSProducer.class);
 
-    private static final String ENDPOINT = "placeholder";
-    private static final String QUEUE_NAME = "Notification Queue";
+    private static final String ENDPOINT = "http://host.docker.internal:4566";
+    private static final String QUEUE_NAME = "NotificationQueue";
     private static final Region REGION = Region.EU_WEST_1;
+
+    private static final String LOCAL_ENV_NAME = "LOCAL";
 
     private Session session;
     private SQSConnection connection;
@@ -64,6 +66,7 @@ public class SQSProducer implements SQSProducerAccess {
             }
 
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            log.info(MessageFormat.format("Created queue with name \"{0}\".", QUEUE_NAME));
         } catch (URISyntaxException e) {
             log.error(MessageFormat.format("Failed to parse destination as URI: {0}", e));
         } catch (JMSException e) {
@@ -78,13 +81,15 @@ public class SQSProducer implements SQSProducerAccess {
     }
 
     public boolean emailNotification(String email, String viewId, String language, Map<String, String> arguments){
-        if(oaf.getProperty(OAFProperties.RADIEN_ENV).equalsIgnoreCase("LOCAL")){
+        if(oaf.getProperty(OAFProperties.RADIEN_ENV, LOCAL_ENV_NAME).equalsIgnoreCase(LOCAL_ENV_NAME)){
             try {
+                log.info("Sent locally.");
                 return notificationService.notify(email, viewId, language, arguments);
             } catch (SystemException e) {
                 log.error(MessageFormat.format("Failed to obtain a valid url to mailing service: {0}", e));
             }
         }
+        log.info("Sent non-locally. Env: " + oaf.getProperty(OAFProperties.RADIEN_ENV));
         return sendNotification(formatEmailNotification(email, viewId, language, arguments));
     }
 
