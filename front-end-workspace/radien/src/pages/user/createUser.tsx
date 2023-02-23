@@ -106,7 +106,7 @@ export default function CreateUser() {
                                     <Button formAction="none" variant="link" href={"/system/userManagement"}>
                                         {i18n?.create_user_cancel_action || "Cancel"}
                                     </Button>
-                                    <Button variant="primary">${i18n?.create_user_create_action || "Create"}</Button>
+                                    <Button variant="primary">{i18n?.create_user_create_action || "Create"}</Button>
                                 </SpaceBetween>
                             }
                             header={<Header variant="h1">{i18n?.create_user_form_header || "Create user"}</Header>}>
