@@ -11,7 +11,7 @@ import TenantRequestsTable from "@/components/TenantRequest/TenantRequestsTable"
 import usePaginatedUsers from "@/hooks/usePaginatedUsers";
 
 export default function UserManagement() {
-    const { i18n } = useContext(RadienContext);
+    const { i18n, addSuccessMessage } = useContext(RadienContext);
     const deleteUser = useDeleteUser();
     const router = useRouter();
 
@@ -69,6 +69,7 @@ export default function UserManagement() {
                                 `${selectedUser?.firstname} ${selectedUser?.lastname}`
                             ),
                         deleteAction: deleteUser.mutate,
+                        onDeleteSuccess: () => addSuccessMessage(i18n?.user_management_delete_success || "User deleted successfully."),
                     }}
                     emptyProps={{
                         emptyMessage: i18n?.user_management_empty_label || "No users available",
