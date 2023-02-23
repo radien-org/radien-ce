@@ -39,7 +39,6 @@ public class ContentService {
                 .queryString("viewId", viewId)
                 .queryString("lang", language)
                 .asBytes();
-        //System.out.println("Request body: " + request.getBody());
         return EnterpriseContentMapper.map(new ByteArrayInputStream(request.getBody()));
     }
 }

@@ -90,7 +90,7 @@ public class SQSProducer implements SQSProducerAccess {
                 log.error(MessageFormat.format("Failed to obtain a valid url to mailing service: {0}", e));
             }
         }
-        log.info("Sent non-locally. Env: " + oaf.getProperty(OAFProperties.RADIEN_ENV));
+        log.info(MessageFormat.format("Sent non-locally. Env: {0}", oaf.getProperty(OAFProperties.RADIEN_ENV)));
         return sendNotification(formatEmailNotification(email, viewId, language, arguments));
     }
 
