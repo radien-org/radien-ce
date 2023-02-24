@@ -33,10 +33,10 @@ export default function CreatePermission() {
     const { addErrorMessage, i18n } = useContext(RadienContext);
 
     const loadActions = async () => {
-        return await axios.get("/api/action/getAll");
+        return await axios.get("/api/action/find");
     };
     const loadResources = async () => {
-        return await axios.get("/api/resource/getAll");
+        return await axios.get("/api/resource/find");
     };
 
     useEffect(() => {
