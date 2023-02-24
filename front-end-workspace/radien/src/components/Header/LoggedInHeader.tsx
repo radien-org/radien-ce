@@ -12,7 +12,7 @@ import { ButtonDropdownProps, TopNavigationProps } from "@cloudscape-design/comp
 import ThemeToggle from "@/components/Header/ThemeToggle";
 import { Tenant } from "radien";
 import TopNavigation from "@cloudscape-design/components/top-navigation";
-import { HeaderProps } from "@/components/Header/Header";
+import { HeaderProps, logout } from "@/components/Header/Header";
 import ItemOrGroup = ButtonDropdownProps.ItemOrGroup;
 import MenuDropdownUtility = TopNavigationProps.MenuDropdownUtility;
 
@@ -32,18 +32,9 @@ export default function LoggedInHeader({ topNavigationProps, localeClicked, i18n
     const setActiveTenant = useSetActiveTenant();
     const queryClient: QueryClient = new QueryClient();
 
-    const logout = async (): Promise<void> => {
-        const {
-            data: { path },
-        } = await axios.get("/api/auth/logout");
-        await signOut({ redirect: false });
-        await queryClient.invalidateQueries({ queryKey: QueryKeys.ME });
-        window.location.href = path;
-    };
-
     const itemClicked = async (event: CustomEvent<ButtonDropdownProps.ItemClickDetails>, userId?: number) => {
         if (event.detail.id === "signout") {
-            await logout();
+            await logout(queryClient);
         }
     };
 

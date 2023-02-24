@@ -1,5 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, ButtonDropdown, ButtonDropdownProps, Container, Form, Header, Input, SpaceBetween, TableProps } from "@cloudscape-design/components";
+import {
+    Box,
+    Button,
+    ButtonDropdown,
+    ButtonDropdownProps,
+    Container,
+    Form,
+    Header,
+    Input,
+    Modal,
+    SpaceBetween,
+    TableProps,
+} from "@cloudscape-design/components";
 import { Tenant, Ticket, User } from "radien";
 import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
@@ -14,16 +26,21 @@ import useCreateTicket from "@/hooks/useCreateTicket";
 import TenantRequestModal from "@/components/TenantRequest/TenantRequestModal";
 import useNotifyUser from "@/hooks/useNotifyUser";
 import usePaginatedUserTenants from "@/hooks/usePaginatedUserTenants";
+import useDeleteUser from "@/hooks/useDeleteUser";
+import { useQueryClient } from "react-query";
+import { logout } from "@/components/Header/Header";
 
 const FormField = dynamic(() => import("@cloudscape-design/components/form-field"), { ssr: false });
 
 export default function UserProfile() {
     const { addSuccessMessage, userInSession: radienUser, isLoadingUserInSession, i18n } = React.useContext(RadienContext);
+    const queryClient = useQueryClient();
     const { locale } = useRouter();
     const updateUser = useUpdateUser();
     const dissociateUser = useDissociateTenant();
     const createTicket = useCreateTicket();
     const notifyUser = useNotifyUser();
+    const deleteUser = useDeleteUser();
 
     const [firstName, setFirstName] = useState<string>(radienUser?.firstname || "");
     const [lastName, setLastName] = useState<string>(radienUser?.lastname || "");
@@ -32,6 +49,7 @@ export default function UserProfile() {
     const [sub, setSub] = useState<string>(radienUser?.sub || "");
 
     const [requestTenantVisibility, setRequestTenantVisibility] = useState(false);
+    const [selfDeletionVisibility, setSelfDeletionVisibility] = useState(false);
 
     useEffect(() => {
         setFirstName(radienUser?.firstname || "");
@@ -106,12 +124,46 @@ export default function UserProfile() {
                 params: args,
             });
             addSuccessMessage("Successfully requested data. Please check your email for more details.");
+        } else if (event.detail.id == "delUser") {
+            setSelfDeletionVisibility(true);
         }
     };
 
     return (
         <>
             <TenantRequestModal modalVisible={requestTenantVisibility} setModalVisible={setRequestTenantVisibility} />
+            <Modal
+                onDismiss={() => setSelfDeletionVisibility(false)}
+                visible={selfDeletionVisibility}
+                closeAriaLabel="Close modal"
+                footer={
+                    <Box float="right">
+                        <SpaceBetween direction="horizontal" size="xs">
+                            <Button
+                                variant="primary"
+                                onClick={() =>
+                                    deleteUser.mutate(
+                                        { objectId: String(radienUser!.id!), userId: String(radienUser!.id!) },
+                                        {
+                                            onSuccess: async () => {
+                                                setSelfDeletionVisibility(false);
+                                                await logout(queryClient);
+                                            },
+                                        }
+                                    )
+                                }>
+                                {i18n?.user_profile_self_deletion_confirm || "Ok"}
+                            </Button>
+                            <Button variant="link" onClick={() => setSelfDeletionVisibility(false)}>
+                                {i18n?.user_profile_self_deletion_cancel || "Cancel"}
+                            </Button>
+                        </SpaceBetween>
+                    </Box>
+                }
+                header={i18n?.user_profile_self_deletion_header || "Delete User Account"}>
+                {i18n?.user_profile_self_deletion_confirmation ||
+                    "Are you sure you would like to delete your user account? After confirmation your user account and all user data will be deleted."}
+            </Modal>
             <Box padding="xl">
                 <Container
                     header={
