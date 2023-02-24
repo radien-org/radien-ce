@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 
 import io.radien.webapp.security.UserSession;
+import javax.ws.rs.core.Response;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -30,6 +31,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -149,8 +152,8 @@ public class TicketConfirmationServletTest {
         verify(userSession).setUser(user);
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void testProcessEmailChangeRequestExpired() throws SystemException {
+    @Test
+    public void testProcessEmailChangeRequestExpired() throws SystemException, IOException {
         SystemTicket ticket = new Ticket();
         ticket.setId(1L);
         ticket.setExpireDate(LocalDateTime.of(1, 1, 1, 1, 1));
@@ -162,5 +165,6 @@ public class TicketConfirmationServletTest {
         when(ticketService.getTicketByToken("ticketUuid")).thenReturn(ticket);
 
         servlet.doGet(req, res);
+        verify(res).sendError(eq(Response.Status.GONE.getStatusCode()), anyString());
     }
 }

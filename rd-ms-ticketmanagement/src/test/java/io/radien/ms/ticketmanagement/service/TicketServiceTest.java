@@ -27,6 +27,8 @@ import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.ms.ticketmanagement.client.entities.TicketSearchFilter;
 import io.radien.ms.ticketmanagement.entities.TicketEntity;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ejb.embeddable.EJBContainer;
@@ -49,22 +51,17 @@ import static org.junit.Assert.assertNull;
  */
 public class TicketServiceTest {
 
-    Properties p;
-    TicketServiceAccess ticketServiceAccess;
-    SystemTicket systemTicket;
+    static TicketServiceAccess ticketServiceAccess;
+    static SystemTicket systemTicket;
+    static EJBContainer container;
 
-    public TicketServiceTest() throws Exception {
-        p = new Properties();
-        p.put("appframeDatabase", "new://Resource?type=DataSource");
-        p.put("appframeDatabase.JdbcDriver", "org.hsqldb.jdbcDriver");
-        p.put("appframeDatabase.JdbcUrl", "jdbc:hsqldb:mem:radienTest");
-        p.put("appframeDatabase.userName", "sa");
-        p.put("appframeDatabase.password", "");
-        p.put("openejb.deployments.classpath.include",".*ticket.*");
+    @BeforeClass
+    public static void start() throws Exception {
+        Properties p = new Properties();
+        p.put("openejb.deployments.classpath.include",".*ticketmanagement.*");
         p.put("openejb.deployments.classpath.exclude",".*client.*");
-
-
-        final Context context = EJBContainer.createEJBContainer(p).getContext();
+        container = EJBContainer.createEJBContainer(p);
+        final Context context = container.getContext();
 
         ticketServiceAccess = (TicketServiceAccess) context.lookup("java:global/rd-ms-ticketmanagement//TicketService");
 
@@ -79,6 +76,13 @@ public class TicketServiceTest {
         }
         else {
             systemTicket = tickets.getResults().get(0);
+        }
+    }
+
+    @AfterClass
+    public static void stop() {
+        if (container != null) {
+            container.close();
         }
     }
 

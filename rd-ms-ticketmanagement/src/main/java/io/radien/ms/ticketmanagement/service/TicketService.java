@@ -91,7 +91,7 @@ public class TicketService implements TicketServiceAccess {
         Root<TicketEntity> ticketRoot = criteriaQuery.from(TicketEntity.class);
 
         criteriaQuery.select(ticketRoot);
-        Predicate global = null;
+        Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
         if(filter!= null) {
             List<Predicate> filtersList = new ArrayList<>();
             if(filter.getUserId() != null) {
