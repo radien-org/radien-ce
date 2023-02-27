@@ -8,7 +8,6 @@ import io.radien.api.OAFProperties;
 import io.radien.api.service.notification.SQSProducerAccess;
 import io.radien.api.service.notification.email.EmailNotificationRESTServiceAccess;
 import io.radien.exception.SystemException;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
@@ -22,15 +21,22 @@ import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.MessageFormat;
 import java.util.Map;
 
 @RequestScoped
 public class SQSProducer implements SQSProducerAccess {
 
-    private static Logger log;
+    enum FinishStates{
+        SUCCESSFUL,
+        INVALID_URI,
+        GENERIC
+    }
+
+    private static final Logger log = LoggerFactory.getLogger(SQSProducer.class);
 
     private static final String ENDPOINT = "http://host.docker.internal:4566";
     private static final String QUEUE_NAME = "NotificationQueue";
@@ -47,10 +53,12 @@ public class SQSProducer implements SQSProducerAccess {
     @Inject
     private EmailNotificationRESTServiceAccess notificationService;
 
-
     @PostConstruct
-    public void init(){
-        log = LoggerFactory.getLogger(SQSProducer.class);
+    private void init(){
+        setup();
+    }
+
+    public FinishStates setup(){
         try {
             SQSConnectionFactory connectionFactory = new SQSConnectionFactory(
                     new ProviderConfiguration(),
@@ -67,11 +75,14 @@ public class SQSProducer implements SQSProducerAccess {
             }
 
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            log.info(MessageFormat.format("Created queue with name \"{0}\".", QUEUE_NAME));
+            log.info("Created queue with name \"{}\".", QUEUE_NAME);
+            return FinishStates.SUCCESSFUL;
         } catch (URISyntaxException e) {
-            log.error(MessageFormat.format("Failed to parse destination as URI: {0}", e));
+            log.error("Failed to parse destination as URI: {}", e.toString());
+            return FinishStates.INVALID_URI;
         } catch (JMSException e) {
-            log.error(MessageFormat.format("Something went wrong initializing: {0}", e));
+            log.error("Something went wrong initializing: {}", e.toString());
+            return FinishStates.GENERIC;
         }
     }
 
@@ -87,23 +98,24 @@ public class SQSProducer implements SQSProducerAccess {
                 log.info("Sent locally.");
                 return notificationService.notify(email, viewId, language, arguments);
             } catch (SystemException e) {
-                log.error(MessageFormat.format("Failed to obtain a valid url to mailing service: {0}", e));
+                log.error("Failed to obtain a valid url to mailing service: {}", e.toString());
             }
         }
-        log.info(MessageFormat.format("Sent non-locally. Env: {0}", oaf.getProperty(OAFProperties.RADIEN_ENV)));
+        log.info("Sent non-locally. Env: {}", oaf.getProperty(OAFProperties.RADIEN_ENV));
         return sendNotification(formatEmailNotification(email, viewId, language, arguments));
     }
 
     private String formatEmailNotification(String email, String viewId, String language, Map<String, String> arguments){
-        String message = "{\n  \"email\": \"".concat(email)
-                .concat("\",\n  \"viewId\": \"").concat(viewId)
-                .concat("\",\n  \"language\": \"").concat(language)
-                .concat("\",\n  \"arguments\": {\"");
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.add("email", email);
+        builder.add("viewId", viewId);
+        builder.add("language", language);
+        JsonObjectBuilder argumentsBuilder = Json.createObjectBuilder();
         for(Map.Entry<String, String> argument : arguments.entrySet()){
-            message = message.concat("\n\"").concat(argument.getKey()).concat("\": \"")
-                    .concat(argument.getValue()).concat("\",");
+            argumentsBuilder.add(argument.getKey(), argument.getValue());
         }
-        return StringUtils.removeEnd(message, ",").concat("\n}");
+        builder.add("arguments", argumentsBuilder.build());
+        return builder.build().toString();
     }
 
     private boolean sendNotification(String message) {
@@ -112,7 +124,7 @@ public class SQSProducer implements SQSProducerAccess {
             producer.send(session.createTextMessage(message));
             return true;
         } catch (JMSException e) {
-            log.error(MessageFormat.format("Something went wrong sending notification: {0}", e));
+            log.error("Something went wrong sending notification: {}", e.toString());
         }
         return false;
     }

@@ -11,24 +11,22 @@ import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.JMSException;
-import junit.framework.TestCase;
 import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnit;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.mockito.junit.MockitoRule;
+
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -36,8 +34,10 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
 
 
-@RunWith(MockitoJUnitRunner.class)
-public class SQSProducerTest extends TestCase {
+public class SQSProducerTest {
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
 
     @Mock
     private OAFAccess oaf;
@@ -52,37 +52,22 @@ public class SQSProducerTest extends TestCase {
 
     private static final SQSConnection mockConnection = mock(SQSConnection.class);
 
-    private static MockedConstruction<SQSConnectionFactory> mocked;
+    private static final MockedConstruction<SQSConnectionFactory> mocked = Mockito.mockConstruction(SQSConnectionFactory.class, (mock, context) -> when(mock.createConnection()).thenReturn(mockConnection));
 
-    private static Logger logger;
-
-    @BeforeClass
-    public static void initTests() {
-        mocked = Mockito.mockConstruction(SQSConnectionFactory.class, (mock, context) -> {when(mock.createConnection()).thenReturn(mockConnection);});
-        Mockito.mockStatic(LoggerFactory.class);
-
-    }
-
-    @Before
-    public void reset(){
-        logger = mock(Logger.class);
-        when(LoggerFactory.getLogger(SQSProducer.class)).thenReturn(logger);
-    }
 
     @AfterClass
     public static void afterTests() {
-        if(mocked != null) {
+        if (mocked != null) {
             mocked.close();
         }
     }
 
     @Test
-    public void testInitJMSException() throws JMSException {
+    public void testSetupJMSException() throws JMSException {
         AmazonSQSMessagingClientWrapper mockWrapper = mock(AmazonSQSMessagingClientWrapper.class);
         when(mockConnection.getWrappedAmazonSQSClient()).thenReturn(mockWrapper);
         when(mockWrapper.queueExists(anyString())).thenThrow(JMSException.class);
-        sqsProducer.init();
-        verify(logger).error(anyString());
+        assertEquals(SQSProducer.FinishStates.GENERIC, sqsProducer.setup());
     }
 
     @Test
@@ -93,10 +78,9 @@ public class SQSProducerTest extends TestCase {
         Session session = mock(Session.class);
         when(mockConnection.createSession(false, Session.AUTO_ACKNOWLEDGE)).thenReturn(session);
         when(session.createQueue(anyString())).thenThrow(JMSException.class);
-        sqsProducer.init();
+        sqsProducer.setup();
         when(oaf.getProperty(OAFProperties.RADIEN_ENV, "LOCAL")).thenReturn("NOT LOCAL");
-        sqsProducer.emailNotification("", "", "", new HashMap<>());
-        verify(logger).error(anyString());
+        assertFalse(sqsProducer.emailNotification("", "", "", new HashMap<>()));
     }
 
     @Test
@@ -110,7 +94,7 @@ public class SQSProducerTest extends TestCase {
         String language = "language";
         Map<String, String> arguments = new HashMap<>();
         when(oaf.getProperty(OAFProperties.RADIEN_ENV, "LOCAL")).thenReturn("LOCAL");
-        sqsProducer.init();
+        sqsProducer.setup();
         sqsProducer.emailNotification(email, viewId, language, arguments);
         verify(notificationService).notify(email, viewId, language, arguments);
     }
@@ -133,7 +117,7 @@ public class SQSProducerTest extends TestCase {
         arguments.put("key", "value");
         when(oaf.getProperty(OAFProperties.RADIEN_ENV, "LOCAL")).thenReturn("NOT LOCAL");
 
-        sqsProducer.init();
+        sqsProducer.setup();
         assertTrue(sqsProducer.emailNotification(email, viewId, language, arguments));
         verify(notificationService, times(0)).notify(email, viewId, language, arguments);
     }
@@ -145,7 +129,7 @@ public class SQSProducerTest extends TestCase {
         when(mockConnection.getWrappedAmazonSQSClient()).thenReturn(mockWrapper);
         when(mockWrapper.queueExists(anyString())).thenReturn(false);
         when(mockConnection.createSession(false, Session.AUTO_ACKNOWLEDGE)).thenReturn(mockSession);
-        sqsProducer.init();
+        sqsProducer.setup();
         sqsProducer.terminate();
         verify(mockSession).close();
         verify(mockConnection).close();
