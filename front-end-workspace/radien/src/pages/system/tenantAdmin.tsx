@@ -293,9 +293,9 @@ export default function TenantAdmin() {
                         viewTitle: i18n?.user_management_view_label || "User details",
                     }}
                     createActionProps={{
-                        createLabel: i18n?.user_management_create_label || "Add user",
+                        createLabel: i18n?.user_management_create_label || "Associate user",
                         createAction: () => {
-                            router.push("/user/createUser");
+                            router.push("/tenant/associateUser");
                         },
                     }}
                     deleteActionProps={{
