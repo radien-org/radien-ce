@@ -9,20 +9,19 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import React from "react";
 import FlashbarComponent from "@/components/Flashbar/FlashbarComponent";
 
-import RadienProvider from "@/context/RadienContextProvider";
+import RadienContextWrapper from "@/context/RadienContextProvider";
 
 export default function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
     const queryClient: QueryClient = new QueryClient();
-
     return (
         <SessionProvider session={session}>
             <QueryClientProvider client={queryClient}>
-                <RadienProvider>
+                <RadienContextWrapper>
                     <Header />
                     <FlashbarComponent />
                     <Component {...pageProps} />
                     <Footer />
-                </RadienProvider>
+                </RadienContextWrapper>
             </QueryClientProvider>
         </SessionProvider>
     );

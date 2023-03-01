@@ -6,7 +6,9 @@
         "dev": "next dev",
         "build": "next build",
         "start": "next start",
-        "lint": "next lint"
+        "lint": "next lint",
+        "cy:open": "cypress open",
+        "cy:run": "cypress run --component"
     },
     "dependencies": {
         "@cloudscape-design/components": "^3.0.178",
@@ -32,6 +34,8 @@
     "devDependencies": {
         "@types/uuid": "^9.0.0",
         "autoprefixer": "^10.4.13",
+        "cypress": "^12.6.0",
+        "cypress-axe": "^1.4.0",
         "eslint-config-prettier": "^8.6.0",
         "next-compose-plugins": "^2.2.1",
         "next-transpile-modules": "^10.0.0",
