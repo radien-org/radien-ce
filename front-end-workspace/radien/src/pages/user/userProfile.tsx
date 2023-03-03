@@ -8,9 +8,9 @@ import {
     Form,
     Header,
     Input,
-    Modal,
-    SpaceBetween,
-    TableProps,
+   Modal, SpaceBetween,
+    TableProps
+,
 } from "@cloudscape-design/components";
 import { Tenant, Ticket, User } from "radien";
 import { v4 as uuidv4 } from "uuid";
@@ -22,7 +22,6 @@ import useUpdateUser from "@/hooks/useUpdateUser";
 import useDissociateTenant from "@/hooks/useDissociateTenant";
 import { RadienContext } from "@/context/RadienContextProvider";
 import { useRouter } from "next/router";
-
 import useCreateTicket from "@/hooks/useCreateTicket";
 import TenantRequestModal from "@/components/TenantRequest/TenantRequestModal";
 import ChangePasswordModal from "@/components/UserDetailsView/ChangePasswordModal";
@@ -31,10 +30,13 @@ import usePaginatedUserTenants from "@/hooks/usePaginatedUserTenants";
 import useDeleteUser from "@/hooks/useDeleteUser";
 import { useQueryClient } from "react-query";
 import { logout } from "@/components/Header/Header";
+import {ConfirmationModalComponent} from "@/components/ConfirmationModal/ConfirmationModalComponent";
 
 const FormField = dynamic(() => import("@cloudscape-design/components/form-field"), { ssr: false });
 
 export default function UserProfile() {
+    const processingLockButtonID: string = "lockUser";
+
     const { addSuccessMessage, userInSession: radienUser, isLoadingUserInSession, i18n } = React.useContext(RadienContext);
     const queryClient = useQueryClient();
     const { locale } = useRouter();
@@ -49,6 +51,8 @@ export default function UserProfile() {
     const [logon, setLogon] = useState<string>(radienUser?.logon || "");
     const [userEmail, setUserEmail] = useState<string>(radienUser?.userEmail || "");
     const [sub, setSub] = useState<string>(radienUser?.sub || "");
+    const [processingLocked, setProcessingLocked] = useState<boolean>(radienUser?.processingLocked || true);
+    const [processingLockedModalVisible, setProcessingLockedModalVisible] = useState<boolean>(false);
 
     const [requestTenantVisibility, setRequestTenantVisibility] = useState(false);
     const [requestPasswordChangeVisibility, setRequestPasswordChange] = useState(false);
@@ -60,6 +64,7 @@ export default function UserProfile() {
         setLogon(radienUser?.logon || "");
         setUserEmail(radienUser?.userEmail || "");
         setSub(radienUser?.sub || "");
+        setProcessingLocked(radienUser?.processingLocked || true);
     }, [radienUser]);
 
     if (isLoadingUserInSession) {
@@ -67,6 +72,10 @@ export default function UserProfile() {
     }
 
     const saveData = () => {
+        updateUser.mutate(cloneCurrentUser());
+    };
+
+    const cloneCurrentUser = () : User => {
         const radUser: User = radienUser!;
         radUser.firstname = firstName;
         radUser.lastname = lastName;
@@ -74,8 +83,17 @@ export default function UserProfile() {
         radUser.userEmail = userEmail;
         radUser.sub = sub;
 
+        return radUser;
+    }
+
+    const processingLock = () => {
+        const radUser: User = cloneCurrentUser();
+        radUser.processingLocked = true;
+
         updateUser.mutate(radUser);
-    };
+        setProcessingLockedModalVisible(false);
+        addSuccessMessage(i18n?.user_profile_processing_lock_success || "Successfully locked the processing of this account's data.");
+    }
 
     const colDefinition: TableProps.ColumnDefinition<Tenant>[] = [
         {
@@ -134,11 +152,20 @@ export default function UserProfile() {
         } else if (event.detail.id == "delUser") {
             setSelfDeletionVisibility(true);
         }
+        if(event.detail.id == processingLockButtonID){
+            setProcessingLockedModalVisible(true);
+        }
     };
 
     return (
         <>
             <TenantRequestModal modalVisible={requestTenantVisibility} setModalVisible={setRequestTenantVisibility} />
+            <ConfirmationModalComponent header={i18n?.user_profile_processing_lock_confirmation_header || "Processing Lock"}
+                                        body={i18n?.user_profile_processing_lock_confirmation_body || "Are you sure you would like to lock the processing of your account's data? This action will lock the processing of all user data including deletion requests."}
+                                        visibilityController={processingLockedModalVisible}
+                                        closeModalOnConfirm={true}
+                                        confirmBehaviour={processingLock}/>
+
             <ChangePasswordModal modalVisible={requestPasswordChangeVisibility} setModalVisible={setRequestPasswordChange} />
             <Modal
                 onDismiss={() => setSelfDeletionVisibility(false)}
@@ -185,6 +212,7 @@ export default function UserProfile() {
                                     items={[
                                         { text: i18n?.user_profile_delete_label || "Delete", id: "delUser", disabled: false },
                                         { text: i18n?.user_profile_request_user_data || "Request User Data", id: "dataReq", disabled: false },
+                                        { text: i18n?.user_profile_lock_label || "Lock Account from Processing", id: processingLockButtonID, disabled: false },
                                         { text: i18n?.password_change_header || "Change password", id: "changePwd", disabled: false },
                                     ]}></ButtonDropdown>
                             }>
@@ -208,13 +236,13 @@ export default function UserProfile() {
                                 </SpaceBetween>
                             }>
                             <FormField label={i18n?.user_profile_firstname || "First name"} stretch={false}>
-                                <Input value={firstName} onChange={(event) => setFirstName(event.detail.value)} />
+                                <Input value={firstName} disabled={radienUser?.processingLocked} onChange={(event) => setFirstName(event.detail.value)} />
                             </FormField>
                             <FormField label={i18n?.user_profile_lastname || "Last name"} stretch={false}>
-                                <Input value={lastName} onChange={(event) => setLastName(event.detail.value)} />
+                                <Input value={lastName} disabled={radienUser?.processingLocked} onChange={(event) => setLastName(event.detail.value)} />
                             </FormField>
                             <FormField label={i18n?.user_profile_username || "Username"} stretch={false}>
-                                <Input value={logon} onChange={(event) => setLogon(event.detail.value)} />
+                                <Input value={logon} disabled={radienUser?.processingLocked} onChange={(event) => setLogon(event.detail.value)} />
                             </FormField>
                             <FormField label={i18n?.user_profile_email || "Email"} stretch={false}>
                                 <Input value={userEmail} disabled={true} onChange={(event) => setUserEmail(event.detail.value)} />

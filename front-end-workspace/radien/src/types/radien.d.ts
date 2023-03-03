@@ -10,6 +10,7 @@ declare module "radien" {
         userEmail: string;
         logon: string;
         mobileNumber: string;
+        processingLocked: boolean;
         enabled: boolean;
         delegatedCreation: boolean;
         terminationDate: Date;
