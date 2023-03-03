@@ -11,6 +11,7 @@ import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.JMSException;
+import io.radien.ms.notificationmanagement.client.exception.JMSGenericException;
 import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -62,12 +63,12 @@ public class SQSProducerTest {
         }
     }
 
-    @Test
+    @Test(expected = JMSGenericException.class)
     public void testSetupJMSException() throws JMSException {
         AmazonSQSMessagingClientWrapper mockWrapper = mock(AmazonSQSMessagingClientWrapper.class);
         when(mockConnection.getWrappedAmazonSQSClient()).thenReturn(mockWrapper);
         when(mockWrapper.queueExists(anyString())).thenThrow(JMSException.class);
-        assertEquals(SQSProducer.FinishStates.GENERIC, sqsProducer.setup());
+        sqsProducer.init();
     }
 
     @Test
@@ -78,7 +79,7 @@ public class SQSProducerTest {
         Session session = mock(Session.class);
         when(mockConnection.createSession(false, Session.AUTO_ACKNOWLEDGE)).thenReturn(session);
         when(session.createQueue(anyString())).thenThrow(JMSException.class);
-        sqsProducer.setup();
+        sqsProducer.init();
         when(oaf.getProperty(OAFProperties.RADIEN_ENV, "LOCAL")).thenReturn("NOT LOCAL");
         assertFalse(sqsProducer.emailNotification("", "", "", new HashMap<>()));
     }
@@ -94,7 +95,7 @@ public class SQSProducerTest {
         String language = "language";
         Map<String, String> arguments = new HashMap<>();
         when(oaf.getProperty(OAFProperties.RADIEN_ENV, "LOCAL")).thenReturn("LOCAL");
-        sqsProducer.setup();
+        sqsProducer.init();
         sqsProducer.emailNotification(email, viewId, language, arguments);
         verify(notificationService).notify(email, viewId, language, arguments);
     }
@@ -117,7 +118,7 @@ public class SQSProducerTest {
         arguments.put("key", "value");
         when(oaf.getProperty(OAFProperties.RADIEN_ENV, "LOCAL")).thenReturn("NOT LOCAL");
 
-        sqsProducer.setup();
+        sqsProducer.init();
         assertTrue(sqsProducer.emailNotification(email, viewId, language, arguments));
         verify(notificationService, times(0)).notify(email, viewId, language, arguments);
     }
@@ -129,7 +130,7 @@ public class SQSProducerTest {
         when(mockConnection.getWrappedAmazonSQSClient()).thenReturn(mockWrapper);
         when(mockWrapper.queueExists(anyString())).thenReturn(false);
         when(mockConnection.createSession(false, Session.AUTO_ACKNOWLEDGE)).thenReturn(mockSession);
-        sqsProducer.setup();
+        sqsProducer.init();
         sqsProducer.terminate();
         verify(mockSession).close();
         verify(mockConnection).close();

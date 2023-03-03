@@ -8,6 +8,8 @@ import io.radien.api.OAFProperties;
 import io.radien.api.service.notification.SQSProducerAccess;
 import io.radien.api.service.notification.email.EmailNotificationRESTServiceAccess;
 import io.radien.exception.SystemException;
+import io.radien.ms.notificationmanagement.client.exception.InvalidURIException;
+import io.radien.ms.notificationmanagement.client.exception.JMSGenericException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
@@ -25,16 +27,11 @@ import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.MessageFormat;
 import java.util.Map;
 
 @RequestScoped
 public class SQSProducer implements SQSProducerAccess {
-
-    enum FinishStates{
-        SUCCESSFUL,
-        INVALID_URI,
-        GENERIC
-    }
 
     private static final Logger log = LoggerFactory.getLogger(SQSProducer.class);
 
@@ -54,11 +51,7 @@ public class SQSProducer implements SQSProducerAccess {
     private EmailNotificationRESTServiceAccess notificationService;
 
     @PostConstruct
-    private void init(){
-        setup();
-    }
-
-    public FinishStates setup(){
+    void init(){
         try {
             SQSConnectionFactory connectionFactory = new SQSConnectionFactory(
                     new ProviderConfiguration(),
@@ -76,15 +69,17 @@ public class SQSProducer implements SQSProducerAccess {
 
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             log.info("Created queue with name \"{}\".", QUEUE_NAME);
-            return FinishStates.SUCCESSFUL;
         } catch (URISyntaxException e) {
-            log.error("Failed to parse destination as URI: {}", e.toString());
-            return FinishStates.INVALID_URI;
+            InvalidURIException exception = new InvalidURIException(MessageFormat.format("Failed to parse destination with URI endpoin \"{0}\"", ENDPOINT));
+            log.error(exception.toString());
+            throw exception;
         } catch (JMSException e) {
-            log.error("Something went wrong initializing: {}", e.toString());
-            return FinishStates.GENERIC;
+            JMSGenericException exception = new JMSGenericException(MessageFormat.format("Something went wrong initializing: {0}", e.toString()));
+            log.error(exception.toString());
+            throw exception;
         }
     }
+
 
     @PreDestroy
     public void terminate() throws JMSException {
