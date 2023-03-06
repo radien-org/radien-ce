@@ -96,6 +96,7 @@
             <artifactId>cxf-rt-rs-mp-client</artifactId>
         </dependency>
 
+
         <!-- Test Dependencies -->
         <dependency>
             <groupId>junit</groupId>
@@ -155,6 +156,10 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${version.maven-surefire-plugin}</version>
             </plugin>
         </plugins>
     </build>
