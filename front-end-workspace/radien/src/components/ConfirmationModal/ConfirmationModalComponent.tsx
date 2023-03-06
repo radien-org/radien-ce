@@ -3,27 +3,31 @@ import {Box, Button, Modal, SpaceBetween} from "@cloudscape-design/components";
 export interface ConfirmationModalProps{
     header: string;
     body: string;
-    visibilityController: boolean;
+    modalVisible: boolean;
+
+    setModalVisible: (visible : boolean) => void;
     closeModalOnConfirm?: boolean;
     confirmBehaviour: () => void;
 }
 
 export function ConfirmationModalComponent(props: ConfirmationModalProps) {
 
+    const {modalVisible, setModalVisible} = props;
+
     return(
         <Modal
-            visible={props.visibilityController}
+            visible={modalVisible}
             header={props.header}
             footer={
                 <Box float="right">
                     <SpaceBetween direction="horizontal" size="xs">
-                        <Button variant="link" onClick={() => props.visibilityController = false}>
+                        <Button variant="link" onClick={() => setModalVisible(false)}>
                             Cancel
                         </Button>
                         <Button variant="primary" onClick={() => {
-                            props.confirmBehaviour;
+                            props.confirmBehaviour();
                             if(props.closeModalOnConfirm){
-                                props.visibilityController = false;
+                                setModalVisible(false);
                             }}}>
                             Ok
                         </Button>

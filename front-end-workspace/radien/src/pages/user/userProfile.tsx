@@ -64,6 +64,7 @@ export default function UserProfile() {
         setLogon(radienUser?.logon || "");
         setUserEmail(radienUser?.userEmail || "");
         setSub(radienUser?.sub || "");
+        console.log("processing locked: "+ radienUser?.processingLocked)
         setProcessingLocked(radienUser?.processingLocked || true);
     }, [radienUser]);
 
@@ -86,12 +87,11 @@ export default function UserProfile() {
         return radUser;
     }
 
-    const processingLock = () => {
+    const processingLock = () : void => {
         const radUser: User = cloneCurrentUser();
         radUser.processingLocked = true;
 
         updateUser.mutate(radUser);
-        setProcessingLockedModalVisible(false);
         addSuccessMessage(i18n?.user_profile_processing_lock_success || "Successfully locked the processing of this account's data.");
     }
 
@@ -162,7 +162,8 @@ export default function UserProfile() {
             <TenantRequestModal modalVisible={requestTenantVisibility} setModalVisible={setRequestTenantVisibility} />
             <ConfirmationModalComponent header={i18n?.user_profile_processing_lock_confirmation_header || "Processing Lock"}
                                         body={i18n?.user_profile_processing_lock_confirmation_body || "Are you sure you would like to lock the processing of your account's data? This action will lock the processing of all user data including deletion requests."}
-                                        visibilityController={processingLockedModalVisible}
+                                        modalVisible={processingLockedModalVisible}
+                                        setModalVisible={setProcessingLockedModalVisible}
                                         closeModalOnConfirm={true}
                                         confirmBehaviour={processingLock}/>
 
@@ -236,13 +237,13 @@ export default function UserProfile() {
                                 </SpaceBetween>
                             }>
                             <FormField label={i18n?.user_profile_firstname || "First name"} stretch={false}>
-                                <Input value={firstName} disabled={radienUser?.processingLocked} onChange={(event) => setFirstName(event.detail.value)} />
+                                <Input value={firstName} disabled={processingLocked} onChange={(event) => setFirstName(event.detail.value)} />
                             </FormField>
                             <FormField label={i18n?.user_profile_lastname || "Last name"} stretch={false}>
-                                <Input value={lastName} disabled={radienUser?.processingLocked} onChange={(event) => setLastName(event.detail.value)} />
+                                <Input value={lastName} disabled={processingLocked} onChange={(event) => setLastName(event.detail.value)} />
                             </FormField>
                             <FormField label={i18n?.user_profile_username || "Username"} stretch={false}>
-                                <Input value={logon} disabled={radienUser?.processingLocked} onChange={(event) => setLogon(event.detail.value)} />
+                                <Input value={logon} disabled={processingLocked} onChange={(event) => setLogon(event.detail.value)} />
                             </FormField>
                             <FormField label={i18n?.user_profile_email || "Email"} stretch={false}>
                                 <Input value={userEmail} disabled={true} onChange={(event) => setUserEmail(event.detail.value)} />
