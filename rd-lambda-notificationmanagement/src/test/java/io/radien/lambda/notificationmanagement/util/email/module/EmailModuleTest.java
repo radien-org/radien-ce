@@ -18,7 +18,7 @@ public class EmailModuleTest {
     @Rule
     public MockitoRule rule = MockitoJUnit.rule();
 
-    class MockAbstractModule extends EmailModule {
+    static class MockAbstractModule extends EmailModule {
         @Override
         public <T> AnnotatedBindingBuilder<T> bind(Class<T> clazz) {
             return mock(AnnotatedBindingBuilder.class);
