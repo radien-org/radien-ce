@@ -1,6 +1,5 @@
 package io.radien.lambda.notificationmanagement.util;
 
-import io.radien.lambda.notificationmanagement.util.Authenticator;
 import io.radien.api.KeycloakConfigs;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;

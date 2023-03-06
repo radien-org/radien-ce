@@ -3,7 +3,6 @@ package io.radien.lambda.notificationmanagement.util.email.service;
 
 import io.radien.api.service.mail.MailServiceAccess;
 import io.radien.lambda.notificationmanagement.util.email.params.EmailParams;
-import io.radien.lambda.notificationmanagement.util.email.service.EmailNotificationService;
 import io.radien.exception.InternalServerErrorException;
 import io.radien.lambda.notificationmanagement.util.ContentService;
 import org.json.simple.parser.ParseException;

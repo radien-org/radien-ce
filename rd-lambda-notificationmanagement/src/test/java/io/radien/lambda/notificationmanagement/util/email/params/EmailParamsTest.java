@@ -1,7 +1,5 @@
 package io.radien.lambda.notificationmanagement.util.email.params;
 
-
-import io.radien.lambda.notificationmanagement.util.email.params.EmailParams;
 import org.junit.Test;
 
 import java.util.HashMap;
