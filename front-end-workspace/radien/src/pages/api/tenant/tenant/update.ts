@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from "axios";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 
-export default async function updateTenant(req: NextApiRequest, res: NextApiResponse) {
+export default async function update(req: NextApiRequest, res: NextApiResponse) {
     const { tenantId } = req.query;
     const session = await getServerSession(req, res, authOptions);
     if (!session) {

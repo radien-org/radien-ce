@@ -87,17 +87,9 @@ export default function TenantAdmin() {
         setIsFormSubmitted(true);
         const isFormValid = (
             validateTextInputNonEmpty(name) &&
-            // validateTextInputNonEmpty(tenantKey) &&
-            // validateTextInputNonEmpty(tenantType) &&
+            validateTextInputNonEmpty(tenantKey) &&
             validateTextInputNonEmpty(tenantStart) &&
             validateTextInputNonEmpty(tenantEnd) &&
-            // validateTextInputNonEmpty(clientAddress) &&
-            // validateTextInputNonEmpty(clientZipCode) &&
-            // validateTextInputNonEmpty(clientCity) &&
-            // validateTextInputNonEmpty(clientCountry) &&
-            // validateTextInputNonEmpty(clientEmail) &&
-            // validateTextInputEmail(clientEmail) &&
-            // validateTextInputNonEmpty(`${clientPhoneNumber}`) &&
             validateDateFuture(tenantStart) &&
             validateDateFuture(tenantEnd));
 

@@ -9,9 +9,9 @@ export default function useUpdateTenant(tenantId: number) {
     const { addSuccessMessage, addErrorMessage, i18n } = useContext(RadienContext);
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (newTenantInfo: any) => axios.put(`/api/tenant/tenant/updateTenant?tenantId=${tenantId}`, newTenantInfo),
+        mutationFn: (newTenantInfo: any) => axios.put(`/api/tenant/tenant/update?tenantId=${tenantId}`, newTenantInfo),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: QueryKeys.TENANT_MANAGEMENT });
+            queryClient.invalidateQueries({ queryKey: QueryKeys.ACTIVE_TENANT });
             let message = `${i18n?.generic_message_success || "Success"}: ${i18n?.upate_tenant_success || "Tenant updated successfully"}`;
             addSuccessMessage(message);
         },
