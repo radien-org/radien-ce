@@ -132,17 +132,17 @@ export default function TenantAdmin() {
                         actions={
                             <SpaceBetween direction="horizontal" size="xs">
                                 <Button formAction="none" variant="normal" onClick={resetForm}>
-                                    {i18n?.update_tenant_cancel_action || "Cancel"}
+                                    {i18n?.tenant_admin_cancel_action || "Cancel"}
                                 </Button>
-                                <Button variant="primary">{i18n?.update_tenant_action || "Update"}</Button>
+                                <Button variant="primary">{i18n?.tenant_admin_update_action || "Update"}</Button>
                             </SpaceBetween>
                         }
-                        header={<Header variant="h1">{i18n?.update_tenant_form_header || "Tenant information"}</Header>}>
+                        header={<Header variant="h1">{i18n?.tenant_admin_form_title || "Tenant information"}</Header>}>
                         <SpaceBetween direction="vertical" size="l">
                             <FormField
                                 key="tenant-form-1"
-                                label={i18n?.update_tenant_name || "Name"}
-                                errorText={!validateTextInputNonEmpty(name) && isFormSubmitted ? i18n?.update_tenant_name_error || "Please enter a valid tenant name" : null}>
+                                label={i18n?.tenant_management_column_name || "Name"}
+                                errorText={!validateTextInputNonEmpty(name) && isFormSubmitted ? i18n?.tenant_admin_column_invalid_name || "Please enter a valid tenant name" : null}>
                                 <Input
                                     value={name}
                                     onChange={(event) => {
@@ -152,7 +152,7 @@ export default function TenantAdmin() {
                             </FormField>
                             <FormField
                                 key="tenant-form-2"
-                                label={i18n?.update_tenant_key || "Tenant key"}>
+                                label={i18n?.tenant_management_column_key || "Tenant key"}>
                                 <Input
                                     value={tenantKey}
                                     disabled={true}
@@ -160,7 +160,7 @@ export default function TenantAdmin() {
                             </FormField>
                             <FormField
                                 key="tenant-form-3"
-                                label={i18n?.update_tenant_type || "Tenant type"}
+                                label={i18n?.tenant_management_column_type || "Tenant type"}
                             >
                                 <Input
                                     value={tenantType}
@@ -169,51 +169,39 @@ export default function TenantAdmin() {
                             </FormField>
                             <FormField
                                 key={"tenant-form-4"}
-                                label={i18n?.update_tenant_start_date || "Tenant start date"}
+                                label={i18n?.tenant_management_column_start_date || "Tenant start date"}
                                 constraintText="Use YYYY/MM/DD format."
-                                errorText={!validateDateFuture(tenantStart) && isFormSubmitted ? i18n?.update_tenant_tenant_start_date || "Please enter a valid tenant start date" : null}>
+                                errorText={!validateDateFuture(tenantStart) && isFormSubmitted ? i18n?.tenant_admin_column_invalid_start_date || "Please enter a valid tenant start date" : null}>
                                 <DatePicker
                                     onChange={({ detail }) => setTenantStart(detail.value)}
                                     value={tenantStart}
-                                    openCalendarAriaLabel={selectedDate =>
-                                        "Choose tenant start date" +
-                                        (selectedDate
-                                            ? `, selected date is ${selectedDate}`
-                                            : "")
-                                    }
                                     isDateEnabled={date => date >= new Date()}
-                                    nextMonthAriaLabel="Next month"
+                                    nextMonthAriaLabel={i18n?.datepicker_next_month || "Next month"}
                                     placeholder="YYYY/MM/DD"
-                                    previousMonthAriaLabel="Previous month"
-                                    todayAriaLabel="Today"
+                                    previousMonthAriaLabel={i18n?.datepicker_previous_month || "Previous month"}
+                                    todayAriaLabel={i18n?.datepicker_today || "Today"}
                                 />
                             </FormField>
                             <FormField
                                 key={"tenant-form-5"}
-                                label={i18n?.update_tenant_end_date || "Tenant end date"}
+                                label={i18n?.tenant_management_column_end_date || "Tenant end date"}
                                 constraintText="Use YYYY/MM/DD format."
-                                errorText={!validateDateFuture(tenantEnd) && isFormSubmitted ? i18n?.update_tenant_tenant_start_end || "Please enter a valid tenant end date" : null}>
+                                errorText={!validateDateFuture(tenantEnd) && isFormSubmitted ? i18n?.tenant_admin_column_invalid_end_date || "Please enter a valid tenant end date" : null}>
                                 <DatePicker
                                     onChange={({ detail }) => setTenantEnd(detail.value)}
                                     value={tenantStart}
-                                    openCalendarAriaLabel={selectedDate =>
-                                        "Choose tenant end date" +
-                                        (selectedDate
-                                            ? `, selected date is ${selectedDate}`
-                                            : "")
-                                    }
                                     isDateEnabled={date => date > new Date()}
-                                    nextMonthAriaLabel="Next month"
+                                    nextMonthAriaLabel={i18n?.datepicker_next_month || "Next month"}
                                     placeholder="YYYY/MM/DD"
-                                    previousMonthAriaLabel="Previous month"
-                                    todayAriaLabel="Today"
+                                    previousMonthAriaLabel={i18n?.datepicker_previous_month || "Previous month"}
+                                    todayAriaLabel={i18n?.datepicker_today || "Today"}
                                 />
                             </FormField>
                             {tenant?.tenantType === CLIENT_TYPE && <>
                                 <FormField
                                     key="tenant-form-15"
-                                    label={i18n?.update_tenant_country || "Client email"}
-                                    errorText={!validateTextInputEmail(clientEmail) && isFormSubmitted ? i18n?.update_tenant_tenant_start_end || "Please enter a valid client email" : null}
+                                    label={i18n?.tenant_management_column_email || "Client email"}
+                                    errorText={!validateTextInputEmail(clientEmail) && isFormSubmitted ? i18n?.tenant_admin_column_invalid_email || "Please enter a valid client email" : null}
                                 >
                                     <Input
                                         value={clientEmail}
@@ -224,7 +212,7 @@ export default function TenantAdmin() {
                                 </FormField>
                                 <FormField
                                     key="tenant-form-6"
-                                    label={i18n?.update_tenant_address || "client address"}
+                                    label={i18n?.tenant_management_column_address || "client address"}
                                 >
                                     <Input
                                         value={clientAddress}
@@ -235,7 +223,7 @@ export default function TenantAdmin() {
                                 </FormField>
                                 <FormField
                                     key="tenant-form-7"
-                                    label={i18n?.update_tenant_zip_code || "client zip code"}
+                                    label={i18n?.tenant_management_column_zip_code || "client zip code"}
                                 >
                                     <Input
                                         value={clientZipCode}
@@ -246,7 +234,7 @@ export default function TenantAdmin() {
                                 </FormField>
                                 <FormField
                                     key="tenant-form-8"
-                                    label={i18n?.update_tenant_city || "client city"}
+                                    label={i18n?.tenant_management_column_city || "client city"}
                                 >
                                     <Input
                                         value={clientCity}
@@ -257,7 +245,7 @@ export default function TenantAdmin() {
                                 </FormField>
                                 <FormField
                                     key="tenant-form-10"
-                                    label={i18n?.update_tenant_country || "Client country"}
+                                    label={i18n?.tenant_management_column_country || "Client country"}
                                 >
                                     <Input
                                         value={clientCountry}
@@ -276,7 +264,7 @@ export default function TenantAdmin() {
         <Box>
             <Box padding={"xl"}>
                 <PaginatedTable
-                    tableHeader={i18n?.user_management_header || "Associated users"}
+                    tableHeader={i18n?.tenant_admin_associated_user_title || "Associated users"}
                     queryKey={QueryKeys.USER_MANAGEMENT}
                     columnDefinitions={colDefinition}
                     getPaginated={(pageNumber, pageSize) => usePaginatedUsersForTenant({tenantId: tenantId?.tenantId!, pageNo: pageNumber, pageSize })}
@@ -285,23 +273,22 @@ export default function TenantAdmin() {
                         viewTitle: i18n?.user_management_view_label || "User details",
                     }}
                     createActionProps={{
-                        createLabel: i18n?.user_management_create_label || "Associate user",
+                        createLabel: i18n?.tenant_admin_associate_user_title || "Associate user",
                         createAction: () => {
                             router.push("/tenant/associateUser");
                         },
                     }}
                     deleteActionProps={{
-                        deleteLabel: i18n?.user_management_delete_label || "Dissociate User",
+                        deleteLabel: i18n?.tenant_admin_dissociate_user_title || "Dissociate User",
                         deleteConfirmationText: (selectedUser) =>
-                            `${i18n?.user_management_delete_confirmation || "Are you sure you would like to dissociate ${}"}`.replace(
+                            `${i18n?.tenant_admin_dissociate_user_confirm || "Are you sure you would like to dissociate ${}"}`.replace(
                                 "${}",
                                 `${selectedUser?.firstname} ${selectedUser?.lastname}`
                             ),
                         deleteAction: dissociateUser.mutate,
                     }}
                     emptyProps={{
-                        emptyMessage: i18n?.user_management_empty_label || "No users available",
-                        emptyActionLabel: i18n?.user_management_empty_action || "Create User",
+                        emptyMessage: i18n?.tenant_admin_no_users_available || "No users available",
                     }}
                 />
             </Box>

@@ -30,9 +30,10 @@ export default function () {
     const { data: assignableRoles, isLoading: isLoadingRoles } = useAssignableRoles(tenantData?.tenantId!);
     const assignRole = useAssignTenantRoles();
     const notifyUser = useNotifyUser();
+    const { locale } = useRouter();
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(10);
-    const { isLoading, data, refetch } = usePaginatedUsers({ pageNo: currentPage, pageSize });
+    const { isLoading, data } = usePaginatedUsers({ pageNo: currentPage, pageSize });
     const [loading, setLoading] = useState(false);
 
     const [targetRoles, setTargetRoles] = useState<OptionDefinition[]>([]);
@@ -51,11 +52,11 @@ export default function () {
 
     const handleAssociateUser = async () => {
         if (!selectedItem) {
-            addErrorMessage("Please select a user to associate");
+            addErrorMessage(`${i18n?.enant_admin_associate_user_no_user_selected || "Please select a user to associate"}}`);
             return;
         }
         if (targetRoles.length === 0) {
-            addErrorMessage("Please select a role to associate");
+            addErrorMessage(`${i18n?.enant_admin_associate_user_no_role_selected || "Please select a role to associate"}}`);
             return;
         }
 
@@ -67,7 +68,7 @@ export default function () {
                     tenantRoleId: Number(role.value),
                 }).then((res) => {
                     if (res) {
-                        addSuccessMessage(`Successfully associated user with role ${role.label}`);
+                        addSuccessMessage(`${i18n?.tenant_admin_associate_user_success || "Successfully associated user with role"} ${role.label}`);
                         const viewId: string = "email-9";
                         const args = {
                             firstName: selectedItem.firstname,
@@ -79,7 +80,7 @@ export default function () {
                         notifyUser.mutate({
                             email: selectedItem.email,
                             viewId,
-                            language: "en",
+                            language: locale,
                             params: args,
                         });
                     }
@@ -106,12 +107,12 @@ export default function () {
                     actions={
                         <SpaceBetween direction="horizontal" size="xs">
                             <Button formAction="none" variant="link" href={"/system/tenantAdmin"}>
-                                {i18n?.create_user_cancel_action || "Cancel"}
+                                {i18n?.tenant_admin_cancel_action || "Cancel"}
                             </Button>
-                            <Button variant="primary">Associate user</Button>
+                            <Button variant="primary">{i18n?.tenant_admin_associate_user_title || "Associate user"}</Button>
                         </SpaceBetween>
                     }
-                    header={<Header variant="h1">Associate user</Header>}>
+                    header={<Header variant="h1">{i18n?.tenant_admin_associate_user_title || "Associate user"}</Header>}>
                     <SpaceBetween  size={'xl'} direction={'vertical'}>
                         <Multiselect
                             selectedOptions={targetRoles}
@@ -119,7 +120,7 @@ export default function () {
                             options={assignableRoles?.map((t) => {
                                 return { label: t.role.name, value: String(t.tenantRole.id) };
                             })}
-                            placeholder={i18n?.user_management_tenant_request_choose_roles || "Choose Role(s)"}
+                            placeholder={i18n?.tenant_admin_select_user_roles || "Choose Role(s)"}
                         />
                         <Table
                             selectionType={"single"}
@@ -128,12 +129,12 @@ export default function () {
                             columnDefinitions={colDefinition}
                             items={data?.results!}
                             loading={isLoading}
-                            loadingText="Loading resources"
+                            loadingText={i18n?.tenant_admin_load_users_message || "Loading..."}
                             sortingDisabled
                             variant={"container"}
                             empty={
                                 <Box textAlign="center" color="inherit">
-                                    <b>{"No users available."}</b>
+                                    <b>{`${i18n?.tenant_admin_no_users_available || "No users available"}`}</b>
                                 </Box>
                             }
                             header={<h4>Select user</h4>}
@@ -143,8 +144,8 @@ export default function () {
                                     pagesCount={data?.totalPages!}
                                     onChange={(event) => clickTargetUserPage(event)}
                                     ariaLabels={{
-                                        nextPageLabel: "Next page",
-                                        previousPageLabel: "Previous page",
+                                        nextPageLabel: `${i18n?.pagination_next_page || "Next page"}`,
+                                        previousPageLabel: `${i18n?.pagination_previous_page || "Previous page"}`,
                                         pageLabel: (pageNumber) => `Page ${pageNumber} of all pages`,
                                     }}
                                 />

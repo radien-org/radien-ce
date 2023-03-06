@@ -12,7 +12,7 @@ export default function useUpdateTenant(tenantId: number) {
         mutationFn: (newTenantInfo: any) => axios.put(`/api/tenant/tenant/update?tenantId=${tenantId}`, newTenantInfo),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: QueryKeys.ACTIVE_TENANT });
-            let message = `${i18n?.generic_message_success || "Success"}: ${i18n?.upate_tenant_success || "Tenant updated successfully"}`;
+            let message = `${i18n?.generic_message_success || "Success"}: ${i18n?.tenant_admin_update_success || "Tenant updated successfully"}`;
             addSuccessMessage(message);
         },
         onError: (e) => {
