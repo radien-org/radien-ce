@@ -52,11 +52,11 @@ export default function () {
 
     const handleAssociateUser = async () => {
         if (!selectedItem) {
-            addErrorMessage(`${i18n?.enant_admin_associate_user_no_user_selected || "Please select a user to associate"}}`);
+            addErrorMessage(`${i18n?.tenant_admin_associate_user_no_user_selected || "Please select a user to associate"}}`);
             return;
         }
         if (targetRoles.length === 0) {
-            addErrorMessage(`${i18n?.enant_admin_associate_user_no_role_selected || "Please select a role to associate"}}`);
+            addErrorMessage(`${i18n?.tenant_admin_associate_user_no_role_selected || "Please select a role to associate"}}`);
             return;
         }
 
