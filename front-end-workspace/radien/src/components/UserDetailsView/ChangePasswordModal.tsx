@@ -115,7 +115,10 @@ export default function ChangePasswordModal(props: PasswordChangeProps) {
     };
 
     const validateNewPassword = (password: string) => {
-        const passwordLowercase = document.getElementById("passwordLowercase");
+            setNewPassword((prevValue) => {
+                return { ...prevValue, valid: true };
+            });
+        /* const passwordLowercase = document.getElementById("passwordLowercase");
         const passwordUppercase = document.getElementById("passwordUppercase");
         const passwordDigits = document.getElementById("passwordDigits");
         const passwordLength = document.getElementById("passwordLength");
@@ -159,7 +162,7 @@ export default function ChangePasswordModal(props: PasswordChangeProps) {
             setNewPassword((prevValue) => {
                 return { ...prevValue, valid: false };
             });
-        }
+        } */
     };
 
     const validateConfirmNewPassword = (confirmNewPwd: string, newPwd: string) => {
