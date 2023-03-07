@@ -10,34 +10,31 @@ export default function useUpdatePassword() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (passwordChanginUser: UserPasswordChanging) => axios.post(`/api/user/updatePassword`, passwordChanginUser),
-        onSuccess: (e) => {
-            if (e.data) {
-                if (e.data.key == "error.invalid.credentials") {
-                    let invalidOldPasswordMessage = `${i18n?.generic_message_error || "Error"}: ${
-                        i18n?.error_not_your_old_password || "You got the old password wrong"
-                    }`;
-                    addErrorMessage(invalidOldPasswordMessage);
-                } else {
-                    const newString = e.data.substr(1);
-                    const arrayError: string[] = newString.substr(0, newString.length - 1).split(",");
-                    arrayError.map((error) => {
-                        addErrorMessage(error);
-                    });
-                }
-                throw new Error("Error: something bad happened");
-            } else {
-                queryClient.invalidateQueries({ queryKey: QueryKeys.ME });
-                let message = `${i18n?.generic_message_success || "Success"}: ${i18n?.password_change_success || "Password updated successfully"}`;
-                addSuccessMessage(message);
-            }
+        onSuccess: async (e) => {
+            await queryClient.invalidateQueries({ queryKey: QueryKeys.ME });
+            let message = `${i18n?.generic_message_success || "Success"}: ${i18n?.password_change_success || "Password updated successfully"}`;
+            addSuccessMessage(message);
         },
         onError: (e) => {
             if (e instanceof AxiosError) {
-                console.log(e);
                 let message = i18n?.generic_message_error || "Error";
                 if (e.response?.status === 401) {
                     message = `${message}: ${i18n?.error_not_logged_in || "You are not logged in, please login again"}`;
                     addErrorMessage(message);
+                }
+                if (e.response?.status === 400) {
+                    if (e.response?.data) {
+                        if (e.response.data.key == "error.invalid.credentials") {
+                            message = `${message}: ${i18n?.error_not_your_old_password || "You got the old password wrong"}`;
+                            addErrorMessage(message);
+                        } else {
+                            const errorArray: string[] = e.response.data.replace("[", "").replace("]", "").split(",");
+                            errorArray.map((error) => {
+                                let errorMsg = `${message}: ${i18n[error] || error}`;
+                                addErrorMessage(errorMsg);
+                            });
+                        }
+                    }
                 } else {
                     addErrorMessage(`${message}: ${e.message}`);
                 }

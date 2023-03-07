@@ -1,21 +1,10 @@
-import { Box, Button, Modal, SpaceBetween, Input, Header, Form } from "@cloudscape-design/components";
+import { Box, Button, Modal, SpaceBetween, Input, Form } from "@cloudscape-design/components";
 import React, { useContext, useState, useEffect } from "react";
-import { v4 as uuidv4 } from "uuid";
-import { Ticket } from "radien";
-import { TicketType } from "@/consts";
 
-import moment from "moment/moment";
-import { OptionDefinition } from "@cloudscape-design/components/internal/components/option/interfaces";
 import { RadienContext } from "@/context/RadienContextProvider";
-import useCreateTicket from "@/hooks/useCreateTicket";
-import useNotifyTenantRoles from "@/hooks/useNotifyTenantRoles";
-import useAvailableTenants from "@/hooks/useAvailableTenants";
-import axios, { AxiosError, AxiosResponse } from "axios";
-import { Loader } from "@/components/Loader/Loader";
 import dynamic from "next/dynamic";
-import { User, UserPasswordChanging } from "radien";
+import { UserPasswordChanging } from "radien";
 import useUpdatePassword from "@/hooks/useUpdatePassword";
-import { Retryer } from "react-query/types/core/retryer";
 
 const FormField = dynamic(() => import("@cloudscape-design/components/form-field"), { ssr: false });
 
@@ -24,101 +13,104 @@ interface PasswordChangeProps {
     setModalVisible: (value: boolean) => void;
 }
 
-const TARGET_ROLES = ["Tenant Administrator", "System Administrator"];
+interface PasswordValidation {
+    value: string;
+    valid: boolean;
+    touched: boolean;
+    visible: boolean;
+}
+
+const passwordVisibleIcon = (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="mr-[15px]" viewBox="0 0 16 16">
+        <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z" />
+        <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
+    </svg>
+);
+
+const passwordNotVisibleIcon = (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="mr-[15px]" viewBox="0 0 16 16">
+        <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7.029 7.029 0 0 0 2.79-.588zM5.21 3.088A7.028 7.028 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474L5.21 3.089z" />
+        <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829l-2.83-2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12-.708.708z" />
+    </svg>
+);
 
 export default function ChangePasswordModal(props: PasswordChangeProps) {
-    const { userInSession: radienUser, i18n, addSuccessMessage, addErrorMessage } = useContext(RadienContext);
+    const { userInSession: radienUser, i18n } = useContext(RadienContext);
     const { modalVisible, setModalVisible } = props;
-    const createTicket = useCreateTicket();
-    const notifyTenantRoles = useNotifyTenantRoles();
-    const { data } = useAvailableTenants();
     const updatePassword = useUpdatePassword();
-
-    const [logon, setLogon] = useState<string>(radienUser?.logon || "");
-    const [sub, setSub] = useState<string>(radienUser?.sub || "");
 
     const lowecaseRegex = new RegExp("(.*[a-z].*)");
     const uppercaseRegex = new RegExp("(.*[A-Z].*)");
     const numberRegex = new RegExp("(.*\\d.*)");
     const specialCaracterRegex = new RegExp("(.*[!\"`'#%&,:;<>=@{}~_$()*+/\\\\?\\[\\]^|]+.*)");
 
-    const [selectedOptions, setSelectedOptions] = useState<OptionDefinition[]>([]);
-    const [loading, setLoading] = useState<string[]>([]);
     const [isFormValid, setIsFormValid] = useState(false);
-
-    const passwordVisibleIcon = (
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="mr-[15px]" viewBox="0 0 16 16">
-            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z" />
-            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
-        </svg>
-    );
-
-    const passwordNotVisibleIcon = (
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="mr-[15px]" viewBox="0 0 16 16">
-            <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7.029 7.029 0 0 0 2.79-.588zM5.21 3.088A7.028 7.028 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474L5.21 3.089z" />
-            <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829l-2.83-2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12-.708.708z" />
-        </svg>
-    );
-
-    const [newPassword, setNewPassword] = useState("");
-    const [oldPassword, setOldPassword] = useState("");
-    const [confirmNewPassword, setConfirmNewPassword] = useState("");
-
-    const [isNewPasswordTouched, setNewPasswordTouched] = useState(false);
-    const [isOldPasswordTouched, setIsOldPasswordTouched] = useState(false);
-    const [isConfirmNewPasswordTouched, setIsConfirmNewPasswordTouched] = useState(false);
-
-    const [isNewPasswordValid, setIsNewPasswordValid] = useState(false);
-    /* const [isOldPasswordValid, setIsOldPasswordValid] = useState(false); */
-    const [isConfirmNewPasswordValid, setIsConfirmNewPasswordValid] = useState(false);
-
-    const [isOldPasswordVisible, setIsOldPasswordVisible] = useState(false);
-    const [isNewPasswordVisible, setIsNewPasswordVisible] = useState(false);
-    const [isConfirmNewPasswordVisible, setIsConfirmNewPasswordVisible] = useState(false);
-
-    const toggleOldPasswordVisibility = () => {
-        setIsOldPasswordVisible((prevValue) => !prevValue);
-    };
-
-    const toggleNewPasswordVisibility = () => {
-        setIsNewPasswordVisible((prevValue) => !prevValue);
-    };
-
-    const toggleConfirmNewPasswordVisibility = () => {
-        setIsConfirmNewPasswordVisible((prevValue) => !prevValue);
-    };
-
-    useEffect(() => {
-        validateAll();
+    const [newPassword, setNewPassword] = useState<PasswordValidation>({
+        touched: false,
+        valid: false,
+        value: "",
+        visible: false,
+    });
+    const [oldPassword, setOldPassword] = useState<PasswordValidation>({
+        touched: false,
+        valid: false,
+        value: "",
+        visible: false,
+    });
+    const [confirmNewPassword, setConfirmNewPassword] = useState<PasswordValidation>({
+        touched: false,
+        valid: false,
+        value: "",
+        visible: false,
     });
 
-    const saveData = () => {
-        const passwordChanginUser: UserPasswordChanging = {
-            login: logon,
-            id: sub,
-            oldPassword: oldPassword,
-            newPassword: newPassword,
-        };
-        updatePassword.mutate(passwordChanginUser, {
-            onSuccess() {
-                setIsOldPasswordTouched(false);
-                setNewPasswordTouched(false);
-                setIsConfirmNewPasswordTouched(false);
-
-                setNewPassword("");
-                setOldPassword("");
-                setConfirmNewPassword("");
-
-                setModalVisible(false);
-            },
+    const toggleOldPasswordVisibility = () => {
+        setOldPassword((prevValue) => {
+            return { ...prevValue, visible: !prevValue.visible };
         });
     };
 
-    const popLoadingState = () => {
-        setLoading((loading) => {
-            let newLoading = [...loading];
-            newLoading.pop();
-            return newLoading;
+    const toggleNewPasswordVisibility = () => {
+        setNewPassword((prevValue) => {
+            return { ...prevValue, visible: !prevValue.visible };
+        });
+    };
+
+    const toggleConfirmNewPasswordVisibility = () => {
+        setConfirmNewPassword((prevValue) => {
+            return { ...prevValue, visible: !prevValue.visible };
+        });
+    };
+
+    const saveData = () => {
+        const passwordChanginUser: UserPasswordChanging = {
+            login: radienUser?.logon!,
+            id: radienUser?.sub!,
+            oldPassword: oldPassword.value,
+            newPassword: newPassword.value,
+        };
+        updatePassword.mutate(passwordChanginUser, {
+            onSuccess() {
+                setOldPassword({
+                    touched: false,
+                    valid: false,
+                    value: "",
+                    visible: false,
+                });
+                setNewPassword({
+                    touched: false,
+                    valid: false,
+                    value: "",
+                    visible: false,
+                });
+                setConfirmNewPassword({
+                    touched: false,
+                    valid: false,
+                    value: "",
+                    visible: false,
+                });
+                setModalVisible(false);
+            },
         });
     };
 
@@ -134,96 +126,79 @@ export default function ChangePasswordModal(props: PasswordChangeProps) {
             requirement.classList.remove("notSatisfied");
         });
 
-        setIsNewPasswordValid(true);
+        setNewPassword((prevValue) => {
+            return { ...prevValue, valid: true };
+        });
 
-        if (!lowecaseRegex.test(password)) {
+        /*if (!lowecaseRegex.test(password)) {
             passwordLowercase?.classList.add("notSatisfied");
-            setIsNewPasswordValid(false);
+            setNewPassword((prevValue) => {
+                return { ...prevValue, valid: false };
+            });
         }
         if (!uppercaseRegex.test(password)) {
             passwordUppercase?.classList.add("notSatisfied");
-            setIsNewPasswordValid(false);
+            setNewPassword((prevValue) => {
+                return { ...prevValue, valid: false };
+            });
         }
         if (!numberRegex.test(password)) {
             passwordDigits?.classList.add("notSatisfied");
-            setIsNewPasswordValid(false);
+            setNewPassword((prevValue) => {
+                return { ...prevValue, valid: false };
+            });
         }
         if (!specialCaracterRegex.test(password)) {
             passwordSpecialCaracter?.classList.add("notSatisfied");
-            setIsNewPasswordValid(false);
+            setNewPassword((prevValue) => {
+                return { ...prevValue, valid: false };
+            });
         }
         if (password.trim().length < 7) {
             passwordLength?.classList.add("notSatisfied");
-            setIsNewPasswordValid(false);
-        }
+            setNewPassword((prevValue) => {
+                return { ...prevValue, valid: false };
+            });
+        }*/
     };
-
-    /* const validateOldPassword = (password: string) => {
-        if (password.trim().length > 0 && password.trim().length > 7) {
-            setIsOldPasswordValid(true);
-        } else {
-            setIsOldPasswordValid(false);
-        }
-    }; */
 
     const validateConfirmNewPassword = (confirmNewPwd: string, newPwd: string) => {
-        if (!confirmNewPwd) confirmNewPwd = confirmNewPassword;
-        if (!newPwd) newPwd = newPassword;
-
-        if (confirmNewPwd == newPwd) {
-            setIsConfirmNewPasswordValid(true);
-        } else {
-            setIsConfirmNewPasswordValid(false);
+        if (!confirmNewPwd) {
+            confirmNewPwd = confirmNewPassword.value;
         }
-    };
+        if (!newPwd) {
+            newPwd = newPassword.value;
+        }
 
-    const onClickAction = () => {
-        setModalVisible(false);
-        const referenceUrl: string = `${process.env.NEXTAUTH_URL}/system/userManagement")`;
-        selectedOptions.forEach((option) => {
-            const uuid = uuidv4();
-            loading.push(option.value!);
-            const ticket: Ticket = {
-                userId: Number(radienUser?.id),
-                token: uuid,
-                ticketType: TicketType.TENANT_REQUEST,
-                data: `${option.value!}`,
-                createUser: Number(radienUser?.id),
-                expireDate: moment().add(7, "days").format("yyyy-MM-DDTHH:mm:ss"),
-            };
+        setConfirmNewPassword((prevValue) => {
+            return { ...prevValue, valid: confirmNewPwd == newPwd };
         });
-        setSelectedOptions([]);
     };
 
     const validateAll = () => {
-        setIsFormValid(isNewPasswordValid && isConfirmNewPasswordValid);
+        setIsFormValid(newPassword.valid && confirmNewPassword.valid);
     };
 
-    if (loading.length !== 0) {
-        return <Loader />;
-    }
-
     const handleSubmit = async () => {
-        setIsOldPasswordTouched(true);
-        setNewPasswordTouched(true);
-        setIsConfirmNewPasswordTouched(true);
+        setOldPassword((prevValue) => {
+            return { ...prevValue, touched: true };
+        });
+        setNewPassword((prevValue) => {
+            return { ...prevValue, touched: true };
+        });
+        setConfirmNewPassword((prevValue) => {
+            return { ...prevValue, touched: true };
+        });
 
         if (!isFormValid) {
             return;
         }
-        /* let returnSaveData:any = saveData();
-        console.log(returnSaveData); */
         saveData();
-
-        /*  try {
-            saveData();
-        } catch (error) {
-            console.log('esse é o erro' + error);
-        } */
-        /* if(returnSaveData){
-            setModalVisible(false);
-        } */
     };
+
+    useEffect(() => {
+        validateAll();
+    }, [newPassword, confirmNewPassword]);
 
     return (
         <Modal
@@ -244,26 +219,25 @@ export default function ChangePasswordModal(props: PasswordChangeProps) {
             }
             header={i18n?.password_change_header || "Change password"}>
             <form
-                onSubmit={(e) => {
+                onSubmit={async (e) => {
                     e.preventDefault();
-                    handleSubmit();
+                    await handleSubmit();
                 }}
                 className={"create-form--container"}>
                 <Form>
-                    <FormField
-                        label={i18n?.user_profile_old_password || "Old password"}
-                        /* errorText={!isOldPasswordValid && isOldPasswordTouched ? i18n?.old_password_error || "That's not your current password" : null} */
-                        stretch={false}>
+                    <FormField label={i18n?.user_profile_old_password || "Old password"} stretch={false}>
                         <Input
-                            value={oldPassword}
+                            value={oldPassword.value}
                             onChange={(event) => {
-                                setOldPassword(event.detail.value);
+                                setOldPassword((prevState) => {
+                                    return { ...prevState, value: event.detail.value };
+                                });
                                 /* validateOldPassword(event.detail.value); */
                             }}
-                            type={isOldPasswordVisible ? "text" : "password"}
+                            type={oldPassword.visible ? "text" : "password"}
                         />
                         <div className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer" onClick={toggleOldPasswordVisibility}>
-                            {isOldPasswordVisible ? passwordVisibleIcon : passwordNotVisibleIcon}
+                            {oldPassword.visible ? passwordVisibleIcon : passwordNotVisibleIcon}
                         </div>
                     </FormField>
                     <FormField
@@ -299,40 +273,42 @@ export default function ChangePasswordModal(props: PasswordChangeProps) {
                             )
                         }
                         errorText={
-                            !isNewPasswordValid && isNewPasswordTouched
+                            !newPassword.valid && newPassword.touched
                                 ? i18n?.new_password_error || "You missed some requirements. Please check below to see what you're missing"
                                 : null
                         }
                         stretch={false}>
                         <Input
-                            value={newPassword}
+                            value={newPassword.value}
                             onChange={(event) => {
-                                setNewPassword(event.detail.value);
+                                setNewPassword((prevState) => {
+                                    return { ...prevState, value: event.detail.value };
+                                });
                                 validateNewPassword(event.detail.value);
                                 validateConfirmNewPassword("", event.detail.value);
                             }}
-                            type={isNewPasswordVisible ? "text" : "password"}
+                            type={newPassword.visible ? "text" : "password"}
                         />
                         <div className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer" onClick={toggleNewPasswordVisibility}>
-                            {isNewPasswordVisible ? passwordVisibleIcon : passwordNotVisibleIcon}
+                            {newPassword.visible ? passwordVisibleIcon : passwordNotVisibleIcon}
                         </div>
                     </FormField>
                     <FormField
                         label={i18n?.user_profile_confirm_new_password || "Confirm new password"}
-                        errorText={
-                            !isConfirmNewPasswordValid && isConfirmNewPasswordTouched ? i18n?.confirm_new_password_error || "Passwords don't match" : null
-                        }
+                        errorText={!confirmNewPassword.valid && confirmNewPassword.touched ? i18n?.confirm_new_password_error || "Passwords don't match" : null}
                         stretch={false}>
                         <Input
-                            value={confirmNewPassword}
+                            value={confirmNewPassword.value}
                             onChange={(event) => {
-                                setConfirmNewPassword(event.detail.value);
+                                setConfirmNewPassword((prevState) => {
+                                    return { ...prevState, value: event.detail.value };
+                                });
                                 validateConfirmNewPassword(event.detail.value, "");
                             }}
-                            type={isConfirmNewPasswordVisible ? "text" : "password"}
+                            type={confirmNewPassword.visible ? "text" : "password"}
                         />
                         <div className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer" onClick={toggleConfirmNewPasswordVisibility}>
-                            {isConfirmNewPasswordVisible ? passwordVisibleIcon : passwordNotVisibleIcon}
+                            {confirmNewPassword.visible ? passwordVisibleIcon : passwordNotVisibleIcon}
                         </div>
                     </FormField>
                 </Form>

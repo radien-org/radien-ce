@@ -17,7 +17,7 @@ declare module "radien" {
         lastUpdate: Date;
     }
 
-    interface UserPasswordChanging extends RadienModel {
+    interface UserPasswordChanging {
         login: string;
         oldPassword: string;
         newPassword: string;

@@ -25,13 +25,13 @@ import java.util.regex.Pattern;
  * @author newton carvalho
  */
 public class UserPasswordChanging implements SystemUserPasswordChanging {
-    private static final String NO_LOWER_CASE_CHARACTER_ERROR = "rd_change_password_no_lowercase_match";
-    private static final String NO_UPPER_CASE_CHARACTER_ERROR = "rd_change_password_no_uppercase_match";
-    private static final String NO_NUMBER_CHARACTER_ERROR = "rd_change_password_no_number_match";
-    private static final String NO_SPECIAL_CHARACTER_ERROR = "rd_change_password_no_special_character_match";
+    private static final String NO_LOWER_CASE_CHARACTER_ERROR = "change_password_no_lowercase_match";
+    private static final String NO_UPPER_CASE_CHARACTER_ERROR = "change_password_no_uppercase_match";
+    private static final String NO_NUMBER_CHARACTER_ERROR = "change_password_no_number_match";
+    private static final String NO_SPECIAL_CHARACTER_ERROR = "change_password_no_special_character_match";
 
     private static final int PASSWORD_MIN_LENGTH = 8;
-    private static final String INSUFICIENT_LENGTH_ERROR = "rd_change_password_insuficient_length";
+    private static final String INSUFICIENT_LENGTH_ERROR = "change_password_insuficient_length";
 
     private static final long serialVersionUID = 1860536680922155716L;
     private String login;

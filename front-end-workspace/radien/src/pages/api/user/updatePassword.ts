@@ -7,13 +7,13 @@ import { UserPasswordChanging } from "radien";
 export default async function updatePassword(req: NextApiRequest, res: NextApiResponse) {
     const session = await getServerSession(req, res, authOptions);
     const userPassword: UserPasswordChanging = req.body;
-    console.log(req.body);
     if (!session) {
         res.status(401).json({});
         return;
     }
 
     const path = `${process.env.RADIEN_USER_URL}/user/${userPassword.id}/passCredential`;
+    let resultCode = 200;
     const result: AxiosResponse = await axios
         .patch(path, userPassword, {
             headers: {
@@ -22,9 +22,10 @@ export default async function updatePassword(req: NextApiRequest, res: NextApiRe
         })
         .catch((error) => {
             if (error instanceof AxiosError && error.response?.status == 400) {
+                resultCode = 400;
                 return error.response;
             }
             throw error;
         });
-    res.status(200).json(result.data);
+    res.status(resultCode).json(result.data);
 }
