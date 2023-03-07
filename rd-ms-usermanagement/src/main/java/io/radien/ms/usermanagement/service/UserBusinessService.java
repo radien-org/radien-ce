@@ -29,6 +29,7 @@ import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import java.text.MessageFormat;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
 import java.io.Serializable;
 import java.util.List;
 
@@ -36,6 +37,8 @@ import static io.radien.api.SystemVariables.LOGON;
 import static io.radien.api.SystemVariables.NEW_PASSWORD;
 import static io.radien.api.SystemVariables.OLD_PASSWORD;
 import static io.radien.exception.GenericErrorCodeMessage.INVALID_VALUE_FOR_PARAMETER;
+import static io.radien.exception.GenericErrorCodeMessage.INFO_CORS_FILTER;
+
 
 /**
  * User service requests between the rest services and the db
@@ -266,6 +269,11 @@ public class UserBusinessService implements Serializable {
 			throw new BadRequestException(INVALID_VALUE_FOR_PARAMETER.
 					toString(NEW_PASSWORD.getLabel()));
 		}
+
+		if (!change.validatePassword()) {
+			throw new BadRequestException(change.getValidationErrors().toString());
+		}
+
 		keycloakBusinessService.validateChangeCredentials(change.getLogin(), subject,
 				change.getOldPassword(), change.getNewPassword());
 	}

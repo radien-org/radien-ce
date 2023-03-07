@@ -18,7 +18,7 @@ interface RoleAssignmentProps {
     request?: TenantRequestsResult;
 }
 
-export default function (props: RoleAssignmentProps) {
+export default function RoleAssignment(props: RoleAssignmentProps) {
     const { request, visible, setVisible } = props;
     const { i18n, addSuccessMessage, addErrorMessage } = useContext(RadienContext);
     const { data } = useAssignableRoles(Number(request?.ticket.data));

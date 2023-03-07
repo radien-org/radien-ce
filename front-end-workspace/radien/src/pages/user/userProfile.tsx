@@ -22,8 +22,10 @@ import useUpdateUser from "@/hooks/useUpdateUser";
 import useDissociateTenant from "@/hooks/useDissociateTenant";
 import { RadienContext } from "@/context/RadienContextProvider";
 import { useRouter } from "next/router";
+
 import useCreateTicket from "@/hooks/useCreateTicket";
 import TenantRequestModal from "@/components/TenantRequest/TenantRequestModal";
+import ChangePasswordModal from "@/components/UserDetailsView/ChangePasswordModal";
 import useNotifyUser from "@/hooks/useNotifyUser";
 import usePaginatedUserTenants from "@/hooks/usePaginatedUserTenants";
 import useDeleteUser from "@/hooks/useDeleteUser";
@@ -49,6 +51,7 @@ export default function UserProfile() {
     const [sub, setSub] = useState<string>(radienUser?.sub || "");
 
     const [requestTenantVisibility, setRequestTenantVisibility] = useState(false);
+    const [requestPasswordChangeVisibility, setRequestPasswordChange] = useState(false);
     const [selfDeletionVisibility, setSelfDeletionVisibility] = useState(false);
 
     useEffect(() => {
@@ -96,6 +99,10 @@ export default function UserProfile() {
     ];
 
     const dropdownClickEvent = async (event: CustomEvent<ButtonDropdownProps.ItemClickDetails>) => {
+        if (event.detail.id == "changePwd") {
+            setRequestPasswordChange(true);
+        }
+
         if (event.detail.id == "dataReq") {
             const uuid = uuidv4();
             const ticket: Ticket = {
@@ -132,6 +139,7 @@ export default function UserProfile() {
     return (
         <>
             <TenantRequestModal modalVisible={requestTenantVisibility} setModalVisible={setRequestTenantVisibility} />
+            <ChangePasswordModal modalVisible={requestPasswordChangeVisibility} setModalVisible={setRequestPasswordChange} />
             <Modal
                 onDismiss={() => setSelfDeletionVisibility(false)}
                 visible={selfDeletionVisibility}
@@ -177,6 +185,7 @@ export default function UserProfile() {
                                     items={[
                                         { text: i18n?.user_profile_delete_label || "Delete", id: "delUser", disabled: false },
                                         { text: i18n?.user_profile_request_user_data || "Request User Data", id: "dataReq", disabled: false },
+                                        { text: i18n?.password_change_header || "Change password", id: "changePwd", disabled: false },
                                     ]}></ButtonDropdown>
                             }>
                             User Profile

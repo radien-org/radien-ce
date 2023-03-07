@@ -17,6 +17,13 @@ declare module "radien" {
         lastUpdate: Date;
     }
 
+    interface UserPasswordChanging extends RadienModel {
+        login: string;
+        oldPassword: string;
+        newPassword: string;
+        id: string;
+    }
+
     interface Tenant extends RadienModel {
         name: string;
         tenantKey: string;
