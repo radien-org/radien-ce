@@ -51,7 +51,7 @@ export default function UserProfile() {
     const [logon, setLogon] = useState<string>(radienUser?.logon || "");
     const [userEmail, setUserEmail] = useState<string>(radienUser?.userEmail || "");
     const [sub, setSub] = useState<string>(radienUser?.sub || "");
-    const [processingLocked, setProcessingLocked] = useState<boolean>(radienUser?.processingLocked || true);
+    const [processingLocked, setProcessingLocked] = useState<boolean>(radienUser?.processingLocked || false);
     const [processingLockedModalVisible, setProcessingLockedModalVisible] = useState<boolean>(false);
 
     const [requestTenantVisibility, setRequestTenantVisibility] = useState(false);
@@ -65,7 +65,7 @@ export default function UserProfile() {
         setUserEmail(radienUser?.userEmail || "");
         setSub(radienUser?.sub || "");
         console.log("processing locked: "+ radienUser?.processingLocked)
-        setProcessingLocked(radienUser?.processingLocked || true);
+        setProcessingLocked(radienUser?.processingLocked || false);
     }, [radienUser]);
 
     if (isLoadingUserInSession) {
@@ -231,7 +231,7 @@ export default function UserProfile() {
                                     <Button formAction="none" variant="link">
                                         {i18n?.user_profile_cancel_action || "Cancel"}
                                     </Button>
-                                    <Button variant="primary" formAction={"submit"}>
+                                    <Button variant="primary" disabled={processingLocked} formAction={"submit"}>
                                         {i18n?.user_profile_submit_action || "Submit"}
                                     </Button>
                                 </SpaceBetween>

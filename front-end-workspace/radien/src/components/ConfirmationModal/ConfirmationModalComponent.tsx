@@ -4,7 +4,6 @@ export interface ConfirmationModalProps{
     header: string;
     body: string;
     modalVisible: boolean;
-
     setModalVisible: (visible : boolean) => void;
     closeModalOnConfirm?: boolean;
     confirmBehaviour: () => void;
