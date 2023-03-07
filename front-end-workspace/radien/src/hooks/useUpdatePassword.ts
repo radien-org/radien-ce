@@ -29,23 +29,9 @@ export default function useUpdatePassword() {
                             addErrorMessage(message);
                         } else {
                             const errorArray: string[] = e.response.data.replace("[", "").replace("]", "").replace(/ /g, "").split(",");
-                            console.log(errorArray);
-                            console.log(e.response.data.replace(" ", ""));
 
                             errorArray.map((error) => {
                                 let errorMsg = `${message}: ${i18n[error] || error}`;
-                                console.log(error);
-                                console.log(i18n["change_password_no_uppercase_match"]);
-                                console.log(i18n["change_password_no_number_match"]);
-                                console.log(i18n["change_password_no_special_character_match"]);
-                                console.log(i18n["change_password_insuficient_length"]);
-
-                                /*  console.log(i18n?.change_password_no_uppercase_match);
-                                console.log(i18n?.change_password_no_number_match);
-                                console.log(i18n?.change_password_no_special_character_match);
-                                console.log(i18n?.change_password_insuficient_length); */
-
-                                /* console.log(error); */
                                 addErrorMessage(errorMsg);
                             });
                         }
