@@ -130,7 +130,7 @@ export default function ChangePasswordModal(props: PasswordChangeProps) {
             return { ...prevValue, valid: true };
         });
 
-        /*if (!lowecaseRegex.test(password)) {
+        if (!lowecaseRegex.test(password)) {
             passwordLowercase?.classList.add("notSatisfied");
             setNewPassword((prevValue) => {
                 return { ...prevValue, valid: false };
@@ -159,7 +159,7 @@ export default function ChangePasswordModal(props: PasswordChangeProps) {
             setNewPassword((prevValue) => {
                 return { ...prevValue, valid: false };
             });
-        }*/
+        }
     };
 
     const validateConfirmNewPassword = (confirmNewPwd: string, newPwd: string) => {
