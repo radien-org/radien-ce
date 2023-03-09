@@ -156,6 +156,7 @@ public class UserBusinessService implements Serializable {
 	 * @throws RemoteResourceException on empty logon, email, first and last name
 	 */
 	public void update(User user,boolean skipKeycloak) throws UniquenessConstraintException {
+		System.out.println("User: " + user.isProcessingLocked());
 		if (!user.isProcessingLocked() || user.isProcessingLocked() && !userServiceAccess.get(user.getId()).isProcessingLocked()) {
 			basicValidation(user);
 			try {

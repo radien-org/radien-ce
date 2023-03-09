@@ -13,6 +13,7 @@ export const useUserInSession = () => {
 
     const query = useQuery<AxiosResponse<User>, AxiosError>(QueryKeys.ME, () => getUser(), {
         enabled: status !== "loading" && status !== "unauthenticated",
+        onSuccess: () => { console.log("Fetched user")},
         onError: (error) => {
             console.error("me query error: ", error.response);
         },

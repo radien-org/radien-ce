@@ -10,7 +10,6 @@ import {
     Input,
    Modal, SpaceBetween,
     TableProps
-,
 } from "@cloudscape-design/components";
 import { Tenant, Ticket, User } from "radien";
 import { v4 as uuidv4 } from "uuid";
@@ -64,7 +63,6 @@ export default function UserProfile() {
         setLogon(radienUser?.logon || "");
         setUserEmail(radienUser?.userEmail || "");
         setSub(radienUser?.sub || "");
-        console.log("processing locked: "+ radienUser?.processingLocked)
         setProcessingLocked(radienUser?.processingLocked || false);
     }, [radienUser]);
 
@@ -77,7 +75,7 @@ export default function UserProfile() {
     };
 
     const cloneCurrentUser = () : User => {
-        const radUser: User = radienUser!;
+        const radUser: User  = {...radienUser} as User;
         radUser.firstname = firstName;
         radUser.lastname = lastName;
         radUser.logon = logon;
@@ -88,9 +86,8 @@ export default function UserProfile() {
     }
 
     const processingLock = () : void => {
-        const radUser: User = cloneCurrentUser();
-        radUser.processingLocked = true;
-
+        const radUser: User = {...radienUser!, processingLocked: true};
+        console.log("PROCESSING LOCK REQUEST");
         updateUser.mutate(radUser);
         addSuccessMessage(i18n?.user_profile_processing_lock_success || "Successfully locked the processing of this account's data.");
     }
@@ -240,7 +237,7 @@ export default function UserProfile() {
                                 <Input value={firstName} disabled={processingLocked} onChange={(event) => setFirstName(event.detail.value)} />
                             </FormField>
                             <FormField label={i18n?.user_profile_lastname || "Last name"} stretch={false}>
-                                <Input value={lastName} disabled={processingLocked} onChange={(event) => setLastName(event.detail.value)} />
+                                <Input value={lastName} disabled={false} onChange={(event) => setLastName(event.detail.value)} />
                             </FormField>
                             <FormField label={i18n?.user_profile_username || "Username"} stretch={false}>
                                 <Input value={logon} disabled={processingLocked} onChange={(event) => setLogon(event.detail.value)} />
