@@ -637,7 +637,7 @@ public class UserBusinessServiceTest {
         UserPasswordChanging u = new UserPasswordChanging();
         u.setLogin("test.test");
         u.setOldPassword("test");
-        u.setNewPassword("test1");
+        u.setNewPassword("Password123#");
         String subject = "12345";
         doNothing().when(keycloakBusinessService).validateChangeCredentials(u.getLogin(), subject,
                 u.getOldPassword(), u.getNewPassword());
