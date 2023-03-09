@@ -24,10 +24,7 @@ export default function useUpdatePassword() {
                 }
                 if (e.response?.status === 400) {
                     if (e.response?.data) {
-                        if (e.response.data.key == "error.invalid.credentials") {
-                            message = `${message}: ${i18n?.error_not_your_old_password || "You got the old password wrong"}`;
-                            addErrorMessage(message);
-                        } else {
+                        if (e.response.data.key != "error.invalid.credentials") {
                             const errorArray: string[] = e.response.data.replace("[", "").replace("]", "").replace(/ /g, "").split(",");
 
                             errorArray.map((error) => {

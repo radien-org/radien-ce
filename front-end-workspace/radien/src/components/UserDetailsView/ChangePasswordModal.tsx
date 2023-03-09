@@ -5,6 +5,7 @@ import { RadienContext } from "@/context/RadienContextProvider";
 import dynamic from "next/dynamic";
 import { UserPasswordChanging } from "radien";
 import useUpdatePassword from "@/hooks/useUpdatePassword";
+import { error } from "console";
 
 const FormField = dynamic(() => import("@cloudscape-design/components/form-field"), { ssr: false });
 
@@ -16,6 +17,13 @@ interface PasswordChangeProps {
 interface PasswordValidation {
     value: string;
     valid: boolean;
+    touched: boolean;
+    visible: boolean;
+}
+
+interface OldPasswordValidation {
+    value: string;
+    valid: string;
     touched: boolean;
     visible: boolean;
 }
@@ -51,9 +59,9 @@ export default function ChangePasswordModal(props: PasswordChangeProps) {
         value: "",
         visible: false,
     });
-    const [oldPassword, setOldPassword] = useState<PasswordValidation>({
+    const [oldPassword, setOldPassword] = useState<OldPasswordValidation>({
         touched: false,
-        valid: false,
+        valid: "notSubmited",
         value: "",
         visible: false,
     });
@@ -93,7 +101,7 @@ export default function ChangePasswordModal(props: PasswordChangeProps) {
             onSuccess() {
                 setOldPassword({
                     touched: false,
-                    valid: false,
+                    valid: "notSubmited",
                     value: "",
                     visible: false,
                 });
@@ -111,13 +119,21 @@ export default function ChangePasswordModal(props: PasswordChangeProps) {
                 });
                 setModalVisible(false);
             },
+            onError(e: any) {
+                if (e.response?.data.key == "error.invalid.credentials") {
+                    let erro = "errorerror";
+                    setOldPassword((prevState) => {
+                        return { ...prevState, valid: "notValid" };
+                    });
+                }
+            },
         });
     };
 
     const validateNewPassword = (password: string) => {
-            setNewPassword((prevValue) => {
-                return { ...prevValue, valid: true };
-            });
+        setNewPassword((prevValue) => {
+            return { ...prevValue, valid: true };
+        });
         const passwordLowercase = document.getElementById("passwordLowercase");
         const passwordUppercase = document.getElementById("passwordUppercase");
         const passwordDigits = document.getElementById("passwordDigits");
@@ -214,7 +230,7 @@ export default function ChangePasswordModal(props: PasswordChangeProps) {
                         <Button variant="link" onClick={() => setModalVisible(false)}>
                             {i18n?.tenant_request_button_cancel || "Cancel"}
                         </Button>
-                        <Button variant="primary" onClick={() => handleSubmit()}>
+                        <Button id="submitBtn" variant="primary" onClick={() => handleSubmit()}>
                             {i18n?.button_update || "Update"}
                         </Button>
                     </SpaceBetween>
@@ -228,14 +244,21 @@ export default function ChangePasswordModal(props: PasswordChangeProps) {
                 }}
                 className={"create-form--container"}>
                 <Form>
-                    <FormField label={i18n?.user_profile_old_password || "Old password"} stretch={false}>
+                    <FormField
+                        label={i18n?.user_profile_old_password || "Old password"}
+                        errorText={
+                            oldPassword.valid == "notValid" && oldPassword.touched
+                                ? i18n?.error_not_your_old_password || "You got the old password wrong"
+                                : null
+                        }
+                        stretch={false}>
                         <Input
+                            name="oldPasswordInput"
                             value={oldPassword.value}
                             onChange={(event) => {
                                 setOldPassword((prevState) => {
-                                    return { ...prevState, value: event.detail.value };
+                                    return { ...prevState, value: event.detail.value, valid: "notSubmited" };
                                 });
-                                /* validateOldPassword(event.detail.value); */
                             }}
                             type={oldPassword.visible ? "text" : "password"}
                         />
@@ -282,6 +305,7 @@ export default function ChangePasswordModal(props: PasswordChangeProps) {
                         }
                         stretch={false}>
                         <Input
+                            name="newPasswordInput"
                             value={newPassword.value}
                             onChange={(event) => {
                                 setNewPassword((prevState) => {
@@ -301,6 +325,7 @@ export default function ChangePasswordModal(props: PasswordChangeProps) {
                         errorText={!confirmNewPassword.valid && confirmNewPassword.touched ? i18n?.confirm_new_password_error || "Passwords don't match" : null}
                         stretch={false}>
                         <Input
+                            name="confirmNewPasswordInput"
                             value={confirmNewPassword.value}
                             onChange={(event) => {
                                 setConfirmNewPassword((prevState) => {
