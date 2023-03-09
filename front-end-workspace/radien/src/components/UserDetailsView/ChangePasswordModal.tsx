@@ -121,7 +121,6 @@ export default function ChangePasswordModal(props: PasswordChangeProps) {
             },
             onError(e: any) {
                 if (e.response?.data.key == "error.invalid.credentials") {
-                    let erro = "errorerror";
                     setOldPassword((prevState) => {
                         return { ...prevState, valid: "notValid" };
                     });

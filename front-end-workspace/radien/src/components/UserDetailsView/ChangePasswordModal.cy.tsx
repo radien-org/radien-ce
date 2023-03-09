@@ -10,6 +10,9 @@ const setModalVisible = (value: boolean) => {
 };
 
 describe("<ChangePasswordModal />", () => {
+    beforeEach(() => {
+        cy.viewport(800, 600);
+    });
     it("password miss requirements", () => {
         cy.mount(
             <QueryClientProvider client={queryClient}>
@@ -36,10 +39,11 @@ describe("<ChangePasswordModal />", () => {
         cy.get(".awsui_error__message_14mhv_veozk_236").should("have.text", "Passwords don't match");
     });
     it("wrong old password", () => {
+        cy.intercept("/api/user/updatePassword", { fixture: "wrongOldpassword.json", statusCode: 400 });
         cy.mount(
             <QueryClientProvider client={queryClient}>
                 <ChangePasswordModal modalVisible={true} setModalVisible={setModalVisible} />
-             </QueryClientProvider>
+            </QueryClientProvider>
         );
         cy.get('input[name="newPasswordInput"]').type("Password123#");
         cy.get('input[name="confirmNewPasswordInput"]').type("Password123#");
