@@ -63,7 +63,7 @@ export default function UserProfile() {
         setLogon(radienUser?.logon || "");
         setUserEmail(radienUser?.userEmail || "");
         setSub(radienUser?.sub || "");
-        setProcessingLocked(radienUser?.processingLocked || false);
+        setProcessingLocked(radienUser?.processingLocked ?? true);
     }, [radienUser]);
 
     if (isLoadingUserInSession) {
@@ -71,23 +71,17 @@ export default function UserProfile() {
     }
 
     const saveData = () => {
-        updateUser.mutate(cloneCurrentUser());
-    };
-
-    const cloneCurrentUser = () : User => {
         const radUser: User  = {...radienUser} as User;
         radUser.firstname = firstName;
         radUser.lastname = lastName;
         radUser.logon = logon;
         radUser.userEmail = userEmail;
         radUser.sub = sub;
-
-        return radUser;
-    }
+        updateUser.mutate(radUser);
+    };
 
     const processingLock = () : void => {
         const radUser: User = {...radienUser!, processingLocked: true};
-        console.log("PROCESSING LOCK REQUEST");
         updateUser.mutate(radUser);
         addSuccessMessage(i18n?.user_profile_processing_lock_success || "Successfully locked the processing of this account's data.");
     }
@@ -237,7 +231,7 @@ export default function UserProfile() {
                                 <Input value={firstName} disabled={processingLocked} onChange={(event) => setFirstName(event.detail.value)} />
                             </FormField>
                             <FormField label={i18n?.user_profile_lastname || "Last name"} stretch={false}>
-                                <Input value={lastName} disabled={false} onChange={(event) => setLastName(event.detail.value)} />
+                                <Input value={lastName} disabled={processingLocked} onChange={(event) => setLastName(event.detail.value)} />
                             </FormField>
                             <FormField label={i18n?.user_profile_username || "Username"} stretch={false}>
                                 <Input value={logon} disabled={processingLocked} onChange={(event) => setLogon(event.detail.value)} />
