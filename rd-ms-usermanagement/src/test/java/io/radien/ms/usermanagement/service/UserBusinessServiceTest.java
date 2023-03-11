@@ -649,6 +649,24 @@ public class UserBusinessServiceTest {
     }
 
     /**
+     * Test method for {@link UserBusinessService#changePassword(String, UserPasswordChanging)} (User, boolean)}
+     * but expecting an error being thrown by ValidatePassword. Expected outcome: FAILURE.
+     * @throws BadRequestException thrown in case new password
+     * is not satisfying all the requirements
+     */
+    @Test(expected = BadRequestException.class)
+    public void testChangePasswordNewPasswordError() throws BadRequestException {
+        UserPasswordChanging u = new UserPasswordChanging();
+        u.setLogin("test.test");
+        u.setOldPassword("pwd");
+        u.setNewPassword("pwd");
+        String subject = "12345";
+        doNothing().when(keycloakBusinessService).validateChangeCredentials(u.getLogin(), subject,
+                u.getOldPassword(), u.getNewPassword());
+        userBusinessService.changePassword(subject, u);
+    }
+
+    /**
      * Test for method {@link UserBusinessService#changePassword(String, UserPasswordChanging)}
      * Scenario: Logon not informed
      */

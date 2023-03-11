@@ -29,7 +29,6 @@ import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import java.text.MessageFormat;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.ws.rs.core.Response;
 import java.io.Serializable;
 import java.util.List;
 
@@ -37,7 +36,6 @@ import static io.radien.api.SystemVariables.LOGON;
 import static io.radien.api.SystemVariables.NEW_PASSWORD;
 import static io.radien.api.SystemVariables.OLD_PASSWORD;
 import static io.radien.exception.GenericErrorCodeMessage.INVALID_VALUE_FOR_PARAMETER;
-import static io.radien.exception.GenericErrorCodeMessage.INFO_CORS_FILTER;
 
 
 /**
