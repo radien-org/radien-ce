@@ -38,16 +38,16 @@ import java.util.*;
 
 import io.radien.ms.usermanagement.client.entities.User;
 import org.junit.Assert;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -61,7 +61,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Rajesh Gavvala
  */
-class TenantRoleUserBusinessServiceTest {
+public class TenantRoleUserBusinessServiceTest {
 
     @InjectMocks
     private TenantRoleUserBusinessService tenantRoleUserBusinessService;
@@ -90,31 +90,31 @@ class TenantRoleUserBusinessServiceTest {
     List<Long> tenantRoleUserIds;
 
 
-    @BeforeEach
-    void setUp(){
-        MockitoAnnotations.initMocks(this);
 
+    @Before
+    public void setUp(){
+        MockitoAnnotations.initMocks(this);
         roleIds = new HashSet<>( Arrays.asList(3L, 4L));
         tenantRoleIds.add(5L);
         tenantRoleUserIds = Arrays.asList(6L, 7L);
     }
 
     @Test
-    void testGet() {
+    public void testGet() {
         when(tenantRoleUserServiceAccess.get(anyLong()))
                 .thenReturn(new TenantRoleUser());
         assertNotNull(tenantRoleUserBusinessService.get(1L));
     }
 
     @Test
-    void testGetNotFound() {
+    public void testGetNotFound() {
         when(tenantRoleUserServiceAccess.get(anyLong()))
                 .thenReturn(null);
         assertThrows(TenantRoleUserNotFoundException.class, () -> tenantRoleUserBusinessService.get(1L));
     }
 
     @Test
-    void testGetAll() {
+    public void testGetAll() {
         Page<SystemTenantRoleUser> result = new Page<>(new ArrayList<>(), 1, 1, 1);
         when(tenantRoleUserServiceAccess.getAll(anyLong(), anyLong(), anyInt(), anyInt(), anyList(), anyBoolean()))
                 .thenReturn(result);
@@ -123,7 +123,7 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testGetAllUserIds() {
+    public void testGetAllUserIds() {
         Page<Long> result = new Page<>(new ArrayList<>(), 1, 1, 1);
         when(tenantRoleUserServiceAccess.getAllUserIds(anyLong(), anyLong(), anyInt(), anyInt()))
                 .thenReturn(result);
@@ -132,12 +132,12 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testGetFiltered() {
+    public void testGetFiltered() {
         assertTrue(tenantRoleUserBusinessService.getFiltered(new TenantRoleUserSearchFilter()).isEmpty());
     }
 
     @Test
-    void testAssignUser() throws InvalidArgumentException, UniquenessConstraintException {
+    public void testAssignUser() throws InvalidArgumentException, UniquenessConstraintException {
         SystemTenantRole tenantRole = new TenantRoleEntity();
         tenantRole.setRoleId(1L);
         tenantRole.setTenantId(1L);
@@ -154,7 +154,7 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testAssignUserAlreadyExisting() throws InvalidArgumentException {
+    public void testAssignUserAlreadyExisting() throws InvalidArgumentException {
         SystemTenantRole tenantRole = new TenantRoleEntity();
         tenantRole.setRoleId(1L);
         tenantRole.setTenantId(1L);
@@ -170,7 +170,7 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testAssignUserInvalidArgument() throws InvalidArgumentException, UniquenessConstraintException {
+    public void testAssignUserInvalidArgument() throws InvalidArgumentException, UniquenessConstraintException {
         SystemTenantRole tenantRole = new TenantRoleEntity();
         tenantRole.setRoleId(1L);
         tenantRole.setTenantId(1L);
@@ -189,7 +189,7 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testAssignUserDuplicatedData() throws InvalidArgumentException, UniquenessConstraintException {
+    public void testAssignUserDuplicatedData() throws InvalidArgumentException, UniquenessConstraintException {
         SystemTenantRole tenantRole = new TenantRoleEntity();
         tenantRole.setRoleId(1L);
         tenantRole.setTenantId(1L);
@@ -208,7 +208,7 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testAssignUserIfProcessingIsLocked() throws SystemException {
+    public void testAssignUserIfProcessingIsLocked() throws SystemException {
         SystemTenantRole tenantRole = new TenantRoleEntity();
         tenantRole.setRoleId(1L);
         tenantRole.setTenantId(1L);
@@ -225,7 +225,7 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testUpdate() throws InvalidArgumentException, UniquenessConstraintException {
+    public void testUpdate() throws InvalidArgumentException, UniquenessConstraintException {
         SystemTenantRole tenantRole = new TenantRoleEntity();
         tenantRole.setRoleId(1L);
         tenantRole.setTenantId(1L);
@@ -242,7 +242,7 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testUpdateIfProcessingIsLocked() throws SystemException {
+    public void testUpdateIfProcessingIsLocked() throws SystemException {
         SystemTenantRole tenantRole = new TenantRoleEntity();
         tenantRole.setRoleId(1L);
         tenantRole.setTenantId(1L);
@@ -258,7 +258,7 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testUpdateAlreadyExisting() throws InvalidArgumentException {
+    public void testUpdateAlreadyExisting() throws InvalidArgumentException {
         SystemTenantRole tenantRole = new TenantRoleEntity();
         tenantRole.setRoleId(1L);
         tenantRole.setTenantId(1L);
@@ -274,7 +274,7 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testUpdateInvalidArgument() throws InvalidArgumentException, UniquenessConstraintException {
+    public void testUpdateInvalidArgument() throws InvalidArgumentException, UniquenessConstraintException {
         SystemTenantRole tenantRole = new TenantRoleEntity();
         tenantRole.setRoleId(1L);
         tenantRole.setTenantId(1L);
@@ -293,7 +293,7 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testUpdateDuplicatedData() throws InvalidArgumentException, UniquenessConstraintException {
+    public void testUpdateDuplicatedData() throws InvalidArgumentException, UniquenessConstraintException {
         SystemTenantRole tenantRole = new TenantRoleEntity();
         tenantRole.setRoleId(1L);
         tenantRole.setTenantId(1L);
@@ -312,7 +312,7 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testDeleteStillAssociated() throws InvalidArgumentException {
+    public void testDeleteStillAssociated() throws InvalidArgumentException {
         TenantRoleUser tenantRoleUser = new TenantRoleUser();
         tenantRoleUser.setTenantRoleId(1L);
         tenantRoleUser.setUserId(1L);
@@ -332,7 +332,7 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testDeleteStillAssociatedInvalidArgument() throws InvalidArgumentException {
+    public void testDeleteStillAssociatedInvalidArgument() throws InvalidArgumentException {
         TenantRoleUser tenantRoleUser = new TenantRoleUser();
         tenantRoleUser.setTenantRoleId(1L);
         tenantRoleUser.setUserId(1L);
@@ -351,7 +351,7 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testDeleteNoMoreAssociation() throws InvalidArgumentException, SystemException {
+    public void testDeleteNoMoreAssociation() throws InvalidArgumentException, SystemException {
         TenantRoleUser tenantRoleUser = new TenantRoleUser();
         tenantRoleUser.setTenantRoleId(1L);
         tenantRoleUser.setUserId(1L);
@@ -372,7 +372,7 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testDeleteNoMoreAssociationRoleException() throws InvalidArgumentException, SystemException {
+    public void testDeleteNoMoreAssociationRoleException() throws InvalidArgumentException, SystemException {
         TenantRoleUser tenantRoleUser = new TenantRoleUser();
         tenantRoleUser.setTenantRoleId(1L);
         tenantRoleUser.setUserId(1L);
@@ -393,7 +393,7 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testDeleteNotFound() {
+    public void testDeleteNotFound() {
         TenantRoleUser tenantRoleUser = new TenantRoleUser();
         tenantRoleUser.setTenantRoleId(1L);
         tenantRoleUser.setUserId(1L);
@@ -410,7 +410,7 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testDeleteIfProcessingIsLocked() throws SystemException {
+    public void testDeleteIfProcessingIsLocked() throws SystemException {
         TenantRoleUser tenantRoleUser = new TenantRoleUser();
         tenantRoleUser.setTenantRoleId(1L);
         tenantRoleUser.setUserId(1L);
@@ -423,7 +423,7 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testUnAssignUser() throws InvalidArgumentException {
+    public void testUnAssignUser() throws InvalidArgumentException {
         when(tenantRoleUserServiceAccess.getTenantRoleUserIds(anyLong(), anyList(), anyLong()))
                 .thenReturn(Collections.singletonList(1L));
         when(tenantRoleUserServiceAccess.isAssociationAlreadyExistent(1L, 1L))
@@ -434,7 +434,7 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testUnAssignUserInvalidArgument() throws InvalidArgumentException {
+    public void testUnAssignUserInvalidArgument() throws InvalidArgumentException {
         Collection<Long> roles = Arrays.asList(1L, 2L);
         when(tenantRoleUserServiceAccess.getTenantRoleUserIds(anyLong(), anyList(), anyLong()))
                 .thenReturn(Collections.singletonList(1L));
@@ -445,7 +445,7 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testUnAssignUserNotFound() throws InvalidArgumentException {
+    public void testUnAssignUserNotFound() throws InvalidArgumentException {
         Collection<Long> roles = Arrays.asList(1L, 2L);
         when(tenantRoleUserServiceAccess.getTenantRoleUserIds(anyLong(), anyList(), anyLong()))
                 .thenReturn(new ArrayList<>());
@@ -454,7 +454,7 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testGetTenants() throws InvalidArgumentException, SystemException {
+    public void testGetTenants() throws InvalidArgumentException, SystemException {
         List<Long> tenantIds = Arrays.asList(1L, 2L);
         when(tenantRoleUserServiceAccess.getTenants(anyLong(), anyLong()))
                 .thenReturn(tenantIds);
@@ -465,7 +465,7 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testUnAssignUserIfProcessingIsLocked() throws SystemException, InvalidArgumentException {
+    public void testUnAssignUserIfProcessingIsLocked() throws SystemException, InvalidArgumentException {
         when(userRESTServiceAccess.isProcessingLocked(anyLong())).thenReturn(true);
         Collection<Long> roles = Collections.singletonList(1L);
         assertThrows(ProcessingLockedException.class, () -> {
@@ -475,7 +475,7 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testGetTenantsSystemException() throws InvalidArgumentException, SystemException {
+    public void testGetTenantsSystemException() throws InvalidArgumentException, SystemException {
         List<Long> tenantIds = Arrays.asList(1L, 2L);
         when(tenantRoleUserServiceAccess.getTenants(anyLong(), anyLong()))
                 .thenReturn(tenantIds);
@@ -486,7 +486,7 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testGetTenantsInvalidArgument() throws InvalidArgumentException {
+    public void testGetTenantsInvalidArgument() throws InvalidArgumentException {
         when(tenantRoleUserServiceAccess.getTenants(anyLong(), anyLong()))
                 .thenThrow(new InvalidArgumentException("error"));
 
@@ -494,18 +494,18 @@ class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    void testGetRolesForUserTenant() {
+    public void testGetRolesForUserTenant() {
         assertTrue(tenantRoleUserBusinessService.getRolesForUserTenant(1L, 1L).isEmpty());
     }
 
     @Test
-    void testGetCount() {
+    public void testGetCount() {
         when(tenantRoleUserServiceAccess.count()).thenReturn(10L);
         assertEquals(10L, tenantRoleUserBusinessService.getCount());
     }
 
     @Test
-    void testCheckIfUserIsLocked() throws SystemException {
+    public void testCheckIfUserIsLocked() throws SystemException {
         when(userRESTServiceAccess.isProcessingLocked(0L)).thenReturn(false);
         assertEquals(false, tenantRoleUserBusinessService.checkIfUserIsLocked(0L));
 
@@ -515,9 +515,9 @@ class TenantRoleUserBusinessServiceTest {
 
 
     @Test
-    void testCheckIfUserIsLockedThrowsException() throws SystemException, RuntimeException {
+    public void testCheckIfUserIsLockedThrowsException() throws SystemException, RuntimeException {
         when(userRESTServiceAccess.isProcessingLocked(0L)).thenThrow(new SystemException());
-        Assert.assertThrows(RuntimeException.class, () ->
+        assertThrows(RuntimeException.class, () ->
                 tenantRoleUserBusinessService.checkIfUserIsLocked(0L));
     }
 }
