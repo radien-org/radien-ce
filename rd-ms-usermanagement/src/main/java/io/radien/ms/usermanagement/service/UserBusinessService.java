@@ -255,15 +255,15 @@ public class UserBusinessService implements Serializable {
 	 * @throws RemoteResourceException thrown in case of any issue regarding communication with KeyCloak service
 	 */
 	public void changePassword(String subject, UserPasswordChanging change) {
-		if (change.getLogin() == null || change.getLogin().isEmpty()) {
+		if (change.getLogin() == null) {
 			throw new BadRequestException(INVALID_VALUE_FOR_PARAMETER.
 					toString(LOGON.getLabel()));
 		}
-		if (change.getOldPassword() == null || change.getOldPassword().isEmpty()) {
+		if (change.getOldPassword() == null) {
 			throw new BadRequestException(INVALID_VALUE_FOR_PARAMETER.
 					toString(OLD_PASSWORD.getLabel()));
 		}
-		if (change.getNewPassword() == null || change.getNewPassword().isEmpty()) {
+		if (change.getNewPassword() == null) {
 			throw new BadRequestException(INVALID_VALUE_FOR_PARAMETER.
 					toString(NEW_PASSWORD.getLabel()));
 		}
