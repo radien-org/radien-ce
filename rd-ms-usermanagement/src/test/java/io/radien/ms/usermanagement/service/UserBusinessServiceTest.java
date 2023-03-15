@@ -719,4 +719,15 @@ public class UserBusinessServiceTest {
                 ()->userBusinessService.changePassword("12345", u));
         assertEquals(INVALID_VALUE_FOR_PARAMETER.toString(LOGON.getLabel()), e.getMessage());
     }
+
+    /**
+     * Test method for {@link UserBusinessService#get(long)}
+     * but expecting an error being thrown. Expected outcome: FAILURE.
+     * @throws UserNotFoundException thrown in case user doesn't exist
+     * with given id
+     */
+    @Test(expected = UserNotFoundException.class)
+    public void testGetSystemUser() throws UserNotFoundException {
+        userBusinessService.get(1L);
+    }
 }
