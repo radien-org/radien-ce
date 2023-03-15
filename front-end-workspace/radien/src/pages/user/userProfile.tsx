@@ -30,6 +30,7 @@ import useDeleteUser from "@/hooks/useDeleteUser";
 import { useQueryClient } from "react-query";
 import { logout } from "@/components/Header/Header";
 import {ConfirmationModalComponent} from "@/components/ConfirmationModal/ConfirmationModalComponent";
+import useProcessingLockUser from "@/hooks/useProcessingLockUser";
 
 const FormField = dynamic(() => import("@cloudscape-design/components/form-field"), { ssr: false });
 
@@ -43,6 +44,7 @@ export default function UserProfile() {
     const dissociateUser = useDissociateTenant();
     const createTicket = useCreateTicket();
     const notifyUser = useNotifyUser();
+    const processingLockUser = useProcessingLockUser();
     const deleteUser = useDeleteUser();
 
     const [firstName, setFirstName] = useState<string>(radienUser?.firstname || "");
@@ -82,7 +84,7 @@ export default function UserProfile() {
 
     const processingLock = () : void => {
         const radUser: User = {...radienUser!, processingLocked: true};
-        updateUser.mutate(radUser);
+        processingLockUser.mutate({id: radUser.id!, lock: true});
         addSuccessMessage(i18n?.user_profile_processing_lock_success || "Successfully locked the processing of this account's data.");
     }
 

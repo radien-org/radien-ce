@@ -26,14 +26,12 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.radien.api.model.user.SystemUserPasswordChanging;
 import io.radien.exception.BadRequestException;
 import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
@@ -45,7 +43,6 @@ import java.net.MalformedURLException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -1376,5 +1373,20 @@ public class UserRESTServiceClientTest {
     public void testGetCurrentUserInSessionMalformed() throws MalformedURLException, SystemException {
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenThrow(new MalformedURLException());
         target.getCurrentUserInSession();
+    }
+
+    @Test
+    public void testProcessingLock() throws MalformedURLException {
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        Response response = Response.ok().build();
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.processingLockChange(anyLong(), anyBoolean())).thenReturn(response);
+        assertTrue(target.processingLock(1, true));
+    }
+
+    @Test
+    public void testProcessingLockMalformed() throws MalformedURLException {
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenThrow(MalformedURLException.class);
+        assertFalse(target.processingLock(1, true));
     }
 }

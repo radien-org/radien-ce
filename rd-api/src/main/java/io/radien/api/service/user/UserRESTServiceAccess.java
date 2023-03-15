@@ -143,6 +143,8 @@ public interface UserRESTServiceAccess extends Appframeable{
      */
     boolean updatePassword(String sub, SystemUserPasswordChanging change) throws SystemException;
 
+    boolean processingLock(long id, boolean processingLock);
+
     /**
     * Checks if the user is locked
      * @param id of the user to be deleted

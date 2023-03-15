@@ -824,8 +824,8 @@ public class UserProfileManagerTest {
         when(userSession.getUser()).then(user -> systemUser);
         doReturn(true).when(userRESTServiceAccess).updateUser(systemUser);
 
-        assertEquals("pretty:index", userProfileManager.lockUserProcessing());
-        assertEquals(true, userProfileManager.getClonedLogInUser().isProcessingLocked());
+        assertTrue(userProfileManager.lockUserProcessing());
+        assertTrue(userProfileManager.getClonedLogInUser().isProcessingLocked());
     }
 
     @Test

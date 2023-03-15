@@ -146,6 +146,10 @@ public interface UserResourceClient {
     @Path("/{id}")
     Response update(@PathParam("id") long id, io.radien.ms.usermanagement.client.entities.User user);
 
+    @PUT
+    @Path("/lock/{id}&{processingLock}")
+    Response processingLockChange(@PathParam("id") long id, @PathParam("processingLock") boolean processingLock);
+
 
     /**
      * Adds multiple users into the DB.

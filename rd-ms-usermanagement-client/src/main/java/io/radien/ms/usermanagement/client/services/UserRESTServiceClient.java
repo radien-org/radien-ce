@@ -15,12 +15,10 @@
  */
 package io.radien.ms.usermanagement.client.services;
 
-import io.radien.api.model.user.SystemPagedUserSearchFilter;
 import io.radien.api.model.user.SystemUserPasswordChanging;
 import io.radien.exception.BadRequestException;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.InternalServerErrorException;
-import io.radien.ms.usermanagement.client.entities.PagedUserSearchFilter;
 import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import io.radien.ms.usermanagement.client.util.UserModelMapper;
 import java.io.InputStream;
@@ -513,6 +511,18 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         }
         return false;
     }
+
+    public boolean processingLock(long id, boolean processingLock){
+        try {
+            UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+            Response response = client.processingLockChange(id, processingLock);
+            return response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL;
+        } catch (MalformedURLException e) {
+            log.error(e.getMessage(), e);
+        }
+        return false;
+    }
+
 
     /**
      * Changes user password (Invokes the core method counterpart and handles TokenExpiration error)

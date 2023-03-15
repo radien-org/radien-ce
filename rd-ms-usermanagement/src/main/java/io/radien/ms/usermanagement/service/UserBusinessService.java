@@ -156,25 +156,35 @@ public class UserBusinessService implements Serializable {
 	 * @throws RemoteResourceException on empty logon, email, first and last name
 	 */
 	public void update(User user,boolean skipKeycloak) throws UniquenessConstraintException {
-		System.out.println("User: " + user.isProcessingLocked());
-		if (!user.isProcessingLocked() || user.isProcessingLocked() && !userServiceAccess.get(user.getId()).isProcessingLocked()) {
-			basicValidation(user);
-			try {
-				userServiceAccess.update(user);
-			} catch (SystemException e) {
-				throw new UserNotFoundException(e.getMessage());
-			}
-			if(!skipKeycloak){
-				try{
-					keycloakBusinessService.updateUser(user);
-				} catch (RemoteResourceException e) {
-					delete(user.getId());
-					throw e;
-				}
-			}
+		if (!userServiceAccess.get(user.getId()).isProcessingLocked()) {
+			user.setProcessingLocked(false);
+			handleChanges(user, skipKeycloak);
 		} else {
 			throw new ProcessingLockedException();
 		}
+	}
+
+	private void handleChanges(User user, boolean skipKeycloak) throws UniquenessConstraintException{
+		basicValidation(user);
+		try {
+			userServiceAccess.update(user);
+		} catch (SystemException e) {
+			throw new UserNotFoundException(e.getMessage());
+		}
+		if(!skipKeycloak){
+			try{
+				keycloakBusinessService.updateUser(user);
+			} catch (RemoteResourceException e) {
+				delete(user.getId());
+				throw e;
+			}
+		}
+	}
+
+	public void processingLockChange(long id, boolean processingLock) throws UniquenessConstraintException{
+		User user = (User) userServiceAccess.get(id);
+		user.setProcessingLocked(processingLock);
+		handleChanges(user, true);
 	}
 
 	/**

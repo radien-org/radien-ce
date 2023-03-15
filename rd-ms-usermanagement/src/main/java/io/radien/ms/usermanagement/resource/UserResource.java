@@ -207,6 +207,16 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 		return Response.ok().build();
 	}
 
+	@Override
+	public Response processingLockChange(long id, boolean processingLock){
+		try{
+			userBusinessService.processingLockChange(id, processingLock);
+		}catch (Exception e) {
+			return getResponseFromException(e);
+		}
+		return Response.ok().build();
+	}
+
 
 	/**
 	 * Will send the updated password via email to the user in case of success will return a 200 code message

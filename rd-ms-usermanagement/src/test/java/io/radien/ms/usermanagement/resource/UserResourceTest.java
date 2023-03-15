@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.usermanagement.service;
+package io.radien.ms.usermanagement.resource;
 
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.batch.BatchSummary;
@@ -30,12 +30,13 @@ import io.radien.ms.openid.entities.Principal;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
-import io.radien.ms.usermanagement.resource.UserResource;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
+
+import io.radien.ms.usermanagement.service.UserBusinessService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -48,6 +49,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -827,5 +829,16 @@ public class UserResourceTest {
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
         doThrow(new BadRequestException("test")).when(userBusinessService).changePassword(subject, u);
         userResource.updatePassword(subject, u);
+    }
+
+    @Test
+    public void processingLockChange(){
+        assertEquals(200, userResource.processingLockChange(1, true).getStatus());
+    }
+
+    @Test
+    public void processingLockChangeException(){
+        when(userResource.processingLockChange(anyLong(), anyBoolean())).thenThrow(RuntimeException.class);
+        assertEquals(500, userResource.processingLockChange(1, true).getStatus());
     }
 }

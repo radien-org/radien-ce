@@ -4,9 +4,12 @@ import { Box, Container, FormField, Input, Toggle } from "@cloudscape-design/com
 import { FunctionComponent, useContext } from "react";
 import { User } from "radien";
 import { RadienContext } from "@/context/RadienContextProvider";
+import useProcessingLockUser from "@/hooks/useProcessingLockUser";
 
 const UserDetailsView: FunctionComponent<{ data: User }> = ({ data }) => {
     const { i18n } = useContext(RadienContext);
+    const processingLockUser = useProcessingLockUser();
+
     return (
         <Box padding="l">
             <>
@@ -34,6 +37,14 @@ const UserDetailsView: FunctionComponent<{ data: User }> = ({ data }) => {
                             <SpaceBetween key="view-form-7" direction={"horizontal"} size={"l"}>
                                 {i18n?.user_details_enabled || "Enabled"}
                                 <Toggle disabled={true} checked={data!.enabled} />
+                            </SpaceBetween>
+                            <SpaceBetween key="view-form-10" direction={"horizontal"} size={"l"}>
+                                {i18n?.user_details_processing_locked || "Processing Locked"}
+                                <input type={"checkbox"} disabled={false} checked={data!.processingLocked} onChange={() => processingLockUser.mutate(
+                                    {
+                                        id: data.id!,
+                                        lock: !data.processingLocked!}
+                                    )}/>
                             </SpaceBetween>
                             <SpaceBetween key="view-form-8" direction={"horizontal"} size={"l"}>
                                 {i18n?.user_details_delegated_creation || "Delegated creation"}

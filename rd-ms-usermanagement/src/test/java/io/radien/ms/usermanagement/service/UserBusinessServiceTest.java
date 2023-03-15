@@ -288,6 +288,7 @@ public class UserBusinessServiceTest {
         user4.setFirstname("first");
         user4.setLastname("last");
         boolean success4 = true;
+        when(userServiceAccess.get((Long) any())).thenReturn(user4);
         try{
             userBusinessService.update(user4, true);
         } catch (RemoteResourceException | UniquenessConstraintException e){
@@ -311,6 +312,7 @@ public class UserBusinessServiceTest {
         user4.setFirstname("first");
         user4.setLastname("last");
         boolean success4 = true;
+        when(userServiceAccess.get((Long) any())).thenReturn(user4);
         try{
             userBusinessService.update(user4, false);
         } catch (RemoteResourceException e){
@@ -356,7 +358,30 @@ public class UserBusinessServiceTest {
         verify(userServiceAccess,never()).update(any());
     }
 
+    @Test
+    public void testProcessingLockChange() throws SystemException, UniquenessConstraintException {
+        User user = new User();
+        user.setLogon("logon");
+        user.setUserEmail("email@email.com");
+        user.setFirstname("first");
+        user.setLastname("last");
+        when(userServiceAccess.get(anyLong())).thenReturn(user);
+        userBusinessService.processingLockChange(1, true);
+        verify(userServiceAccess).update(user);
+    }
 
+    @Test(expected = UserNotFoundException.class)
+    public void testProcessingLockChangeSystemException() throws UniquenessConstraintException, SystemException {
+        User user = new User();
+        user.setLogon("logon");
+        user.setUserEmail("email@email.com");
+        user.setFirstname("first");
+        user.setLastname("last");
+        SystemException exception = new SystemException("");
+        when(userServiceAccess.get(anyLong())).thenReturn(user);
+        doThrow(exception).when(userServiceAccess).update(user);
+        userBusinessService.processingLockChange(1, true);
+    }
 
     /**
      * Test method for {@link UserBusinessService#create(User, boolean)}
