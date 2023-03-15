@@ -30,23 +30,22 @@ import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+
+import org.junit.FixMethodOrder;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 /**
@@ -55,8 +54,8 @@ import static org.mockito.Mockito.when;
  *
  * @author Newton Carvalho
  */
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class TenantRoleResourceTest {
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+public class TenantRoleResourceTest {
 
     @InjectMocks
     TenantRoleResource tenantRoleResource;
@@ -82,17 +81,14 @@ class TenantRoleResourceTest {
     @Mock
     UserClient userClient;
 
-    @BeforeEach
-    void before(){
-        MockitoAnnotations.initMocks(this);
-    }
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
 
     /**
      * Testing getAll
      */
     @Test
-    @Order(1)
-    void getAll() {
+    public void test001getAll() {
         Response response = tenantRoleResource.getAll(null, null, 1,10, null, true);
         assertEquals(200,response.getStatus());
     }
@@ -101,8 +97,7 @@ class TenantRoleResourceTest {
      * Tests response of the get specific association
      */
     @Test
-    @Order(3)
-    void testGetSpecific() {
+    public void test003GetSpecific() {
         Response response = tenantRoleResource.getSpecific(2L,2L,true);
         assertEquals(200,response.getStatus());
     }
@@ -111,8 +106,7 @@ class TenantRoleResourceTest {
      * Tests response from getById method
      */
     @Test
-    @Order(5)
-    void testGetById() {
+    public void test005GetById() {
         Response response = tenantRoleResource.getById(1L);
         assertEquals(200,response.getStatus());
     }
@@ -121,8 +115,7 @@ class TenantRoleResourceTest {
      * Tests response from delete method
      */
     @Test
-    @Order(7)
-    void testDelete() {
+    public void test007Delete() {
         Response response = tenantRoleResource.delete(1L);
         assertEquals(200,response.getStatus());
     }
@@ -131,8 +124,7 @@ class TenantRoleResourceTest {
      * Tests response from save method
      */
     @Test
-    @Order(9)
-    void testSave() {
+    public void test009Save() {
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
         HttpSession session = Mockito.mock(HttpSession.class);
@@ -158,8 +150,7 @@ class TenantRoleResourceTest {
      * Tests response from exists method
      */
     @Test
-    @Order(11)
-    void testExists() throws InvalidArgumentException {
+    public void test011Exists() throws InvalidArgumentException {
         when(tenantRoleBusinessService.existsAssociation(1L, 2L)).
                 thenReturn(Boolean.TRUE);
         when(tenantRoleBusinessService.existsAssociation(1L, 3L)).
@@ -176,8 +167,7 @@ class TenantRoleResourceTest {
      * Tests response from isRoleExistentForUser method
      */
     @Test
-    @Order(17)
-    void testIsRoleExistentForUser() {
+    public void test017IsRoleExistentForUser() {
         Response response = tenantRoleResource.isRoleExistentForUser(1L, "test", 2L);
         assertEquals(200, response.getStatus());
     }
@@ -186,8 +176,7 @@ class TenantRoleResourceTest {
      * Tests response from isAnyRoleExistentForUser method
      */
     @Test
-    @Order(19)
-    void testIsAnyRoleExistentForUser() {
+    public void test019IsAnyRoleExistentForUser() {
         Response response = tenantRoleResource.isAnyRoleExistentForUser(1L,
                 Arrays.asList("test", "test2"), 2L);
         assertEquals(200, response.getStatus());
@@ -197,8 +186,7 @@ class TenantRoleResourceTest {
      * Tests response from isPermissionExistentForUser method
      */
     @Test
-    @Order(21)
-    void testIsPermissionExistentForUser() {
+    public void test021IsPermissionExistentForUser() {
         Response response = tenantRoleResource.isPermissionExistentForUser(1L,
                 2L, 3L);
         assertEquals(200, response.getStatus());
@@ -208,7 +196,7 @@ class TenantRoleResourceTest {
      * Tests response from getIdByTenantRole
      */
     @Test
-    void testGetIdByTenantRole() {
+    public void testGetIdByTenantRole() {
         Response response = tenantRoleResource.getById(1L);
         assertEquals(200,response.getStatus());
     }
@@ -217,7 +205,7 @@ class TenantRoleResourceTest {
      * Tests response from save method when exceptions occur during the processing
      */
     @Test
-    void testSaveNotAllowed() {
+    public void testSaveNotAllowed() {
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
         HttpSession session = Mockito.mock(HttpSession.class);
@@ -245,7 +233,7 @@ class TenantRoleResourceTest {
      * Tests response from update method
      */
     @Test
-    void testUpdate() {
+    public void testUpdate() {
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
         HttpSession session = Mockito.mock(HttpSession.class);
@@ -271,7 +259,7 @@ class TenantRoleResourceTest {
      * Tests response from update method when exceptions occur during the processing
      */
     @Test
-    void testUpdateNotAllowed() {
+    public void testUpdateNotAllowed() {
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
         HttpSession session = Mockito.mock(HttpSession.class);

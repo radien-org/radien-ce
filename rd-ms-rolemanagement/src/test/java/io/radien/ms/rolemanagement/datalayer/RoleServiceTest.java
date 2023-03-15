@@ -18,12 +18,16 @@ package io.radien.ms.rolemanagement.datalayer;
 import io.radien.api.entity.Page;
 import io.radien.api.model.role.SystemRole;
 import io.radien.api.service.role.RoleServiceAccess;
-import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.api.service.role.exception.RoleNotFoundException;
 import io.radien.exception.InvalidArgumentException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
 import io.radien.ms.rolemanagement.entities.RoleEntity;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
@@ -33,31 +37,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.Assert.*;
 
 /**
  * @author Bruno Gama
  */
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class RoleServiceTest {
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+public class RoleServiceTest {
     static Properties p;
     static RoleServiceAccess roleServiceAccess;
     static SystemRole systemRole;
     static EJBContainer container;
 
-    @BeforeAll
-    static void start() throws NamingException, RoleNotFoundException, UniquenessConstraintException, InvalidArgumentException {
+    @BeforeClass
+    public static void start() throws NamingException, RoleNotFoundException, UniquenessConstraintException, InvalidArgumentException {
         p = new Properties();
         p.put("appframeDatabase", "new://Resource?type=DataSource");
         p.put("appframeDatabase.JdbcDriver", "org.hsqldb.jdbcDriver");
@@ -83,23 +76,21 @@ class RoleServiceTest {
         }
     }
 
-    @AfterAll
-    static void stop() {
+    @AfterClass
+    public static void stop() {
         if (container != null) {
             container.close();
         }
     }
 
     @Test
-    @Order(1)
-    void testAddUser() throws RoleNotFoundException {
+    public void test001AddUser() throws RoleNotFoundException {
         SystemRole result = roleServiceAccess.get(systemRole.getId());
         assertNotNull(result);
     }
 
     @Test
-    @Order(2)
-    void testAddDuplicatedUserEmail() {
+    public void test002AddDuplicatedUserEmail() {
         RoleEntity role = createRoleEntity("name", "description", 2L);
         RoleEntity roleDuplicated = createRoleEntity("name", "description", 2L);
 
@@ -119,8 +110,7 @@ class RoleServiceTest {
     }
 
     @Test
-    @Order(3)
-    void testGetById() throws RoleNotFoundException, UniquenessConstraintException, InvalidArgumentException {
+    public void test003GetById() throws RoleNotFoundException, UniquenessConstraintException, InvalidArgumentException {
         RoleEntity role = createRoleEntity("nameGetByID", "descriptionGetByID", 2L);
         roleServiceAccess.create(role);
         SystemRole result = roleServiceAccess.get(role.getId());
@@ -132,14 +122,12 @@ class RoleServiceTest {
     }
 
     @Test
-    @Order(4)
-    void testGetByIdException() {
+    public void test004GetByIdException() {
         assertNull(roleServiceAccess.get(99L));
     }
 
     @Test
-    @Order(5)
-    void testDeleteById() throws RoleNotFoundException {
+    public void test005DeleteById() throws RoleNotFoundException {
         SystemRole result = roleServiceAccess.get(systemRole.getId());
         assertNotNull(result);
         assertEquals(systemRole.getDescription(), result.getDescription());
@@ -149,8 +137,7 @@ class RoleServiceTest {
     }
 
     @Test
-    @Order(6)
-    void testGetByIsExactOrLogical() throws RoleNotFoundException, UniquenessConstraintException, InvalidArgumentException {
+    public void test006GetByIsExactOrLogical() throws RoleNotFoundException, UniquenessConstraintException, InvalidArgumentException {
         SystemRole testById1 = createRoleEntity("name1", "description1", 2L);
         SystemRole testById2 = createRoleEntity("name2Find", "description2Find", 3L);
         SystemRole testById3 = createRoleEntity("name3Find", "description3Find", 4L);
@@ -197,8 +184,7 @@ class RoleServiceTest {
      * @throws UniquenessConstraintException in case of information duplicated (already existent in other records)
      */
     @Test
-    @Order(7)
-    void testUpdate() throws RoleNotFoundException, UniquenessConstraintException, InvalidArgumentException {
+    public void test007Update() throws RoleNotFoundException, UniquenessConstraintException, InvalidArgumentException {
         SystemRole testUpdate1 = createRoleEntity("nameUpdate1", "descriptionUpdate1", 2L);
         SystemRole testUpdate2 = createRoleEntity("nameUpdate2", "descriptionUpdate2", 2L);
 
@@ -216,8 +202,7 @@ class RoleServiceTest {
     }
 
     @Test
-    @Order(8)
-    void testGetAllSearchNotNullSort() throws UniquenessConstraintException, RoleNotFoundException, InvalidArgumentException {
+    public void test008GetAllSearchNotNullSort() throws UniquenessConstraintException, RoleNotFoundException, InvalidArgumentException {
         SystemRole testById1 = createRoleEntity("name12", "description12", 2L);
         roleServiceAccess.create(testById1);
 
@@ -234,8 +219,7 @@ class RoleServiceTest {
     }
 
     @Test
-    @Order(9)
-    void testGetTotalRecordsCount() {
+    public void test009GetTotalRecordsCount() {
         long result = roleServiceAccess.getTotalRecordsCount();
         assertEquals(0, result);
     }

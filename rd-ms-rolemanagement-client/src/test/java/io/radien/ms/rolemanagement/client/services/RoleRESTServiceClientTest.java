@@ -52,7 +52,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -660,8 +659,11 @@ public class RoleRESTServiceClientTest {
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
-
-        assertDoesNotThrow(()-> target.update(role));
+        try {
+            target.update(role);
+        } catch(Exception e) {
+            fail();
+        }
     }
 
     /**

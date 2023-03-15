@@ -17,7 +17,6 @@ package io.radien.spi.themes.providers.themes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.radien.spi.themes.exception.InvalidResponseException;
-import io.radien.spi.themes.gateway.sms.SmsServiceFactory;
 import io.radien.spi.themes.providers.properties.SPIPropertiesProvider;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

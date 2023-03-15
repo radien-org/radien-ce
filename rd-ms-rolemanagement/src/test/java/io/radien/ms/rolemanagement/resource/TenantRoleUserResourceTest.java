@@ -32,13 +32,15 @@ import java.util.Collections;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
+import org.junit.Rule;
+import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -50,7 +52,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Newton Carvalho
  */
-class TenantRoleUserResourceTest {
+public class TenantRoleUserResourceTest {
 
     @InjectMocks
     TenantRoleUserResource tenantRoleUserResource;
@@ -79,16 +81,14 @@ class TenantRoleUserResourceTest {
     @Mock
     UserClient userClient;
 
-    @BeforeEach
-    void before(){
-        MockitoAnnotations.initMocks(this);
-    }
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
 
     /**
      * Tests response from getUsers method
      */
     @Test
-    void testGetUsers() {
+    public void testGetUsers() {
         Response response = tenantRoleUserResource.getAll(1L,1L,
                 2, 3, null, false);
         assertEquals(200, response.getStatus());
@@ -98,7 +98,7 @@ class TenantRoleUserResourceTest {
      * Tests response from getUsers method
      */
     @Test
-    void testGetUsersIds() {
+    public void testGetUsersIds() {
         Response response = tenantRoleUserResource.getAllUserIds(1L,1L,
                 2, 3);
         assertEquals(200, response.getStatus());
@@ -109,7 +109,7 @@ class TenantRoleUserResourceTest {
      * UnAssignedUserTenantRoles
      */
     @Test
-    void testUnAssignUserTenantRoles() {
+    public void testUnAssignUserTenantRoles() {
         Response response = tenantRoleUserResource.unAssignUser(1L, Arrays.asList(1L, 2L),1L);
         assertEquals(200, response.getStatus());
     }
@@ -118,7 +118,7 @@ class TenantRoleUserResourceTest {
      * Tests response from assignUser method
      */
     @Test
-    void testAssignUser() {
+    public void testAssignUser() {
 
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
@@ -146,7 +146,7 @@ class TenantRoleUserResourceTest {
      * Tests response from getTenants method
      */
     @Test
-    void testGetTenants() {
+    public void testGetTenants() {
         Response response = tenantRoleUserResource.getTenants(1L, 2L);
         assertEquals(200, response.getStatus());
     }
@@ -155,7 +155,7 @@ class TenantRoleUserResourceTest {
      * Tests response from unassignUser method
      */
     @Test
-    void testUnAssignUser() {
+    public void testUnAssignUser() {
         Response response = tenantRoleUserResource.unAssignUser(1L,
                 Collections.singletonList(2L), 3L);
         assertEquals(200, response.getStatus());
@@ -165,7 +165,7 @@ class TenantRoleUserResourceTest {
      * Tests response from delete method
      */
     @Test
-    void testDelete() {
+    public void testDelete() {
         Response response = tenantRoleUserResource.delete(1L);
         assertEquals(200,response.getStatus());
     }
@@ -174,7 +174,7 @@ class TenantRoleUserResourceTest {
      * Tests response from update method
      */
     @Test
-    void testUpdateTenantRoleUser() {
+    public void testUpdateTenantRoleUser() {
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
         HttpSession session = mock(HttpSession.class);
@@ -201,7 +201,7 @@ class TenantRoleUserResourceTest {
      * Tests response from getSpecfic method
      */
     @Test
-    void testGetTenantRoleUsers() {
+    public void testGetTenantRoleUsers() {
         Response response = tenantRoleUserResource.getSpecific(1L,1L,
                 false);
         assertEquals(200, response.getStatus());
@@ -211,7 +211,7 @@ class TenantRoleUserResourceTest {
      * Tests response from getById method
      */
     @Test
-    void testGetById() {
+    public void testGetById() {
         long id = 1L;
         SystemTenantRoleUser m = mock(SystemTenantRoleUser.class);
         doReturn(m).when(tenantRoleUserServiceAccess).get(id);
@@ -223,7 +223,7 @@ class TenantRoleUserResourceTest {
      * Tests response from getRoles method
      */
     @Test
-    void testGetRoles() {
+    public void testGetRoles() {
         Response response = tenantRoleUserResource.getRolesForUserTenant(1L, 1L);
         assertEquals(200, response.getStatus());
     }

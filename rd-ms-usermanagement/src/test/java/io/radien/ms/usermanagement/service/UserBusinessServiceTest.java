@@ -35,10 +35,13 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import static io.radien.api.SystemVariables.LOGON;
 import static io.radien.api.SystemVariables.NEW_PASSWORD;
@@ -69,10 +72,9 @@ public class UserBusinessServiceTest {
     /**
      * Prepares required mock objects
      */
-    @Before
-    public void setUp(){
-        MockitoAnnotations.initMocks(this);
-    }
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
 
     /**
      * Test for method {@link UserBusinessService#getUserId(String)}

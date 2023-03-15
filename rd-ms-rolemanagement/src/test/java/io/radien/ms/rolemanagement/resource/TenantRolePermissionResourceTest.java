@@ -30,21 +30,20 @@ import io.radien.ms.rolemanagement.datalayer.TenantRolePermissionService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+
+import org.junit.FixMethodOrder;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -54,8 +53,8 @@ import static org.mockito.Mockito.when;
  *
  * @author Newton Carvalho
  */
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class TenantRolePermissionResourceTest {
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+public class TenantRolePermissionResourceTest {
 
     @InjectMocks
     TenantRolePermissionResource tenantRolePermissionResource;
@@ -84,17 +83,14 @@ class TenantRolePermissionResourceTest {
     @Mock
     UserClient userClient;
 
-    @BeforeEach
-    void before(){
-        MockitoAnnotations.initMocks(this);
-    }
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
 
     /**
      * Tests response from assignPermission method
      */
     @Test
-    @Order(1)
-    void testAssignPermission() {
+    public void test001AssignPermission() {
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
         HttpSession session = Mockito.mock(HttpSession.class);
@@ -121,8 +117,7 @@ class TenantRolePermissionResourceTest {
      * Tests response from unassignPermission method
      */
     @Test
-    @Order(3)
-    void testUnAssignPermission() {
+    public void test003UnAssignPermission() {
         Response response = tenantRolePermissionResource.unAssignPermission(1L,
                 2L, 3L);
         assertEquals(200, response.getStatus());
@@ -132,8 +127,7 @@ class TenantRolePermissionResourceTest {
      * Tests response from delete method
      */
     @Test
-    @Order(5)
-    void testDelete() {
+    public void test005Delete() {
         Response response = tenantRolePermissionResource.delete(1L);
         assertEquals(200,response.getStatus());
     }
@@ -142,8 +136,7 @@ class TenantRolePermissionResourceTest {
      * Tests response from getAll method
      */
     @Test
-    @Order(7)
-    void testGetAll() {
+    public void test007GetAll() {
         Response response = tenantRolePermissionResource.getAll(1L,1L,
                 2, 3, null, false);
         assertEquals(200, response.getStatus());
@@ -154,8 +147,7 @@ class TenantRolePermissionResourceTest {
      * Tests response from getAll method
      */
     @Test
-    @Order(9)
-    void testGetTenantRolePermissions() {
+    public void test009GetTenantRolePermissions() {
         Response response = tenantRolePermissionResource.getSpecific(1L,1L,
                 false);
         assertEquals(200, response.getStatus());
@@ -165,8 +157,7 @@ class TenantRolePermissionResourceTest {
      * Tests response from update method
      */
     @Test
-    @Order(11)
-    void testUpdatePermission() {
+    public void test011UpdatePermission() {
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
         HttpSession session = Mockito.mock(HttpSession.class);
@@ -193,8 +184,7 @@ class TenantRolePermissionResourceTest {
      * Tests response from getById method
      */
     @Test
-    @Order(15)
-    void testGetById() {
+    public void test015GetById() {
         long id = 1L;
         SystemTenantRolePermission m = mock(SystemTenantRolePermission.class);
         doReturn(m).when(tenantRolePermissionService).get(id);

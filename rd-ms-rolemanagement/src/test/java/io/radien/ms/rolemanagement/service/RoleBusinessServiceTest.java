@@ -22,28 +22,26 @@ import io.radien.api.service.role.exception.RoleNotFoundException;
 import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.rolemanagement.client.entities.RoleSearchFilter;
 import io.radien.ms.rolemanagement.client.services.RoleFactory;
+import org.junit.Rule;
+import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 /**
  * @author Bruno Gama
  */
-class RoleBusinessServiceTest {
+public class RoleBusinessServiceTest {
 
     @InjectMocks
     @Spy
@@ -51,13 +49,11 @@ class RoleBusinessServiceTest {
     @Mock
     RoleServiceAccess roleServiceAccess;
 
-    @BeforeEach
-    public void setUp(){
-        MockitoAnnotations.initMocks(this);
-    }
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
 
     @Test
-    void testGetAll() {
+    public void testGetAll() {
         Page<SystemRole> p = new Page<>(new ArrayList<>(),-1,0,0);
         when(roleServiceAccess.getAll(null, 1, 10, null, false)).thenReturn(p);
         Page<? extends SystemRole> result = roleBusinessService.getAll(null, 1,10, null, false);
@@ -65,14 +61,14 @@ class RoleBusinessServiceTest {
     }
 
     @Test
-    void testGetSpecificRoles() {
+    public void testGetSpecificRoles() {
         List<? extends SystemRole> list = roleBusinessService.getSpecificRoles(new RoleSearchFilter
                 ("name", "description", new ArrayList<>(), true, true));
         assertEquals(0,list.size());
     }
 
     @Test
-    void testGetById() throws RoleNotFoundException {
+    public void testGetById() throws RoleNotFoundException {
         SystemRole systemRole = RoleFactory.create("name", "description", 4L);
         when(roleServiceAccess.get(any(Long.class))).thenReturn(systemRole);
         SystemRole result = roleBusinessService.getById(3L);
@@ -80,7 +76,7 @@ class RoleBusinessServiceTest {
     }
 
     @Test
-    void testDelete() {
+    public void testDelete() {
         Role u = RoleFactory.create("name", "description", 4L);
         u.setId(2L);
         when(roleServiceAccess.delete(anyLong())).thenReturn(true);
@@ -100,7 +96,7 @@ class RoleBusinessServiceTest {
      * Test for method {@link RoleBusinessService#create(Role)}
      */
     @Test
-    void testCreate() {
+    public void testCreate() {
         Role u = RoleFactory.create("name", "description", 4L);
         boolean success;
         try{
@@ -116,7 +112,7 @@ class RoleBusinessServiceTest {
      * Test for method {@link RoleBusinessService#update(Long, Role)}
      */
     @Test
-    void testUpdate() {
+    public void testUpdate() {
         Role u = RoleFactory.create("name", "description", 4L);
         u.setId(111L);
         boolean success;
@@ -130,7 +126,7 @@ class RoleBusinessServiceTest {
     }
 
     @Test
-    void testGetTotalRecordsCount() {
+    public void testGetTotalRecordsCount(){
         boolean success = false;
         Long l = 30L;
         try{

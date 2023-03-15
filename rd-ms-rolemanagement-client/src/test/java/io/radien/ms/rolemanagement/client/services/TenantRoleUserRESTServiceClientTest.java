@@ -52,12 +52,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -824,12 +819,19 @@ public class TenantRoleUserRESTServiceClientTest {
         TenantRoleUserResourceClient client = Mockito.mock(TenantRoleUserResourceClient.class);
 
         when(client.getRolesForUserTenant(1L, 1L)).thenReturn(response);
-        assertDoesNotThrow(() -> when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).
-                thenReturn(client));
-
-        List<? extends SystemRole> result = assertDoesNotThrow(() -> target.getRolesForUserTenant(1L, 1L));
-        assertNotNull(result);
-        assertFalse(result.isEmpty());
+        try {
+            when(roleServiceUtil.getTenantRoleUserResourceClient(getRoleManagementUrl())).
+                    thenReturn(client);
+        } catch(Exception e) {
+            fail();
+        }
+        try {
+            List<? extends SystemRole> result = target.getRolesForUserTenant(1L, 1L);
+            assertNotNull(result);
+            assertFalse(result.isEmpty());
+        } catch(Exception e) {
+            fail();
+        }
     }
 
     /**

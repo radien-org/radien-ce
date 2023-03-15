@@ -15,11 +15,9 @@
  */
 package io.radien.ms.rolemanagement.service;
 
-import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
-import io.radien.api.model.user.SystemUser;
 import io.radien.api.service.role.RoleServiceAccess;
 import io.radien.api.service.role.exception.RoleException;
 import io.radien.api.service.role.exception.TenantRoleUserNotFoundException;
@@ -36,14 +34,11 @@ import io.radien.ms.rolemanagement.entities.TenantRoleUserEntity;
 
 import java.util.*;
 
-import io.radien.ms.usermanagement.client.entities.User;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -90,10 +85,11 @@ public class TenantRoleUserBusinessServiceTest {
     List<Long> tenantRoleUserIds;
 
 
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
 
     @Before
     public void setUp(){
-        MockitoAnnotations.initMocks(this);
         roleIds = new HashSet<>( Arrays.asList(3L, 4L));
         tenantRoleIds.add(5L);
         tenantRoleUserIds = Arrays.asList(6L, 7L);
@@ -107,13 +103,6 @@ public class TenantRoleUserBusinessServiceTest {
     }
 
     @Test
-    public void testGetNotFound() {
-        when(tenantRoleUserServiceAccess.get(anyLong()))
-                .thenReturn(null);
-        assertThrows(TenantRoleUserNotFoundException.class, () -> tenantRoleUserBusinessService.get(1L));
-    }
-
-    @Test
     public void testGetAll() {
         Page<SystemTenantRoleUser> result = new Page<>(new ArrayList<>(), 1, 1, 1);
         when(tenantRoleUserServiceAccess.getAll(anyLong(), anyLong(), anyInt(), anyInt(), anyList(), anyBoolean()))
@@ -121,6 +110,15 @@ public class TenantRoleUserBusinessServiceTest {
 
         assertEquals(result, tenantRoleUserBusinessService.getAll(1L, 1L, 1, 1, new ArrayList<>(), false));
     }
+
+
+    @Test
+    public void testGetNotFound() {
+        when(tenantRoleUserServiceAccess.get(anyLong()))
+                .thenReturn(null);
+        assertThrows(TenantRoleUserNotFoundException.class, () -> tenantRoleUserBusinessService.get(1L));
+    }
+
 
     @Test
     public void testGetAllUserIds() {
@@ -507,10 +505,10 @@ public class TenantRoleUserBusinessServiceTest {
     @Test
     public void testCheckIfUserIsLocked() throws SystemException {
         when(userRESTServiceAccess.isProcessingLocked(0L)).thenReturn(false);
-        assertEquals(false, tenantRoleUserBusinessService.checkIfUserIsLocked(0L));
+        assertFalse(tenantRoleUserBusinessService.checkIfUserIsLocked(0L));
 
         when(userRESTServiceAccess.isProcessingLocked(0L)).thenReturn(true);
-        assertEquals(true, tenantRoleUserBusinessService.checkIfUserIsLocked(0L));
+        assertTrue(tenantRoleUserBusinessService.checkIfUserIsLocked(0L));
     }
 
 

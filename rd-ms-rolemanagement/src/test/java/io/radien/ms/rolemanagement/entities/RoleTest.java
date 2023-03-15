@@ -1,14 +1,10 @@
 package io.radien.ms.rolemanagement.entities;
 
+import org.junit.Test;
+
 import java.util.Date;
 
-import org.junit.jupiter.api.Test;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.Assert.*;
 
 public class RoleTest {
     RoleEntity role;
