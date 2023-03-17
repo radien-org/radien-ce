@@ -5,9 +5,6 @@ import useAssignedTenants from "@/hooks/useAssignedTenants";
 import useCheckPermissions from "@/hooks/useCheckPermissions";
 import useSetActiveTenant from "@/hooks/useSetActiveTenant";
 import { QueryClient } from "react-query";
-import axios from "axios";
-import { signOut } from "next-auth/react";
-import { QueryKeys } from "@/consts";
 import { ButtonDropdownProps, TopNavigationProps } from "@cloudscape-design/components";
 import ThemeToggle from "@/components/Header/ThemeToggle";
 import { Tenant } from "radien";
@@ -28,7 +25,7 @@ export default function LoggedInHeader({ topNavigationProps, localeClicked, i18n
         user: { isLoading: isLoadingUser, data: usersViewPermission },
         permission: { isLoading: isLoadingPermission, data: permissionViewPermission },
         tenant: { isLoading: isLoadingTenant, data: tenantViewPermission },
-        tenantAdmin: { data: isTenantAdmin, isLoading: isTenantAdminLoading}
+        tenantAdmin: { data: isTenantAdmin, isLoading: isTenantAdminLoading },
     } = useCheckPermissions(radienUser?.id!, activeTenant?.tenantId!);
     const setActiveTenant = useSetActiveTenant();
     const queryClient: QueryClient = new QueryClient();
