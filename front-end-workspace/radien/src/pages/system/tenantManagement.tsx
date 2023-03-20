@@ -6,10 +6,18 @@ import { QueryKeys } from "@/consts";
 import { RadienContext } from "@/context/RadienContextProvider";
 import useDeleteTenant from "@/hooks/useDeleteTenant";
 import usePaginatedTenants from "@/hooks/usePaginatedTenants";
+import { useRouter } from "next/router";
+import useActiveTenant from "@/hooks/useActiveTenant";
+import useAvailableTenants from "@/hooks/useAvailableTenants";
+
+
 
 export default function TenantManagement() {
+    const router = useRouter();
     const { i18n } = useContext(RadienContext);
     const deleteTenant = useDeleteTenant();
+    const { activeTenant } = useContext(RadienContext)
+
 
     const colDefinition: TableProps.ColumnDefinition<Tenant>[] = [
         {
@@ -100,7 +108,11 @@ export default function TenantManagement() {
                 columnDefinitions={colDefinition}
                 getPaginated={(pageNumber, pageSize) => usePaginatedTenants({ pageNo: pageNumber, pageSize })}
                 viewActionProps={{}}
-                createActionProps={{}}
+                createActionProps={{
+                    createLabel: i18n?.tenant_management_create_label || "Create Tenant",
+                    createAction: () => {
+                        router.push("/tenant/createTenant");
+                    },}}
                 deleteActionProps={{
                     deleteLabel: i18n?.tenant_management_delete_label || "Delete Tenant",
                     deleteConfirmationText: (selectedTenant) =>
