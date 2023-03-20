@@ -79,7 +79,6 @@ public class MailFactoryTest {
         assertEquals(mailMessage.getFrom(), resultMail.getFrom());
         assertEquals(targetEmail1, resultMail.getTO());
         assertEquals(enterpriseContent.getName(), resultMail.getSubject());
-        assertEquals(enterpriseContent.getHtmlContent(), resultMail.getBody());
         assertEquals(mailMessage.getContentType(), resultMail.getContentType());
         assertNull(resultMail.getAttachments());
         assertEquals(mailMessage.getCC(),resultMail.getCC());

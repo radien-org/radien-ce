@@ -41,18 +41,37 @@ class MailFactory extends AbstractMailFactory {
     private OAFAccess baseApp;
 
     @Override
+    protected String getAnchorStyle() {
+        return "a  color: #5D5D9E; }" +
+                "\n" +
+                "a:hover { color: #B2B3B4; }";
+    }
+
+    @Override
     protected String getHTMLBodyStyle() {
-        return "body { margin: 0px; padding: 0px; background: #292929 ; font-family: Arial, Helvetica, sans-serif; color: #5B5B5B; }";
+        return "body { width: 100%;  min-height: 70px; max-width: 1024px; margin: 10px; display: block; }";
+    }
+
+    @Override
+    protected String getImgStyle() {
+        return "img { display: block; margin: auto; width: 25%; }";
+    }
+
+    @Override
+    protected String getContentStyle() {
+        return "#subject { display: block; text-align: center; font-size: 16pt; font-family: Segoe, 'Segoe UI', 'Helvetica Neue', sans-serif; font-weight: bold; margin-bottom: 1em; } " +
+                "\n" +
+                "#body { font-size: 12pt; font-family: Segoe, 'Segoe UI', 'Helvetica Neue', sans-serif; line-height: 1.5; }";
     }
 
     @Override
     protected String getHTMLContentWrapperStyle() {
-        return ".content-wrapper { border: 1px solid #000; background-color: white; font-family: Verdana,Arial,sans-serif; width: 80%; margin: 0 auto; }";
+        return ".content-wrapper { min-height: 70px; max-width: 1024px;}";
     }
 
     @Override
     protected String getHTMLFooterStyle() {
-        return ".footer { font-family: Verdana,Arial,sans-serif; font-size: 10px; }";
+        return ".footer { font-size: 10pt; font-family: Segoe, 'Segoe UI', 'Helvetica Neue', sans-serif; margin-top: 3em; }";
     }
 
 
@@ -66,7 +85,7 @@ class MailFactory extends AbstractMailFactory {
 
     @Override
     public Mail create(String targetEmail, SystemMailTemplate template) {
-                return create(baseApp.getProperty(OAFProperties.SYS_MAIL_FROM_SYSTEM_ADMIN), targetEmail,
+        return create(baseApp.getProperty(OAFProperties.SYS_MAIL_FROM_SYSTEM_ADMIN), targetEmail,
                 MailMessage.createSubject(template), MailMessage.of(template), MailContentType.HTML);
     }
 

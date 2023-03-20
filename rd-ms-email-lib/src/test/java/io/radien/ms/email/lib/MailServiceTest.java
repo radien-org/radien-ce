@@ -52,7 +52,7 @@ public class MailServiceTest {
     }
 
     @AfterClass
-    public static final void destroy(){
+    public static void destroy(){
         if(transport!=null) {
             transport.close();
         }
