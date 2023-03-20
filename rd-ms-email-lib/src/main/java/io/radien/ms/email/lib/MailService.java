@@ -195,19 +195,19 @@ public class MailService implements MailServiceAccess {
     }
 
     @Override
-    public Mail create(String from, String tO, String subject, String body, MailContentType contentType){
-        return mailFactory.create(from, tO, subject, body, contentType);
+    public Mail create(String from, String tO, String subject, String logoHtml, String body, MailContentType contentType){
+        return mailFactory.create(from, tO, subject, logoHtml, body, contentType);
     }
 
     @Override
-    public Mail create(String from, List<String> tO, String subject, String body, MailContentType contentType){
-        return mailFactory.create(from, tO, subject, body, contentType);
+    public Mail create(String from, List<String> tO, String subject, String logoHtml, String body, MailContentType contentType){
+        return mailFactory.create(from, tO, subject, logoHtml, body, contentType);
     }
 
     @Override
-    public Mail create(String from, List<String> tO, String subject, String body, MailContentType contentType,
+    public Mail create(String from, List<String> tO, String subject, String logoHtml, String body, MailContentType contentType,
                        Map<String, RemoteInputStream> attachments, List<String> cC, List<String> bCC){
-        return mailFactory.create(from, tO, subject, body, contentType, attachments, cC, bCC);
+        return mailFactory.create(from, tO, subject, logoHtml, body, contentType, attachments, cC, bCC);
     }
 
 }

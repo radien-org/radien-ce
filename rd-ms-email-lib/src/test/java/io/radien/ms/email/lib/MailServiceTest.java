@@ -190,8 +190,8 @@ public class MailServiceTest {
 
         Mail mail = new MailMessage("something@something", tO,"Subject","Body",
                 MailContentType.HTML,attachments,cC,bCC);
-        when(mailFactory.create(from,t1,subject,body,MailContentType.HTML)).thenReturn(mail);
-        assertEquals(mail, target.create(from,t1,subject,body,MailContentType.HTML));
+        when(mailFactory.create(from,t1,subject, null, body,MailContentType.HTML)).thenReturn(mail);
+        assertEquals(mail, target.create(from,t1,subject,null,body,MailContentType.HTML));
     }
 
     @Test
@@ -214,8 +214,8 @@ public class MailServiceTest {
 
         Mail mail = new MailMessage("something@something", tO,"Subject","Body",
                 MailContentType.HTML,attachments,cC,bCC);
-        when(mailFactory.create(from,tO,subject,body,MailContentType.HTML)).thenReturn(mail);
-        assertEquals(mail, target.create(from,tO,subject,body,MailContentType.HTML));
+        when(mailFactory.create(from,tO,subject,null,body,MailContentType.HTML)).thenReturn(mail);
+        assertEquals(mail, target.create(from,tO,subject,null,body,MailContentType.HTML));
     }
 
     @Test
@@ -238,7 +238,7 @@ public class MailServiceTest {
 
         Mail mail = new MailMessage("something@something", tO,"Subject","Body",
                 MailContentType.HTML,attachments,cC,bCC);
-        when(mailFactory.create(from,tO,subject,body,MailContentType.HTML,attachments, cC,bCC)).thenReturn(mail);
-        assertEquals(mail, target.create(from,tO,subject,body,MailContentType.HTML,attachments, cC, bCC));
+        when(mailFactory.create(from,tO,subject,null,body,MailContentType.HTML,attachments, cC,bCC)).thenReturn(mail);
+        assertEquals(mail, target.create(from,tO,subject,null,body,MailContentType.HTML,attachments, cC, bCC));
     }
 }

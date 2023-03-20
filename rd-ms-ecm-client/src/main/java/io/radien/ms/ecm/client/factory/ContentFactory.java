@@ -114,6 +114,7 @@ public class ContentFactory {
         if (contentType != null && contentType.equalsIgnoreCase(ContentType.DOCUMENT.key())) {
             getFileResource(json, content);
         }
+        getImageResource(json, content);
         return content;
     }
 
@@ -189,6 +190,24 @@ public class ContentFactory {
                 byte[] bArray = ArrayUtils.toPrimitive(bytes);
                 content.setFileSize(bArray.length);
                 content.setFile(bArray);
+            }
+        } catch (Exception e) {
+            log.warn("Error converting json object", e);
+        }
+    }
+
+    private static void getImageResource(JSONObject json, EnterpriseContent content) {
+        try {
+            String imageString =  json.get("image") == null ? null : json.get("image").toString();
+
+            if(imageString != null && imageString.contains(",")) {
+                String file = imageString.substring(1, imageString.length() - 1);
+                List<Byte> stringList = Arrays.stream(file.split(",")).map(Byte::valueOf).collect(Collectors.toList());
+                Byte[] bytes = stringList.toArray(new Byte[stringList.size()]);
+                byte[] bArray = ArrayUtils.toPrimitive(bytes);
+                content.setImageMimeType(tryGetJsonProperty(json, "imageMimeType"));
+                content.setImageName(tryGetJsonProperty(json, "imageName"));
+                content.setImage(bArray);
             }
         } catch (Exception e) {
             log.warn("Error converting json object", e);

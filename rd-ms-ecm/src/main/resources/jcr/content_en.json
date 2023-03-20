@@ -7,7 +7,7 @@
     "system": "true",
     "name": "Contact",
     "htmlContent": "For any information please contact us through the email <a href=mailto:m.weiland@radien.io> m.weiland@radien.io</a>",
-    "image": "logo.png",
+    "image": "imgs/logo.png",
     "tags": ["Radien"]
   },
   {
@@ -18,7 +18,7 @@
     "system": "true",
     "name": "radien - Email change confirmation",
     "htmlContent": "An email change has been requested from your account:</br></br>Current email: <b>$currentEmail$</b></br>New email: <b>$newEmail$</b></br></br>To apply this change, click <a href='$confirmationURL$'>this link</a> within the next 5 minutes.",
-    "image": "logo.png",
+    "image": "imgs/logo.png",
     "tags": ["Radien", "email"]
   },
   {
@@ -29,7 +29,7 @@
     "system": "true",
     "name": "radien - GDRP Art. 15 - Right of Access Confirmation",
     "htmlContent": "Dear $firstName$ $lastName$, </br>If you requested your personal data from $portalUrl$, please click on the verify button below. </br>Ignore this email, if you did not request the data. </br> <a href='$targetUrl$'>Confirmation</a>",
-    "image": "logo.png",
+    "image": "imgs/logo.png",
     "tags": ["Radien", "email", "GDPR"]
   },
   {
@@ -40,7 +40,7 @@
     "system": "true",
     "name": "radien - Tenant Request",
     "htmlContent": "Dear Administrator of $tenantName$, </br>user $firstName$ $lastName$ with UID $userId$ has requested access to $tenantName$ Tenant. </br>Please take required action in <a href='$targetUrl$'>Approvals Page</a>",
-    "image": "logo.png",
+    "image": "imgs/logo.png",
     "tags": ["Radien", "email", "GDPR"]
   },
   {
@@ -51,7 +51,7 @@
     "system": "true",
     "name": "radien - Tenant Assignment",
     "htmlContent": "Dear $firstName$ $lastName$, </br>You have been provided access to $tenantName$ Tenant with the following role(s): $roleList$.",
-    "image": "logo.png",
+    "image": "imgs/logo.png",
     "tags": ["Radien", "email", "GDPR"]
   },
   {
@@ -72,7 +72,7 @@
     "active": "true",
     "system": "true",
     "name": "TermsAndConditions",
-    "image": "logo.png",
+    "image": "imgs/logo.png",
     "parentPath": "/protec/protec_documents/legal_documents/termsAndConditions",
     "file": "legal_documents/DS-Hinweise Pro-Tec.pdf",
     "versionable": "true",
@@ -90,7 +90,7 @@
     "active": "true",
     "system": "true",
     "name": "LegalDataPolicy",
-    "image": "logo.png",
+    "image": "imgs/logo.png",
     "parentPath": "/protec/protec_documents/legal_documents/legalData",
     "file": "legal_documents/Nutzungsbedingungen.pdf",
     "versionable": "true",

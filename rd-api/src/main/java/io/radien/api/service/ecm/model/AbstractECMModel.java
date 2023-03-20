@@ -42,7 +42,7 @@ public abstract class AbstractECMModel extends AbstractModel {
 
 	private String app;
 
-	protected transient byte[] image;
+	protected byte[] image;
 	protected transient byte[] fileStream;
 	protected String mimeType;
 	protected long fileSize;

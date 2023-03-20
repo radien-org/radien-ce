@@ -70,7 +70,7 @@ public class MailFactoryTest {
         Mail resultMail = target.create(targetEmail,systemMailTemplate);
 
         AbstractMailFactory mailFactory = Mockito.mock(AbstractMailFactory.class);
-        when(mailFactory.create(mailMessage.getFrom(),tO,"subject","Body",mailContentType,null,
+        when(mailFactory.create(mailMessage.getFrom(),tO,"subject",null, "Body",mailContentType,null,
                 mailMessage.getCC(),mailMessage.getBCC())).thenReturn(resultMail);
 
         resultMail.setCC(mailMessage.getCC());

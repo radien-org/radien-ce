@@ -24,10 +24,12 @@ import io.radien.api.service.mail.model.Mail;
 import io.radien.api.service.mail.model.MailContentType;
 import io.radien.api.service.mail.model.SystemMailTemplate;
 
+import java.text.MessageFormat;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.geronimo.mail.util.Base64;
 
 /**
  * Default implementation of the {@link AbstractMailFactory}
@@ -54,12 +56,12 @@ class MailFactory extends AbstractMailFactory {
 
     @Override
     protected String getImgStyle() {
-        return "img { display: block; margin: auto; width: 25%; }";
+        return "img { display: block; margin: auto; }";
     }
 
     @Override
     protected String getContentStyle() {
-        return "#subject { display: block; text-align: center; font-size: 16pt; font-family: Segoe, 'Segoe UI', 'Helvetica Neue', sans-serif; font-weight: bold; margin-bottom: 1em; } " +
+        return "#subject { display: block; text-align: center; font-size: 14pt; font-family: Segoe, 'Segoe UI', 'Helvetica Neue', sans-serif; font-weight: bold; margin-bottom: 1em; } " +
                 "\n" +
                 "#body { font-size: 12pt; font-family: Segoe, 'Segoe UI', 'Helvetica Neue', sans-serif; line-height: 1.5; }";
     }
@@ -79,28 +81,36 @@ class MailFactory extends AbstractMailFactory {
     @Override
     public Mail create(SystemUser user, SystemMailTemplate template) {
         String email = user.getUserEmail() == null ? user.getLogon() : user.getUserEmail();
+        String logoHtml = template.getContent().getImageName() == null ? null : MessageFormat.format("<img src=\"data:image/png;base64,{0}\" />",
+                new String(Base64.encode(template.getContent().getImage())));
         return create(baseApp.getProperty(OAFProperties.SYS_MAIL_FROM_SYSTEM_ADMIN), email,
-                MailMessage.createSubject(template), MailMessage.of(template), MailContentType.HTML);
+                MailMessage.createSubject(template), logoHtml, MailMessage.of(template), MailContentType.HTML);
     }
 
     @Override
     public Mail create(String targetEmail, SystemMailTemplate template) {
+        String logoHtml = template.getContent().getImageName() == null ? null : MessageFormat.format("<img src=\"data:image/png;base64,{0}\" />",
+                new String(Base64.encode(template.getContent().getImage())));
         return create(baseApp.getProperty(OAFProperties.SYS_MAIL_FROM_SYSTEM_ADMIN), targetEmail,
-                MailMessage.createSubject(template), MailMessage.of(template), MailContentType.HTML);
+                MailMessage.createSubject(template), logoHtml, MailMessage.of(template), MailContentType.HTML);
     }
 
     @Override
     public Mail create(List<SystemUser> user, SystemMailTemplate template) {
+        String logoHtml = template.getContent().getImageName() == null ? null : MessageFormat.format("<img src=\"data:image/png;base64,{0}\" />",
+                new String(Base64.encode(template.getContent().getImage())));
         List<String> to = new ArrayList<>();
         user.forEach(u -> to.add(u.getUserEmail()));
         return create(baseApp.getProperty(OAFProperties.SYS_MAIL_FROM_SYSTEM_ADMIN), to,
-                MailMessage.createSubject(template), MailMessage.of(template), MailContentType.HTML);
+                MailMessage.createSubject(template), logoHtml, MailMessage.of(template), MailContentType.HTML);
     }
 
     @Override
     public Mail create(SystemMailTemplate template, List<String> receiverEmails) {
+        String logoHtml = template.getContent().getImageName() == null ? null : MessageFormat.format("<img src=\"data:image/png;base64,{0}\" />",
+                new String(Base64.encode(template.getContent().getImage())));
         return create(baseApp.getProperty(OAFProperties.SYS_MAIL_FROM_SYSTEM_ADMIN), receiverEmails,
-                MailMessage.createSubject(template), MailMessage.of(template), MailContentType.HTML);
+                MailMessage.createSubject(template), logoHtml, MailMessage.of(template), MailContentType.HTML);
     }
 
     @Override

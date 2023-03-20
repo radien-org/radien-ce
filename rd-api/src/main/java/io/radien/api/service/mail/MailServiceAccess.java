@@ -86,7 +86,7 @@ public interface MailServiceAccess extends ServiceAccess {
 	 * @param contentType of the email
 	 * @return email object to be sent
 	 */
-	Mail create(String from, String tO, String subject, String body, MailContentType contentType);
+	Mail create(String from, String tO, String subject, String logoHtml, String body, MailContentType contentType);
 
 	/**
 	 * Mail service creation constructor
@@ -97,7 +97,7 @@ public interface MailServiceAccess extends ServiceAccess {
 	 * @param contentType of the email
 	 * @return email object to be sent
 	 */
-	Mail create(String from, List<String> tO, String subject, String body, MailContentType contentType);
+	Mail create(String from, List<String> tO, String subject, String logoHtml, String body, MailContentType contentType);
 
 	/**
 	 * Mail service creation constructor
@@ -111,6 +111,6 @@ public interface MailServiceAccess extends ServiceAccess {
 	 * @param bCC to be sent to
 	 * @return email object to be sent
 	 */
-	Mail create(String from, List<String> tO, String subject, String body, MailContentType contentType,
+	Mail create(String from, List<String> tO, String subject, String logoHtml, String body, MailContentType contentType,
 				Map<String, RemoteInputStream> attachments, List<String> cC, List<String> bCC);
 }
