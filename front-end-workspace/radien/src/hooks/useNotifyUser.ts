@@ -2,7 +2,7 @@ import { useMutation } from "react-query";
 import axios from "axios";
 
 interface NotificationArgs {
-    email: string;
+    email: string | undefined;
     params: any;
     viewId: string;
     language?: string;

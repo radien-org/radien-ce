@@ -23,13 +23,7 @@ export default function RoleManagement() {
             header: i18n?.role_management_column_description || "Description",
             cell: (item: Role) => item?.description || "-",
             sortingField: "description",
-        },
-        {
-            id: "terminationDate",
-            header: i18n?.role_management_column_termination_date || "Termination Date",
-            cell: (item: Role) => item?.terminationDate.toString().substring(0, item?.terminationDate.toString().indexOf("T")) || "-",
-            sortingField: "terminationDate",
-        },
+        }
     ];
 
     return (

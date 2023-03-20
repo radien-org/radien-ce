@@ -8,9 +8,7 @@
     "name": "Contact",
     "htmlContent": "For any information please contact us through the email <a href=mailto:m.weiland@radien.io> m.weiland@radien.io</a>",
     "image": "logo.png",
-    "tags": [
-      "Radien"
-    ]
+    "tags": ["Radien"]
   },
   {
     "viewId": "email-3",
@@ -21,10 +19,7 @@
     "name": "radien - Email change confirmation",
     "htmlContent": "An email change has been requested from your account:</br></br>Current email: <b>$currentEmail$</b></br>New email: <b>$newEmail$</b></br></br>To apply this change, click <a href='$confirmationURL$'>this link</a> within the next 5 minutes.",
     "image": "logo.png",
-    "tags": [
-      "Radien",
-      "email"
-    ]
+    "tags": ["Radien", "email"]
   },
   {
     "viewId": "email-7",
@@ -35,11 +30,7 @@
     "name": "radien - GDRP Art. 15 - Right of Access Confirmation",
     "htmlContent": "Dear $firstName$ $lastName$, </br>If you requested your personal data from $portalUrl$, please click on the verify button below. </br>Ignore this email, if you did not request the data. </br> <a href='$targetUrl$'>Confirmation</a>",
     "image": "logo.png",
-    "tags": [
-      "Radien",
-      "email",
-      "GDPR"
-    ]
+    "tags": ["Radien", "email", "GDPR"]
   },
   {
     "viewId": "email-8",
@@ -50,11 +41,7 @@
     "name": "radien - Tenant Request",
     "htmlContent": "Dear Administrator of $tenantName$, </br>user $firstName$ $lastName$ with UID $userId$ has requested access to $tenantName$ Tenant. </br>Please take required action in <a href='$targetUrl$'>Approvals Page</a>",
     "image": "logo.png",
-    "tags": [
-      "Radien",
-      "email",
-      "GDPR"
-    ]
+    "tags": ["Radien", "email", "GDPR"]
   },
   {
     "viewId": "email-9",
@@ -65,11 +52,18 @@
     "name": "radien - Tenant Assignment",
     "htmlContent": "Dear $firstName$ $lastName$, </br>You have been provided access to $tenantName$ Tenant with the following role(s): $roleList$.",
     "image": "logo.png",
-    "tags": [
-      "Radien",
-      "email",
-      "GDPR"
-    ]
+    "tags": ["Radien", "email", "GDPR"]
+  },
+  {
+    "viewId": "email-10",
+    "contentType": "html",
+    "language": "en",
+    "active": "true",
+    "system": "true",
+    "name": "radien - Tenant Request Not Approved",
+    "htmlContent": "Dear $firstName$ $lastName$,<br><br>You requested the tenant $tenantName$.<br>Unfortunately your request has been not been approved.<br><br>If you have further questions, please check together with your tenant's administrator.<br>Thank you.<br><br>Best regards,<br>$tenantName$ administrator.",
+    "image": "logo.png",
+    "tags": ["Radien", "email", "GDPR"]
   },
   {
     "viewId": "TaC",
@@ -87,9 +81,7 @@
     "validDate": "2020-07-28",
     "externalPublic": "true",
     "version": "1.0.0",
-    "tags": [
-      "protec terms"
-    ]
+    "tags": ["protec terms"]
   },
   {
     "viewId": "LDP",
@@ -107,8 +99,6 @@
     "validDate": "2020-07-28",
     "externalPublic": "true",
     "version": "1.0.0",
-    "tags": [
-      "protec legal data"
-    ]
+    "tags": ["protec legal data"]
   }
 ]

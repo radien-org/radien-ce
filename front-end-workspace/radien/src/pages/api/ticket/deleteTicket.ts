@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from "axios";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+export default async function deleteTicket(req: NextApiRequest, res: NextApiResponse) {
     const session = await getServerSession(req, res, authOptions);
     const { ticketId } = req.query;
     if (!session) {
