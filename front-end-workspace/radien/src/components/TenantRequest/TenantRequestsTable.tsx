@@ -27,6 +27,7 @@ export default function TenantRequestsTable() {
     } = useContext(RadienContext);
     const [requestCount, setRequestCount] = useState(0);
     const [modalVisible, setModalVisible] = useState(false);
+    const [clearSelectedRow, setClearSelectedRow] = useState(false);
     const [selectedRow, setSelectedRow] = useState<TenantRequestsResult | undefined>();
     const { data: assignedTenants } = useAssignedTenants(radienUser?.id);
     const notifyUser = useNotifyUser();
@@ -67,7 +68,6 @@ export default function TenantRequestsTable() {
             assignedTenants?.results.find((t: Tenant) => t.id == activeTenantData?.tenantId)?.name ||
             i18n?.active_tenant_no_active_tenant ||
             "No tenant selected....";
-        console.log(activeTenantName);
         const viewId: string = "email-10";
         const args = {
             firstName: selectedRow?.user.firstname,
@@ -83,9 +83,13 @@ export default function TenantRequestsTable() {
         queryClient.invalidateQueries(`${QueryKeys.TENANT_REQUESTS}_${selectedRow?.ticket.data})`);
     };
 
+    const sendClearRow = (clearSelectedRow: boolean) => {
+        setClearSelectedRow(clearSelectedRow);
+    };
+
     return (
         <Box padding={"xl"}>
-            <RoleAssignment visible={modalVisible} setVisible={setModalVisible} request={selectedRow} />
+            <RoleAssignment visible={modalVisible} setVisible={setModalVisible} request={selectedRow} sendClearRow={sendClearRow} />
             <ExpandableSection
                 headerText={i18n?.user_management_tenant_request_section_header || "Tenant Requests"}
                 headerCounter={requestCount > 0 ? String(requestCount) : undefined}
@@ -123,6 +127,7 @@ export default function TenantRequestsTable() {
                     emptyProps={{
                         emptyMessage: i18n?.user_management_tenant_request_empty_label || "No tenant Requests",
                     }}
+                    clearRow={clearSelectedRow}
                 />
             </ExpandableSection>
         </Box>
