@@ -24,6 +24,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -178,6 +179,57 @@ public class MailFactoryTest {
         assertEquals("user@email.com", resultMail.getTO().get(0));
         assertEquals(enterpriseContent.getName(), resultMail.getSubject());
         assertEquals(mailMessage.getContentType(), resultMail.getContentType());
+        assertNull(resultMail.getAttachments());
+        assertEquals(mailMessage.getCC(),resultMail.getCC());
+        assertEquals(mailMessage.getBCC(), resultMail.getBCC());
+    }
+
+    @Test
+    public void testCreateWithUserAndLogo() {
+        SystemUser mockUser = mock(SystemUser.class);
+        when(mockUser.getUserEmail()).thenReturn("user@email.com");
+        List<String> bCC = new ArrayList<>();
+        bCC.add("");
+        List<String> tO = new ArrayList<>();
+        tO.add("something1@something1.com");
+        List<String> cC = new ArrayList<>();
+        cC.add("something2@something.com");
+
+        HashMap<String, String> args = new HashMap<>();
+        SystemMailTemplate systemMailTemplate = mock(SystemMailTemplate.class);
+
+        byte[] imgArray = new byte[]{101,120,97,109,112,108,101};
+        EnterpriseContent enterpriseContent = Mockito.mock(EnterpriseContent.class);
+        when(systemMailTemplate.getArgs()).thenReturn(args);
+        when(systemMailTemplate.getContent()).thenReturn(enterpriseContent);
+        when(enterpriseContent.getHtmlContent()).thenReturn("Body");
+        when(enterpriseContent.getName()).thenReturn("subject");
+        when(enterpriseContent.getImage()).thenReturn(imgArray);
+
+        MailMessage mailMessage = mock(MailMessage.class);
+        when(mailMessage.getBCC()).thenReturn(bCC);
+        when(mailMessage.getCC()).thenReturn(cC);
+        when(mailMessage.getFrom()).thenReturn("something@something");
+
+        when(oafAccess.getProperty(OAFProperties.SYS_MAIL_FROM_SYSTEM_ADMIN)).thenReturn("something@something");
+
+        MailContentType mailContentType = Mockito.mock(MailContentType.class);
+        when(mailMessage.getContentType()).thenReturn(MailContentType.HTML);
+
+        Mail resultMail = target.create(mockUser,  systemMailTemplate);
+
+        AbstractMailFactory mailFactory = Mockito.mock(AbstractMailFactory.class);
+        when(mailFactory.create(mailMessage.getFrom(),tO,"subject",null, "Body",mailContentType,null,
+                mailMessage.getCC(),mailMessage.getBCC())).thenReturn(resultMail);
+
+        resultMail.setCC(mailMessage.getCC());
+        resultMail.setBCC(mailMessage.getBCC());
+
+        assertEquals(mailMessage.getFrom(), resultMail.getFrom());
+        assertEquals("user@email.com", resultMail.getTO().get(0));
+        assertEquals(enterpriseContent.getName(), resultMail.getSubject());
+        assertEquals(mailMessage.getContentType(), resultMail.getContentType());
+        assertTrue(resultMail.getBody().contains("<img"));
         assertNull(resultMail.getAttachments());
         assertEquals(mailMessage.getCC(),resultMail.getCC());
         assertEquals(mailMessage.getBCC(), resultMail.getBCC());

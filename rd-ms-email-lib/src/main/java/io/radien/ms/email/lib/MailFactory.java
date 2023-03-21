@@ -81,24 +81,21 @@ class MailFactory extends AbstractMailFactory {
     @Override
     public Mail create(SystemUser user, SystemMailTemplate template) {
         String email = user.getUserEmail() == null ? user.getLogon() : user.getUserEmail();
-        String logoHtml = template.getContent().getImageName() == null ? null : MessageFormat.format("<img src=\"data:image/png;base64,{0}\" />",
-                new String(Base64.encode(template.getContent().getImage())));
+        String logoHtml = getLogoHtml(template);
         return create(baseApp.getProperty(OAFProperties.SYS_MAIL_FROM_SYSTEM_ADMIN), email,
                 MailMessage.createSubject(template), logoHtml, MailMessage.of(template), MailContentType.HTML);
     }
 
     @Override
     public Mail create(String targetEmail, SystemMailTemplate template) {
-        String logoHtml = template.getContent().getImageName() == null ? null : MessageFormat.format("<img src=\"data:image/png;base64,{0}\" />",
-                new String(Base64.encode(template.getContent().getImage())));
+        String logoHtml = getLogoHtml(template);
         return create(baseApp.getProperty(OAFProperties.SYS_MAIL_FROM_SYSTEM_ADMIN), targetEmail,
                 MailMessage.createSubject(template), logoHtml, MailMessage.of(template), MailContentType.HTML);
     }
 
     @Override
     public Mail create(List<SystemUser> user, SystemMailTemplate template) {
-        String logoHtml = template.getContent().getImageName() == null ? null : MessageFormat.format("<img src=\"data:image/png;base64,{0}\" />",
-                new String(Base64.encode(template.getContent().getImage())));
+        String logoHtml = getLogoHtml(template);
         List<String> to = new ArrayList<>();
         user.forEach(u -> to.add(u.getUserEmail()));
         return create(baseApp.getProperty(OAFProperties.SYS_MAIL_FROM_SYSTEM_ADMIN), to,
@@ -107,8 +104,7 @@ class MailFactory extends AbstractMailFactory {
 
     @Override
     public Mail create(SystemMailTemplate template, List<String> receiverEmails) {
-        String logoHtml = template.getContent().getImageName() == null ? null : MessageFormat.format("<img src=\"data:image/png;base64,{0}\" />",
-                new String(Base64.encode(template.getContent().getImage())));
+        String logoHtml = getLogoHtml(template);
         return create(baseApp.getProperty(OAFProperties.SYS_MAIL_FROM_SYSTEM_ADMIN), receiverEmails,
                 MailMessage.createSubject(template), logoHtml, MailMessage.of(template), MailContentType.HTML);
     }
@@ -118,4 +114,8 @@ class MailFactory extends AbstractMailFactory {
         return baseApp;
     }
 
+    private static String getLogoHtml(SystemMailTemplate template) {
+        return template.getContent().getImage() == null ? null : MessageFormat.format("<img src=\"data:image/png;base64,{0}\" />",
+                new String(Base64.encode(template.getContent().getImage())));
+    }
 }
