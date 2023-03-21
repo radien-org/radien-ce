@@ -108,6 +108,34 @@ public class ContentFactoryTest {
     }
 
     @Test
+    public void testConvertJSONObjectImageNoVersion() throws IOException, ParseException {
+        JSONObject object = new JSONObject();
+        object.put("viewId", viewID);
+        object.put("htmlContent", htmlContent);
+        object.put("name", name);
+        object.put("contentType", contentTypeDocument);
+        object.put("language", language);
+        object.put("active", active);
+        object.put("system", system);
+        object.put("parentPath", parentPath);
+        object.put("jcrPath", jcrPath);
+        object.put("createDate", createDate);
+        object.put("externalPublic", externalPublic);
+        object.put("permissions", permissions);
+        JSONArray tagArray = new JSONArray();
+        object.put("tags", tagArray);
+        object.put("image", file);
+        object.put("imageName", "imageName");
+        object.put("imageMimeType", "image/png");
+
+        EnterpriseContent content = ContentFactory.convertJSONObject(object);
+        validateEnterpriseContent(content, contentTypeDocument);
+        assertEquals(file, Arrays.toString(content.getImage()).replaceAll("\\s+", ""));
+        assertEquals("imageName", content.getImageName());
+        assertEquals("image/png", content.getImageMimeType());
+    }
+
+    @Test
     public void testConvertJSONObjectNoFileVersion() throws IOException, ParseException {
         JSONObject object = new JSONObject();
         object.put("viewId", viewID);
