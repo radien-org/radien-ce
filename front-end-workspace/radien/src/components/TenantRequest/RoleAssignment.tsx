@@ -16,11 +16,10 @@ interface RoleAssignmentProps {
     visible: boolean;
     setVisible: (value: boolean) => void;
     request?: TenantRequestsResult;
-    sendClearRow: (value: boolean) => void;
 }
 
 export default function RoleAssignment(props: RoleAssignmentProps) {
-    const { request, visible, setVisible, sendClearRow } = props;
+    const { request, visible, setVisible } = props;
     const { i18n, addSuccessMessage, addErrorMessage } = useContext(RadienContext);
     const { data } = useAssignableRoles(Number(request?.ticket.data));
     const queryClient = useQueryClient();
@@ -116,7 +115,6 @@ export default function RoleAssignment(props: RoleAssignmentProps) {
         notifyUserOfRoleAssignment();
         setTargetRoles([]);
         setVisible(false);
-        sendClearRow(true);
     };
 
     return (

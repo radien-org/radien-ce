@@ -78,4 +78,14 @@ public class RoleEntity extends io.radien.ms.rolemanagement.client.entities.Role
     public String getDescription() {
         return super.getDescription();
     }
+
+    /**
+     * Role entity termination table field
+     * @return the role termination date
+     */
+    @Column
+    @Override
+    public Date getTerminationDate() {
+        return super.getTerminationDate();
+    }
 }

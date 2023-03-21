@@ -9,7 +9,6 @@ import { useRouter } from "next/router";
 
 import useNotifyUser from "@/hooks/useNotifyUser";
 import useDeleteTicket from "@/hooks/useDeleteTicket";
-import useUserById from "@/hooks/useUserById";
 import useAssignedTenants from "@/hooks/useAssignedTenants";
 
 import { useQueryClient } from "react-query";
@@ -34,7 +33,6 @@ export default function TenantRequestsTable() {
     const { locale } = useRouter();
     const queryClient = useQueryClient();
     const deleteTicket = useDeleteTicket();
-    const userInfo = useUserById;
 
     const columnDefinition: TableProps.ColumnDefinition<TenantRequestsResult>[] = [
         {
@@ -75,7 +73,7 @@ export default function TenantRequestsTable() {
             tenantName: activeTenantName,
         };
         notifyUser.mutate({
-            email: selectedRow?.user.userEmail,
+            email: selectedRow?.user.userEmail!,
             viewId,
             language: locale,
             params: args,
@@ -83,13 +81,9 @@ export default function TenantRequestsTable() {
         queryClient.invalidateQueries(`${QueryKeys.TENANT_REQUESTS}_${selectedRow?.ticket.data})`);
     };
 
-    const sendClearRow = (clearSelectedRow: boolean) => {
-        setClearSelectedRow(clearSelectedRow);
-    };
-
     return (
         <Box padding={"xl"}>
-            <RoleAssignment visible={modalVisible} setVisible={setModalVisible} request={selectedRow} sendClearRow={sendClearRow} />
+            <RoleAssignment visible={modalVisible} setVisible={setModalVisible} request={selectedRow} />
             <ExpandableSection
                 headerText={i18n?.user_management_tenant_request_section_header || "Tenant Requests"}
                 headerCounter={requestCount > 0 ? String(requestCount) : undefined}
@@ -127,7 +121,6 @@ export default function TenantRequestsTable() {
                     emptyProps={{
                         emptyMessage: i18n?.user_management_tenant_request_empty_label || "No tenant Requests",
                     }}
-                    clearRow={clearSelectedRow}
                 />
             </ExpandableSection>
         </Box>

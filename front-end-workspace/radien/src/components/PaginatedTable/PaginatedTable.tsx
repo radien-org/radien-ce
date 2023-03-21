@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import { Page, RadienModel } from "radien";
 import { AxiosResponse } from "axios";
 import { Box, Button, Header, Modal, NonCancelableCustomEvent, Pagination, PaginationProps, SpaceBetween, TableProps } from "@cloudscape-design/components";
@@ -22,7 +22,6 @@ interface CreateActionProps<T> {
     createLabel?: string;
     createAction?: (selectedValue?: T) => void;
     createButtonType?: "normal" | "primary" | "link" | "icon" | "inline-icon";
-    clearSelectedRow?: boolean;
 }
 
 interface ViewActionDetails {
@@ -52,7 +51,6 @@ export interface PaginatedTableProps<T> {
     createActionProps: CreateActionProps<T>;
     deleteActionProps: DeleteActionProps<T>;
     emptyProps: EmptyProps;
-    clearRow: boolean;
 }
 
 const Table = dynamic(() => import("@cloudscape-design/components/table"), { ssr: false }) as TableForwardRefType;
@@ -68,7 +66,6 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
         createActionProps: { createLabel, createButtonType, hideCreate, createAction },
         viewActionProps: { ViewComponent, viewTitle, viewLabel, viewConfirmLabel },
         emptyProps: { emptyMessage, emptyActionLabel },
-        clearRow,
     } = props;
     const {
         userInSession,
@@ -110,12 +107,6 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
         }
         setDeleteModalVisible(false);
     };
-
-    useEffect(() => {
-        if (clearRow) {
-            setSelectedItem(undefined);
-        }
-    }, [clearRow]);
 
     return (
         <>
