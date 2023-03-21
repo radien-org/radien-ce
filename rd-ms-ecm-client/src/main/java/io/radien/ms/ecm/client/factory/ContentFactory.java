@@ -112,9 +112,9 @@ public class ContentFactory {
                 new SimpleDateFormat(DATE_FORMAT).parse(createDate));
 
         if (contentType != null && contentType.equalsIgnoreCase(ContentType.DOCUMENT.key())) {
-            getFileResource(json, content);
+            parseFileContent(json, content);
         }
-        getImageResource(json, content);
+        parseImageContent(json, content);
         return content;
     }
 
@@ -179,7 +179,7 @@ public class ContentFactory {
         return content;
     }
 
-    private static void getFileResource(JSONObject json, EnterpriseContent content) {
+    private static void parseFileContent(JSONObject json, EnterpriseContent content) {
         try {
             String fileString =  json.get("file") == null ? null : json.get("file").toString();
 
@@ -196,7 +196,7 @@ public class ContentFactory {
         }
     }
 
-    private static void getImageResource(JSONObject json, EnterpriseContent content) {
+    private static void parseImageContent(JSONObject json, EnterpriseContent content) {
         try {
             String imageString =  json.get("image") == null ? null : json.get("image").toString();
 
