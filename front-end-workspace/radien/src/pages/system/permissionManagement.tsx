@@ -12,7 +12,7 @@ export default function PermissionManagement() {
     const pageSize = 10;
     const router = useRouter();
 
-    const { i18n } = useContext(RadienContext);
+    const { i18n, userInSession: radienUser } = useContext(RadienContext);
     const deletePermission = useDeletePermission();
 
     const colDefinition: TableProps.ColumnDefinition<Permission>[] = [
@@ -41,6 +41,7 @@ export default function PermissionManagement() {
             <PaginatedTable
                 tableHeader={i18n?.permission_management_header || "Permission Management"}
                 queryKey={QueryKeys.PERMISSION_MANAGEMENT}
+                manipulationEnableCondition={!radienUser?.processingLocked}
                 columnDefinitions={colDefinition}
                 getPaginated={(pageNumber, pageSize) => usePaginatedPermissions({ pageNo: pageNumber, pageSize })}
                 viewActionProps={{}}

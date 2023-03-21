@@ -10,11 +10,15 @@ export default async function lockUserProcessing(req: NextApiRequest, res: NextA
         return;
     }
     const { id, lock } = req.body;
-    const path = `${process.env.RADIEN_USER_URL}/user/lock/${id}&${lock}`;
+    const path = `${process.env.RADIEN_USER_URL}/user/lock`;
     const result: AxiosResponse = await axios.put(path, {}, {
         headers: {
             Authorization: `Bearer ${session!.accessToken}`,
-        }
+        },
+        params: {
+            id: id,
+            processingLock: lock,
+        },
     });
     res.status(200).json(result.data);
 }

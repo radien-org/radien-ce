@@ -147,8 +147,8 @@ public interface UserResourceClient {
     Response update(@PathParam("id") long id, io.radien.ms.usermanagement.client.entities.User user);
 
     @PUT
-    @Path("/lock/{id}&{processingLock}")
-    Response processingLockChange(@PathParam("id") long id, @PathParam("processingLock") boolean processingLock);
+    @Path("lock")
+    Response processingLockChange(@QueryParam("id") long id, @QueryParam("processingLock") boolean processingLock);
 
 
     /**

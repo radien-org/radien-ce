@@ -14,7 +14,7 @@ import useAvailableTenants from "@/hooks/useAvailableTenants";
 
 export default function TenantManagement() {
     const router = useRouter();
-    const { i18n } = useContext(RadienContext);
+    const { i18n, userInSession: radienUser } = useContext(RadienContext);
     const deleteTenant = useDeleteTenant();
     const { activeTenant } = useContext(RadienContext)
 
@@ -105,6 +105,7 @@ export default function TenantManagement() {
             <PaginatedTable
                 tableHeader={i18n?.tenant_management_header || "Tenant Management"}
                 queryKey={QueryKeys.TENANT_MANAGEMENT}
+                manipulationEnableCondition={!radienUser?.processingLocked}
                 columnDefinitions={colDefinition}
                 getPaginated={(pageNumber, pageSize) => usePaginatedTenants({ pageNo: pageNumber, pageSize })}
                 viewActionProps={{}}

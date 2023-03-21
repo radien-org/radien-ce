@@ -73,7 +73,7 @@ export default function UserProfile() {
     }
 
     const saveData = () => {
-        const radUser: User  = {...radienUser} as User;
+        const radUser: User  = radienUser as User;
         radUser.firstname = firstName;
         radUser.lastname = lastName;
         radUser.logon = logon;
@@ -83,8 +83,7 @@ export default function UserProfile() {
     };
 
     const processingLock = () : void => {
-        const radUser: User = {...radienUser!, processingLocked: true};
-        processingLockUser.mutate({id: radUser.id!, lock: true});
+        processingLockUser.mutate({id: radienUser!.id!, lock: true});
         addSuccessMessage(i18n?.user_profile_processing_lock_success || "Successfully locked the processing of this account's data.");
     }
 
@@ -254,6 +253,7 @@ export default function UserProfile() {
                         tableHeader={i18n?.user_profile_tenants_table_header || "Associated Tenants"}
                         tableVariant={"embedded"}
                         queryKey={QueryKeys.ASSIGNED_TENANTS}
+                        manipulationEnableCondition={!radienUser?.processingLocked}
                         columnDefinitions={colDefinition}
                         getPaginated={() => usePaginatedUserTenants({ userId: radienUser?.id! })}
                         viewActionProps={{}}

@@ -8,7 +8,7 @@ import { RadienContext } from "@/context/RadienContextProvider";
 import usePaginatedTenantRoles from "@/hooks/usePaginatedTenantRoles";
 
 export default function TenantRoleManagement() {
-    const { i18n, addWarningMessage } = useContext(RadienContext);
+    const { i18n, userInSession: radienUser, addWarningMessage } = useContext(RadienContext);
 
     const colDefinition: TableProps.ColumnDefinition<TenantRole>[] = [
         {
@@ -36,6 +36,7 @@ export default function TenantRoleManagement() {
             <PaginatedTable
                 tableHeader={i18n?.tenant_role_management_header || "Tenant Role Management"}
                 queryKey={QueryKeys.TENANT_ROLE_MANAGEMENT}
+                manipulationEnableCondition={!radienUser?.processingLocked}
                 columnDefinitions={colDefinition}
                 getPaginated={(pageNumber, pageSize) => usePaginatedTenantRoles({ pageNo: pageNumber, pageSize })}
                 viewActionProps={{}}

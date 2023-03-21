@@ -61,6 +61,7 @@ public class User extends AbstractUserModel implements SystemUser {
 		this.mobileNumber = u.getMobileNumber();
 		this.sub = u.getSub();
 		this.processingLocked = u.isProcessingLocked();
+		this.delegatedCreation = u.isDelegatedCreation();
 		if (u.getTerminationDate() != null) {
 			this.terminationDate = (Date) u.getTerminationDate().clone();
 		}

@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContextType;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.NoResultException;
@@ -72,7 +71,7 @@ public class UserService extends ModelServiceUtil implements UserServiceAccess {
 	private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
 
-	@PersistenceContext(unitName = "persistenceUnit", type = PersistenceContextType.EXTENDED)
+	@PersistenceContext(unitName = "persistenceUnit")
 	private transient EntityManager em;
 
 	/**

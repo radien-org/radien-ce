@@ -131,10 +131,10 @@ export default function TenantAdmin() {
                     <Form
                         actions={
                             <SpaceBetween direction="horizontal" size="xs">
-                                <Button formAction="none" variant="normal" onClick={resetForm}>
+                                <Button disabled={radienUser?.processingLocked} formAction="none" variant="normal" onClick={resetForm}>
                                     {i18n?.tenant_admin_cancel_action || "Cancel"}
                                 </Button>
-                                <Button variant="primary">{i18n?.tenant_admin_update_action || "Update"}</Button>
+                                <Button disabled={radienUser?.processingLocked} variant="primary">{i18n?.tenant_admin_update_action || "Update"}</Button>
                             </SpaceBetween>
                         }
                         header={<Header variant="h1">{i18n?.tenant_admin_form_title || "Tenant information"}</Header>}>
@@ -145,6 +145,7 @@ export default function TenantAdmin() {
                                 errorText={!validateTextInputNonEmpty(name) && isFormSubmitted ? i18n?.tenant_admin_column_invalid_name || "Please enter a valid tenant name" : null}>
                                 <Input
                                     value={name}
+                                    disabled={radienUser?.processingLocked}
                                     onChange={(event) => {
                                         setName(event.detail.value);
                                     }}
@@ -173,6 +174,7 @@ export default function TenantAdmin() {
                                 constraintText="Use YYYY/MM/DD format."
                                 errorText={!validateDateFuture(tenantStart) && isFormSubmitted ? i18n?.tenant_admin_column_invalid_start_date || "Please enter a valid tenant start date" : null}>
                                 <DatePicker
+                                    disabled={radienUser?.processingLocked}
                                     onChange={({ detail }) => setTenantStart(detail.value)}
                                     value={tenantStart}
                                     isDateEnabled={date => date >= new Date()}
@@ -188,6 +190,7 @@ export default function TenantAdmin() {
                                 constraintText="Use YYYY/MM/DD format."
                                 errorText={!validateDateFuture(tenantEnd) && isFormSubmitted ? i18n?.tenant_admin_column_invalid_end_date || "Please enter a valid tenant end date" : null}>
                                 <DatePicker
+                                    disabled={radienUser?.processingLocked}
                                     onChange={({ detail }) => setTenantEnd(detail.value)}
                                     value={tenantStart}
                                     isDateEnabled={date => date > new Date()}
@@ -266,6 +269,7 @@ export default function TenantAdmin() {
                 <PaginatedTable
                     tableHeader={i18n?.tenant_admin_associated_user_title || "Associated users"}
                     queryKey={QueryKeys.USER_MANAGEMENT}
+                    manipulationEnableCondition={!radienUser?.processingLocked}
                     columnDefinitions={colDefinition}
                     getPaginated={(pageNumber, pageSize) => usePaginatedUsersForTenant({tenantId: tenantId?.tenantId!, pageNo: pageNumber, pageSize })}
                     viewActionProps={{

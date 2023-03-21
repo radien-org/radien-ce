@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 import usePaginatedRoles from "@/hooks/usePaginatedRoles";
 
 export default function RoleManagement() {
-    const { i18n } = useContext(RadienContext);
+    const { i18n, userInSession: radienUser } = useContext(RadienContext);
     const router = useRouter();
 
     const colDefinition: TableProps.ColumnDefinition<Role>[] = [
@@ -31,6 +31,7 @@ export default function RoleManagement() {
             <PaginatedTable
                 tableHeader={i18n?.role_management_header || "Role Management"}
                 queryKey={QueryKeys.ROLE_MANAGEMENT}
+                manipulationEnableCondition={!radienUser?.processingLocked}
                 columnDefinitions={colDefinition}
                 getPaginated={(pageNumber, pageSize) => usePaginatedRoles({ pageNo: pageNumber, pageSize })}
                 viewActionProps={{}}

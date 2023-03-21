@@ -8,13 +8,13 @@ import UserDetailsView from "@/components/UserDetailsView/UserDetailsView";
 import { RadienContext } from "@/context/RadienContextProvider";
 import useDeleteUser from "@/hooks/useDeleteUser";
 import TenantRequestsTable from "@/components/TenantRequest/TenantRequestsTable";
-import usePaginatedUsers from "@/hooks/usePaginatedUsers";
 import usePaginatedUsersForTenant from "@/hooks/usePaginatedUsersForTenant";
 import { getColDefinitionUser } from "@/utils/tablesColDefinitions";
 
 export default function UserManagement() {
     const {
         i18n,
+        userInSession: radienUser,
         addSuccessMessage,
         activeTenant: { data: tenantId, isLoading: isLoadingActiveTenant },
     } = useContext(RadienContext);
@@ -30,6 +30,7 @@ export default function UserManagement() {
                 <PaginatedTable
                     tableHeader={i18n?.user_management_header || "User Management"}
                     queryKey={QueryKeys.USER_MANAGEMENT}
+                    manipulationEnableCondition={!radienUser?.processingLocked}
                     columnDefinitions={colDefinition}
                     getPaginated={(pageNumber, pageSize) => usePaginatedUsersForTenant({ tenantId: tenantId?.tenantId!, pageNo: pageNumber, pageSize })}
                     viewActionProps={{

@@ -11,7 +11,6 @@ const getUser = () => {
 export const useUserInSession = () => {
     const { status } = useSession();
     const query = useQuery<AxiosResponse<User>, AxiosError>(QueryKeys.ME, () => getUser(), {
-        refetchOnWindowFocus: false,
         enabled: status !== "loading" && status !== "unauthenticated",
         onError: (error) => {
             console.error("me query error: ", error.response);

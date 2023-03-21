@@ -25,6 +25,7 @@ import io.radien.exception.*;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
+import io.radien.ms.usermanagement.entities.UserEntity;
 
 import java.text.MessageFormat;
 import javax.ejb.Stateless;
@@ -182,9 +183,9 @@ public class UserBusinessService implements Serializable {
 	}
 
 	public void processingLockChange(long id, boolean processingLock) throws UniquenessConstraintException{
-		User user = (User) userServiceAccess.get(id);
+		User user = new UserEntity((User) userServiceAccess.get(id));
 		user.setProcessingLocked(processingLock);
-		handleChanges(user, true);
+		handleChanges(user, user.isDelegatedCreation());
 	}
 
 	/**

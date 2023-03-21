@@ -21,6 +21,7 @@ const ExpandableSection = dynamic(() => import("@cloudscape-design/components/ex
 export default function TenantRequestsTable() {
     const {
         i18n,
+        userInSession: radienUser,
         activeTenant: { data: activeTenantData },
         userInSession: radienUser
     } = useContext(RadienContext);
@@ -91,6 +92,7 @@ export default function TenantRequestsTable() {
                     tableHeader={""}
                     tableVariant="embedded"
                     queryKey={`${QueryKeys.TENANT_REQUESTS}_${activeTenantData?.tenantId}`}
+                    manipulationEnableCondition={!radienUser?.processingLocked}
                     columnDefinitions={columnDefinition}
                     getPaginated={(pageNumber, pageSize) =>
                         usePaginatedTenantRequests({ pageNo: pageNumber, pageSize, tenantId: activeTenantData?.tenantId!, setRequestCount })
