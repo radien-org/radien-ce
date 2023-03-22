@@ -31,7 +31,7 @@ export default function RoleManagement() {
             <PaginatedTable
                 tableHeader={i18n?.role_management_header || "Role Management"}
                 queryKey={QueryKeys.ROLE_MANAGEMENT}
-                manipulationEnableCondition={!radienUser?.processingLocked}
+                manipulationDisableCondition={radienUser?.processingLocked}
                 columnDefinitions={colDefinition}
                 getPaginated={(pageNumber, pageSize) => usePaginatedRoles({ pageNo: pageNumber, pageSize })}
                 viewActionProps={{}}

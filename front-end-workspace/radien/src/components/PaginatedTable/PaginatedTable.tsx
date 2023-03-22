@@ -51,7 +51,7 @@ export interface PaginatedTableProps<T> {
     createActionProps: CreateActionProps<T>;
     deleteActionProps: DeleteActionProps<T>;
     emptyProps: EmptyProps;
-    manipulationEnableCondition?: boolean;
+    manipulationDisableCondition?: boolean;
 }
 
 const Table = dynamic(() => import("@cloudscape-design/components/table"), { ssr: false }) as TableForwardRefType;
@@ -61,7 +61,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
         tableHeader,
         tableVariant,
         columnDefinitions,
-        manipulationEnableCondition = true,
+        manipulationDisableCondition = false,
         queryKey,
         getPaginated,
         deleteActionProps: { deleteLabel, deleteNestedObj, deleteConfirmationText, deleteAction, onDeleteSuccess },
@@ -186,7 +186,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
 
             <div className="flex justify-end py-6 gap-2">
                 {!hideCreate && (
-                    <Button disabled={!manipulationEnableCondition} onClick={createResource} variant={createButtonType || "primary"}>
+                    <Button disabled={manipulationDisableCondition} onClick={createResource} variant={createButtonType || "primary"}>
                         {createLabel || "Create"}
                     </Button>
                 )}
@@ -195,7 +195,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
                         {viewLabel || "View"}
                     </Button>
                 )}
-                <Button onClick={() => setDeleteModalVisible(true)} disabled={!selectedItem || !manipulationEnableCondition}>
+                <Button onClick={() => setDeleteModalVisible(true)} disabled={!selectedItem || manipulationDisableCondition}>
                     {deleteLabel || "Delete"}
                 </Button>
             </div>

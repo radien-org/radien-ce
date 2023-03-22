@@ -23,7 +23,6 @@ export default function TenantRequestsTable() {
         i18n,
         userInSession: radienUser,
         activeTenant: { data: activeTenantData },
-        userInSession: radienUser
     } = useContext(RadienContext);
     const [requestCount, setRequestCount] = useState(0);
     const [modalVisible, setModalVisible] = useState(false);
@@ -92,7 +91,7 @@ export default function TenantRequestsTable() {
                     tableHeader={""}
                     tableVariant="embedded"
                     queryKey={`${QueryKeys.TENANT_REQUESTS}_${activeTenantData?.tenantId}`}
-                    manipulationEnableCondition={!radienUser?.processingLocked}
+                    manipulationDisableCondition={radienUser?.processingLocked}
                     columnDefinitions={columnDefinition}
                     getPaginated={(pageNumber, pageSize) =>
                         usePaginatedTenantRequests({ pageNo: pageNumber, pageSize, tenantId: activeTenantData?.tenantId!, setRequestCount })

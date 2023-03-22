@@ -36,7 +36,7 @@ export default function TenantRoleManagement() {
             <PaginatedTable
                 tableHeader={i18n?.tenant_role_management_header || "Tenant Role Management"}
                 queryKey={QueryKeys.TENANT_ROLE_MANAGEMENT}
-                manipulationEnableCondition={!radienUser?.processingLocked}
+                manipulationDisableCondition={radienUser?.processingLocked}
                 columnDefinitions={colDefinition}
                 getPaginated={(pageNumber, pageSize) => usePaginatedTenantRoles({ pageNo: pageNumber, pageSize })}
                 viewActionProps={{}}

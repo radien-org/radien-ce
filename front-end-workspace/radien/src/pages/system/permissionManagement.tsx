@@ -41,7 +41,7 @@ export default function PermissionManagement() {
             <PaginatedTable
                 tableHeader={i18n?.permission_management_header || "Permission Management"}
                 queryKey={QueryKeys.PERMISSION_MANAGEMENT}
-                manipulationEnableCondition={!radienUser?.processingLocked}
+                manipulationDisableCondition={radienUser?.processingLocked}
                 columnDefinitions={colDefinition}
                 getPaginated={(pageNumber, pageSize) => usePaginatedPermissions({ pageNo: pageNumber, pageSize })}
                 viewActionProps={{}}

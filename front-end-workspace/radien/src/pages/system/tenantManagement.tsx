@@ -105,7 +105,7 @@ export default function TenantManagement() {
             <PaginatedTable
                 tableHeader={i18n?.tenant_management_header || "Tenant Management"}
                 queryKey={QueryKeys.TENANT_MANAGEMENT}
-                manipulationEnableCondition={!radienUser?.processingLocked}
+                manipulationDisableCondition={radienUser?.processingLocked}
                 columnDefinitions={colDefinition}
                 getPaginated={(pageNumber, pageSize) => usePaginatedTenants({ pageNo: pageNumber, pageSize })}
                 viewActionProps={{}}

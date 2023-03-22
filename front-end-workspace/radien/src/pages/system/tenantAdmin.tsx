@@ -13,7 +13,6 @@ import useAssignedTenants from "@/hooks/useAssignedTenants";
 import useUpdateTenant from "@/hooks/useUpdateTenant";
 import PaginatedTable from "@/components/PaginatedTable/PaginatedTable";
 import {QueryKeys} from "@/consts";
-import usePaginatedUsers from "@/hooks/usePaginatedUsers";
 import UserDetailsView from "@/components/UserDetailsView/UserDetailsView";
 import usePaginatedUsersForTenant from "@/hooks/usePaginatedUsersForTenant";
 import {getColDefinitionUser} from "@/utils/tablesColDefinitions";
@@ -269,7 +268,7 @@ export default function TenantAdmin() {
                 <PaginatedTable
                     tableHeader={i18n?.tenant_admin_associated_user_title || "Associated users"}
                     queryKey={QueryKeys.USER_MANAGEMENT}
-                    manipulationEnableCondition={!radienUser?.processingLocked}
+                    manipulationDisableCondition={radienUser?.processingLocked}
                     columnDefinitions={colDefinition}
                     getPaginated={(pageNumber, pageSize) => usePaginatedUsersForTenant({tenantId: tenantId?.tenantId!, pageNo: pageNumber, pageSize })}
                     viewActionProps={{

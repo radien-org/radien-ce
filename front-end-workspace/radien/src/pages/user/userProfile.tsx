@@ -73,7 +73,7 @@ export default function UserProfile() {
     }
 
     const saveData = () => {
-        const radUser: User  = radienUser as User;
+        const radUser: User  = radienUser!;
         radUser.firstname = firstName;
         radUser.lastname = lastName;
         radUser.logon = logon;
@@ -253,7 +253,7 @@ export default function UserProfile() {
                         tableHeader={i18n?.user_profile_tenants_table_header || "Associated Tenants"}
                         tableVariant={"embedded"}
                         queryKey={QueryKeys.ASSIGNED_TENANTS}
-                        manipulationEnableCondition={!radienUser?.processingLocked}
+                        manipulationDisableCondition={radienUser?.processingLocked}
                         columnDefinitions={colDefinition}
                         getPaginated={() => usePaginatedUserTenants({ userId: radienUser?.id! })}
                         viewActionProps={{}}

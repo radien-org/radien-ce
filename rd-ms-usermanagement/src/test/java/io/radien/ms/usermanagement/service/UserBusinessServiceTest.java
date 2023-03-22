@@ -360,14 +360,13 @@ public class UserBusinessServiceTest {
 
     @Test
     public void testProcessingLockChange() throws SystemException, UniquenessConstraintException {
-        User user = new User();
+        UserEntity user = new UserEntity();
         user.setLogon("logon");
         user.setUserEmail("email@email.com");
-        user.setFirstname("first");
-        user.setLastname("last");
+        user.setDelegatedCreation(false);
         when(userServiceAccess.get(anyLong())).thenReturn(user);
         userBusinessService.processingLockChange(1, true);
-        verify(userServiceAccess).update(user);
+        verify(userServiceAccess).update(any(User.class));
     }
 
     @Test(expected = UserNotFoundException.class)
@@ -375,11 +374,9 @@ public class UserBusinessServiceTest {
         User user = new User();
         user.setLogon("logon");
         user.setUserEmail("email@email.com");
-        user.setFirstname("first");
-        user.setLastname("last");
         SystemException exception = new SystemException("");
         when(userServiceAccess.get(anyLong())).thenReturn(user);
-        doThrow(exception).when(userServiceAccess).update(user);
+        doThrow(exception).when(userServiceAccess).update(any(User.class));
         userBusinessService.processingLockChange(1, true);
     }
 

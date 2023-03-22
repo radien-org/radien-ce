@@ -30,7 +30,7 @@ export default function UserManagement() {
                 <PaginatedTable
                     tableHeader={i18n?.user_management_header || "User Management"}
                     queryKey={QueryKeys.USER_MANAGEMENT}
-                    manipulationEnableCondition={!radienUser?.processingLocked}
+                    manipulationDisableCondition={radienUser?.processingLocked}
                     columnDefinitions={colDefinition}
                     getPaginated={(pageNumber, pageSize) => usePaginatedUsersForTenant({ tenantId: tenantId?.tenantId!, pageNo: pageNumber, pageSize })}
                     viewActionProps={{
