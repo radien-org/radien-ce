@@ -44,7 +44,7 @@ class MailFactory extends AbstractMailFactory {
 
     @Override
     protected String getAnchorStyle() {
-        return "a  color: #5D5D9E; }" +
+        return "a { color: #5D5D9E; }" +
                 "\n" +
                 "a:hover { color: #B2B3B4; }";
     }

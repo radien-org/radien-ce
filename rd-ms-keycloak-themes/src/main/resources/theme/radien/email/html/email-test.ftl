@@ -1,5 +1,8 @@
-<html>
-<body>
-${kcSanitize(msg("rd_emailTestBodyHtml_test",realmName))?no_esc}
-</body>
-</html>
+<#import "template.ftl" as layout>
+<@layout.emailLayout; section>
+    <#if section = "subject">
+        ${kcSanitize(msg("emailTestSubject"))?no_esc}
+    <#elseif section = "body">
+        ${kcSanitize(msg("emailTestBodyHtml",realmName))?no_esc}
+    </#if>
+</@layout.emailLayout>

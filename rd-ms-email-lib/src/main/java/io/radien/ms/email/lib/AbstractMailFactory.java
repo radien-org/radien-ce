@@ -107,10 +107,10 @@ public abstract class AbstractMailFactory {
 		logoHtml = logoHtml == null ? "" : logoHtml;
 		// GENERIC
 		return ("<html><head><style type=\"text/css\">" + getAnchorStyle() + getHTMLBodyStyle() + getImgStyle() + getHTMLContentWrapperStyle()
-				+ getContentStyle() + getHTMLFooterStyle() + "</style></head><div class=\"content-wrapper\">" + logoHtml +
+				+ getContentStyle() + getHTMLFooterStyle() + "</style></head><body><div class=\"content-wrapper\">" + logoHtml +
 				"<br /><span id=\"subject\">" + subject + "</span><br />" +
 				"<span id=\"body\">" + htmlMessage +"</span><center>" +
-				"<div class=\"footer\"> &copy;&nbsp;radien.io <br></div></center></div></body></html>");
+				"<div class=\"footer\"> &copy;&nbsp;radien.io <br /></div></center></div></body></html>");
 	}
 
     protected abstract OAFAccess getOAF();
