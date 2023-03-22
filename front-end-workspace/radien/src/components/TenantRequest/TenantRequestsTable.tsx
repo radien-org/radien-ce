@@ -22,7 +22,7 @@ export default function TenantRequestsTable() {
     const {
         i18n,
         activeTenant: { data: activeTenantData },
-        userInSession: radienUser,
+        userInSession: radienUser
     } = useContext(RadienContext);
     const [requestCount, setRequestCount] = useState(0);
     const [modalVisible, setModalVisible] = useState(false);

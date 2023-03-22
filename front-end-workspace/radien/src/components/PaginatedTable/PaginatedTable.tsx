@@ -65,11 +65,11 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
         deleteActionProps: { deleteLabel, deleteNestedObj, deleteConfirmationText, deleteAction, onDeleteSuccess },
         createActionProps: { createLabel, createButtonType, hideCreate, createAction },
         viewActionProps: { ViewComponent, viewTitle, viewLabel, viewConfirmLabel },
-        emptyProps: { emptyMessage, emptyActionLabel },
+        emptyProps: { emptyMessage, emptyActionLabel }
     } = props;
     const {
         userInSession,
-        activeTenant: { data: activeTenantData },
+        activeTenant: { data: activeTenantData }
     } = useContext(RadienContext);
     const [pageSize, setPageSize] = useState<number>(10);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
