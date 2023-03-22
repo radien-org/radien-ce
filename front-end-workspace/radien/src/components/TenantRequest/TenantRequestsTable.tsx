@@ -1,6 +1,6 @@
 import { Box, TableProps } from "@cloudscape-design/components";
-import React, { useContext, useEffect, useState } from "react";
-import { QueryKeys, TicketType } from "@/consts";
+import React, { useContext, useState } from "react";
+import { QueryKeys } from "@/consts";
 import { RadienContext } from "@/context/RadienContextProvider";
 import PaginatedTable from "@/components/PaginatedTable/PaginatedTable";
 import dynamic from "next/dynamic";
@@ -26,7 +26,6 @@ export default function TenantRequestsTable() {
     } = useContext(RadienContext);
     const [requestCount, setRequestCount] = useState(0);
     const [modalVisible, setModalVisible] = useState(false);
-    const [clearSelectedRow, setClearSelectedRow] = useState(false);
     const [selectedRow, setSelectedRow] = useState<TenantRequestsResult | undefined>();
     const { data: assignedTenants } = useAssignedTenants(radienUser?.id);
     const notifyUser = useNotifyUser();

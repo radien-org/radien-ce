@@ -4,7 +4,7 @@ import React, { useContext, useState } from "react";
 import { Page, RadienModel } from "radien";
 import { AxiosResponse } from "axios";
 import { Box, Button, Header, Modal, NonCancelableCustomEvent, Pagination, PaginationProps, SpaceBetween, TableProps } from "@cloudscape-design/components";
-import { UseMutateFunction, useQuery, UseQueryResult } from "react-query";
+import { UseMutateFunction, UseQueryResult } from "react-query";
 import { RadienContext } from "@/context/RadienContextProvider";
 import dynamic from "next/dynamic";
 import { TableForwardRefType } from "@cloudscape-design/components/table/interfaces";
