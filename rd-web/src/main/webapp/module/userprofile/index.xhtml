@@ -33,12 +33,12 @@
 											 disabled="#{userProfileManager.clonedLogInUser.processingLocked}" span="6"/>
 
 								<h:outputLabel value="#{msg.rd_user_logon}"/>
-								<b:inputText id="userLogon" value="#{userProfileManager.clonedLogInUser.logon}" disabled="false" span="6"/>
+								<b:inputText id="userLogon" value="#{userProfileManager.clonedLogInUser.logon}" disabled="#{userProfileManager.clonedLogInUser.processingLocked}" span="6"/>
 
 								<h:outputLabel value="#{msg.email}"/>
 								<h:panelGroup>
-									<b:inputText id="userEmail" styleClass="userEmail" value="#{userProfileManager.clonedLogInUser.userEmail}" disabled="#{!userProfileManager.emailControlEnabled}" span="6"/>
-									<h:commandLink value="#{msg.rd_user_email_update}" action="#{userProfileManager.emailControlToggle()}" update="@form" rendered="#{!userProfileManager.emailControlEnabled}"/>
+									<b:inputText id="userEmail" styleClass="userEmail" value="#{userProfileManager.clonedLogInUser.userEmail}" disabled="#{!userProfileManager.emailControlEnabled || userProfileManager.clonedLogInUser.processingLocked}" span="6"/>
+									<h:commandLink value="#{msg.rd_user_email_update}" action="#{userProfileManager.emailControlToggle()}" update="@form" rendered="#{!userProfileManager.emailControlEnabled and !userProfileManager.clonedLogInUser.processingLocked}"/>
 								</h:panelGroup>
 
 								<h:outputLabel value="#{msg.sub}"/>
@@ -53,7 +53,7 @@
 
 							<b:button id="changePassword" onclick="$('.changePwdDialog').modal('show')"
 									  value="#{msg.change_password}" tooltip="#{msg.change_password}"
-									  iconAwesome="fa-key"/>
+									  iconAwesome="fa-key" disabled="#{userProfileManager.clonedLogInUser.processingLocked}"/>
 
 							<b:button id="updateUserProfile"
 									  onclick="$('.formValidationModalUserProfileUpdate').modal('show')"
