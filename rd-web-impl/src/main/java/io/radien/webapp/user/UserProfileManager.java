@@ -474,8 +474,9 @@ public class UserProfileManager extends AbstractManager {
      * Gets the user from the current session and sets processingLocked for it to true
      * @return site to which the user should be redirect as a string
      */
-    public boolean lockUserProcessing(){
-        return userService.processingLock(clonedLogInUser.getId(), true);
+    public String lockUserProcessing(){
+        userService.processingLock(clonedLogInUser.getId(), true);
+        return DataModelEnum.PRETTY_PROFILE.getValue();
     }
 
 

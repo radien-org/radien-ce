@@ -822,10 +822,8 @@ public class UserProfileManagerTest {
     public void testLockUserProcessing(){
         userProfileManager.getClonedLogInUser().setUserEmail("e@mail.com");
         when(userSession.getUser()).then(user -> systemUser);
-        doReturn(true).when(userRESTServiceAccess).updateUser(systemUser);
-
-        assertTrue(userProfileManager.lockUserProcessing());
-        assertTrue(userProfileManager.getClonedLogInUser().isProcessingLocked());
+        userProfileManager.lockUserProcessing();
+        verify(userRESTServiceAccess).processingLock(systemUser.getId(), true);
     }
 
     @Test
