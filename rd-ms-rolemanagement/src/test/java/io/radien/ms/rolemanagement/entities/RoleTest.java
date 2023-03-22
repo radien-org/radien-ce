@@ -17,7 +17,6 @@ public class RoleTest {
         role.setId(44L);
         role.setCreateUser(2L);
         role.setCreateDate(now);
-        role.setTerminationDate(now);
         role.setLastUpdate(now);
         role.setLastUpdateUser(3L);
     }
@@ -73,22 +72,6 @@ public class RoleTest {
         assertNotNull(role.getDescription());
         assertEquals("newDescription", role.getDescription());
     }
-
-    @Test
-    public void testGetTerminationDate() {
-        assertNotNull(role.getTerminationDate());
-        assertEquals(now, role.getTerminationDate());
-    }
-
-    @Test
-    public void testSetTerminationDate() {
-        Date terminationDateRefactored = new Date();
-        role.setTerminationDate(terminationDateRefactored);
-
-        assertNotNull(role.getTerminationDate());
-        assertEquals(terminationDateRefactored, role.getTerminationDate());
-    }
-
     @Test
     public void testGetCreateDate() {
         assertNotNull(role.getCreateDate());

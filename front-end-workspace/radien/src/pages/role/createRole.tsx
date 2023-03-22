@@ -3,7 +3,7 @@ import Form from "@cloudscape-design/components/form";
 import SpaceBetween from "@cloudscape-design/components/space-between";
 import Button from "@cloudscape-design/components/button";
 import Header from "@cloudscape-design/components/header";
-import { Box, Container, DatePicker, Input, Select } from "@cloudscape-design/components";
+import { Box, Container, Input } from "@cloudscape-design/components";
 import { useContext, useEffect, useState } from "react";
 import { Loader } from "@/components/Loader/Loader";
 import { RadienContext } from "@/context/RadienContextProvider";
@@ -17,10 +17,8 @@ const FormField = dynamic(() => import("@cloudscape-design/components/form-field
 export default function CreateRole() {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
-    const [terminationDate, setTerminationDate] = useState("");
     const [isNameValid, setIsNameValid] = useState(false);
     const [isDescriptionValid, setIsDescriptionValid] = useState(false);
-    const [isTerminationDateValid, setIsTerminationDateValid] = useState(false);
     const [isFormSubmitted, setIsFormSubmitted] = useState(false);
     const [isFormValid, setIsFormValid] = useState(false);
     const createRoleMutation = useCreateRole();
@@ -29,7 +27,7 @@ export default function CreateRole() {
 
     useEffect(() => {
         validateAll();
-    }, [isNameValid, isDescriptionValid, isTerminationDateValid]);
+    }, [isNameValid, isDescriptionValid]);
 
     const validateName = (_name: string) => {
         if (_name.trim().length > 0) {
@@ -47,16 +45,9 @@ export default function CreateRole() {
         }
     };
 
-    const validateTerminationDate = (_terminationDate: any) => {
-        if (_terminationDate && new Date(_terminationDate) > new Date()) {
-            setIsTerminationDateValid(true);
-        } else {
-            setIsTerminationDateValid(false);
-        }
-    };
 
     const validateAll = () => {
-        setIsFormValid(isNameValid && isDescriptionValid && isTerminationDateValid);
+        setIsFormValid(isNameValid && isDescriptionValid);
     };
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -68,7 +59,6 @@ export default function CreateRole() {
         const role: Role = {
             name,
             description: String(description),
-            terminationDate: new Date(),
         };
         createRoleMutation.mutate(role);
     };
@@ -116,29 +106,6 @@ export default function CreateRole() {
                                             setDescription(event.detail.value);
                                             validateDescription(event.detail.value);
                                         }}
-                                    />
-                                </FormField>
-                                <FormField
-                                    key={"per-form--3"}
-                                    label={i18n?.create_role_termination_date || "Termination Date*"}
-                                    errorText={
-                                        !isTerminationDateValid && isFormSubmitted
-                                            ? i18n?.create_role_termination_date_error || "Please select a termination date after today"
-                                            : null
-                                    }
-                                    constraintText="Use YYYY/MM/DD format.">
-                                    <DatePicker
-                                        onChange={(event) => {
-                                            setTerminationDate(event.detail.value);
-                                            validateTerminationDate(event.detail.value);
-                                        }}
-                                        isDateEnabled={(date) => date > new Date()}
-                                        value={String(terminationDate)}
-                                        locale={locale}
-                                        nextMonthAriaLabel={i18n?.create_role_next_month_aria_label || "Next month"}
-                                        previousMonthAriaLabel={i18n?.create_role_previous_month_aria_label || "Previous month"}
-                                        todayAriaLabel={i18n?.create_role_today_aria_label || "Today"}
-                                        placeholder="YYYY/MM/DD"
                                     />
                                 </FormField>
                             </SpaceBetween>

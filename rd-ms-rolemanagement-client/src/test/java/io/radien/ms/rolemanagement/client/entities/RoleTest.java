@@ -10,12 +10,9 @@ public class RoleTest extends TestCase {
 
     private Role role;
 
-    Date now = new Date();
-
     public RoleTest() {
         role = RoleFactory.create("name", "description", 3L);
         role.setId(2L);
-        role.setTerminationDate(now);
     }
 
 
@@ -25,7 +22,6 @@ public class RoleTest extends TestCase {
         assertEquals((Long) 2L, newRole.getId());
         assertEquals("name", newRole.getName());
         assertEquals("description", newRole.getDescription());
-        assertEquals(now, newRole.getTerminationDate());
     }
 
     @Test
@@ -65,19 +61,5 @@ public class RoleTest extends TestCase {
         role.setDescription("newDescription");
         assertNotNull(role.getDescription());
         assertEquals("newDescription", role.getDescription());
-    }
-
-    @Test
-    public void testGetTerminationDate() {
-        assertNotNull(role.getTerminationDate());
-        assertEquals(now, role.getTerminationDate());
-    }
-
-    @Test
-    public void testSetTerminationDate() {
-        Date newDate = new Date();
-        role.setTerminationDate(newDate);
-        assertNotNull(role.getTerminationDate());
-        assertEquals(newDate, role.getTerminationDate());
     }
 }

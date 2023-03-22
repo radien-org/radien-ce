@@ -50,7 +50,6 @@ declare module "radien" {
     interface Role extends RadienModel {
         name: string;
         description: string;
-        terminationDate: Date;
     }
 
     interface Action extends RadienModel {
