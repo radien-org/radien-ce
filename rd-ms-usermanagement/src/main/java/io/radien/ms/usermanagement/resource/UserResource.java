@@ -208,7 +208,16 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 	}
 
 	@Override
-	public Response processingLockChange(long id, boolean processingLock){
+	public Response processingLockChange(long id, boolean processingLock) {
+		try{
+			if(!processingLock && !hasPermission(null,
+					SystemActionsEnum.ACTION_UPDATE.getActionName(),
+					SystemResourcesEnum.USER.getResourceName()) && !checkUserRoles()){
+				return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
+			}
+		}catch (SystemException e){
+			return getResponseFromException(e);
+		}
 		try{
 			userBusinessService.processingLockChange(id, processingLock);
 		}catch (Exception e) {
