@@ -838,7 +838,16 @@ public class UserResourceTest {
 
     @Test
     public void processingLockChangeException(){
-        when(userResource.processingLockChange(anyLong(), anyBoolean())).thenThrow(RuntimeException.class);
-        assertEquals(500, userResource.processingLockChange(1, true).getStatus());
+        int id = 1;
+
+        preProcessAuthentication();
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
+
+        Response expectedPermissionId = Response.ok().entity(1L).build();
+        doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
+        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
+
+        when(userResource.processingLockChange(id, true)).thenThrow(RuntimeException.class);
+        assertEquals(500, userResource.processingLockChange(id, true).getStatus());
     }
 }
