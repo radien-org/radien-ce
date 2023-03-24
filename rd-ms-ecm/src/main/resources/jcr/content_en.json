@@ -66,6 +66,17 @@
     "tags": ["Radien", "email", "GDPR"]
   },
   {
+    "viewId": "email-11",
+    "contentType": "html",
+    "language": "en",
+    "active": "true",
+    "system": "true",
+    "name": "radien - Data Alteration",
+    "htmlContent": "Dear User,<br><br>You have requested us to $operation$ your personal data in ra’di'en Platform. We have successfully $operation$ your personal data.<br><br>Thank you.<br><br>Sincerely,<br><ra’di'en> Admin",
+    "image": "logo.png",
+    "tags": ["Radien", "email", "GDPR"]
+  },
+  {
     "viewId": "TaC",
     "contentType": "document",
     "language": "en",

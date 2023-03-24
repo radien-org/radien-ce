@@ -20,18 +20,24 @@ import io.radien.api.model.user.SystemPagedUserSearchFilter;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.api.service.batch.BatchSummary;
+import io.radien.api.service.mail.model.OperationType;
+import io.radien.api.service.notification.SQSProducerAccess;
 import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.*;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import io.radien.ms.usermanagement.entities.UserEntity;
 
 import java.text.MessageFormat;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static io.radien.api.SystemVariables.LOGON;
 import static io.radien.api.SystemVariables.NEW_PASSWORD;
@@ -47,10 +53,14 @@ import static io.radien.exception.GenericErrorCodeMessage.INVALID_VALUE_FOR_PARA
 @Stateless
 public class UserBusinessService implements Serializable {
 	private static final long serialVersionUID = 9136599710056928804L;
+
+	Logger log = LoggerFactory.getLogger(UserBusinessService.class);
 	@Inject
 	private UserServiceAccess userServiceAccess;
 	@Inject
 	private KeycloakBusinessService keycloakBusinessService;
+	@Inject
+	private SQSProducerAccess notificationService;
 
 	/**
 	 * Method to request a specific user id by a given subject
@@ -122,6 +132,7 @@ public class UserBusinessService implements Serializable {
 				keycloakBusinessService.deleteUser(u.getSub());
 			}
 			userServiceAccess.delete(id);
+			sendNotification(u, OperationType.DELETION);
 		}  else {
 			throw new ProcessingLockedException();
 		}
@@ -290,5 +301,17 @@ public class UserBusinessService implements Serializable {
 
 	public Long count() {
 		return userServiceAccess.count();
+	}
+
+
+	private void sendNotification(SystemUser user, OperationType operation){
+		String email = user.getUserEmail();
+		try {
+			Map<String, String> args = new HashMap<>();
+			args.put("operation", operation.getOperation());
+			notificationService.emailNotification(email, "email-11", "en", args);
+		} catch (Exception e) {
+			log.error("An exception has occurred when attempting to send an email change request. Stack trace: {}", e.toString());
+		}
 	}
 }

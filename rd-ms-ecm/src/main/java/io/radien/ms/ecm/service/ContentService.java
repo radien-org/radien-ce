@@ -182,6 +182,8 @@ public class ContentService implements ContentServiceAccess {
             return "email-6";
         } else if(type == MailType.REQUEST_GDPR_DATA_OPT_IN) {
             return "email-7";
+        }else if(type == MailType.DATA_MANIPULATION){
+            return "email-11";
         }
         return null;
     }
