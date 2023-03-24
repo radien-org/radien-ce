@@ -69,6 +69,7 @@ import io.radien.exception.TokenExpiredException;
 import io.radien.exception.SystemException;
 
 import io.radien.ms.authz.client.UserClient;
+import io.radien.ms.usermanagement.client.util.UserFactoryUtil;
 import io.radien.ms.usermanagement.client.util.UserModelMapper;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.util.ClientServiceUtil;
@@ -1388,5 +1389,18 @@ public class UserRESTServiceClientTest {
     public void testProcessingLockMalformed() throws MalformedURLException {
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenThrow(MalformedURLException.class);
         assertFalse(target.processingLock(1, true));
+    }
+
+    @Test
+    public void testIsProcessingLocked() throws SystemException, MalformedURLException {
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        boolean processingLock = true;
+        dummyUser.setProcessingLocked(processingLock);
+        JsonObject json = UserFactoryUtil.convertSystemUserToJsonObject(dummyUser);
+        InputStream inputStream = new ByteArrayInputStream(json.toString().getBytes());
+        Response response = Response.ok(inputStream).build();
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.getById(dummyUser.getId())).thenReturn(response);
+        assertEquals(processingLock, target.isProcessingLocked(dummyUser.getId()));
     }
 }
