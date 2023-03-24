@@ -19,13 +19,11 @@ import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.batch.DataIssue;
 import io.radien.api.service.role.SystemRolesEnum;
-import io.radien.exception.BadRequestException;
-import io.radien.exception.GenericErrorCodeMessage;
-import io.radien.exception.UniquenessConstraintException;
-import io.radien.exception.UserNotFoundException;
+import io.radien.exception.*;
 import io.radien.ms.authz.client.PermissionClient;
 import io.radien.ms.authz.client.TenantRoleClient;
 import io.radien.ms.authz.client.UserClient;
+import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.openid.entities.Principal;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
@@ -50,10 +48,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * User Resource rest requests and responses
@@ -158,7 +153,7 @@ public class UserResourceTest {
     @Test
     public void testGetAllGenericException() {
 
-        HttpSession session = Mockito.mock(HttpSession.class);
+        HttpSession session = mock(HttpSession.class);
         when(servletRequest.getSession()).thenReturn(session);
         when(userBusinessService.getAll(null,1,10,null,true))
                 .thenThrow(new RuntimeException());
@@ -304,7 +299,7 @@ public class UserResourceTest {
     public void testCreate() {
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
-        HttpSession session = Mockito.mock(HttpSession.class);
+        HttpSession session = mock(HttpSession.class);
 
         when(servletRequest.getSession()).thenReturn(session);
         when(servletRequest.getSession(false)).thenReturn(session);
@@ -329,7 +324,7 @@ public class UserResourceTest {
     public void testCreateWithAuthorizationDenied() {
         Principal loggedUser = new Principal();
         loggedUser.setSub("aaa-bbb-ccc-ddd");
-        HttpSession session = Mockito.mock(HttpSession.class);
+        HttpSession session = mock(HttpSession.class);
 
         User userToBeCreated = new User();
         userToBeCreated.setSub("xxx-yyy-zzz-www");
@@ -358,7 +353,7 @@ public class UserResourceTest {
     public void testCreateSelfRegisterScenario() {
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
-        HttpSession session = Mockito.mock(HttpSession.class);
+        HttpSession session = mock(HttpSession.class);
 
         User userToBeRegistered = new User();
         userToBeRegistered.setSub(principal.getSub());
@@ -381,7 +376,7 @@ public class UserResourceTest {
     public void testGetResponseFromExceptionWhenCreating() throws UserNotFoundException, RemoteResourceException, UniquenessConstraintException {
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
-        HttpSession session = Mockito.mock(HttpSession.class);
+        HttpSession session = mock(HttpSession.class);
 
         when(servletRequest.getSession()).thenReturn(session);
         when(servletRequest.getSession(false)).thenReturn(session);
@@ -412,7 +407,7 @@ public class UserResourceTest {
     public void testCreateInvalid() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
-        HttpSession session = Mockito.mock(HttpSession.class);
+        HttpSession session = mock(HttpSession.class);
 
         when(servletRequest.getSession()).thenReturn(session);
         when(servletRequest.getSession(false)).thenReturn(session);
@@ -480,7 +475,7 @@ public class UserResourceTest {
     public void testUpdateWithAuthorizationDenied() {
         Principal loggedUser = new Principal();
         loggedUser.setSub("aaa-bbb-ccc-ddd");
-        HttpSession session = Mockito.mock(HttpSession.class);
+        HttpSession session = mock(HttpSession.class);
 
         User userToBeUpdated = new User();
         userToBeUpdated.setSub("xxx-yyy-zzz-www");
@@ -509,7 +504,7 @@ public class UserResourceTest {
     public void testGetResponseFromExceptionWhenUpdating() throws UserNotFoundException, RemoteResourceException, UniquenessConstraintException {
         Principal principal = new Principal();
         principal.setSub("aaa-bbb-ccc-ddd");
-        HttpSession session = Mockito.mock(HttpSession.class);
+        HttpSession session = mock(HttpSession.class);
 
         when(servletRequest.getSession()).thenReturn(session);
         when(servletRequest.getSession(false)).thenReturn(session);
@@ -747,7 +742,7 @@ public class UserResourceTest {
      * Private method to mock the preprocess method requested while validating the roles
      */
     private void preProcessAuthentication() {
-        HttpSession session = Mockito.mock(HttpSession.class);
+        HttpSession session = mock(HttpSession.class);
         when(servletRequest.getSession()).thenReturn(session);
 
         Principal principal = new Principal();
@@ -772,7 +767,7 @@ public class UserResourceTest {
         UserPasswordChanging u = new UserPasswordChanging();
         Principal principal = new Principal();
         principal.setSub(subject);
-        HttpSession session = Mockito.mock(HttpSession.class);
+        HttpSession session = mock(HttpSession.class);
 
         when(servletRequest.getSession()).thenReturn(session);
         when(servletRequest.getSession(false)).thenReturn(session);
@@ -796,7 +791,7 @@ public class UserResourceTest {
         UserPasswordChanging u = new UserPasswordChanging();
         Principal principal = new Principal();
         principal.setSub("1");
-        HttpSession session = Mockito.mock(HttpSession.class);
+        HttpSession session = mock(HttpSession.class);
 
         when(servletRequest.getSession()).thenReturn(session);
         when(servletRequest.getSession(false)).thenReturn(session);
@@ -820,7 +815,7 @@ public class UserResourceTest {
         UserPasswordChanging u = new UserPasswordChanging();
         Principal principal = new Principal();
         principal.setSub(subject);
-        HttpSession session = Mockito.mock(HttpSession.class);
+        HttpSession session = mock(HttpSession.class);
 
         when(servletRequest.getSession()).thenReturn(session);
         when(servletRequest.getSession(false)).thenReturn(session);
@@ -839,15 +834,27 @@ public class UserResourceTest {
     @Test
     public void processingLockChangeException(){
         int id = 1;
+        preProcessAuthentication();
+        doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
 
+        when(userResource.processingLockChange(id, true)).thenThrow(RuntimeException.class);
+        assertEquals(500, userResource.processingLockChange(id, true).getStatus());
+    }
+
+    @Test
+    public void processingLockChangeNoPermissions() {
         preProcessAuthentication();
         doReturn("token-yyz").when(tokensPlaceHolder).getAccessToken();
 
         Response expectedPermissionId = Response.ok().entity(1L).build();
         doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
-        doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
 
-        when(userResource.processingLockChange(id, true)).thenThrow(RuntimeException.class);
-        assertEquals(500, userResource.processingLockChange(id, true).getStatus());
+        Response mockResponse = mock(Response.class);
+        Response.StatusType mockStatusType = mock(Response.StatusType.class);
+        when(mockResponse.getStatusInfo()).thenReturn(mockStatusType);
+        when(mockStatusType.getFamily()).thenReturn(Response.Status.Family.CLIENT_ERROR);
+        doReturn(mockResponse).when(tenantRoleClient).isPermissionExistentForUser(anyLong(), anyLong(), any());
+        doReturn(mockResponse).when(tenantRoleClient).checkPermissions(anyLong(), anyList(), any());
+        assertEquals(403, userResource.processingLockChange(1, false).getStatus());
     }
 }
