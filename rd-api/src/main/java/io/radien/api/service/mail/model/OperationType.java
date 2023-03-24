@@ -1,18 +1,22 @@
 package io.radien.api.service.mail.model;
 
 public enum OperationType {
-    MODIFICATION("rectify"),
-    DELETION("erase"),
-    RESTRICTION("restrict");
+    MODIFICATION("rectify", "rectified"),
+    DELETION("erase", "erased"),
+    RESTRICTION("restrict", "restricted");
 
-    private String operation;
+    private final String operation, operation_past_simple;
 
-    OperationType(final String operation){
+    OperationType(String operation, String operation_past_simple){
         this.operation = operation;
+        this.operation_past_simple = operation_past_simple;
     }
 
     public String getOperation(){
         return operation;
     }
 
+    public String getOperationPasteSimple(){
+        return operation_past_simple;
+    }
 }

@@ -309,6 +309,7 @@ public class UserBusinessService implements Serializable {
 		try {
 			Map<String, String> args = new HashMap<>();
 			args.put("operation", operation.getOperation());
+			args.put("operation_complete", operation.getOperationPasteSimple());
 			notificationService.emailNotification(email, "email-11", "en", args);
 		} catch (Exception e) {
 			log.error("An exception has occurred when attempting to send an email change request. Stack trace: {}", e.toString());
