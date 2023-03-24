@@ -310,6 +310,8 @@ public class UserBusinessService implements Serializable {
 		String email = user.getUserEmail();
 		try {
 			Map<String, String> args = new HashMap<>();
+			args.put("firstname", user.getFirstname());
+			args.put("lastname", user.getLastname());
 			args.put("operation", operation.getOperation());
 			args.put("operation_complete", operation.getOperationPasteSimple());
 			notificationService.emailNotification(email, "email-11", "en", args);
