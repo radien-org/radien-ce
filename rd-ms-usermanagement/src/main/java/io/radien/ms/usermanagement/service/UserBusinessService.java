@@ -29,6 +29,8 @@ import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import io.radien.ms.usermanagement.entities.UserEntity;
 
 import java.text.MessageFormat;
