@@ -52,7 +52,7 @@ const UserDetailsView: FunctionComponent<{ data: User }> = ({ data }) => {
                                     processingLockUser.mutate(
                                     {
                                         id: data.id!,
-                                        lock: !processingLocked})
+                                        lock: detail.checked})
                                     }}/>
                             </SpaceBetween>
                             <SpaceBetween key="view-form-8" direction={"horizontal"} size={"l"}>

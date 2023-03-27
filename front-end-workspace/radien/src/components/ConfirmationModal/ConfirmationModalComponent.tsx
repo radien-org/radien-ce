@@ -11,12 +11,17 @@ export interface ConfirmationModalProps{
 
 export function ConfirmationModalComponent(props: ConfirmationModalProps) {
 
-    const {modalVisible, setModalVisible} = props;
+    const { header,
+            body,
+            modalVisible,
+            setModalVisible,
+            closeModalOnConfirm,
+            confirmBehaviour } = props;
 
     return(
         <Modal
             visible={modalVisible}
-            header={props.header}
+            header={header}
             footer={
                 <Box float="right">
                     <SpaceBetween direction="horizontal" size="xs">
@@ -24,8 +29,8 @@ export function ConfirmationModalComponent(props: ConfirmationModalProps) {
                             Cancel
                         </Button>
                         <Button variant="primary" onClick={() => {
-                            props.confirmBehaviour();
-                            if(props.closeModalOnConfirm){
+                            confirmBehaviour();
+                            if(closeModalOnConfirm){
                                 setModalVisible(false);
                             }}}>
                             Ok
@@ -34,7 +39,7 @@ export function ConfirmationModalComponent(props: ConfirmationModalProps) {
                 </Box>
             }
         >
-            {props.body}
+            {body}
         </Modal>
     );
 }
