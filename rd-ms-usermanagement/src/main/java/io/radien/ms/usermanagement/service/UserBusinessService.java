@@ -23,12 +23,14 @@ import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.i18n.I18NRESTServiceAccess;
 import io.radien.api.service.notification.SQSProducerAccess;
 import io.radien.api.service.user.UserServiceAccess;
-import io.radien.exception.*;
+import io.radien.exception.BadRequestException;
+import io.radien.exception.ProcessingLockedException;
+import io.radien.exception.SystemException;
+import io.radien.exception.UniquenessConstraintException;
+import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.entities.User;
 import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.radien.ms.usermanagement.entities.UserEntity;
@@ -203,6 +205,7 @@ public class UserBusinessService implements Serializable {
 		if (!userServiceAccess.get(user.getId()).isProcessingLocked()) {
 			user.setProcessingLocked(false);
 			handleChanges(user, skipKeycloak);
+			sendNotification(user, OperationType.MODIFICATION);
 		} else {
 			throw new ProcessingLockedException();
 		}
@@ -229,6 +232,7 @@ public class UserBusinessService implements Serializable {
 		User user = new UserEntity((User) userServiceAccess.get(id));
 		user.setProcessingLocked(processingLock);
 		handleChanges(user, user.isDelegatedCreation());
+		sendNotification(user, OperationType.RESTRICTION);
 	}
 
 	/**
