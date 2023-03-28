@@ -20,7 +20,7 @@ import io.radien.api.model.user.SystemPagedUserSearchFilter;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.api.service.batch.BatchSummary;
-import io.radien.api.service.mail.model.OperationType;
+import io.radien.api.service.i18n.I18NRESTServiceAccess;
 import io.radien.api.service.notification.SQSProducerAccess;
 import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.*;
@@ -54,6 +54,34 @@ import static io.radien.exception.GenericErrorCodeMessage.INVALID_VALUE_FOR_PARA
  */
 @Stateless
 public class UserBusinessService implements Serializable {
+
+	/**
+	 * Enum containing all operations that can result in a user notification.
+	 * Each operation has contains two fields,
+	 * one representing the present and the other past simple version of the operation executed,
+	 * that should be linked to labels in the 'language.properties' file.
+	 */
+	private enum OperationType {
+		MODIFICATION("data_manipulation_modification_present", "data_manipulation_modification_past_simple"),
+		DELETION("data_manipulation_deletion_present", "data_manipulation_deletion_past_simple"),
+		RESTRICTION("data_manipulation_restriction_present", "data_manipulation_restriction_past_simple");
+
+
+		private final String operationPresent, operationPastSimple;
+
+		OperationType(String operation, String operation_past_simple){
+			this.operationPresent = operation;
+			this.operationPastSimple = operation_past_simple;
+		}
+
+		public String getOperationPresent(){
+			return operationPresent;
+		}
+
+		public String getOperationPasteSimple(){
+			return operationPastSimple;
+		}
+	}
 	private static final long serialVersionUID = 9136599710056928804L;
 
 	Logger log = LoggerFactory.getLogger(UserBusinessService.class);
@@ -63,6 +91,8 @@ public class UserBusinessService implements Serializable {
 	private KeycloakBusinessService keycloakBusinessService;
 	@Inject
 	private SQSProducerAccess notificationService;
+	@Inject
+	private I18NRESTServiceAccess translationService;
 
 	/**
 	 * Method to request a specific user id by a given subject
@@ -306,14 +336,19 @@ public class UserBusinessService implements Serializable {
 	}
 
 
+	/**
+	 * Sends an email notifying a user of a data manipulation executed upon his account.
+	 * @param user to notify.
+	 * @param operation executed upon said user's account.
+	 */
 	private void sendNotification(SystemUser user, OperationType operation){
 		String email = user.getUserEmail();
 		try {
 			Map<String, String> args = new HashMap<>();
 			args.put("firstname", user.getFirstname());
 			args.put("lastname", user.getLastname());
-			args.put("operation", operation.getOperation());
-			args.put("operation_complete", operation.getOperationPasteSimple());
+			args.put("operation", translationService.getTranslation(operation.getOperationPresent(), "en", "radien"));
+			args.put("operation_complete", translationService.getTranslation(operation.getOperationPasteSimple(), "en", "radien"));
 			notificationService.emailNotification(email, "email-11", "en", args);
 		} catch (Exception e) {
 			log.error("An exception has occurred when attempting to send an email change request. Stack trace: {}", e.toString());

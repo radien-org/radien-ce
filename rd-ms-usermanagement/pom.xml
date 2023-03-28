@@ -99,6 +99,10 @@
 			<groupId>io.radien</groupId>
 			<artifactId>rd-ms-notificationmanagement-client</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-ecm-client</artifactId>
+		</dependency>
 
 		<!-- Microprofile -->
 		<dependency>
