@@ -24,7 +24,7 @@ const getRolesByIds = async (roleIds: number[], accessToken: string) => {
     return result.data;
 };
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+export default async function getTenantRolesByTenantId(req: NextApiRequest, res: NextApiResponse) {
     const { tenantId } = req.query;
     const session = await getServerSession(req, res, authOptions);
     if (!session) {
@@ -59,4 +59,4 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     } catch (e) {
         res.status(500).json(e);
     }
-};
+}

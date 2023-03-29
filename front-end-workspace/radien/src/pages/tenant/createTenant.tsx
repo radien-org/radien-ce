@@ -8,17 +8,11 @@ import { useContext, useEffect, useState } from "react";
 import { Loader } from "@/components/Loader/Loader";
 import { RadienContext } from "@/context/RadienContextProvider";
 import dynamic from "next/dynamic";
-import { Tenant } from "radien";
 import useCreateTenant from "@/hooks/useCreateTenant";
 import { useRouter } from "next/router";
-import {types} from "sass";
-import Number = types.Number;
-import {OptionDefinition} from "@cloudscape-design/components/internal/components/option/interfaces";
-import axios, { AxiosError } from "axios";
-import emailValidator from 'email-validator';
-import {useQuery} from "react-query";
+import { OptionDefinition } from "@cloudscape-design/components/internal/components/option/interfaces";
+import emailValidator from "email-validator";
 import useAvailableTenants from "@/hooks/useAvailableTenants";
-
 
 const FormField = dynamic(() => import("@cloudscape-design/components/form-field"), { ssr: false });
 
@@ -26,33 +20,32 @@ export default function CreateTenant() {
     const [name, setName] = useState("");
     const [clientAddress, setClientAddress] = useState("");
     const [tenantEnd, setTenantEnd] = useState("");
-    const [clientCity, setClientCity] = useState("")
-    const [clientCountry, setClientCountry] = useState("")
-    const [clientEmail, setClientEmail] = useState("")
-    const [clientPhoneNumber,setClientPhoneNumber] = useState("")
-    const [clientZipCode,setClientZipCode] = useState("")
+    const [clientCity, setClientCity] = useState("");
+    const [clientCountry, setClientCountry] = useState("");
+    const [clientEmail, setClientEmail] = useState("");
+    const [clientPhoneNumber, setClientPhoneNumber] = useState("");
+    const [clientZipCode, setClientZipCode] = useState("");
 
-    const [tenantKey,setTenantKey] = useState("")
-    const [tenantStart,setTenantStart] = useState("")
-    const [tenantType,setTenantType] = useState("")
+    const [tenantKey, setTenantKey] = useState("");
+    const [tenantStart, setTenantStart] = useState("");
+    const [tenantType, setTenantType] = useState("");
     const [selectedTenant, setSelectedTenant] = useState<OptionDefinition | null>(null);
     const [selectedTenantType, setSelectedTenantType] = useState<OptionDefinition | null>(null);
     const { activeTenant } = useContext(RadienContext);
 
-
     const [isNameValid, setIsNameValid] = useState(false);
     const [isClientAddressValid, setIsClientAddressValid] = useState(true);
     const [isTenantEndValid, setIsTenantEndValid] = useState(false);
-    const [isClientCityValid, setIsClientCityValid] = useState(true)
-    const [isClientCountryValid, setIsClientCountryValid] = useState(true)
-    const [isClientEmailValid, setIsClientEmailValid] = useState(true)
-    const [isClientIdValid,setIsClientIdValid] = useState(true)
-    const [isClientPhoneNumberValid,setIsClientPhoneNumberValid] = useState(true)
-    const [isClientZipCodeValid,setIsClientZipCodeValid] = useState(true)
-    const [isParentIdValid,setIsParentIdValid] = useState(true)
-    const [isTenantKeyValid,setIsTenantKeyValid] = useState(false)
-    const [isTenantStartValid,setIsTenantStartValid] = useState(false)
-    const [isTenantTypeValid,setIsTenantTypeValid] = useState(false)
+    const [isClientCityValid, setIsClientCityValid] = useState(true);
+    const [isClientCountryValid, setIsClientCountryValid] = useState(true);
+    const [isClientEmailValid, setIsClientEmailValid] = useState(true);
+    const [isClientIdValid, setIsClientIdValid] = useState(true);
+    const [isClientPhoneNumberValid, setIsClientPhoneNumberValid] = useState(true);
+    const [isClientZipCodeValid, setIsClientZipCodeValid] = useState(true);
+    const [isParentIdValid, setIsParentIdValid] = useState(true);
+    const [isTenantKeyValid, setIsTenantKeyValid] = useState(false);
+    const [isTenantStartValid, setIsTenantStartValid] = useState(false);
+    const [isTenantTypeValid, setIsTenantTypeValid] = useState(false);
 
     const [isFormSubmitted, setIsFormSubmitted] = useState(false);
     const [isFormValid, setIsFormValid] = useState(false);
@@ -62,14 +55,25 @@ export default function CreateTenant() {
     const { i18n } = useContext(RadienContext);
     const { locale } = useRouter();
 
-    const {  data: tenants, isLoading: tenantsLoading, error: tenantLoadError } = useAvailableTenants();
+    const { data: tenants, isLoading: tenantsLoading, error: tenantLoadError } = useAvailableTenants();
 
     useEffect(() => {
         validateAll();
-    }, [isNameValid, isClientAddressValid, isTenantEndValid, isClientCityValid,
-        isClientCountryValid, isClientEmailValid, isClientIdValid, isClientPhoneNumberValid,
-        isClientZipCodeValid, isParentIdValid, isTenantTypeValid, isTenantKeyValid, isTenantStartValid]);
-
+    }, [
+        isNameValid,
+        isClientAddressValid,
+        isTenantEndValid,
+        isClientCityValid,
+        isClientCountryValid,
+        isClientEmailValid,
+        isClientIdValid,
+        isClientPhoneNumberValid,
+        isClientZipCodeValid,
+        isParentIdValid,
+        isTenantTypeValid,
+        isTenantKeyValid,
+        isTenantStartValid,
+    ]);
 
     const validateName = (_name: string) => {
         if (_name.trim().length > 0) {
@@ -80,7 +84,7 @@ export default function CreateTenant() {
     };
 
     const validateClientEmail = (_clientEmail: string) => {
-        if (_clientEmail.trim().length > 0 && emailValidator.validate(String(_clientEmail)) ) {
+        if (_clientEmail.trim().length > 0 && emailValidator.validate(String(_clientEmail))) {
             setIsClientEmailValid(true);
         } else {
             setIsClientEmailValid(false);
@@ -113,7 +117,6 @@ export default function CreateTenant() {
         } else {
             setIsTenantTypeValid(false);
         }
-
     };
     const validateTenantKey = (_tenantKey: string) => {
         if (_tenantKey.trim().length > 0) {
@@ -124,7 +127,7 @@ export default function CreateTenant() {
     };
 
     const validateTenantStart = (_tenantStart: any) => {
-        if (_tenantStart && new Date(_tenantStart) > new Date()){
+        if (_tenantStart && new Date(_tenantStart) > new Date()) {
             setIsTenantStartValid(true);
         } else {
             setIsTenantStartValid(false);
@@ -132,17 +135,29 @@ export default function CreateTenant() {
     };
 
     const validateTenantEnd = (_tenantEnd: any) => {
-        if (_tenantEnd && new Date(_tenantEnd) > new Date(tenantStart))  {
+        if (_tenantEnd && new Date(_tenantEnd) > new Date(tenantStart)) {
             setIsTenantEndValid(true);
         } else {
             setIsTenantEndValid(false);
         }
     };
 
-
-
     const validateAll = () => {
-        setIsFormValid(isNameValid && isClientAddressValid && isTenantEndValid && isClientCityValid && isClientCountryValid && isClientEmailValid && isClientIdValid && isClientPhoneNumberValid && isClientZipCodeValid && isParentIdValid && isTenantTypeValid && isTenantKeyValid && isTenantStartValid);
+        setIsFormValid(
+            isNameValid &&
+                isClientAddressValid &&
+                isTenantEndValid &&
+                isClientCityValid &&
+                isClientCountryValid &&
+                isClientEmailValid &&
+                isClientIdValid &&
+                isClientPhoneNumberValid &&
+                isClientZipCodeValid &&
+                isParentIdValid &&
+                isTenantTypeValid &&
+                isTenantKeyValid &&
+                isTenantStartValid
+        );
     };
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -163,11 +178,10 @@ export default function CreateTenant() {
             tenantType,
             name,
             clientId: tenantType === "SUB" ? selectedTenant?.value : null,
-            parentId: tenantType !== "ROOT" ? activeTenant.data?.tenantId : null
+            parentId: tenantType !== "ROOT" ? activeTenant.data?.tenantId : null,
         };
         createTenantMutation.mutate(tenant);
     };
-
 
     return (
         <>
@@ -199,15 +213,10 @@ export default function CreateTenant() {
                                     />
                                 </FormField>
 
-
                                 <FormField
                                     key={"per-form--2"}
                                     label={i18n?.create_tenant_email || "Email"}
-                                    errorText={
-                                        !isClientEmailValid && isFormSubmitted
-                                            ? i18n?.create_tenant_email_error || "Please enter a valid email"
-                                            : null
-                                    }>
+                                    errorText={!isClientEmailValid && isFormSubmitted ? i18n?.create_tenant_email_error || "Please enter a valid email" : null}>
                                     <Input
                                         value={clientEmail}
                                         onChange={(event) => {
@@ -236,11 +245,9 @@ export default function CreateTenant() {
 
                                 <FormField
                                     key={"per-form--2"}
-                                    label={i18n?.create_tenant_tenant_key|| "Tenant Key*"}
+                                    label={i18n?.create_tenant_tenant_key || "Tenant Key*"}
                                     errorText={
-                                        !isTenantKeyValid && isFormSubmitted
-                                            ? i18n?.create_tenant_key_error || "Please enter a valid Tenant key"
-                                            : null
+                                        !isTenantKeyValid && isFormSubmitted ? i18n?.create_tenant_key_error || "Please enter a valid Tenant key" : null
                                     }>
                                     <Input
                                         value={tenantKey}
@@ -253,123 +260,126 @@ export default function CreateTenant() {
 
                                 <FormField
                                     key={"per-form--2"}
-                                    label={i18n?.create_tenant_tenant_type|| "Tenant Type*"}
+                                    label={i18n?.create_tenant_tenant_type || "Tenant Type*"}
                                     errorText={
-                                        !isTenantTypeValid && isFormSubmitted
-                                            ? i18n?.create_tenant_type_error || "Please enter a valid Tenant type"
-                                            : null
+                                        !isTenantTypeValid && isFormSubmitted ? i18n?.create_tenant_type_error || "Please enter a valid Tenant type" : null
                                     }>
                                     <Select
                                         selectedOption={selectedTenantType}
-                                        onChange={({detail}) => {
+                                        onChange={({ detail }) => {
                                             setSelectedTenantType(detail.selectedOption);
                                             setTenantType(String(detail.selectedOption.value));
                                             validateTenantType(String(detail.selectedOption));
                                         }}
-                                        options = {[
-                                            {label:"ROOT",value:"ROOT"},
-                                            {label:"CLIENT",value:"CLIENT"},
-                                            {label:"SUB",value:"SUB"}
+                                        options={[
+                                            { label: "ROOT", value: "ROOT" },
+                                            { label: "CLIENT", value: "CLIENT" },
+                                            { label: "SUB", value: "SUB" },
                                         ]}
                                         loadingText={i18n?.tenant_creation_tenant_type_loading || "Loading tenant types..."}
                                         placeholder={i18n?.tenant_creation_tenant_type_placeholder || "Choose an tenant types"}
                                         selectedAriaLabel={i18n?.tenant_creation_tenant_type_selected_aria || "Selected tenant type"}
                                         statusType={tenantsLoading ? "loading" : tenantLoadError ? "error" : "finished"}
                                     />
-
-
                                 </FormField>
-                                {tenantType === 'SUB' && <FormField
-                                    key={"per-form--2"}
-                                    label={i18n?.tenant_creation_client_id || "Client ID *"}
-                                    errorText={!isClientIdValid && isFormSubmitted ? i18n?.tenant_creation_client_id || "Please select an action" : null}>
-                                    <Select
-                                        selectedOption={selectedTenant}
-                                        onChange={({detail}) => {
-                                            setSelectedTenant(detail.selectedOption);
-                                            validateParentId(String(detail.selectedOption));
-                                        }}
-                                        options={
-                                           tenants
-                                                ? [
-                                                   ...tenants?.map((tenant: any) => {
-                                                        return {label: tenant.name, value: tenant.id};
-                                                    }),
-                                                ]
-                                                : []
-                                        }
-                                        loadingText={i18n?.tenant_creation_client_loading || "Loading actions..."}
-                                        placeholder={i18n?.tenant_creation_client_placeholder || "Choose an client"}
-                                        selectedAriaLabel={i18n?.tenant_creation_client_selected_aria || "Selected client"}
-                                        statusType={tenantsLoading ? "loading" : tenantLoadError ? "error" : "finished"}
-                                    />
-                                </FormField>}
+                                {tenantType === "SUB" && (
+                                    <FormField
+                                        key={"per-form--2"}
+                                        label={i18n?.tenant_creation_client_id || "Client ID *"}
+                                        errorText={!isClientIdValid && isFormSubmitted ? i18n?.tenant_creation_client_id || "Please select an action" : null}>
+                                        <Select
+                                            selectedOption={selectedTenant}
+                                            onChange={({ detail }) => {
+                                                setSelectedTenant(detail.selectedOption);
+                                                validateParentId(String(detail.selectedOption));
+                                            }}
+                                            options={
+                                                tenants
+                                                    ? [
+                                                          ...tenants?.map((tenant: any) => {
+                                                              return { label: tenant.name, value: tenant.id };
+                                                          }),
+                                                      ]
+                                                    : []
+                                            }
+                                            loadingText={i18n?.tenant_creation_client_loading || "Loading actions..."}
+                                            placeholder={i18n?.tenant_creation_client_placeholder || "Choose an client"}
+                                            selectedAriaLabel={i18n?.tenant_creation_client_selected_aria || "Selected client"}
+                                            statusType={tenantsLoading ? "loading" : tenantLoadError ? "error" : "finished"}
+                                        />
+                                    </FormField>
+                                )}
 
-                                {tenantType === 'CLIENT' && <FormField
+                                {tenantType === "CLIENT" && (
+                                    <FormField
+                                        key={"per-form--2"}
+                                        label={i18n?.create_tenant_address || "Address"}
+                                        errorText={
+                                            !isClientAddressValid && isFormSubmitted
+                                                ? i18n?.create_tenant_address_error || "Please enter a valid address"
+                                                : null
+                                        }>
+                                        <Input
+                                            value={clientAddress}
+                                            onChange={(event) => {
+                                                setClientAddress(event.detail.value);
+                                            }}
+                                        />
+                                    </FormField>
+                                )}
 
-                                    key={"per-form--2"}
-                                    label={i18n?.create_tenant_address || "Address"}
-                                    errorText={
-                                        !isClientAddressValid && isFormSubmitted
-                                            ? i18n?.create_tenant_address_error || "Please enter a valid address"
-                                            : null
-                                    }>
-                                    <Input
-                                        value={clientAddress}
-                                        onChange={(event) => {
-                                            setClientAddress(event.detail.value);
-                                        }}
-                                    />
-                                </FormField>}
+                                {tenantType === "CLIENT" && (
+                                    <FormField
+                                        key={"per-form--2"}
+                                        label={i18n?.create_tenant_city || "City"}
+                                        errorText={
+                                            !isClientCityValid && isFormSubmitted ? i18n?.create_tenant_city_error || "Please enter a valid city" : null
+                                        }>
+                                        <Input
+                                            value={clientCity}
+                                            onChange={(event) => {
+                                                setClientCity(event.detail.value);
+                                            }}
+                                        />
+                                    </FormField>
+                                )}
 
-                                {tenantType === 'CLIENT' && <FormField
-                                    key={"per-form--2"}
-                                    label={i18n?.create_tenant_city || "City"}
-                                    errorText={
-                                        !isClientCityValid && isFormSubmitted
-                                            ? i18n?.create_tenant_city_error || "Please enter a valid city"
-                                            : null
-                                    }>
-                                    <Input
-                                        value={clientCity}
-                                        onChange={(event) => {
-                                            setClientCity(event.detail.value);
-                                        }}
-                                    />
-                                </FormField>}
+                                {tenantType === "CLIENT" && (
+                                    <FormField
+                                        key={"per-form--2"}
+                                        label={i18n?.create_tenant_zipcode || "Zip Code"}
+                                        errorText={
+                                            !isClientZipCodeValid && isFormSubmitted
+                                                ? i18n?.create_tenant_zipcode_error || "Please enter a valid zipcode"
+                                                : null
+                                        }>
+                                        <Input
+                                            value={clientZipCode}
+                                            onChange={(event) => {
+                                                setClientZipCode(event.detail.value);
+                                                validateClientZipCode(event.detail.value);
+                                            }}
+                                        />
+                                    </FormField>
+                                )}
 
-                                {tenantType === 'CLIENT' && <FormField
-                                    key={"per-form--2"}
-                                    label={i18n?.create_tenant_zipcode || "Zip Code"}
-                                    errorText={
-                                        !isClientZipCodeValid && isFormSubmitted
-                                            ? i18n?.create_tenant_zipcode_error || "Please enter a valid zipcode"
-                                            : null
-                                    }>
-                                    <Input
-                                        value={clientZipCode}
-                                        onChange={(event) => {
-                                            setClientZipCode(event.detail.value);
-                                            validateClientZipCode(event.detail.value);
-                                        }}
-                                    />
-                                </FormField>}
-
-                                {tenantType === 'CLIENT' && <FormField
-                                    key={"per-form--2"}
-                                    label={i18n?.create_tenant_country || "Country"}
-                                    errorText={
-                                        !isClientCountryValid && isFormSubmitted
-                                            ? i18n?.create_tenant_country_error || "Please enter a valid country"
-                                            : null
-                                    }>
-                                    <Input
-                                        value={clientCountry}
-                                        onChange={(event) => {
-                                            setClientCountry(event.detail.value);
-                                        }}
-                                    />
-                                </FormField>}
+                                {tenantType === "CLIENT" && (
+                                    <FormField
+                                        key={"per-form--2"}
+                                        label={i18n?.create_tenant_country || "Country"}
+                                        errorText={
+                                            !isClientCountryValid && isFormSubmitted
+                                                ? i18n?.create_tenant_country_error || "Please enter a valid country"
+                                                : null
+                                        }>
+                                        <Input
+                                            value={clientCountry}
+                                            onChange={(event) => {
+                                                setClientCountry(event.detail.value);
+                                            }}
+                                        />
+                                    </FormField>
+                                )}
 
                                 <FormField
                                     key={"per-form--2"}
@@ -394,8 +404,6 @@ export default function CreateTenant() {
                                         placeholder="YYYY/MM/DD"
                                     />
                                 </FormField>
-
-
 
                                 <FormField
                                     key={"per-form--2"}

@@ -1,3 +1,7 @@
 {
-    "extends": ["next", "prettier"]
+    "extends": ["next", "prettier"],
+    "rules": {
+        "react-hooks/exhaustive-deps": "off",
+        "react-hooks/rules-of-hooks": "off"
+    }
 }

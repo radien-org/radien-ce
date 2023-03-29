@@ -16,7 +16,7 @@ const buildConfig = (_phase) => {
     const config = plugins.reduce((acc, next) => next(acc), {
         ...nextConfig,
     });
-    return config;
+    return { ...config, output: "standalone" };
 };
 
 module.exports = buildConfig();

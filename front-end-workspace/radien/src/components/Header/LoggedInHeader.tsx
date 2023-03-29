@@ -1,6 +1,6 @@
-import { useRouter } from "next/router";
+import { NextRouter, useRouter } from "next/router";
 import React, { useContext } from "react";
-import { RadienContext } from "@/context/RadienContextProvider";
+import { RadienContext, RadienContextDef } from "@/context/RadienContextProvider";
 import useAssignedTenants from "@/hooks/useAssignedTenants";
 import useCheckPermissions from "@/hooks/useCheckPermissions";
 import useSetActiveTenant from "@/hooks/useSetActiveTenant";
@@ -15,11 +15,12 @@ import MenuDropdownUtility = TopNavigationProps.MenuDropdownUtility;
 
 export default function LoggedInHeader({ topNavigationProps, localeClicked, i18nStrings }: HeaderProps) {
     const router = useRouter();
+    const radienContext = useContext(RadienContext);
     const {
         userInSession: radienUser,
         i18n,
         activeTenant: { data: activeTenant, isLoading: activeTenantLoading },
-    } = useContext(RadienContext);
+    } = radienContext;
     const { isLoading: loadingAssignedTenants, data: assignedTenants } = useAssignedTenants(radienUser!.id);
     const {
         user: { isLoading: isLoadingUser, data: usersViewPermission },
@@ -165,7 +166,7 @@ export default function LoggedInHeader({ topNavigationProps, localeClicked, i18n
         systemMenus.items = [item, ...systemMenus.items];
     }
 
-    systemMenus = generateSystemRoleMenu(systemMenus);
+    systemMenus = useGenerateSystemRoleMenu(systemMenus);
 
     if (!isTenantAdminLoading && isTenantAdmin) {
         const item: ItemOrGroup = {
@@ -201,7 +202,7 @@ export default function LoggedInHeader({ topNavigationProps, localeClicked, i18n
     );
 }
 
-const generateSystemRoleMenu = (systemMenus: MenuDropdownUtility) => {
+const useGenerateSystemRoleMenu = (systemMenus: MenuDropdownUtility) => {
     const router = useRouter();
     const {
         userInSession: radienUser,

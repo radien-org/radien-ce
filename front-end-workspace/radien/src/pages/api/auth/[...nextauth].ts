@@ -31,6 +31,7 @@ export const authOptions: AuthOptions = {
                     mobileNumber: "",
                     enabled: true,
                     delegatedCreation: true,
+                    processingLocked: false,
                     terminationDate: new Date(),
                     createDate: new Date(),
                     lastUpdate: new Date(),

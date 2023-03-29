@@ -20,7 +20,7 @@ const getUserById = async (userId: number, accessToken: string) => {
     return result.data;
 };
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+export default async function getTenantRequests(req: NextApiRequest, res: NextApiResponse) {
     const session = await getServerSession(req, res, authOptions);
     const { pageNo, pageSize, ticketType, data } = req.query;
     if (!session) {
@@ -57,4 +57,4 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     res.status(200).json(resultsMap);
-};
+}

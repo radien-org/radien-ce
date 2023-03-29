@@ -29,10 +29,6 @@ export default function CreateUser() {
     const { i18n } = useContext(RadienContext);
     const createUser = useCreateUser();
 
-    useEffect(() => {
-        validateAll();
-    }, [isEmailValid, isLastNameValid, isFirstNameValid]);
-
     const validateEmail = (email: string) => {
         const re = /\S+@\S+\.\S+/;
         const res = re.test(email);
@@ -63,6 +59,10 @@ export default function CreateUser() {
         setIsFormValid(isEmailValid && isFirstNameValid && isLastNameValid);
     };
 
+    useEffect(() => {
+        validateAll();
+    }, [isEmailValid, isLastNameValid, isFirstNameValid]);
+
     const handleSubmit = async () => {
         setIsEmailTouched(true);
         setIsFirstNameTouched(true);
@@ -79,6 +79,7 @@ export default function CreateUser() {
             logon: email,
             enabled: true,
             delegatedCreation: false,
+            processingLocked: false,
             terminationDate: new Date(),
             createDate: new Date(),
             lastUpdate: new Date(),

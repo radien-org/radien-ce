@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 
 import { useUserInSession } from "@/hooks/useUserInSession";
 import { FlashbarProps } from "@cloudscape-design/components";
@@ -9,12 +8,24 @@ import { UseQueryResult } from "react-query";
 import useI18N from "@/hooks/useI18N";
 import { handleErrorMessage, handleInfoMessage, handleSuccessMessage, handleWarningMessage } from "@/components/Flashbar/FlashbarComponent";
 
-export const RadienContext = React.createContext({
+export type RadienContextDef = {
+    values: FlashbarProps.MessageDefinition[];
+    addSuccessMessage: (message: string, dismissedAfter?: number) => void;
+    addInfoMessage: (message: string, dismissedAfter?: number) => void;
+    addWarningMessage: (message: string) => void;
+    addErrorMessage: (message: string) => void;
+    isLoadingUserInSession: boolean;
+    userInSession: User | undefined;
+    activeTenant: UseQueryResult<ActiveTenant, Error>;
+    i18n: any;
+};
+
+export const RadienContext = React.createContext<RadienContextDef>({
     values: [] as FlashbarProps.MessageDefinition[],
-    addSuccessMessage: (message: string, dismissedAfter?: number) => {},
-    addInfoMessage: (message: string, dismissedAfter?: number) => {},
-    addWarningMessage: (message: string) => {},
-    addErrorMessage: (message: string) => {},
+    addSuccessMessage: (message: string, dismissedAfter?: number) => null,
+    addInfoMessage: (message: string, dismissedAfter?: number) => null,
+    addWarningMessage: (message: string) => null,
+    addErrorMessage: (message: string) => null,
     isLoadingUserInSession: true,
     userInSession: {} as User | undefined,
     activeTenant: {} as UseQueryResult<ActiveTenant, Error>,

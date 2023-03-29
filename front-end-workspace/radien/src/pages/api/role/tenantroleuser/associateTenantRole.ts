@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+export default async function associateTenantRole(req: NextApiRequest, res: NextApiResponse) {
     const { tenantRoleId, userId } = req.query;
     const session = await getServerSession(req, res, authOptions);
 
@@ -34,4 +34,4 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     } catch (e) {
         res.status(500).json(e);
     }
-};
+}
