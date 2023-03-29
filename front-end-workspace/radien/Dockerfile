@@ -1,4 +1,4 @@
-FROM radien/node-base AS base
+FROM 720023125294.dkr.ecr.eu-west-1.amazonaws.com/radien/node-base AS base
 
 # Install dependencies only when needed
 FROM base AS deps
