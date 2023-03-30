@@ -16,7 +16,7 @@ const buildConfig = (_phase) => {
     const config = plugins.reduce((acc, next) => next(acc), {
         ...nextConfig,
     });
-    return { ...config, output: "standalone", basePath: "/web" };
+    return { ...config, output: "standalone" };
 };
 
 module.exports = buildConfig();
