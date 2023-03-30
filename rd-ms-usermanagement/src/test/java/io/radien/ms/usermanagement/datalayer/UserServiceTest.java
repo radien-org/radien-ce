@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.usermanagement.service;
+package io.radien.ms.usermanagement.datalayer;
 
 import io.radien.api.entity.Page;
 import io.radien.api.model.user.SystemUser;
@@ -28,7 +28,6 @@ import io.radien.exception.UserNotFoundException;
 import io.radien.ms.usermanagement.client.entities.PagedUserSearchFilter;
 import io.radien.ms.usermanagement.client.entities.UserSearchFilter;
 import io.radien.ms.usermanagement.client.services.UserFactory;
-import io.radien.ms.usermanagement.datalayer.UserService;
 import io.radien.ms.usermanagement.entities.UserEntity;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,6 +77,7 @@ public class UserServiceTest {
         p.put("openejb.exclude-include.order", "include-exclude");
         p.put("openejb.deployments.classpath.include",".*usermanagement.*");
         p.put("openejb.deployments.classpath.exclude",".*client.*");
+        p.put("openejb.cdi.activated-on-ejb", "false");
 
         container = EJBContainer.createEJBContainer(p);
         final Context context = container.getContext();
