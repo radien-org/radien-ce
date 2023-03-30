@@ -56,43 +56,6 @@ import static io.radien.exception.GenericErrorCodeMessage.INVALID_VALUE_FOR_PARA
  */
 @Stateless
 public class UserBusinessService implements Serializable {
-
-	/**
-	 * Enum containing all operations that can result in a user notification.
-	 * Each operation has contains two fields,
-	 * one representing the present and the other past simple version of the operation executed,
-	 * that should be linked to labels in the 'language.properties' file.
-	 */
-	private enum OperationType {
-		MODIFICATION("modification", "data_manipulation_modification_subject", "data_manipulation_modification_present", "data_manipulation_modification_past_simple"),
-		DELETION("deletion", "data_manipulation_deletion_subject", "data_manipulation_deletion_present", "data_manipulation_deletion_past_simple"),
-		RESTRICTION("restriction", "data_manipulation_restriction_subject", "data_manipulation_restriction_present", "data_manipulation_restriction_past_simple");
-
-		private final String deverbal, subject, present, pastSimple;
-
-		OperationType(String deverbal, String subject, String operation, String pastSimple){
-			this.deverbal = deverbal;
-			this.subject = subject;
-			this.present = operation;
-			this.pastSimple = pastSimple;
-		}
-
-		public String getDeverbal() {
-			return deverbal;
-		}
-
-		public String getSubject(){
-			return subject;
-		}
-
-		public String getPresent(){
-			return present;
-		}
-
-		public String getPastSimple(){
-			return pastSimple;
-		}
-	}
 	private static final long serialVersionUID = 9136599710056928804L;
 
 	Logger log = LoggerFactory.getLogger(UserBusinessService.class);
@@ -169,15 +132,14 @@ public class UserBusinessService implements Serializable {
 	 * @param id of the user to be deleted.
 	 */
 	public void delete(long id, boolean sendNotification) {
-		SystemUser u = userServiceAccess.get(id);
+		SystemUser u = new User((User) userServiceAccess.get(id));
 		if (!u.isProcessingLocked()) {
 			if(u.getSub() != null) {
 				keycloakBusinessService.deleteUser(u.getSub());
 			}
-			SystemUser clone = new User((User) u);
 			userServiceAccess.delete(id);
 			if(sendNotification){
-				sendNotification(clone, OperationType.DELETION);
+				sendNotification(u, OperationType.DELETION);
 			}
 		}  else {
 			throw new ProcessingLockedException();
