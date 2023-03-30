@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.radien.ms.usermanagement.service;
+package io.radien.ms.usermanagement.util;
 
 import io.radien.api.model.user.SystemUser;
 import io.radien.ms.usermanagement.client.services.UserFactory;

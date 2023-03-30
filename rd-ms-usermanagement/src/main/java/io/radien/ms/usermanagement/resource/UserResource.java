@@ -160,7 +160,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 		}  catch (Exception e){
 			return getResponseFromException(e);
 		}
-		userBusinessService.delete(id);
+		userBusinessService.delete(id, isUserInSessionTheTarget(id));
 		return Response.ok().build();
 	}
 
@@ -199,7 +199,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 			}
 			UserEntity userEntity = new UserEntity(user);
 			userEntity.setId(id);
-			userBusinessService.update(userEntity,userEntity.isDelegatedCreation());
+			userBusinessService.update(userEntity,userEntity.isDelegatedCreation(), isUserInSessionTheTarget(id));
 		}
 		catch (Exception e) {
 			return getResponseFromException(e);
@@ -214,7 +214,7 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 					SystemResourcesEnum.USER.getResourceName()) && !checkUserRoles()){
 				return GenericErrorMessagesToResponseMapper.getForbiddenResponse();
 			}
-			userBusinessService.processingLockChange(id, processingLock);
+			userBusinessService.processingLockChange(id, processingLock, isUserInSessionTheTarget(id));
 		}catch (Exception e){
 			return getResponseFromException(e);
 		}
@@ -325,6 +325,10 @@ public class UserResource extends AuthorizationChecker implements UserResourceCl
 		catch (Exception e) {
 			return getResponseFromException(e);
 		}
+	}
+
+	private boolean isUserInSessionTheTarget(long userId){
+		return userId == ((User) getUserInSession().getEntity()).getId();
 	}
 
 	/**

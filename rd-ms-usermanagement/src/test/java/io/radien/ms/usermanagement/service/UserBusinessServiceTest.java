@@ -20,6 +20,8 @@ import io.radien.api.model.user.SystemPagedUserSearchFilter;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.model.user.SystemUserSearchFilter;
 import io.radien.api.service.batch.BatchSummary;
+import io.radien.api.service.i18n.I18NRESTServiceAccess;
+import io.radien.api.service.notification.SQSProducerAccess;
 import io.radien.api.service.user.UserServiceAccess;
 import io.radien.exception.*;
 import io.radien.ms.usermanagement.client.entities.PagedUserSearchFilter;
@@ -34,12 +36,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -48,12 +48,21 @@ import static io.radien.api.SystemVariables.NEW_PASSWORD;
 import static io.radien.api.SystemVariables.OLD_PASSWORD;
 import static io.radien.exception.GenericErrorCodeMessage.INVALID_VALUE_FOR_PARAMETER;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 
 /**
  * Class that aggregates UnitTest cases for UserBusinessService
@@ -68,6 +77,12 @@ public class UserBusinessServiceTest {
 
     @Mock
     KeycloakBusinessService keycloakBusinessService;
+
+    @Mock
+    SQSProducerAccess notificationService;
+
+    @Mock
+    I18NRESTServiceAccess translationService;
 
     /**
      * Prepares required mock objects
@@ -136,7 +151,7 @@ public class UserBusinessServiceTest {
     }
 
     /**
-     * Test for method {@link UserBusinessService#delete(long)}
+     * Test for method {@link UserBusinessService#delete(long, boolean)}
      */
     @Test
     public void testDelete() {
@@ -145,15 +160,45 @@ public class UserBusinessServiceTest {
 
         boolean success = false;
         try{
-            userBusinessService.delete(1L);
+            userBusinessService.delete(1L, false);
         } catch (Exception e){
             success = true;
         }
-        Assert.assertFalse( success );
+        assertFalse( success );
+    }
+
+    @Test
+    public void testDeleteWithNotification(){
+        SystemUser user = UserFactory.create("a", "b", "l", "subTest", "e", "951",1L,false);
+        when(userServiceAccess.get((Long) any())).thenReturn(user);
+        boolean success = false;
+        try{
+            userBusinessService.delete(1L, true);
+        } catch (Exception e){
+            success = true;
+        }
+        assertFalse( success );
+        verify(notificationService).emailNotification(anyString(), anyString(), anyString(), anyMap());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testDeleteWithNotificationException(){
+        SystemUser user = UserFactory.create("a", "b", "l", "subTest", "e", "951",1L,false);
+        when(userServiceAccess.get((Long) any())).thenReturn(user);
+        when(notificationService.emailNotification(anyString(), anyString(), anyString(), anyMap())).thenThrow(RuntimeException.class);
+        boolean success = false;
+        try{
+            userBusinessService.delete(1L, true);
+        } catch (Exception e){
+            success = true;
+        }
+        assertFalse( success );
+        verify(notificationService).emailNotification(anyString(), anyString(), anyString(), anyMap());
+        notificationService.emailNotification(anyString(), anyString(), anyString(), anyMap());
     }
 
     /**
-     * Test for method {@link UserBusinessService#delete(long)}
+     * Test for method {@link UserBusinessService#delete(long, boolean)}
      * if user processingIsLocked
      */
     @Test(expected = ProcessingLockedException.class)
@@ -162,7 +207,7 @@ public class UserBusinessServiceTest {
         user.setProcessingLocked(true);
         when(userServiceAccess.get((Long) any())).thenReturn(user);
 
-        userBusinessService.delete(1L);
+        userBusinessService.delete(1L, false);
         verify(userServiceAccess, never()).delete(1L);
     }
 
@@ -180,7 +225,7 @@ public class UserBusinessServiceTest {
         } catch (UniquenessConstraintException e){
             success = true;
         }
-        Assert.assertTrue( success );
+        assertTrue( success );
     }
 
     /**
@@ -200,7 +245,7 @@ public class UserBusinessServiceTest {
         } catch (RemoteResourceException e){
             success = false;
         }
-        Assert.assertTrue( success );
+        assertTrue( success );
     }
 
     /**
@@ -218,7 +263,7 @@ public class UserBusinessServiceTest {
         } catch (RemoteResourceException e){
             success = false;
         }
-        Assert.assertFalse( success );
+        assertFalse( success );
     }
 
     /**
@@ -236,7 +281,7 @@ public class UserBusinessServiceTest {
         } catch (RemoteResourceException e){
             success = false;
         }
-        Assert.assertTrue( success );
+        assertTrue( success );
     }
 
     /**
@@ -273,11 +318,11 @@ public class UserBusinessServiceTest {
         } catch (RemoteResourceException | UniquenessConstraintException e){
             success4 = false;
         }
-        Assert.assertTrue(success4);
+        assertTrue(success4);
     }
 
     /**
-     * Test method for {@link UserBusinessService#update(User, boolean)}
+     * Test method for {@link UserBusinessService#update(User, boolean, boolean)}
      * skipping keycloak
      */
     @Test
@@ -290,15 +335,33 @@ public class UserBusinessServiceTest {
         boolean success4 = true;
         when(userServiceAccess.get((Long) any())).thenReturn(user4);
         try{
-            userBusinessService.update(user4, true);
+            userBusinessService.update(user4, true, false);
         } catch (RemoteResourceException | UniquenessConstraintException e){
             success4 = false;
         }
-        Assert.assertTrue(success4);
+        assertTrue(success4);
+    }
+
+    @Test
+    public void testUpdateUserWithNotification(){
+        User user4 = new User();
+        user4.setLogon("logon");
+        user4.setUserEmail("email@email.com");
+        user4.setFirstname("first");
+        user4.setLastname("last");
+        boolean success4 = true;
+        when(userServiceAccess.get((Long) any())).thenReturn(user4);
+        try{
+            userBusinessService.update(user4, true, true);
+        } catch (RemoteResourceException | UniquenessConstraintException e){
+            success4 = false;
+        }
+        assertTrue(success4);
+        verify(notificationService).emailNotification(anyString(), anyString(), anyString(), anyMap());
     }
 
     /**
-     * Test method for {@link UserBusinessService#update(User, boolean)}
+     * Test method for {@link UserBusinessService#update(User, boolean, boolean)}
      * but NOT skipping keycloak. Expected outcome: SUCCESS.
      * @throws UniquenessConstraintException thrown in case of conflict regarding repeated values
      * during update operation
@@ -314,15 +377,15 @@ public class UserBusinessServiceTest {
         boolean success4 = true;
         when(userServiceAccess.get((Long) any())).thenReturn(user4);
         try{
-            userBusinessService.update(user4, false);
+            userBusinessService.update(user4, false, false);
         } catch (RemoteResourceException e){
             success4 = false;
         }
-        Assert.assertTrue(success4);
+        assertTrue(success4);
     }
 
     /**
-     * Test method for {@link UserBusinessService#update(User, boolean)}
+     * Test method for {@link UserBusinessService#update(User, boolean, boolean)}
      * but expecting an error being thrown by Keycloak. Expected outcome: FAILURE.
      * @throws UniquenessConstraintException thrown in case of conflict regarding repeated values
      * during update operation
@@ -339,11 +402,11 @@ public class UserBusinessServiceTest {
         when(userServiceAccess.get(user4.getId())).thenReturn(user4);
         doThrow(new RemoteResourceException("remote error")).
                 when(keycloakBusinessService).updateUser(user4);
-        userBusinessService.update(user4, false);
+        userBusinessService.update(user4, false, false);
     }
 
     /**
-     * Test method for {@link UserBusinessService#update(User, boolean)}
+     * Test method for {@link UserBusinessService#update(User, boolean, boolean)}
      * If processing is locked
      * during update operation
      */
@@ -354,7 +417,7 @@ public class UserBusinessServiceTest {
         user4.setProcessingLocked(true);
         when(userServiceAccess.get(user4.getId())).thenReturn(user4);
 
-        userBusinessService.update(user4, true);
+        userBusinessService.update(user4, true, false);
         verify(userServiceAccess,never()).update(any());
     }
 
@@ -365,9 +428,22 @@ public class UserBusinessServiceTest {
         user.setUserEmail("email@email.com");
         user.setDelegatedCreation(false);
         when(userServiceAccess.get(anyLong())).thenReturn(user);
-        userBusinessService.processingLockChange(1, true);
+        userBusinessService.processingLockChange(1, true, false);
         verify(userServiceAccess).update(any(User.class));
     }
+
+    @Test
+    public void testProcessingLockChangeWithNotification() throws SystemException, UniquenessConstraintException {
+        UserEntity user = new UserEntity();
+        user.setLogon("logon");
+        user.setUserEmail("email@email.com");
+        user.setDelegatedCreation(false);
+        when(userServiceAccess.get(anyLong())).thenReturn(user);
+        userBusinessService.processingLockChange(1, true, true);
+        verify(userServiceAccess).update(any(User.class));
+        verify(notificationService).emailNotification(anyString(), anyString(), anyString(), anyMap());
+    }
+
 
     @Test(expected = UserNotFoundException.class)
     public void testProcessingLockChangeSystemException() throws UniquenessConstraintException, SystemException {
@@ -377,7 +453,7 @@ public class UserBusinessServiceTest {
         SystemException exception = new SystemException("");
         when(userServiceAccess.get(anyLong())).thenReturn(user);
         doThrow(exception).when(userServiceAccess).update(any(User.class));
-        userBusinessService.processingLockChange(1, true);
+        userBusinessService.processingLockChange(1, true, false);
     }
 
     /**
@@ -396,7 +472,7 @@ public class UserBusinessServiceTest {
         } catch (BadRequestException e){
             success = false;
         }
-        Assert.assertFalse(success);
+        assertFalse(success);
     }
 
     /**
@@ -415,7 +491,7 @@ public class UserBusinessServiceTest {
         } catch (BadRequestException e){
             success = false;
         }
-        Assert.assertFalse(success);
+        assertFalse(success);
     }
 
     /**
@@ -434,7 +510,7 @@ public class UserBusinessServiceTest {
         } catch (BadRequestException e){
             success = false;
         }
-        Assert.assertFalse(success);
+        assertFalse(success);
     }
 
     /**
@@ -453,7 +529,7 @@ public class UserBusinessServiceTest {
         } catch (BadRequestException e){
             success = false;
         }
-        Assert.assertFalse( success );
+        assertFalse( success );
     }
 
     /**
@@ -475,7 +551,7 @@ public class UserBusinessServiceTest {
         } catch (RemoteResourceException e){
             success = false;
         }
-        Assert.assertFalse(success);
+        assertFalse(success);
     }
 
     /**
@@ -491,7 +567,7 @@ public class UserBusinessServiceTest {
         } catch (BadRequestException e){
             success = true;
         }
-        Assert.assertTrue(success);
+        assertTrue(success);
     }
 
     /**
@@ -511,7 +587,7 @@ public class UserBusinessServiceTest {
         } catch (RemoteResourceException e){
             success = false;
         }
-        Assert.assertTrue(success);
+        assertTrue(success);
     }
 
     /**
@@ -546,7 +622,7 @@ public class UserBusinessServiceTest {
         } catch (Exception e) {
             success = false;
         }
-        Assert.assertTrue(success);
+        assertTrue(success);
     }
 
     /**
@@ -566,7 +642,7 @@ public class UserBusinessServiceTest {
         } catch (Exception e){
             success = false;
         }
-        Assert.assertTrue(success);
+        assertTrue(success);
     }
 
     /**
@@ -583,7 +659,7 @@ public class UserBusinessServiceTest {
         } catch (RemoteResourceException e){
             success = false;
         }
-        Assert.assertTrue(success);
+        assertTrue(success);
     }
 
     /**
@@ -601,7 +677,7 @@ public class UserBusinessServiceTest {
         } catch (Exception e) {
             success = false;
         }
-        Assert.assertTrue(success);
+        assertTrue(success);
     }
 
     /**
@@ -625,7 +701,7 @@ public class UserBusinessServiceTest {
         } catch (RemoteResourceException e){
             success = false;
         }
-        Assert.assertTrue(success);
+        assertTrue(success);
     }
 
     /**
@@ -649,7 +725,7 @@ public class UserBusinessServiceTest {
         } catch (RemoteResourceException | UniquenessConstraintException e){
             success3 = false;
         }
-        Assert.assertTrue(success3);
+        assertTrue(success3);
     }
 
     /**

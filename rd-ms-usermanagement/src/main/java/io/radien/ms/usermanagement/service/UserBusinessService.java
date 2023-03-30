@@ -64,24 +64,33 @@ public class UserBusinessService implements Serializable {
 	 * that should be linked to labels in the 'language.properties' file.
 	 */
 	private enum OperationType {
-		MODIFICATION("data_manipulation_modification_present", "data_manipulation_modification_past_simple"),
-		DELETION("data_manipulation_deletion_present", "data_manipulation_deletion_past_simple"),
-		RESTRICTION("data_manipulation_restriction_present", "data_manipulation_restriction_past_simple");
+		MODIFICATION("modification", "data_manipulation_modification_subject", "data_manipulation_modification_present", "data_manipulation_modification_past_simple"),
+		DELETION("deletion", "data_manipulation_deletion_subject", "data_manipulation_deletion_present", "data_manipulation_deletion_past_simple"),
+		RESTRICTION("restriction", "data_manipulation_restriction_subject", "data_manipulation_restriction_present", "data_manipulation_restriction_past_simple");
 
+		private final String deverbal, subject, present, pastSimple;
 
-		private final String operationPresent, operationPastSimple;
-
-		OperationType(String operation, String operation_past_simple){
-			this.operationPresent = operation;
-			this.operationPastSimple = operation_past_simple;
+		OperationType(String deverbal, String subject, String operation, String pastSimple){
+			this.deverbal = deverbal;
+			this.subject = subject;
+			this.present = operation;
+			this.pastSimple = pastSimple;
 		}
 
-		public String getOperationPresent(){
-			return operationPresent;
+		public String getDeverbal() {
+			return deverbal;
 		}
 
-		public String getOperationPasteSimple(){
-			return operationPastSimple;
+		public String getSubject(){
+			return subject;
+		}
+
+		public String getPresent(){
+			return present;
+		}
+
+		public String getPastSimple(){
+			return pastSimple;
 		}
 	}
 	private static final long serialVersionUID = 9136599710056928804L;
@@ -159,14 +168,17 @@ public class UserBusinessService implements Serializable {
 	 * Deletes a unique user selected by his id.
 	 * @param id of the user to be deleted.
 	 */
-	public void delete(long id) {
+	public void delete(long id, boolean sendNotification) {
 		SystemUser u = userServiceAccess.get(id);
 		if (!u.isProcessingLocked()) {
 			if(u.getSub() != null) {
 				keycloakBusinessService.deleteUser(u.getSub());
 			}
+			SystemUser clone = new User((User) u);
 			userServiceAccess.delete(id);
-			sendNotification(u, OperationType.DELETION);
+			if(sendNotification){
+				sendNotification(clone, OperationType.DELETION);
+			}
 		}  else {
 			throw new ProcessingLockedException();
 		}
@@ -201,11 +213,13 @@ public class UserBusinessService implements Serializable {
 	 * @param skipKeycloak boolean to skip updating on keycloak
 	 * @throws RemoteResourceException on empty logon, email, first and last name
 	 */
-	public void update(User user,boolean skipKeycloak) throws UniquenessConstraintException {
+	public void update(User user, boolean skipKeycloak, boolean sendNotification) throws UniquenessConstraintException {
 		if (!userServiceAccess.get(user.getId()).isProcessingLocked()) {
 			user.setProcessingLocked(false);
 			handleChanges(user, skipKeycloak);
-			sendNotification(user, OperationType.MODIFICATION);
+			if(sendNotification){
+				sendNotification(user, OperationType.MODIFICATION);
+			}
 		} else {
 			throw new ProcessingLockedException();
 		}
@@ -222,17 +236,22 @@ public class UserBusinessService implements Serializable {
 			try{
 				keycloakBusinessService.updateUser(user);
 			} catch (RemoteResourceException e) {
-				delete(user.getId());
+				delete(user.getId(), false);
 				throw e;
 			}
 		}
 	}
 
-	public void processingLockChange(long id, boolean processingLock) throws UniquenessConstraintException{
+	public void processingLockChange(long id, boolean processingLock, boolean sendNotification) throws UniquenessConstraintException{
 		User user = new UserEntity((User) userServiceAccess.get(id));
+		if(processingLock == user.isProcessingLocked()){
+			return;
+		}
 		user.setProcessingLocked(processingLock);
 		handleChanges(user, user.isDelegatedCreation());
-		sendNotification(user, OperationType.RESTRICTION);
+		if(sendNotification && processingLock){
+			sendNotification(user, OperationType.RESTRICTION);
+		}
 	}
 
 	/**
@@ -345,17 +364,19 @@ public class UserBusinessService implements Serializable {
 	 * @param user to notify.
 	 * @param operation executed upon said user's account.
 	 */
-	private void sendNotification(SystemUser user, OperationType operation){
+	private boolean sendNotification(SystemUser user, OperationType operation){
 		String email = user.getUserEmail();
 		try {
 			Map<String, String> args = new HashMap<>();
 			args.put("firstname", user.getFirstname());
 			args.put("lastname", user.getLastname());
-			args.put("operation", translationService.getTranslation(operation.getOperationPresent(), "en", "radien"));
-			args.put("operation_complete", translationService.getTranslation(operation.getOperationPasteSimple(), "en", "radien"));
-			notificationService.emailNotification(email, "email-11", "en", args);
+			args.put("subject", translationService.getTranslation(operation.getSubject(), "en", "radien"));
+			args.put("operation", translationService.getTranslation(operation.getPresent(), "en", "radien"));
+			args.put("operation_complete", translationService.getTranslation(operation.getPastSimple(), "en", "radien"));
+			return notificationService.emailNotification(email, "email-11", "en", args);
 		} catch (Exception e) {
-			log.error("An exception has occurred when attempting to send an email change request. Stack trace: {}", e.toString());
+			log.error("An exception has occurred when attempting to notify the user of an account {}. Stack trace: {}", operation.getDeverbal(), e.toString());
 		}
+		return false;
 	}
 }

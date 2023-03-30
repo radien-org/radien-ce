@@ -39,7 +39,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.Assert.assertEquals;
@@ -48,7 +47,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * User Resource rest requests and responses
@@ -78,6 +81,9 @@ public class UserResourceTest {
 
     @Mock
     UserClient userClient;
+
+    @Mock
+    HttpServletRequest httpServletRequest;
 
     /**
      * Method before test preparation
@@ -258,6 +264,7 @@ public class UserResourceTest {
 
         doReturn(expectedAuthGranted).when(tenantRoleClient).checkPermissions(
                 1001L, roleList, null);
+        doReturn(mock(User.class)).when(userBusinessService).get(anyLong());
 
         Response response = userResource.delete(1L);
         assertEquals(200,response.getStatus());
@@ -287,7 +294,7 @@ public class UserResourceTest {
      */
     @Test
     public void testDeleteGenericError() throws UserNotFoundException, RemoteResourceException {
-        doThrow(new RemoteResourceException()).when(userBusinessService).delete(1L);
+        doThrow(new RemoteResourceException()).when(userBusinessService).delete(1L, false);
         Response response = userResource.delete(1L);
         assertEquals(500,response.getStatus());
     }
@@ -463,7 +470,7 @@ public class UserResourceTest {
         Response expectedPermissionId = Response.ok().entity(1L).build();
         doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
         doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
-
+        doReturn(mock(User.class)).when(userBusinessService).get(anyLong());
         Response response = userResource.update(1L, new User());
         assertEquals(200,response.getStatus());
     }
@@ -518,7 +525,7 @@ public class UserResourceTest {
         doReturn(expectedAuthGranted).when(tenantRoleClient).isRoleExistentForUser(
                 1001L, SystemRolesEnum.USER_ADMINISTRATOR.getRoleName(), 1L);
 
-        doThrow(new RemoteResourceException()).when(userBusinessService).update(any(), anyBoolean());
+        doThrow(new RemoteResourceException()).when(userBusinessService).update(any(), anyBoolean(), anyBoolean());
 
         User user = new User(); user.setId(1L); user.setSub("aaa-bbb-ccc-ddd");
         Response response = userResource.update(user.getId(), user);
@@ -539,7 +546,8 @@ public class UserResourceTest {
         doReturn(expectedPermissionId).when(permissionClient).getIdByResourceAndAction(any(),any());
         doReturn(Response.ok(Boolean.TRUE).build()).when(tenantRoleClient).isPermissionExistentForUser(1001L,1L,null);
 
-        doThrow(new UniquenessConstraintException()).when(userBusinessService).update(any(), anyBoolean());
+        doThrow(new UniquenessConstraintException()).when(userBusinessService).update(any(), anyBoolean(), anyBoolean());
+        doReturn(mock(User.class)).when(userBusinessService).get(anyLong());
         Response response = userResource.update(1L, new User());
         assertEquals(400,response.getStatus());
     }
@@ -553,7 +561,7 @@ public class UserResourceTest {
     @Test
     public void testUpdateRemoteResourceError() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
         User u = new User();
-        doThrow(new RemoteResourceException()).when(userBusinessService).update(any(),anyBoolean());
+        doThrow(new RemoteResourceException()).when(userBusinessService).update(any(),anyBoolean(), anyBoolean());
         Response response = userResource.update(1L, u);
         assertEquals(500,response.getStatus());
     }
@@ -567,7 +575,7 @@ public class UserResourceTest {
     @Test
     public void testUpdateGenericError() throws UniquenessConstraintException, UserNotFoundException, RemoteResourceException {
         User u = new User();
-        doThrow(new RuntimeException()).when(userBusinessService).update(any(),anyBoolean());
+        doThrow(new RuntimeException()).when(userBusinessService).update(any(),anyBoolean(), anyBoolean());
         Response response = userResource.update(1L, u);
         assertEquals(500,response.getStatus());
     }
@@ -828,7 +836,9 @@ public class UserResourceTest {
 
     @Test
     public void processingLockChange(){
-        assertEquals(200, userResource.processingLockChange(1, true).getStatus());
+        preProcessAuthentication();
+        doReturn(mock(User.class)).when(userBusinessService).get(anyLong());
+        assertEquals(200, userResource.processingLockChange(1L, true).getStatus());
     }
 
     @Test

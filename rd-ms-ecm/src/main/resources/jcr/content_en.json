@@ -71,7 +71,7 @@
     "language": "en",
     "active": "true",
     "system": "true",
-    "name": "radien - Data Alteration",
+    "name": "radien - $subject$",
     "htmlContent": "Dear $firstname$ $lastname$,<br><br>You have requested us to $operation$ your personal data in ra’di'en Platform. We have successfully $operation_complete$ your personal data.<br><br>Thank you.",
     "image": "logo.png",
     "tags": ["Radien", "email", "GDPR"]
