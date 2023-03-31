@@ -203,9 +203,9 @@ export default function UserProfile() {
                                     variant="icon"
                                     onItemClick={(event) => dropdownClickEvent(event)}
                                     items={[
-                                        { text: i18n?.user_profile_delete_label || "Delete", id: "delUser", disabled: false },
+                                        { text: i18n?.user_profile_delete_label || "Delete", id: "delUser", disabled: processingLocked },
                                         { text: i18n?.user_profile_request_user_data || "Request User Data", id: "dataReq", disabled: false },
-                                        { text: i18n?.user_profile_lock_label || "Lock Account from Processing", id: processingLockButtonID, disabled: false },
+                                        { text: i18n?.user_profile_lock_label || "Lock Account from Processing", id: processingLockButtonID, disabled: processingLocked },
                                         { text: i18n?.password_change_header || "Change password", id: "changePwd", disabled: false },
                                     ]}></ButtonDropdown>
                             }>
