@@ -62,7 +62,7 @@
     "system": "true",
     "name": "radien - Tenant Request Not Approved",
     "htmlContent": "Dear $firstName$ $lastName$,<br><br>You requested the tenant $tenantName$.<br>Unfortunately your request has been not been approved.<br><br>If you have further questions, please check together with your tenant's administrator.<br>Thank you.<br><br>Best regards,<br>$tenantName$ administrator.",
-    "image": "logo.png",
+    "image": "imgs/logo.png",
     "tags": ["Radien", "email", "GDPR"]
   },
   {
@@ -73,7 +73,7 @@
     "system": "true",
     "name": "radien - $subject$",
     "htmlContent": "Dear $firstname$ $lastname$,<br><br>You have requested us to $operation$ your personal data in ra'di'en Platform. We have successfully $operation_complete$ your personal data.<br><br>Thank you.",
-    "image": "logo.png",
+    "image": "imgs/logo.png",
     "tags": ["Radien", "email", "GDPR"]
   },
   {
