@@ -13,6 +13,9 @@ export default function useSetActiveTenant() {
     return useMutation({
         mutationFn: ({ userId, tenantId, activeTenantId }: SetActiveTenantProps) =>
             axios.post(`/api/tenant/activeTenant/setActiveTenant`, {}, { params: { userId, tenantId, activeTenantId } }),
-        onSuccess: () => queryClient.invalidateQueries(QueryKeys.ACTIVE_TENANT),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: [QueryKeys.ACTIVE_TENANT], exact: false });
+            await queryClient.invalidateQueries({ queryKey: [QueryKeys.TENANT_MANAGEMENT], exact: false });
+        },
     });
 }

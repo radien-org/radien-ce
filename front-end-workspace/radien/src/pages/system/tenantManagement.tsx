@@ -1,10 +1,10 @@
 import React, { useContext, useState } from "react";
 import { SplitEmptyColumnDefinition, Tenant } from "radien";
-import { AppLayout, Box, Button, ColumnLayout, Header, Modal, Pagination, SpaceBetween, SplitPanel, Table, TableProps } from "@cloudscape-design/components";
+import { AppLayout, Box, ColumnLayout, Header, SplitPanel, Table, TableProps } from "@cloudscape-design/components";
 import { QueryKeys } from "@/consts";
 import { RadienContext } from "@/context/RadienContextProvider";
 import useDeleteTenant from "@/hooks/useDeleteTenant";
-import {getTenantPage} from "@/hooks/usePaginatedTenants";
+import { getTenantPage } from "@/hooks/usePaginatedTenants";
 import { useRouter } from "next/router";
 import useTenantChildren from "@/hooks/useTenantChildren";
 import PaginatedTable from "@/components/PaginatedTable/PaginatedTable";
@@ -157,7 +157,7 @@ export default function TenantManagement() {
                 toolsHide={true}
                 splitPanel={
                     <SplitPanel
-                    className="mb-[20px]"
+                        className="mb-[20px]"
                         header={panelHeader}
                         i18nStrings={{
                             preferencesTitle: i18n?.split_view_preferences || "Split panel preferences",
@@ -181,7 +181,7 @@ export default function TenantManagement() {
                         manipulationDisableCondition={radienUser?.processingLocked}
                         onSelectAction={(item) => setSelectedItem(item)}
                         columnDefinitions={colDefinition}
-                        getPaginated={(pageNumber, pageSize) => getTenantPage(pageNumber, pageSize)}
+                        getPaginated={(pageNumber, pageSize) => getTenantPage(pageNumber, pageSize, activeTenant.data?.id)}
                         viewActionProps={{}}
                         createActionProps={{
                             createLabel: i18n?.tenant_management_create_label || "Create Tenant",

@@ -4,6 +4,7 @@ import { Page, Tenant } from "radien";
 import { QueryKeys } from "@/consts";
 
 interface TenantParams {
+    parentId?: number;
     pageNo?: number;
     pageSize?: number;
 }
@@ -22,20 +23,21 @@ const aggregateTenant = (tenants: Tenant[], data: Tenant[]) => {
     }));
 };
 
-export const getTenantPage = async (pageNumber: number = 1, pageSize: number = 10) => {
+export const getTenantPage = async (pageNumber: number = 1, pageSize: number = 10, parentId?: number) => {
     return await axios.get<Page<Tenant>>("/api/tenant/tenant/getAll", {
         params: {
+            parentId,
             page: pageNumber,
             pageSize: pageSize,
         },
     });
 };
 
-export default function usePaginatedTenants({ pageNo, pageSize }: TenantParams) {
+export default function usePaginatedTenants({ parentId, pageNo, pageSize }: TenantParams) {
     return useQuery<Page<Tenant>, Error>(
-        [QueryKeys.TENANT_MANAGEMENT, pageNo, pageSize],
+        [QueryKeys.TENANT_MANAGEMENT, parentId, pageNo, pageSize],
         async () => {
-            const { data } = await getTenantPage(pageNo, pageSize);
+            const { data } = await getTenantPage(pageNo, pageSize, parentId);
             const { data: tenantData } = await loadTenants();
             return { ...data, results: aggregateTenant(tenantData, data.results) };
         },
