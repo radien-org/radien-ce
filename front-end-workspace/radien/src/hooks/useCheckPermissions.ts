@@ -14,6 +14,8 @@ export default function useCheckPermissions(userId?: number, tenantId?: number) 
         permission: { resource: "Permission", action: "Read" },
         tenant: { resource: "Tenant", action: "Read" },
         isTenantAdmin: { resource: "Tenant", action: "Write" },
+        userEdit: { resource: "User", action: "Update" },
+        roleEdit: { resource: "Roles", action: "Update" },
     };
 
     return {
@@ -45,6 +47,16 @@ export default function useCheckPermissions(userId?: number, tenantId?: number) 
         tenantAdmin: useQuery(
             [permissions.isTenantAdmin.resource, tenantId],
             async () => (await checkPermission(permissions.isTenantAdmin.resource, permissions.isTenantAdmin.action, userId, tenantId)).data,
+            { enabled: !!tenantId && !!userId, refetchInterval: 60000 }
+        ),
+        userEdit: useQuery(
+            [`${permissions.userEdit.resource} update`, tenantId],
+            async () => (await checkPermission(permissions.userEdit.resource, permissions.userEdit.action, userId, tenantId)).data,
+            { enabled: !!tenantId && !!userId, refetchInterval: 60000 }
+        ),
+        roleEdit: useQuery(
+            [`${permissions.roleEdit.resource} update`, tenantId],
+            async () => (await checkPermission(permissions.roleEdit.resource, permissions.roleEdit.action, userId, tenantId)).data,
             { enabled: !!tenantId && !!userId, refetchInterval: 60000 }
         ),
     };

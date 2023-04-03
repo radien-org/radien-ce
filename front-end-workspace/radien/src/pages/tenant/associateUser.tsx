@@ -16,12 +16,12 @@ import {
     Table,
     TableProps,
 } from "@cloudscape-design/components";
-import { OptionDefinition } from "@cloudscape-design/components/internal/components/option/interfaces";
+import {OptionDefinition} from "@cloudscape-design/components/internal/components/option/interfaces";
 import usePaginatedUsers from "@/hooks/usePaginatedUsers";
-import { User } from "radien";
-import { getColDefinitionUser } from "@/utils/tablesColDefinitions";
-import { useRouter } from "next/router";
-import { Loader } from "@/components/Loader/Loader";
+import {User} from "radien";
+import {getColDefinitionUser} from "@/utils/tablesColDefinitions";
+import {useRouter} from "next/router";
+import {Loader} from "@/components/Loader/Loader";
 import Form from "@cloudscape-design/components/form";
 
 export default function AssociateUser() {

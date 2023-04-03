@@ -5,11 +5,8 @@ import { Box, TableProps } from "@cloudscape-design/components";
 import { QueryKeys } from "@/consts";
 import { RadienContext } from "@/context/RadienContextProvider";
 import useDeleteTenant from "@/hooks/useDeleteTenant";
-import usePaginatedTenants from "@/hooks/usePaginatedTenants";
+import {getTenantPage} from "@/hooks/usePaginatedTenants";
 import { useRouter } from "next/router";
-import useActiveTenant from "@/hooks/useActiveTenant";
-import useAvailableTenants from "@/hooks/useAvailableTenants";
-
 
 
 export default function TenantManagement() {
@@ -107,7 +104,7 @@ export default function TenantManagement() {
                 queryKey={QueryKeys.TENANT_MANAGEMENT}
                 manipulationDisableCondition={radienUser?.processingLocked}
                 columnDefinitions={colDefinition}
-                getPaginated={(pageNumber, pageSize) => usePaginatedTenants({ pageNo: pageNumber, pageSize })}
+                getPaginated={(pageNumber, pageSize) => getTenantPage(pageNumber, pageSize)}
                 viewActionProps={{}}
                 createActionProps={{
                     createLabel: i18n?.tenant_management_create_label || "Create Tenant",

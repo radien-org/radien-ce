@@ -1,11 +1,10 @@
 import React, { useContext } from "react";
 import { Role, TenantRole } from "radien";
-import axios from "axios";
 import PaginatedTable from "@/components/PaginatedTable/PaginatedTable";
 import { Box, TableProps } from "@cloudscape-design/components";
 import { QueryKeys } from "@/consts";
 import { RadienContext } from "@/context/RadienContextProvider";
-import usePaginatedTenantRoles from "@/hooks/usePaginatedTenantRoles";
+import {getTenantRolesPage} from "@/hooks/usePaginatedTenantRoles";
 
 export default function TenantRoleManagement() {
     const { i18n, userInSession: radienUser, addWarningMessage } = useContext(RadienContext);
@@ -38,7 +37,7 @@ export default function TenantRoleManagement() {
                 queryKey={QueryKeys.TENANT_ROLE_MANAGEMENT}
                 manipulationDisableCondition={radienUser?.processingLocked}
                 columnDefinitions={colDefinition}
-                getPaginated={(pageNumber, pageSize) => usePaginatedTenantRoles({ pageNo: pageNumber, pageSize })}
+                getPaginated={(pageNumber, pageSize) => getTenantRolesPage(pageNumber, pageSize)}
                 viewActionProps={{}}
                 createActionProps={{
                     createAction: () => addWarningMessage("Not yet implemented"),

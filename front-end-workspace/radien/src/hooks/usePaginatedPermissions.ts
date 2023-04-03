@@ -29,7 +29,7 @@ const aggregateResources = (resources: Resource[], data: Permission[]) => {
     }));
 };
 
-const getPermissionPage = async (pageNumber: number = 1, pageSize: number = 10) => {
+export const getPermissionPage = async (pageNumber: number = 1, pageSize: number = 10) => {
     return await axios.get<Page<Permission>>("/api/permission/permission/getAll", {
         params: {
             page: pageNumber,

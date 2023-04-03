@@ -6,7 +6,7 @@ import { QueryKeys } from "@/consts";
 import { RadienContext } from "@/context/RadienContextProvider";
 import { useRouter } from "next/router";
 import useDeletePermission from "@/hooks/useDeletePermission";
-import usePaginatedPermissions from "@/hooks/usePaginatedPermissions";
+import {getPermissionPage} from "@/hooks/usePaginatedPermissions";
 
 export default function PermissionManagement() {
     const pageSize = 10;
@@ -43,7 +43,7 @@ export default function PermissionManagement() {
                 queryKey={QueryKeys.PERMISSION_MANAGEMENT}
                 manipulationDisableCondition={radienUser?.processingLocked}
                 columnDefinitions={colDefinition}
-                getPaginated={(pageNumber, pageSize) => usePaginatedPermissions({ pageNo: pageNumber, pageSize })}
+                getPaginated={(pageNumber, pageSize) => getPermissionPage(pageNumber, pageSize )}
                 viewActionProps={{}}
                 createActionProps={{
                     createLabel: i18n?.permission_management_create_label || "Create permission",

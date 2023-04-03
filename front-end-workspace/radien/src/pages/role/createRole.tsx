@@ -45,7 +45,6 @@ export default function CreateRole() {
         }
     };
 
-
     const validateAll = () => {
         setIsFormValid(isNameValid && isDescriptionValid);
     };

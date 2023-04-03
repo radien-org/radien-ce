@@ -8,7 +8,7 @@ interface UsersParams {
     pageSize?: number;
 }
 
-const getUsersPage = async (pageNumber: number = 1, pageSize: number = 10): Promise<AxiosResponse<Page<User>, any>> => {
+export const getUsersPage = async (pageNumber: number = 1, pageSize: number = 10): Promise<AxiosResponse<Page<User>, any>> => {
     return await axios.get("/api/user/getAll", {
         params: {
             page: pageNumber,

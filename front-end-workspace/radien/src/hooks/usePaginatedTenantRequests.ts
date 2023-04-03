@@ -11,7 +11,7 @@ interface TenantRequestParams {
     setRequestCount: (value: number) => void;
 }
 
-const getTenantRequestsPage = async (data: number, pageNumber: number = 1, pageSize: number = 10) => {
+export const getTenantRequestsPage = async (data: number, pageNumber: number = 1, pageSize: number = 10) => {
     return await axios.get<Page<TenantRequestsResult>>("/api/ticket/getTenantRequests", {
         params: {
             ticketType: TicketType.TENANT_REQUEST,

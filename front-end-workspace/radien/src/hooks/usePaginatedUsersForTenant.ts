@@ -9,7 +9,7 @@ interface UsersForTenantParams {
     pageSize?: number;
 }
 
-const getUsersForTenantPage = async (tenantId: number, pageNumber: number = 1, pageSize: number = 10): Promise<AxiosResponse<Page<User>, any>> => {
+export const getUsersForTenantPage = async (tenantId: number, pageNumber: number = 1, pageSize: number = 10): Promise<AxiosResponse<Page<User>, any>> => {
     return await axios.get("/api/user/getAllUsersForTenant", {
         params: {
             tenantId,

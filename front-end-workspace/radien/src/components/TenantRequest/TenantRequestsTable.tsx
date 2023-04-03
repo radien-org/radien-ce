@@ -13,8 +13,8 @@ import useAssignedTenants from "@/hooks/useAssignedTenants";
 
 import { useQueryClient } from "react-query";
 import RoleAssignment from "@/components/TenantRequest/RoleAssignment";
-import usePaginatedTenantRequests from "@/hooks/usePaginatedTenantRequests";
-import { Tenant } from "radien";
+import  {getTenantRequestsPage} from "@/hooks/usePaginatedTenantRequests";
+import {Tenant} from "radien";
 
 const ExpandableSection = dynamic(() => import("@cloudscape-design/components/expandable-section"), { ssr: false });
 
@@ -93,9 +93,8 @@ export default function TenantRequestsTable() {
                     queryKey={`${QueryKeys.TENANT_REQUESTS}_${activeTenantData?.tenantId}`}
                     manipulationDisableCondition={radienUser?.processingLocked}
                     columnDefinitions={columnDefinition}
-                    getPaginated={(pageNumber, pageSize) =>
-                        usePaginatedTenantRequests({ pageNo: pageNumber, pageSize, tenantId: activeTenantData?.tenantId!, setRequestCount })
-                    }
+                    getPaginated={(pageNumber, pageSize) => getTenantRequestsPage(activeTenantData?.tenantId!, pageNumber, pageSize)}
+                    onSuccessfulFetch={(data: any) => setRequestCount(data.totalResults)}
                     viewActionProps={{}}
                     createActionProps={{
                         createButtonType: "primary",

@@ -7,7 +7,7 @@ interface UserTenantsParams {
     userId: number;
 }
 
-const getTenantPage = async (userId: number) => {
+export const getUserTenantPage = async (userId: number) => {
     return await axios.get<Page<Tenant>>("/api/role/tenantroleuser/getTenants", {
         params: {
             userId,
@@ -19,7 +19,7 @@ export default function usePaginatedUserTenants({ userId }: UserTenantsParams) {
     return useQuery<Page<Tenant>, Error>(
         QueryKeys.ASSIGNED_TENANTS,
         async () => {
-            const { data } = await getTenantPage(userId);
+            const { data } = await getUserTenantPage(userId);
             return data;
         },
         { refetchInterval: 300000, enabled: !!userId }

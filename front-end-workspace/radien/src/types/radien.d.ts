@@ -18,6 +18,9 @@ declare module "radien" {
         lastUpdate: Date;
     }
 
+    interface UserRequest extends User {
+        terminationDate: string | Date | null;
+    }
     interface UserPasswordChanging {
         login: string;
         oldPassword: string;

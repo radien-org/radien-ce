@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useContext, useState } from "react";
-import { Page, RadienModel } from "radien";
+import {Page, RadienModel, User} from "radien";
 import { AxiosResponse } from "axios";
 import { Box, Button, Header, Modal, NonCancelableCustomEvent, Pagination, PaginationProps, SpaceBetween, TableProps } from "@cloudscape-design/components";
-import { UseMutateFunction, UseQueryResult } from "react-query";
+import {UseMutateFunction, useQuery, UseQueryResult} from "react-query";
 import { RadienContext } from "@/context/RadienContextProvider";
 import dynamic from "next/dynamic";
 import { TableForwardRefType } from "@cloudscape-design/components/table/interfaces";
+import {QueryKeys} from "@/consts";
 
 interface DeleteActionProps<T> {
     deleteLabel?: string;
@@ -46,7 +47,8 @@ export interface PaginatedTableProps<T> {
     tableVariant?: "embedded" | "container" | "stacked" | "full-page";
     queryKey: string;
     columnDefinitions: TableProps.ColumnDefinition<T>[];
-    getPaginated: (pageNumber?: number, pageSize?: number) => UseQueryResult<Page<T>, Error>;
+    getPaginated: ((pageNumber: number , pageSize: number)=> Promise<AxiosResponse<Page<T>, T>>);
+    onSuccessfulFetch?: (data: Page<T>) => void;
     viewActionProps: ViewActionDetails;
     createActionProps: CreateActionProps<T>;
     deleteActionProps: DeleteActionProps<T>;
@@ -64,6 +66,7 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
         manipulationDisableCondition = false,
         queryKey,
         getPaginated,
+        onSuccessfulFetch,
         deleteActionProps: { deleteLabel, deleteNestedObj, deleteConfirmationText, deleteAction, onDeleteSuccess },
         createActionProps: { createLabel, createButtonType, hideCreate, createAction },
         viewActionProps: { ViewComponent, viewTitle, viewLabel, viewConfirmLabel },
@@ -78,7 +81,14 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
     const [selectedItem, setSelectedItem] = useState<T>();
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [viewModalVisible, setViewModalVisible] = useState(false);
-    const { isLoading, data, refetch } = getPaginated(currentPage, pageSize);
+    const { isLoading, data, refetch } =  useQuery<Page<T>, Error>(
+        [queryKey, currentPage],
+        async () => {
+            const res = await getPaginated(currentPage, pageSize);
+            return res.data;
+        },
+        { refetchInterval: 300000, onSuccess: (data) => onSuccessfulFetch && onSuccessfulFetch(data)},
+    );
 
     const clickTargetUserPage = async (event: NonCancelableCustomEvent<PaginationProps.ChangeDetail>) => {
         let targetPage = event.detail.currentPageIndex;

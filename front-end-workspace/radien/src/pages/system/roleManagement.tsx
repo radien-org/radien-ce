@@ -5,7 +5,8 @@ import { Box, TableProps } from "@cloudscape-design/components";
 import { QueryKeys } from "@/consts";
 import { RadienContext } from "@/context/RadienContextProvider";
 import { useRouter } from "next/router";
-import usePaginatedRoles from "@/hooks/usePaginatedRoles";
+import  {getRolesPage} from "@/hooks/usePaginatedRoles";
+import {RoleDetailsView} from "@/components/RoleDetailsView";
 
 export default function RoleManagement() {
     const { i18n, userInSession: radienUser } = useContext(RadienContext);
@@ -33,8 +34,11 @@ export default function RoleManagement() {
                 queryKey={QueryKeys.ROLE_MANAGEMENT}
                 manipulationDisableCondition={radienUser?.processingLocked}
                 columnDefinitions={colDefinition}
-                getPaginated={(pageNumber, pageSize) => usePaginatedRoles({ pageNo: pageNumber, pageSize })}
-                viewActionProps={{}}
+                getPaginated={(pageNumber, pageSize) => getRolesPage(pageNumber, pageSize)}
+                viewActionProps={{
+                    ViewComponent: RoleDetailsView,
+                    viewTitle: i18n?.role_management_view_label || "Role details",
+                }}
                 createActionProps={{
                     createLabel: i18n?.permission_management_create_label || "Create Role",
                     createAction: () => {

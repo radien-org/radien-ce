@@ -25,7 +25,7 @@ import useCreateTicket from "@/hooks/useCreateTicket";
 import TenantRequestModal from "@/components/TenantRequest/TenantRequestModal";
 import ChangePasswordModal from "@/components/UserDetailsView/ChangePasswordModal";
 import useNotifyUser from "@/hooks/useNotifyUser";
-import usePaginatedUserTenants from "@/hooks/usePaginatedUserTenants";
+import {getUserTenantPage} from "@/hooks/usePaginatedUserTenants";
 import useDeleteUser from "@/hooks/useDeleteUser";
 import { useQueryClient } from "react-query";
 import { logout } from "@/components/Header/Header";
@@ -255,7 +255,7 @@ export default function UserProfile() {
                         queryKey={QueryKeys.ASSIGNED_TENANTS}
                         manipulationDisableCondition={radienUser?.processingLocked}
                         columnDefinitions={colDefinition}
-                        getPaginated={() => usePaginatedUserTenants({ userId: radienUser?.id! })}
+                        getPaginated={() => getUserTenantPage( radienUser?.id!)}
                         viewActionProps={{}}
                         createActionProps={{
                             createLabel: i18n?.user_profile_tenants_create_label || "Request Tenant",

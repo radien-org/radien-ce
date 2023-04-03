@@ -8,7 +8,7 @@ interface RolesParams {
     pageSize?: number;
 }
 
-const getRolesPage = async (pageNumber: number = 1, pageSize: number = 10) => {
+export const getRolesPage = async (pageNumber: number = 1, pageSize: number = 10) => {
     return await axios.get<Page<Role>>("/api/role/role/getAll", {
         params: {
             page: pageNumber,

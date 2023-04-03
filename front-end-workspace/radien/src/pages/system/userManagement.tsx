@@ -8,7 +8,7 @@ import UserDetailsView from "@/components/UserDetailsView/UserDetailsView";
 import { RadienContext } from "@/context/RadienContextProvider";
 import useDeleteUser from "@/hooks/useDeleteUser";
 import TenantRequestsTable from "@/components/TenantRequest/TenantRequestsTable";
-import usePaginatedUsersForTenant from "@/hooks/usePaginatedUsersForTenant";
+import { getUsersForTenantPage } from "@/hooks/usePaginatedUsersForTenant";
 import { getColDefinitionUser } from "@/utils/tablesColDefinitions";
 
 export default function UserManagement() {
@@ -22,7 +22,7 @@ export default function UserManagement() {
     const router = useRouter();
 
     const colDefinition: TableProps.ColumnDefinition<User>[] = getColDefinitionUser(i18n);
- 
+
     return (
         <>
             <TenantRequestsTable />
@@ -32,7 +32,7 @@ export default function UserManagement() {
                     queryKey={QueryKeys.USER_MANAGEMENT}
                     manipulationDisableCondition={radienUser?.processingLocked}
                     columnDefinitions={colDefinition}
-                    getPaginated={(pageNumber, pageSize) => usePaginatedUsersForTenant({ tenantId: tenantId?.tenantId!, pageNo: pageNumber, pageSize })}
+                    getPaginated={(pageNumber, pageSize) => getUsersForTenantPage(tenantId?.tenantId!, pageNumber, pageSize)}
                     viewActionProps={{
                         ViewComponent: UserDetailsView,
                         viewTitle: i18n?.user_management_view_label || "User details",

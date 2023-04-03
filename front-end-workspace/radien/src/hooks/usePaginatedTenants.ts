@@ -22,7 +22,7 @@ const aggregateTenant = (tenants: Tenant[], data: Tenant[]) => {
     }));
 };
 
-const getTenantPage = async (pageNumber: number = 1, pageSize: number = 10) => {
+export const getTenantPage = async (pageNumber: number = 1, pageSize: number = 10) => {
     return await axios.get<Page<Tenant>>("/api/tenant/tenant/getAll", {
         params: {
             page: pageNumber,

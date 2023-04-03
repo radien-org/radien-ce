@@ -13,8 +13,8 @@ import useUpdateTenant from "@/hooks/useUpdateTenant";
 import PaginatedTable from "@/components/PaginatedTable/PaginatedTable";
 import { QueryKeys } from "@/consts";
 import UserDetailsView from "@/components/UserDetailsView/UserDetailsView";
-import usePaginatedUsersForTenant from "@/hooks/usePaginatedUsersForTenant";
-import { getColDefinitionUser } from "@/utils/tablesColDefinitions";
+import {getUsersForTenantPage} from "@/hooks/usePaginatedUsersForTenant";
+import {getColDefinitionUser} from "@/utils/tablesColDefinitions";
 import useDeleteUser from "@/hooks/useDeleteUser";
 import { useRouter } from "next/router";
 import useDissociateTenant from "@/hooks/useDissociateTenant";
@@ -267,39 +267,40 @@ export default function TenantAdmin() {
                 </Container>
             </Box>
 
-            <Box>
-                <Box padding={"xl"}>
-                    <PaginatedTable
-                        tableHeader={i18n?.tenant_admin_associated_user_title || "Associated users"}
-                        queryKey={QueryKeys.USER_MANAGEMENT}
-                        manipulationDisableCondition={radienUser?.processingLocked}
-                        columnDefinitions={colDefinition}
-                        getPaginated={(pageNumber, pageSize) => usePaginatedUsersForTenant({ tenantId: tenantId?.tenantId!, pageNo: pageNumber, pageSize })}
-                        viewActionProps={{
-                            ViewComponent: UserDetailsView,
-                            viewTitle: i18n?.user_management_view_label || "User details",
-                        }}
-                        createActionProps={{
-                            createLabel: i18n?.tenant_admin_associate_user_title || "Associate user",
-                            createAction: () => {
-                                router.push("/tenant/associateUser");
-                            },
-                        }}
-                        deleteActionProps={{
-                            deleteLabel: i18n?.tenant_admin_dissociate_user_title || "Dissociate User",
-                            deleteConfirmationText: (selectedUser) =>
-                                `${i18n?.tenant_admin_dissociate_user_confirm || "Are you sure you would like to dissociate ${}"}`.replace(
-                                    "${}",
-                                    `${selectedUser?.firstname} ${selectedUser?.lastname}`
-                                ),
-                            deleteAction: dissociateUser.mutate,
-                        }}
-                        emptyProps={{
-                            emptyMessage: i18n?.tenant_admin_no_users_available || "No users available",
-                        }}
-                    />
-                </Box>
+        <Box>
+            <Box padding={"xl"}>
+                <PaginatedTable
+                    tableHeader={i18n?.tenant_admin_associated_user_title || "Associated users"}
+                    queryKey={QueryKeys.USER_MANAGEMENT}
+                    manipulationDisableCondition={radienUser?.processingLocked}
+                    columnDefinitions={colDefinition}
+                    getPaginated={(pageNumber, pageSize) => getUsersForTenantPage(tenantId?.tenantId!, pageNumber, pageSize)}
+                    viewActionProps={{
+                        ViewComponent: UserDetailsView,
+                        viewTitle: i18n?.user_management_view_label || "User details",
+                    }}
+                    createActionProps={{
+                        createLabel: i18n?.tenant_admin_associate_user_title || "Associate user",
+                        createAction: () => {
+                            router.push("/tenant/associateUser");
+                        },
+                    }}
+                    deleteActionProps={{
+                        deleteLabel: i18n?.tenant_admin_dissociate_user_title || "Dissociate User",
+                        deleteConfirmationText: (selectedUser) =>
+                            `${i18n?.tenant_admin_dissociate_user_confirm || "Are you sure you would like to dissociate ${}"}`.replace(
+                                "${}",
+                                `${selectedUser?.firstname} ${selectedUser?.lastname}`
+                            ),
+                        deleteAction: dissociateUser.mutate,
+                    }}
+                    emptyProps={{
+                        emptyMessage: i18n?.tenant_admin_no_users_available || "No users available",
+                    }}
+                />
             </Box>
+        </Box>
+
         </div>
     );
 }

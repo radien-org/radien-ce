@@ -30,7 +30,7 @@ const aggregateRoles = (roles: any, data: TenantRole[]): TenantRole[] => {
     }));
 };
 
-const getTenantRolesPage = async (pageNumber: number = 1, pageSize: number = 10): Promise<AxiosResponse<Page<TenantRole>, any>> => {
+export const getTenantRolesPage = async (pageNumber: number = 1, pageSize: number = 10): Promise<AxiosResponse<Page<TenantRole>, any>> => {
     return await axios.get<Page<TenantRole>>("/api/role/tenantRole/getAll", {
         params: {
             page: pageNumber,
