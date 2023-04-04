@@ -70,6 +70,15 @@ public class TenantResourceTest {
     }
 
     /**
+     * Test the Get Children request which will return a success message code 200.
+     */
+    @Test
+    public void testGetChildren() {
+        Response response = tenantResource.getChildren(2L);
+        assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
+    }
+
+    /**
      * Test that will test the error message 404 User Not Found
      */
     @Test(expected = TenantNotFoundException.class)

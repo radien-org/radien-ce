@@ -45,6 +45,13 @@ public interface TenantServiceAccess extends ServiceAccess {
     Page<SystemTenant> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
 
     /**
+     * Method to get all the requested tenant children tenants
+     * @param tenantId of the parent tenant
+     * @return a list of all the tenant children
+     */
+    List<SystemTenant> getChildren(Long tenantId);
+
+    /**
      * Gets specific tenant by the id
      * @param tenantId to be searched for
      * @return the requested system tenant

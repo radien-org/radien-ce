@@ -8,6 +8,7 @@ enum QueryKeys {
     USER_MANAGEMENT = "userManagement",
     PERMISSION_MANAGEMENT = "permissionManagement",
     TENANT_MANAGEMENT = "tenantManagement",
+    TENANT_MANAGEMENT_CHILDREN = "tenantManagement_children",
     AVAILABLE_TENANTS = "availableTenants",
     TENANT_REQUESTS = "tenantRequests",
     ASSIGNABLE_ROLES = "assignableRoles",

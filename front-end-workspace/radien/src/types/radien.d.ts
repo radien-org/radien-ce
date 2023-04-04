@@ -46,6 +46,11 @@ declare module "radien" {
         clientData?: Tenant;
     }
 
+    interface SplitEmptyColumnDefinition{
+        header: string,
+        body: React.ReactNode
+    }
+
     interface ActiveTenant extends RadienModel {
         userId: number;
         tenantId: number;

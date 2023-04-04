@@ -433,17 +433,17 @@ public class TenantService implements TenantServiceAccess {
     /**
      * Method to get all the requested tenant children tenants
      * @param tenantId of the parent tenant
-     * @param em already created entity manager
      * @return a list of all the tenant children ids
      */
-    protected List<Long> getChildren(Long tenantId, EntityManager em) {
+    public List<SystemTenant> getChildren(Long tenantId) {
+        EntityManager em = emh.getEm();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        CriteriaQuery<TenantEntity> criteriaQuery = criteriaBuilder.createQuery(TenantEntity.class);
         Root<TenantEntity> tenantRoot = criteriaQuery.from(TenantEntity.class);
         Predicate predicate = criteriaBuilder.equal(tenantRoot.get("parentId"), tenantId);
-        criteriaQuery.select(tenantRoot.get("id")).where(predicate);
-        TypedQuery<Long> q= em.createQuery(criteriaQuery);
-        return q.getResultList();
+        criteriaQuery.where(predicate);
+        TypedQuery<TenantEntity> q = em.createQuery(criteriaQuery);
+        return new ArrayList<>(q.getResultList());
     }
 
     /**
@@ -453,11 +453,11 @@ public class TenantService implements TenantServiceAccess {
      * @return true if deletion has been a success or false if there was an issue
      */
     protected boolean deleteChildren(Long tenantId, EntityManager entityManager) {
-        List<Long> children = getChildren(tenantId, entityManager);
+        List<SystemTenant> children = getChildren(tenantId);
 
         if (!children.isEmpty()) {
-            for (Long child: children) {
-                deleteChildren(child, entityManager);
+            for (SystemTenant child: children) {
+                deleteChildren(child.getId(), entityManager);
             }
         }
 

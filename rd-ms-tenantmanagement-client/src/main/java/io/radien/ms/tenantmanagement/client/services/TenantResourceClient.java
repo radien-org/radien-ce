@@ -80,6 +80,15 @@ public interface TenantResourceClient {
                         @DefaultValue("false") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
     /**
+     * Method to get all the requested tenant children tenants
+     * @param id of the parent tenant
+     * @return a list of all the tenant children
+     */
+    @GET
+    @Path("/{id}/children")
+    public Response getChildren(@PathParam("id") Long id);
+
+    /**
      * Gets tenant based on the given id
      * @param id to be searched for
      * @return 200 code message in case of success or 500 in case of any error

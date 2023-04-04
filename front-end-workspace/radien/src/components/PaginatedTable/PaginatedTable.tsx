@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {Page, RadienModel, User} from "radien";
 import { AxiosResponse } from "axios";
 import { Box, Button, Header, Modal, NonCancelableCustomEvent, Pagination, PaginationProps, SpaceBetween, TableProps } from "@cloudscape-design/components";
@@ -49,6 +49,7 @@ export interface PaginatedTableProps<T> {
     columnDefinitions: TableProps.ColumnDefinition<T>[];
     getPaginated: ((pageNumber: number , pageSize: number)=> Promise<AxiosResponse<Page<T>, T>>);
     onSuccessfulFetch?: (data: Page<T>) => void;
+    onSelectAction?: (item: T) => void;
     viewActionProps: ViewActionDetails;
     createActionProps: CreateActionProps<T>;
     deleteActionProps: DeleteActionProps<T>;
@@ -65,16 +66,17 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
         columnDefinitions,
         manipulationDisableCondition = false,
         queryKey,
+        onSelectAction,
         getPaginated,
         onSuccessfulFetch,
         deleteActionProps: { deleteLabel, deleteNestedObj, deleteConfirmationText, deleteAction, onDeleteSuccess },
         createActionProps: { createLabel, createButtonType, hideCreate, createAction },
         viewActionProps: { ViewComponent, viewTitle, viewLabel, viewConfirmLabel },
-        emptyProps: { emptyMessage, emptyActionLabel }
+        emptyProps: { emptyMessage, emptyActionLabel },
     } = props;
     const {
         userInSession,
-        activeTenant: { data: activeTenantData }
+        activeTenant: { data: activeTenantData },
     } = useContext(RadienContext);
     const [pageSize, setPageSize] = useState<number>(10);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
@@ -89,6 +91,12 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
         },
         { refetchInterval: 300000, onSuccess: (data) => onSuccessfulFetch && onSuccessfulFetch(data)},
     );
+
+    useEffect(() => {
+        if (onSelectAction) {
+            onSelectAction(selectedItem);
+        }   
+    }, [selectedItem]);
 
     const clickTargetUserPage = async (event: NonCancelableCustomEvent<PaginationProps.ChangeDetail>) => {
         let targetPage = event.detail.currentPageIndex;

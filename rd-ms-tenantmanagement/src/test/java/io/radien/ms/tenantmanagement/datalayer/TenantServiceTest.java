@@ -39,12 +39,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 /**
  * @author Nuno Santana
@@ -265,7 +260,7 @@ public class TenantServiceTest {
     }
 
     /**
-     * Test of get all the tenants
+     * Test of get all the children from a tenant
      * @throws UniquenessConstraintException in case of duplicates
      * @throws TenantException in case of any issue in the data
      */
@@ -281,13 +276,57 @@ public class TenantServiceTest {
         tenantServiceAccess.create(c);
         Page<SystemTenant> result = tenantServiceAccess.getAll(null,1,10,null,false);
         assertNotNull(result);
+        assertNotEquals(result.getResults().size(), 0);
     }
 
+    /**
+     * Test of get the children from a tenant
+     * @throws UniquenessConstraintException in case of duplicates
+     * @throws TenantException in case of any issue in the data
+     */
+    @Test
+    public void testGetChildren() throws UniquenessConstraintException, SystemException {
+        String name = "testGetChildren";
+        SystemTenant c = new TenantEntity();
+        c.setId(101L);
+        c.setName(name);
+        c.setTenantType(TenantType.CLIENT);
+        c.setParentId(rootTenant.getId());
+        c.setTenantKey(RandomStringUtils.randomAlphabetic(4));
+        tenantServiceAccess.create(c);
+        List<SystemTenant> result = tenantServiceAccess.getChildren(rootTenant.getId());
+        assertTrue(result.contains(c));
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+    }
+
+    /**
+     * Test of deleting all the tenants children
+     * @throws UniquenessConstraintException in case of duplicates
+     * @throws TenantException in case of any issue in the data
+     */
+    @Test
+    public void testDeleteChildren() throws UniquenessConstraintException, SystemException {
+        String name = "testDeleteChildren";
+        SystemTenant c = new TenantEntity();
+        c.setId(102L);
+        c.setName(name);
+        c.setTenantType(TenantType.CLIENT);
+        c.setParentId(rootTenant.getId());
+        c.setTenantKey(RandomStringUtils.randomAlphabetic(4));
+        tenantServiceAccess.create(c);
+        List<SystemTenant> result = tenantServiceAccess.getChildren(rootTenant.getId());
+        int childNumberBeforeDeletion = result.size();
+        tenantServiceAccess.deleteTenantHierarchy(rootTenant.getId());
+        List<SystemTenant> resultAfterwards = tenantServiceAccess.getChildren(rootTenant.getId());
+        assertNotEquals(childNumberBeforeDeletion, tenantServiceAccess.getChildren(rootTenant.getId()).size());
+        assertFalse(resultAfterwards.contains(c));
+    }
     @Test
     public void testGetAllSearchNotNullSort() throws UniquenessConstraintException, SystemException {
         String name = "testGetAll2";
         SystemTenant c = new TenantEntity();
-        c.setId(102L);
+        c.setId(103L);
         c.setName(name);
         c.setTenantType(TenantType.CLIENT);
         c.setParentId(rootTenant.getId());

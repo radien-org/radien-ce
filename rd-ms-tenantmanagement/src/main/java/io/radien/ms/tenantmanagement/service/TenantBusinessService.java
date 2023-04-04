@@ -57,6 +57,15 @@ public class TenantBusinessService implements Serializable {
     }
 
     /**
+     * Method to get all the requested tenant children tenants
+     * @param tenantId of the parent tenant
+     * @return a list of all the tenant children ids
+     */
+    public List<SystemTenant> getChildren(Long tenantId) {
+        return tenantService.getChildren(tenantId);
+    }
+
+    /**
      * Finds tenant by specified id
      * @param tenantId to be searched
      * @return requested system tenant

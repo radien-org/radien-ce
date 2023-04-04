@@ -56,6 +56,15 @@ public class TenantResource implements TenantResourceClient {
 	}
 
 	/**
+	 * Method to get all the requested tenant children tenants
+	 * @param tenantId of the parent tenant
+	 * @return a list of all the tenant children ids
+	 */
+	public Response getChildren(Long tenantId) {
+		return Response.ok(tenantBusinessService.getChildren(tenantId)).build();
+	}
+
+	/**
 	 * Gets a list of requested tenants based on some filtered information
 	 * @param name to be searched for
 	 * @param tenantType of the tenant to be searched

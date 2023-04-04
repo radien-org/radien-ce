@@ -27,10 +27,14 @@ import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantSearchFilter;
+import io.radien.ms.tenantmanagement.client.entities.TenantType;
+import io.radien.ms.tenantmanagement.client.services.TenantFactory;
 import io.radien.ms.tenantmanagement.entities.TenantEntity;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -66,6 +70,23 @@ public class TenantBusinessServiceTest {
                 .thenReturn(result);
 
         assertEquals(result, businessService.getAll("", 1, 1, new ArrayList<>(), false));
+    }
+
+    @Test
+    public void testGetChildren(){
+        List<SystemTenant> expectedChildren = new ArrayList<SystemTenant>();
+        Long parentId = 2L;
+
+        Tenant t = TenantFactory.create("name","tenantKey", TenantType.ROOT, null, null, null, null, null, null, null, null, parentId, null, null);
+        t.setId(1L);
+        expectedChildren.add(t);
+        t = TenantFactory.create("name","tenantKey2", TenantType.CLIENT, null, null, null, null, null, null, null, null, parentId, null, null);
+        t.setId(2L);
+        expectedChildren.add(t);
+
+        when(tenantService.getChildren(parentId)).thenReturn(expectedChildren);
+
+        assertEquals(expectedChildren, businessService.getChildren(parentId));
     }
 
     @Test
