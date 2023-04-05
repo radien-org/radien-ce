@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, {useContext, useEffect, useState} from "react";
 import { RadienContext } from "@/context/RadienContextProvider";
 import useAssignableRoles from "@/hooks/useAssignableRoles";
 import useAssignTenantRoles from "@/hooks/useAssignTenantRoles";
@@ -7,7 +7,7 @@ import {
     Box,
     Button,
     Container,
-    Header,
+    Header, Modal,
     Multiselect,
     NonCancelableCustomEvent,
     Pagination,
@@ -42,7 +42,7 @@ export default function AssociateUser() {
 
     const [targetRoles, setTargetRoles] = useState<OptionDefinition[]>([]);
     const [selectedItem, setSelectedItem] = useState<any>();
-    const router = useRouter();
+    const [associateModalVisible, setAssociateModalVisible] = useState(false);
     const colDefinition: TableProps.ColumnDefinition<User>[] = getColDefinitionUser(i18n);
 
     const clickTargetUserPage = async (event: NonCancelableCustomEvent<PaginationProps.ChangeDetail>) => {
@@ -53,6 +53,12 @@ export default function AssociateUser() {
     if (isLoadingRoles || isLoading) {
         return <Loader />;
     }
+
+    const resetForm = () => {
+        setTargetRoles([]);
+        setSelectedItem(undefined);
+    }
+
 
     const handleAssociateUser = async () => {
         if (!selectedItem) {
@@ -83,7 +89,7 @@ export default function AssociateUser() {
                         };
 
                         notifyUser.mutate({
-                            email: selectedItem.email,
+                            email: selectedItem.userEmail,
                             viewId,
                             language: locale,
                             params: args,
@@ -101,13 +107,38 @@ export default function AssociateUser() {
 
     return (
         <Box padding="xl">
+            <Modal
+                onDismiss={() => setAssociateModalVisible(false)}
+                visible={associateModalVisible}
+                closeAriaLabel="Close modal"
+                footer={
+                    <Box float="right">
+                        <SpaceBetween direction="horizontal" size="xs">
+                            <Button variant="link" onClick={() => {
+                                setAssociateModalVisible(false);
+                                resetForm();
+                            }}>
+                                Cancel
+                            </Button>
+                            <Button variant="primary" onClick={() => {
+                                setAssociateModalVisible(false)
+                                handleAssociateUser()
+                            }}>
+                                Ok
+                            </Button>
+                        </SpaceBetween>
+                    </Box>
+                }
+                header={'Associate user'}>
+                {`Are you sure you want to associated user with email : ${selectedItem?.userEmail} with roles: ${targetRoles.map(role => role.label).join(', ')}?`}
+            </Modal>
             <Container>
                 {loading && <Loader />}
 
                 <form
                     onSubmit={(e) => {
                         e.preventDefault();
-                        handleAssociateUser();
+                        setAssociateModalVisible(true);
                     }}
                     className={"create-form--container"}>
                     <Form
@@ -121,14 +152,14 @@ export default function AssociateUser() {
                         }
                         header={<Header variant="h1">{i18n?.tenant_admin_associate_user_title || "Associate user"}</Header>}>
                         <SpaceBetween size={"xl"} direction={"vertical"}>
-                            <Multiselect
+                            {selectedItem && <Multiselect
                                 selectedOptions={targetRoles}
-                                onChange={({ detail }) => setTargetRoles(() => [...detail.selectedOptions])}
+                                onChange={({detail}) => setTargetRoles(() => [...detail.selectedOptions])}
                                 options={assignableRoles?.map((t) => {
-                                    return { label: t.role.name, value: String(t.tenantRole.id) };
+                                    return {label: t.role.name, value: String(t.tenantRole.id)};
                                 })}
                                 placeholder={i18n?.tenant_admin_select_user_roles || "Choose Role(s)"}
-                            />
+                            />}
                             <Table
                                 selectionType={"single"}
                                 onSelectionChange={({ detail }) => setSelectedItem(detail.selectedItems[0])}

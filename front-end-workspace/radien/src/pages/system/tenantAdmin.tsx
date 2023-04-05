@@ -1,5 +1,5 @@
 import { User } from "radien";
-import { Box, Container, DatePicker, FormField, Input, TableProps } from "@cloudscape-design/components";
+import {Box, Container, DatePicker, FormField, Input, Modal, TableProps} from "@cloudscape-design/components";
 import { Loader } from "@/components/Loader/Loader";
 import Form from "@cloudscape-design/components/form";
 import SpaceBetween from "@cloudscape-design/components/space-between";
@@ -18,6 +18,7 @@ import {getColDefinitionUser} from "@/utils/tablesColDefinitions";
 import useDeleteUser from "@/hooks/useDeleteUser";
 import { useRouter } from "next/router";
 import useDissociateTenant from "@/hooks/useDissociateTenant";
+import AssociateUser from "@/components/UserAssociation/associateUser";
 
 export default function TenantAdmin() {
     const CLIENT_TYPE = "CLIENT";
@@ -26,6 +27,8 @@ export default function TenantAdmin() {
         userInSession: radienUser,
         activeTenant: { data: tenantId, isLoading: isLoadingActiveTenant },
         i18n,
+        addErrorMessage,
+        addSuccessMessage,
     } = useContext(RadienContext);
     const { isLoading: loadingAssignedTenants, data: assignedTenants } = useAssignedTenants(radienUser?.id!);
     let tenant = assignedTenants?.results.filter((tenant) => tenant.id === tenantId?.tenantId)[0];
@@ -42,6 +45,8 @@ export default function TenantAdmin() {
     const [clientPhoneNumber, setClientPhoneNumber] = React.useState<number>(tenant?.clientPhoneNumber || 0);
     const updateTenant = useUpdateTenant(tenantId?.tenantId!);
     const [isFormSubmitted, setIsFormSubmitted] = React.useState<boolean>(false);
+    const [newTenantData, setNewTenantData] = React.useState<any>(null);
+    const [updateModalVisible, setUpdateModalVisible] = React.useState<boolean>(false);
 
     const validateTextInputNonEmpty = (value: string) => {
         return value.trim().length > 0;
@@ -61,7 +66,7 @@ export default function TenantAdmin() {
     const dissociateUser = useDissociateTenant();
 
     const resetForm = () => {
-        tenant = assignedTenants?.results.filter((tenant) => tenant.id === tenantId?.tenantId)[0];
+        tenant = newTenantData ? newTenantData : assignedTenants?.results.filter((tenant) => tenant.id === tenantId?.tenantId)[0];
         if (tenant) {
             setName(tenant?.name);
             setTenantKey(tenant?.tenantKey);
@@ -78,11 +83,6 @@ export default function TenantAdmin() {
     useEffect(() => {
         resetForm();
     }, [assignedTenants, radienUser]);
-    useEffect(() => {
-        if (!isLoadingActiveTenant && !loadingAssignedTenants) {
-            setLoading(false);
-        }
-    }, [isLoadingActiveTenant, loadingAssignedTenants]);
 
     const handleSubmit = async () => {
         setIsFormSubmitted(true);
@@ -112,9 +112,12 @@ export default function TenantAdmin() {
             clientPhoneNumber,
         };
         updateTenant
-            .mutateAsync(newTenantInfo)
-            .catch((e) => {
-                console.log(e);
+            .mutateAsync(newTenantInfo).then((res) => {
+                addSuccessMessage(i18n?.tenant_admin_update_success || "Tenant updated successfully");
+                setNewTenantData(newTenantInfo);
+            }).catch((e) => {
+                addErrorMessage(i18n?.tenant_admin_update_error || "Error updating tenant");
+                resetForm();
             })
             .finally(() => {
                 setLoading(false);
@@ -124,14 +127,36 @@ export default function TenantAdmin() {
     return (
         <div>
             <Box padding="xl">
+                <Modal
+                    onDismiss={() => setUpdateModalVisible(false)}
+                    visible={updateModalVisible}
+                    closeAriaLabel="Close modal"
+                    footer={
+                        <Box float="right">
+                            <SpaceBetween direction="horizontal" size="xs">
+                                <Button variant="link" onClick={() => {
+                                    setUpdateModalVisible(false);
+                                    resetForm();
+                                }}>
+                                    Cancel
+                                </Button>
+                                <Button variant="primary" onClick={() => handleSubmit()}>
+                                    Ok
+                                </Button>
+                            </SpaceBetween>
+                        </Box>
+                    }
+                    header={'Update tenant'}>
+                    {i18n?.tenant_admin_update_user_confirm || "Are you sure you want to update tenant information?"}
+                </Modal>
                 <Container>
-                    {loading && <Loader />}
+                    {(isLoadingActiveTenant || loadingAssignedTenants) && <Loader />}
 
                     {tenant && (
                         <form
                             onSubmit={(e) => {
                                 e.preventDefault();
-                                handleSubmit();
+                                setUpdateModalVisible(true);
                             }}
                             className={"create-form--container"}>
                             <Form
@@ -268,37 +293,7 @@ export default function TenantAdmin() {
             </Box>
 
         <Box>
-            <Box padding={"xl"}>
-                <PaginatedTable
-                    tableHeader={i18n?.tenant_admin_associated_user_title || "Associated users"}
-                    queryKey={QueryKeys.USER_MANAGEMENT}
-                    manipulationDisableCondition={radienUser?.processingLocked}
-                    columnDefinitions={colDefinition}
-                    getPaginated={(pageNumber, pageSize) => getUsersForTenantPage(tenantId?.tenantId!, pageNumber, pageSize)}
-                    viewActionProps={{
-                        ViewComponent: UserDetailsView,
-                        viewTitle: i18n?.user_management_view_label || "User details",
-                    }}
-                    createActionProps={{
-                        createLabel: i18n?.tenant_admin_associate_user_title || "Associate user",
-                        createAction: () => {
-                            router.push("/tenant/associateUser");
-                        },
-                    }}
-                    deleteActionProps={{
-                        deleteLabel: i18n?.tenant_admin_dissociate_user_title || "Dissociate User",
-                        deleteConfirmationText: (selectedUser) =>
-                            `${i18n?.tenant_admin_dissociate_user_confirm || "Are you sure you would like to dissociate ${}"}`.replace(
-                                "${}",
-                                `${selectedUser?.firstname} ${selectedUser?.lastname}`
-                            ),
-                        deleteAction: dissociateUser.mutate,
-                    }}
-                    emptyProps={{
-                        emptyMessage: i18n?.tenant_admin_no_users_available || "No users available",
-                    }}
-                />
-            </Box>
+            <AssociateUser/>
         </Box>
 
         </div>
