@@ -118,18 +118,18 @@ export default function AssociateUser() {
                                 setAssociateModalVisible(false);
                                 resetForm();
                             }}>
-                                Cancel
+                                {i18n?.button_cancel || "Cancel"}
                             </Button>
                             <Button variant="primary" onClick={() => {
                                 setAssociateModalVisible(false)
                                 handleAssociateUser()
                             }}>
-                                Ok
+                                {i18n?.button_ok || "Confirm"}
                             </Button>
                         </SpaceBetween>
                     </Box>
                 }
-                header={'Associate user'}>
+                header={i18n?.tenant_admin_associate_user_title || "Associate user"}>
                 {`Are you sure you want to associated user with email : ${selectedItem?.userEmail} with roles: ${targetRoles.map(role => role.label).join(', ')}?`}
             </Modal>
             <Container>

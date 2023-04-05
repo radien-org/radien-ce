@@ -94,7 +94,6 @@ export default function PaginatedTable<T>(props: PaginatedTableProps<T>) {
 
     useEffect(() => {
         if (onSelectAction) {
-            // @ts-ignore
             onSelectAction(selectedItem);
         }   
     }, [selectedItem]);

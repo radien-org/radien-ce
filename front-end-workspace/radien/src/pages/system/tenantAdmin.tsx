@@ -138,10 +138,10 @@ export default function TenantAdmin() {
                                     setUpdateModalVisible(false);
                                     resetForm();
                                 }}>
-                                    Cancel
+                                    {i18n?.button_cancel || "Cancel"}
                                 </Button>
                                 <Button variant="primary" onClick={() => handleSubmit()}>
-                                    Ok
+                                    {i18n?.button_update || "Update"}
                                 </Button>
                             </SpaceBetween>
                         </Box>
@@ -226,7 +226,7 @@ export default function TenantAdmin() {
                                         <DatePicker
                                             disabled={radienUser?.processingLocked}
                                             onChange={({ detail }) => setTenantEnd(detail.value)}
-                                            value={tenantStart}
+                                            value={tenantEnd}
                                             isDateEnabled={(date) => date > new Date()}
                                             nextMonthAriaLabel={i18n?.datepicker_next_month || "Next month"}
                                             placeholder="YYYY/MM/DD"
