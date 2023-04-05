@@ -280,6 +280,14 @@ public class TenantServiceTest {
         assertNotNull(result);
         assertNotEquals(result.getResults().size(), 0);
     }
+    @Test
+    public void testGetAllWithFilter() throws UniquenessConstraintException, SystemException {
+        SystemPagedTenantSearchFilter filter = new PagedTenantSearchFilter(true, Collections.singletonList(1L), "name", "key", TenantType.CLIENT, "address",
+                "zipCode", "city", "country", "phoneNumber", "email", 1L);
+        Page<SystemTenant> result = tenantServiceAccess.getAll(filter,1,10,null,false);
+        assertNotNull(result);
+        assertTrue(result.getResults().isEmpty());
+    }
 
     /**
      * Test of get the children from a tenant
