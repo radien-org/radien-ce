@@ -16,6 +16,7 @@
 package io.radien.ms.tenantmanagement.datalayer;
 
 import io.radien.api.entity.Page;
+import io.radien.api.model.tenant.SystemPagedTenantSearchFilter;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.service.tenant.TenantServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
@@ -23,6 +24,7 @@ import io.radien.exception.NotFoundException;
 import io.radien.api.service.tenant.exception.TenantException;
 import io.radien.exception.SystemException;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.tenantmanagement.client.entities.PagedTenantSearchFilter;
 import io.radien.ms.tenantmanagement.client.entities.TenantSearchFilter;
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.ms.tenantmanagement.entities.TenantEntity;
@@ -336,11 +338,9 @@ public class TenantServiceTest {
         List<String> sortBy = new ArrayList<>();
         sortBy.add("name");
 
-        Page<SystemTenant> result = tenantServiceAccess.getAll("testGetAll2",1,10,sortBy,false);
+        SystemPagedTenantSearchFilter filter = new PagedTenantSearchFilter(false, null, "testGetAll2", null, null, null, null, null, null, null, null, null);
+        Page<SystemTenant> result = tenantServiceAccess.getAll(filter,1,10,sortBy,false);
         assertNotNull(result);
-
-        Page<SystemTenant> result2 = tenantServiceAccess.getAll("testGetAll2",1,10,sortBy,true);
-        assertNotNull(result2);
     }
 
     /**

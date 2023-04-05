@@ -17,6 +17,7 @@
 package io.radien.ms.tenantmanagement.service;
 
 import io.radien.api.entity.Page;
+import io.radien.api.model.tenant.SystemPagedTenantSearchFilter;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenant.SystemTenantSearchFilter;
 import io.radien.api.service.tenant.TenantServiceAccess;
@@ -52,8 +53,8 @@ public class TenantBusinessService implements Serializable {
      * @param isAscending ascending filter criteria.
      * @return a page of system tenants.
      */
-    public Page<SystemTenant> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
-        return tenantService.getAll(search, pageNo, pageSize, sortBy, isAscending);
+    public Page<SystemTenant> getAll(SystemPagedTenantSearchFilter filter, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
+        return tenantService.getAll(filter, pageNo, pageSize, sortBy, isAscending);
     }
 
     /**

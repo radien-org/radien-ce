@@ -645,7 +645,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
     public List<SystemTenant> getTenants() {
         try {
             Page pagedInformation =
-                    tenantRESTServiceAccess.getAll(null, 1, 30, null, true);
+                    tenantRESTServiceAccess.getAll(null,null,null,null,null,null,null,null,null,null,null, 1, 30, null, true, true, true);
             return pagedInformation.getResults();
         }
         catch (Exception e) {

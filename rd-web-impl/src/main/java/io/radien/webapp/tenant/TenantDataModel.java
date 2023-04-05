@@ -421,7 +421,7 @@ public class TenantDataModel extends AbstractManager implements Serializable {
      * @throws SystemException in case of issues in the url or retrieving the data
      */
     public List<? extends SystemTenant> getParents() throws SystemException {
-        return service.getAll(null, 1, 3, null, false).getResults();
+        return service.getAll(null,null,null,null,null,null,null,null,null,null,null, 1, 3, null, false, true, true).getResults();
     }
 
     /**

@@ -307,13 +307,13 @@ public class TenantRESTServiceClientTest {
 
         TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
 
-        when(tenantResourceClient.getAll(null,1, 10, null, false)).thenReturn(response);
+        when(tenantResourceClient.getAll(null,null, null,null,null,null,null,null,null,null,null,1, 10, null, false, true, true)).thenReturn(response);
 
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
 
         List<? extends SystemTenant> list = new ArrayList<>();
 
-        List<? extends SystemTenant> returnedList = target.getAll(null,1, 10, null, false).getResults();
+        List<? extends SystemTenant> returnedList = target.getAll(null,null,null,null,null,null,null,null,null,null,null,1, 10, null, false, true, true).getResults();
 
         assertEquals(list, returnedList);
     }
@@ -323,7 +323,7 @@ public class TenantRESTServiceClientTest {
         boolean success = false;
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenThrow(new MalformedURLException());
         try {
-            target.getAll(null,1, 10, null, false);
+            target.getAll(null,null,null,null,null,null,null,null,null,null,null,1, 10, null, false, true, true);
         }catch (SystemException se){
             success = true;
         }
@@ -342,14 +342,14 @@ public class TenantRESTServiceClientTest {
     public void testGetAllWithTokenException() throws MalformedURLException, SystemException {
         TenantResourceClient resourceClient = Mockito.mock(TenantResourceClient.class);
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.getAll(anyString(), anyInt(),anyInt(),anyList(), anyBoolean())).
+        when(resourceClient.getAll(any(),any(),any(),any(),any(),any(),any(),any(),any(),any(),any(),anyInt(),anyInt(),anyList(),anyBoolean(), anyBoolean(), anyBoolean())).
                 thenThrow(new TokenExpiredException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
-        target.getAll("toyota", 1, 10, new ArrayList<>(), true);
+        target.getAll(null,null,null,null,null,null,null,null,null,null,null, 1, 10, new ArrayList<>(), true, true, true);
     }
 
     @Test
@@ -716,13 +716,13 @@ public class TenantRESTServiceClientTest {
         TenantResourceClient tenantResourceClient = Mockito.mock(TenantResourceClient.class);
 
         when(tenantServiceUtil.getTenantResourceClient(getTenantManagementUrl())).thenReturn(tenantResourceClient);
-        when(tenantResourceClient.getAll(anyString(), anyInt(), anyInt(), any(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
+        when(tenantResourceClient.getAll(any(),any(),any(),any(),any(),any(),any(),any(),any(),any(),any(),anyInt(),anyInt(),any(),anyBoolean(), anyBoolean(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
-        target.getAll("name", 1, 10, null, false);
+        target.getAll(null,null,null,null,null,null,null,null,null,null,null, 1, 10, null, false, true, true);
     }
 
     @Test(expected = SystemException.class)

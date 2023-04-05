@@ -17,10 +17,12 @@ package io.radien.webapp.util;
 
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.role.SystemRole;
+import io.radien.api.model.tenant.SystemPagedTenantSearchFilter;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.service.permission.PermissionRESTServiceAccess;
 import io.radien.api.service.role.RoleRESTServiceAccess;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
+import io.radien.ms.tenantmanagement.client.entities.PagedTenantSearchFilter;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
@@ -59,8 +61,9 @@ public class EntityFilterUtil extends AbstractManager {
      */
     public List<? extends SystemTenant> filterTenantsByName(String name) {
         try {
-            return this.tenantRESTServiceAccess.getAll(appendIfMissingIgnoreCase(name, "%").trim(),
-                    1, 100, null, false).getResults();
+            return this.tenantRESTServiceAccess.getAll(null, appendIfMissingIgnoreCase(name, "%").trim(),
+                    null,null,null,null,null,null,null,null,null,
+                    1, 100, null, false, true, true).getResults();
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage(DataModelEnum.RETRIEVE_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANTS.getValue()));
             return new ArrayList<>();

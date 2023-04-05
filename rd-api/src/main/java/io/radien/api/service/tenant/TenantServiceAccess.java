@@ -16,6 +16,7 @@
 package io.radien.api.service.tenant;
 
 import io.radien.api.entity.Page;
+import io.radien.api.model.tenant.SystemPagedTenantSearchFilter;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenant.SystemTenantSearchFilter;
 import io.radien.api.service.ServiceAccess;
@@ -42,7 +43,7 @@ public interface TenantServiceAccess extends ServiceAccess {
      * @param isAscending ascending filter criteria.
      * @return a page of system tenants.
      */
-    Page<SystemTenant> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
+    Page<SystemTenant> getAll(SystemPagedTenantSearchFilter filter, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
 
     /**
      * Method to get all the requested tenant children tenants

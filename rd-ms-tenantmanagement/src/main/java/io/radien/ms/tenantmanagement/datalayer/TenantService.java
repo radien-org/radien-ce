@@ -15,9 +15,12 @@
  */
 package io.radien.ms.tenantmanagement.datalayer;
 
+import io.radien.api.SystemVariables;
 import io.radien.api.entity.Page;
+import io.radien.api.model.tenant.SystemPagedTenantSearchFilter;
 import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenant.SystemTenantSearchFilter;
+import io.radien.api.model.user.SystemPagedUserSearchFilter;
 import io.radien.api.service.tenant.TenantServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
@@ -69,7 +72,7 @@ public class TenantService implements TenantServiceAccess {
 
     /**
      * Gets all the tenants into a pagination mode.
-     * @param search name description for some tenant
+     * @param filter name description for some tenant
      * @param pageNo of the requested information. Where the tenant is.
      * @param pageSize total number of pages returned in the request.
      * @param sortBy sort filter criteria.
@@ -77,18 +80,20 @@ public class TenantService implements TenantServiceAccess {
      * @return a page of system tenants.
      */
     @Override
-    public Page<SystemTenant> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
+    public Page<SystemTenant> getAll(SystemPagedTenantSearchFilter filter, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
         EntityManager entityManager = emh.getEm();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<TenantEntity> criteriaQuery = criteriaBuilder.createQuery(TenantEntity.class);
         Root<TenantEntity> tenantRoot = criteriaQuery.from(TenantEntity.class);
 
         criteriaQuery.select(tenantRoot);
-        Predicate global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
-        if(search!= null) {
-            global = criteriaBuilder.and(criteriaBuilder.like(tenantRoot.get("name"), search));
-            criteriaQuery.where(global);
+
+        Predicate global = generateFilterPredicate(filter, criteriaBuilder, tenantRoot);
+        if(global == null) {
+            global = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
         }
+        criteriaQuery.where(global);
+
         if(sortBy != null && !sortBy.isEmpty()){
             List<Order> orders;
             if(isAscending){
@@ -477,5 +482,53 @@ public class TenantService implements TenantServiceAccess {
         criteriaDelete.where(cb.equal(userRoot.get("id"), tenantId));
         int ret = entityManager.createQuery(criteriaDelete).executeUpdate();
         return ret > 0;
+    }
+
+    private static Predicate generateFilterPredicate(SystemPagedTenantSearchFilter filter, CriteriaBuilder criteriaBuilder, Root<TenantEntity> tenantRoot) {
+        Predicate global = null;
+        if(filter != null) {
+            List<Predicate> filtersList = new ArrayList<>();
+            if(filter.getIds() != null && !filter.getIds().isEmpty()) {
+                filtersList.add(tenantRoot.get(SystemVariables.ID.getFieldName()).in(filter.getIds()));
+            }
+            if(filter.getName() != null) {
+                filtersList.add(criteriaBuilder.like(tenantRoot.get(SystemVariables.NAME.getFieldName()), filter.getName()));
+            }
+            if(filter.getTenantKey() != null) {
+                filtersList.add(criteriaBuilder.like(tenantRoot.get("tenantKey"), filter.getTenantKey()));
+            }
+            if(filter.getTenantType() != null) {
+                filtersList.add(criteriaBuilder.like(tenantRoot.get("tenantType"), filter.getTenantType().getId().toString()));
+            }
+            if(filter.getClientAddress() != null) {
+                filtersList.add(criteriaBuilder.like(tenantRoot.get("clientAddress"), filter.getClientAddress()));
+            }
+            if(filter.getClientZipCode() != null) {
+                filtersList.add(criteriaBuilder.like(tenantRoot.get("clientZipCode"), filter.getClientZipCode()));
+            }
+            if(filter.getClientCity() != null) {
+                filtersList.add(criteriaBuilder.like(tenantRoot.get("clientCity"), filter.getClientCity()));
+            }
+            if(filter.getClientCountry() != null) {
+                filtersList.add(criteriaBuilder.like(tenantRoot.get("clientCountry"), filter.getClientCountry()));
+            }
+            if(filter.getClientPhoneNumber() != null) {
+                filtersList.add(criteriaBuilder.like(tenantRoot.get("clientPhoneNumber"), filter.getClientPhoneNumber()));
+            }
+            if(filter.getClientEmail() != null) {
+                filtersList.add(criteriaBuilder.like(tenantRoot.get("clientEmail"), filter.getClientEmail()));
+            }
+            if(filter.getParentId() != null) {
+                filtersList.add(criteriaBuilder.equal(tenantRoot.get("parentId"), filter.getParentId()));
+            }
+            if(filter.isLogicConjunction()) {
+                filtersList.add(criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
+                global = criteriaBuilder.and(filtersList.toArray(new Predicate[0]));
+            } else {
+                filtersList.add(criteriaBuilder.isTrue(criteriaBuilder.literal(false)));
+                global = criteriaBuilder.or(filtersList.toArray(new Predicate[0]));
+            }
+        }
+        return global;
     }
 }

@@ -66,10 +66,10 @@ public class TenantBusinessServiceTest {
     public void testGetAll() {
         SystemTenant resultTenant = new Tenant();
         Page<SystemTenant> result = new Page<>(Collections.singletonList(resultTenant), 1, 1, 1);
-        when(tenantService.getAll(anyString(), anyInt(), anyInt(), anyList(), anyBoolean()))
+        when(tenantService.getAll(any(), anyInt(), anyInt(), anyList(), anyBoolean()))
                 .thenReturn(result);
 
-        assertEquals(result, businessService.getAll("", 1, 1, new ArrayList<>(), false));
+        assertEquals(result, businessService.getAll(null, 1, 1, new ArrayList<>(), false));
     }
 
     @Test

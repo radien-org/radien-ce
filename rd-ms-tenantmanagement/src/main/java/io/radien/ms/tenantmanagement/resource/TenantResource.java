@@ -15,13 +15,17 @@
  */
 package io.radien.ms.tenantmanagement.resource;
 
+import io.radien.api.model.tenant.SystemPagedTenantSearchFilter;
 import io.radien.api.model.tenant.SystemTenantSearchFilter;
 import io.radien.ms.openid.entities.Authenticated;
+import io.radien.ms.tenantmanagement.client.entities.PagedTenantSearchFilter;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.ms.tenantmanagement.client.entities.TenantSearchFilter;
+import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.ms.tenantmanagement.client.services.TenantResourceClient;
 import io.radien.ms.tenantmanagement.service.TenantBusinessService;
 
+import java.util.Collection;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -38,21 +42,15 @@ public class TenantResource implements TenantResourceClient {
 	@Inject
 	private TenantBusinessService tenantBusinessService;
 
-
-	/**
-	 * Gets all the tenant information into a paginated mode and return those information to the user.
-	 * @param search name description for some tenant
-	 * @param pageNo of the requested information. Where the tenant is.
-	 * @param pageSize total number of pages returned in the request.
-	 * @param sortBy sort filter criteria.
-	 * @param isAscending ascending filter criteria.	 *
-	 * @return a paginated response with the information. 200 code message if success, 500 code message if there is any
-	 * error.
-	 */
 	@Override
-	public Response getAll(String search, int pageNo, int pageSize,
-						   List<String> sortBy, boolean isAscending) {
-		return Response.ok(tenantBusinessService.getAll(search, pageNo, pageSize, sortBy, isAscending)).build();
+	public Response getAll(Collection<Long> ids, String name, String tenantKey, TenantType tenantType,
+						   String clientAddress, String clientZipCode, String clientCity,
+						   String clientCountry, String clientPhoneNumber, String clientEmail,
+						   Long parentId, int pageNo, int pageSize, List<String> sortBy, boolean isAscending,
+						   boolean isExact, boolean isLogicalConjunction) {
+		SystemPagedTenantSearchFilter filter = new PagedTenantSearchFilter(isLogicalConjunction, ids, name, tenantKey, tenantType, clientAddress,
+				clientZipCode, clientCity, clientCountry, clientPhoneNumber, clientEmail, parentId);
+		return Response.ok(tenantBusinessService.getAll(filter, pageNo, pageSize, sortBy, isAscending)).build();
 	}
 
 	/**

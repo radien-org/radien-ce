@@ -17,6 +17,9 @@ package io.radien.ms.tenantmanagement.client.services;
 
 import io.radien.ms.tenantmanagement.client.entities.GlobalHeaders;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
+import io.radien.ms.tenantmanagement.client.entities.TenantType;
+import java.time.LocalDate;
+import java.util.Collection;
 import javax.ws.rs.HEAD;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
@@ -57,11 +60,23 @@ public interface TenantResourceClient {
      * error.
      */
     @GET
-    public Response getAll(@QueryParam("search") String search,
+    public Response getAll(@QueryParam("id") Collection<Long> id,
+                           @QueryParam("name") String name,
+                           @QueryParam("tenantKey") String tenantKey,
+                           @QueryParam("tenantType") TenantType tenantType,
+                           @QueryParam("clientAddress") String clientAddress,
+                           @QueryParam("clientZipCode") String clientZipCode,
+                           @QueryParam("clientCity") String clientCity,
+                           @QueryParam("clientCountry") String clientCountry,
+                           @QueryParam("clientPhoneNumber") String clientPhoneNumber,
+                           @QueryParam("clientEmail") String clientEmail,
+                           @QueryParam("parentId") Long parentId,
                            @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
                            @DefaultValue("10") @QueryParam("pageSize") int pageSize,
                            @QueryParam("sortBy") List<String> sortBy,
-                           @DefaultValue("true") @QueryParam("asc") boolean isAscending);
+                           @DefaultValue("true") @QueryParam("asc") boolean isAscending,
+                           @DefaultValue("true") @QueryParam("isExact") boolean isExact,
+                           @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
     /**
      * Gets a list of requested tenants based on some filtered information

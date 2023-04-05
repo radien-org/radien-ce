@@ -65,7 +65,7 @@ public class TenantResourceTest {
      */
     @Test
     public void testGetAll() {
-        Response response = tenantResource.getAll(null, 1, 10, null, false);
+        Response response = tenantResource.getAll(null,null,null,null,null,null,null,null,null,null,null, 1, 10, null, false, true, true);
         assertEquals(Response.Status.OK.getStatusCode(),response.getStatus());
     }
 
