@@ -17,7 +17,7 @@
     "active": "true",
     "system": "true",
     "name": "radien - Email change confirmation",
-    "htmlContent": "An email change has been requested from your account:</br></br>Current email: <b>$currentEmail$</b></br>New email: <b>$newEmail$</b></br></br>To apply this change, click <a href='$confirmationURL$'>this link</a> within the next 5 minutes.",
+    "htmlContent": "An email change has been requested from your account:</br></br>Current email: <b>$currentEmail$</b></br>New email: <b>$newEmail$</b></br></br>To apply this change, click <a href='$targetUrl$'>this link</a>. This link expires at $expireDate$",
     "image": "imgs/logo.png",
     "tags": ["Radien", "email"]
   },

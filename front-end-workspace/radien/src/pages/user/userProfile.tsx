@@ -8,8 +8,9 @@ import {
     Form,
     Header,
     Input,
-   Modal, SpaceBetween,
-    TableProps
+    Modal,
+    SpaceBetween,
+    TableProps,
 } from "@cloudscape-design/components";
 import { Tenant, Ticket, User } from "radien";
 import { v4 as uuidv4 } from "uuid";
@@ -25,11 +26,11 @@ import useCreateTicket from "@/hooks/useCreateTicket";
 import TenantRequestModal from "@/components/TenantRequest/TenantRequestModal";
 import ChangePasswordModal from "@/components/UserDetailsView/ChangePasswordModal";
 import useNotifyUser from "@/hooks/useNotifyUser";
-import {getUserTenantPage} from "@/hooks/usePaginatedUserTenants";
+import { getUserTenantPage } from "@/hooks/usePaginatedUserTenants";
 import useDeleteUser from "@/hooks/useDeleteUser";
 import { useQueryClient } from "react-query";
 import { logout } from "@/components/Header/Header";
-import {ConfirmationModalComponent} from "@/components/ConfirmationModal/ConfirmationModalComponent";
+import { ConfirmationModalComponent } from "@/components/ConfirmationModal/ConfirmationModalComponent";
 import useProcessingLockUser from "@/hooks/useProcessingLockUser";
 
 const FormField = dynamic(() => import("@cloudscape-design/components/form-field"), { ssr: false });
@@ -51,7 +52,9 @@ export default function UserProfile() {
     const [lastName, setLastName] = useState<string>(radienUser?.lastname || "");
     const [logon, setLogon] = useState<string>(radienUser?.logon || "");
     const [userEmail, setUserEmail] = useState<string>(radienUser?.userEmail || "");
+    const [oldEmail, setOldEmail] = useState<string>(radienUser?.userEmail || "");
     const [sub, setSub] = useState<string>(radienUser?.sub || "");
+    // const [isChanged, setIsChanged] = useState(false);
     const [processingLocked, setProcessingLocked] = useState<boolean>(radienUser?.processingLocked || false);
     const [processingLockedModalVisible, setProcessingLockedModalVisible] = useState<boolean>(false);
 
@@ -64,28 +67,35 @@ export default function UserProfile() {
         setLastName(radienUser?.lastname || "");
         setLogon(radienUser?.logon || "");
         setUserEmail(radienUser?.userEmail || "");
+        setOldEmail(radienUser?.userEmail || "");
         setSub(radienUser?.sub || "");
         setProcessingLocked(radienUser?.processingLocked ?? true);
     }, [radienUser]);
+
+    /*
+    function handleChanges() {
+        setIsChanged(true);
+    }
+     */
 
     if (isLoadingUserInSession) {
         return <div>Loading...</div>;
     }
 
     const saveData = () => {
-        const radUser: User  = radienUser!;
+        const radUser: User = radienUser!;
         radUser.firstname = firstName;
         radUser.lastname = lastName;
         radUser.logon = logon;
-        radUser.userEmail = userEmail;
+        radUser.userEmail = oldEmail;
         radUser.sub = sub;
         updateUser.mutate(radUser);
     };
 
-    const processingLock = () : void => {
-        processingLockUser.mutate({id: radienUser!.id!, lock: true});
+    const processingLock = (): void => {
+        processingLockUser.mutate({ id: radienUser!.id!, lock: true });
         addSuccessMessage(i18n?.user_profile_processing_lock_success || "Successfully locked the processing of this account's data.");
-    }
+    };
 
     const colDefinition: TableProps.ColumnDefinition<Tenant>[] = [
         {
@@ -125,12 +135,13 @@ export default function UserProfile() {
             };
             createTicket.mutate(ticket);
 
-            const referenceUrl: string = `${process.env.NEXTAUTH_URL}/api/data-privacy/dataRequest?ticket=${uuid}")`;
+            const referenceUrl: string = `${process.env.NEXT_PUBLIC_HOST}/api/data-privacy/dataRequest?ticket=${uuid}")`;
             const viewId: string = "email-9";
             const args = {
                 firstName: radienUser?.firstname,
                 lastName: radienUser?.lastname,
                 portalUrl: "radien",
+                expireDate: moment().add(24, "hours").format("yyyy-MM-DDTHH:mm:ss"),
                 targetUrl: referenceUrl,
             };
 
@@ -144,20 +155,59 @@ export default function UserProfile() {
         } else if (event.detail.id == "delUser") {
             setSelfDeletionVisibility(true);
         }
-        if(event.detail.id == processingLockButtonID){
+        if (event.detail.id == processingLockButtonID) {
             setProcessingLockedModalVisible(true);
         }
+    };
+
+    const notifyEmailUpdate = async (newEmail: string) => {
+        const uuid = uuidv4();
+        const emailChangeRequest = {
+            newEmail,
+        };
+        const ticket: Ticket = {
+            userId: Number(radienUser?.id),
+            token: uuid,
+            ticketType: TicketType.EMAIL_CHANGE,
+            data: JSON.stringify(emailChangeRequest),
+            createUser: Number(radienUser?.id),
+            expireDate: moment().add(5, "minutes").format("yyyy-MM-DDTHH:mm:ss"),
+        };
+        createTicket.mutate(ticket);
+        const referenceUrl: string = `${process.env.NEXT_PUBLIC_HOST}/api/user/confirmUpdateEmail?ticketToken=${uuid}`;
+        const viewId: string = "email-3";
+        const args = {
+            firstName: radienUser?.firstname,
+            lastName: radienUser?.lastname,
+            currentEmail: oldEmail,
+            newEmail: userEmail,
+            portalUrl: "radien",
+            targetUrl: referenceUrl,
+            expireDate: moment().add(5, "minutes").toDate().toLocaleString(),
+        };
+        notifyUser.mutate({
+            email: radienUser?.userEmail!,
+            viewId,
+            language: locale,
+            params: args,
+        });
+        addSuccessMessage("Successfully updated Email. Please check your email for more details.");
     };
 
     return (
         <>
             <TenantRequestModal modalVisible={requestTenantVisibility} setModalVisible={setRequestTenantVisibility} />
-            <ConfirmationModalComponent header={i18n?.user_profile_processing_lock_confirmation_header || "Processing Lock"}
-                                        body={i18n?.user_profile_processing_lock_confirmation_body || "Are you sure you would like to lock the processing of your account's data? This action will lock the processing of all user data including deletion requests."}
-                                        modalVisible={processingLockedModalVisible}
-                                        setModalVisible={setProcessingLockedModalVisible}
-                                        closeModalOnConfirm={true}
-                                        confirmBehaviour={processingLock}/>
+            <ConfirmationModalComponent
+                header={i18n?.user_profile_processing_lock_confirmation_header || "Processing Lock"}
+                body={
+                    i18n?.user_profile_processing_lock_confirmation_body ||
+                    "Are you sure you would like to lock the processing of your account's data? This action will lock the processing of all user data including deletion requests."
+                }
+                modalVisible={processingLockedModalVisible}
+                setModalVisible={setProcessingLockedModalVisible}
+                closeModalOnConfirm={true}
+                confirmBehaviour={processingLock}
+            />
 
             <ChangePasswordModal modalVisible={requestPasswordChangeVisibility} setModalVisible={setRequestPasswordChange} />
             <Modal
@@ -205,7 +255,11 @@ export default function UserProfile() {
                                     items={[
                                         { text: i18n?.user_profile_delete_label || "Delete", id: "delUser", disabled: processingLocked },
                                         { text: i18n?.user_profile_request_user_data || "Request User Data", id: "dataReq", disabled: false },
-                                        { text: i18n?.user_profile_lock_label || "Lock Account from Processing", id: processingLockButtonID, disabled: processingLocked },
+                                        {
+                                            text: i18n?.user_profile_lock_label || "Lock Account from Processing",
+                                            id: processingLockButtonID,
+                                            disabled: processingLocked,
+                                        },
                                         { text: i18n?.password_change_header || "Change password", id: "changePwd", disabled: false },
                                     ]}></ButtonDropdown>
                             }>
@@ -213,8 +267,11 @@ export default function UserProfile() {
                         </Header>
                     }>
                     <form
-                        onSubmit={(e) => {
+                        onSubmit={async (e) => {
                             e.preventDefault();
+                            if (oldEmail !== userEmail) {
+                                await notifyEmailUpdate(userEmail);
+                            }
                             saveData();
                         }}>
                         <Form
@@ -238,7 +295,14 @@ export default function UserProfile() {
                                 <Input value={logon} disabled={processingLocked} onChange={(event) => setLogon(event.detail.value)} />
                             </FormField>
                             <FormField label={i18n?.user_profile_email || "Email"} stretch={false}>
-                                <Input value={userEmail} disabled={true} onChange={(event) => setUserEmail(event.detail.value)} />
+                                <Input
+                                    value={userEmail}
+                                    disabled={processingLocked}
+                                    onChange={(event) => {
+                                        setOldEmail(radienUser?.userEmail ?? "");
+                                        setUserEmail(event.detail.value);
+                                    }}
+                                />
                             </FormField>
                             <FormField label={i18n?.user_profile_subject || "Subject Id"} stretch={false}>
                                 <Input value={sub} disabled={true} onChange={(event) => setSub(event.detail.value)} />
@@ -255,7 +319,7 @@ export default function UserProfile() {
                         queryKey={QueryKeys.ASSIGNED_TENANTS}
                         manipulationDisableCondition={radienUser?.processingLocked}
                         columnDefinitions={colDefinition}
-                        getPaginated={() => getUserTenantPage( radienUser?.id!)}
+                        getPaginated={() => getUserTenantPage(radienUser?.id!)}
                         viewActionProps={{}}
                         createActionProps={{
                             createLabel: i18n?.user_profile_tenants_create_label || "Request Tenant",
