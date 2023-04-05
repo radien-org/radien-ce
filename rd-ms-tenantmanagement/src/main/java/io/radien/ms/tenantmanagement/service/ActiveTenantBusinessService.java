@@ -44,10 +44,10 @@ public class ActiveTenantBusinessService implements Serializable {
     /**
      * Gets all the active tenants into a pagination mode.
      *
-     * @param tenantId tenant identifier
-     * @param userId user identifier
+     * @param tenantId    tenant identifier
+     * @param userId      user identifier
      * @param pageNo      of the requested information. Where the active tenant is.
-     * @param pageSize    total number of pages returned in the request.
+     * @param pageSize    number of records to be returned in the response page.
      * @param sortBy      sort filter criteria.
      * @param isAscending ascending filter criteria.
      * @return a page of system active tenants.

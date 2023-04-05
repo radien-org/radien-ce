@@ -31,6 +31,7 @@ public interface ActiveTenantRESTServiceAccess {
 
     /**
      * Search for a active tenant with given id
+     *
      * @param id of the active tenant to be retrieved
      * @return a optional list of the requested active tenant
      * @throws SystemException in case of token expiration or any issue on the application

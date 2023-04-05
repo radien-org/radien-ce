@@ -41,6 +41,7 @@ public class ActiveTenantResource implements ActiveTenantResourceClient {
 
 	/**
 	 * Gets all the active tenant information into a paginated mode and return those information to the user.
+	 *
 	 * @param tenantId tenant identifier (Optional)
 	 * @param userId user identifier (Optional)
 	 * @param pageNo of the requested information. Where the active tenant is.
@@ -85,7 +86,7 @@ public class ActiveTenantResource implements ActiveTenantResourceClient {
 	/**
 	 * Requests to a active tenant be deleted by given his id
 	 * @param id of the active tenant to be deleted
-	 * @return a response with true or false based on the success or failure of the deletion
+	 * @return 200 code message in case of success or 500 in case of any error
 	 */
 	@Override
 	public Response delete(long id) {
@@ -97,7 +98,7 @@ public class ActiveTenantResource implements ActiveTenantResourceClient {
 	 * Requests to delete active tenants taking in account the following parameters
 	 * @param tenantId tenant id of the active tenant to be deleted
 	 * @param userId user id of the active tenant to be deleted
-	 * @return a response with true or false based on the success or failure of the deletion
+	 * @return 200 code message in case of success or 500 in case of any error
 	 */
 	@Override
 	public Response delete(long tenantId, long userId) {
@@ -108,7 +109,7 @@ public class ActiveTenantResource implements ActiveTenantResourceClient {
 	/**
 	 * Method to request a creation of a active tenant
 	 * @param activeTenant information to be created
-	 * @return a response with true or false based on the success or failure of the creation
+	 * @return 200 code message in case of success or 500 in case of any error
 	 */
 	@Override
 	public Response create(ActiveTenant activeTenant) {
@@ -119,7 +120,7 @@ public class ActiveTenantResource implements ActiveTenantResourceClient {
 	 * Method to update a requested active tenant
 	 * @param id of the active tenant to be updated
  	 * @param activeTenant information to be update
-	 * @return a response with true or false based on the success or failure of the update
+	 * @return 200 code message in case of success or 500 in case of any error
 	 */
 	@Override
 	public Response update(long id, ActiveTenant activeTenant) {
@@ -131,7 +132,7 @@ public class ActiveTenantResource implements ActiveTenantResourceClient {
 	 * Validates if specific requested active Tenant exists
 	 * @param userId to be found
 	 * @param tenantId to be found
-	 * @return response true if it exists
+	 * @return 200 code message in case of success or 500 in case of any error
 	 */
 	@Override
 	public Response exists(Long userId, Long tenantId) {

@@ -139,6 +139,7 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
 
     /**
      * Gets the requester to get all the active tenants into a pagination mode.
+     *
      * @param tenantId tenant identifier (Optional)
      * @param userId user identifier (Optional)
      * @param pageNo of the requested information. Where the active tenant is.
