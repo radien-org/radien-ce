@@ -181,7 +181,7 @@ export default function TenantManagement() {
                         manipulationDisableCondition={radienUser?.processingLocked}
                         onSelectAction={(item) => setSelectedItem(item)}
                         columnDefinitions={colDefinition}
-                        getPaginated={(pageNumber, pageSize) => getTenantPage(pageNumber, pageSize, activeTenant.data?.id)}
+                        getPaginated={(pageNumber, pageSize) => getTenantPage(pageNumber, pageSize, activeTenant.data?.tenantId)}
                         viewActionProps={{}}
                         createActionProps={{
                             createLabel: i18n?.tenant_management_create_label || "Create Tenant",
