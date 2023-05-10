@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-present radien GmbH & its legal owners. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -10,7 +10,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * See the License for the specific language governing actions and
  * limitations under the License.
  */
 package io.radien.ms.permissionmanagement.client.services;
@@ -20,7 +20,10 @@ import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.service.permission.ActionRESTServiceAccess;
+import io.radien.exception.BadRequestException;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.InternalServerErrorException;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
@@ -60,6 +63,20 @@ public class ActionRESTServiceClient extends AuthorizationChecker implements Act
 
     @Inject
     private ClientServiceUtil clientServiceUtil;
+
+    /**
+     * Programmatically (via RestClientBuilder) creates an instance of a Action Rest Client
+     * @return Instance of {@link ActionResourceClient} (Rest client)
+     * @throws SystemException in case of any issue regarding url
+     */
+    private ActionResourceClient getActionResourceClient() throws SystemException {
+        try {
+            return clientServiceUtil.getActionResourceClient(oaf.getProperty
+                    (OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
+        } catch (MalformedURLException m) {
+            throw new SystemException(m);
+        }
+    }
 
     /**
      * Requests all Actions if not able then will try to refresh access token and retry
@@ -197,31 +214,18 @@ public class ActionRESTServiceClient extends AuthorizationChecker implements Act
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     public boolean create(SystemAction action) throws SystemException {
-        try {
-            return createRequest(action);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return createRequest(action);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(this::createRequest, action);
     }
 
     /**
      * Creates given action
      * @param action to be created
      * @return true if action has been created with success or false if not
-     * @throws SystemException in case it founds multiple actions or if URL is malformed
+     * @throws SystemException  in case of any communication or processing issue regarding action rest api
      */
     private boolean createRequest(SystemAction action) throws SystemException{
-        ActionResourceClient client;
-        try {
-            client = clientServiceUtil.getActionResourceClient(oaf.
-                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT));
-
-            Response response = client.save((Action)action);
+        ActionResourceClient client = getActionResourceClient();
+        try (Response response = client.create((Action)action)) {
             if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
@@ -229,7 +233,38 @@ public class ActionRESTServiceClient extends AuthorizationChecker implements Act
                 log.error(entity);
                 return false;
             }
-        } catch (ProcessingException | MalformedURLException e) {
+        } catch (ProcessingException | BadRequestException | InternalServerErrorException e) {
+            throw new SystemException(e.getMessage());
+        }
+    }
+
+    /**
+     * Requests to update a given action
+     * @param action to be updated
+     * @return true if action has been updated with success or false if not
+     * @throws SystemException in case of any communication or processing issue regarding action rest api
+     */
+    public boolean update(SystemAction action) throws SystemException {
+        return get(this::updateRequest,action);
+    }
+
+    /**
+     * Updates a given action
+     * @param action to be updated
+     * @return true if action has been updated with success or false if not
+     * @throws SystemException in case of any communication or processing issue regarding action rest api
+     */
+    private boolean updateRequest(SystemAction action) throws SystemException{
+        ActionResourceClient client = getActionResourceClient();
+        try (Response response = client.update(action.getId(), (Action)action)) {
+            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return true;
+            } else {
+                String entity = response.readEntity(String.class);
+                log.error(entity);
+                return false;
+            }
+        } catch (ProcessingException | NotFoundException | BadRequestException | InternalServerErrorException e) {
             throw new SystemException(e.getMessage());
         }
     }

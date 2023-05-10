@@ -15,7 +15,9 @@
  */
 package io.radien.api.service.user;
 
+import io.radien.api.model.user.SystemUserPasswordChanging;
 import java.net.MalformedURLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,7 +63,7 @@ public interface UserRESTServiceAccess extends Appframeable{
      * @return a list containing system users
      * @throws SystemException in case of token expiration or any issue on the application
      */
-    public List<? extends SystemUser> getUsersByIds(List<Long> ids) throws SystemException;
+    public List<? extends SystemUser> getUsersByIds(Collection<Long> ids) throws SystemException;
 
     /**
      * Creates given user
@@ -69,6 +71,8 @@ public interface UserRESTServiceAccess extends Appframeable{
      * @return true if user has been created with success or false if not
      * @throws SystemException in case of token expiration or any issue on the application
      */
+    Optional<SystemUser> getCurrentUserInSession() throws SystemException;
+
     /**
      * Creates given user
      * @param user to be created
@@ -89,7 +93,9 @@ public interface UserRESTServiceAccess extends Appframeable{
      * @return a page of all the requested system users
      * @throws MalformedURLException in case of any issue while attempting communication with the client side
      */
-    public Page<? extends SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws MalformedURLException;
+    public Page<? extends SystemUser> getAll(String sub, String email, String logon, String firstName, String lastName,
+                                             Boolean enabled, Boolean processingLocked, Collection<Long> ids, int pageNo, int pageSize, List<String> sortBy,
+                                             boolean isAscending, boolean isExact, boolean isLogicalConjunction) throws MalformedURLException;
 
     /**
      * Send the update password email to the active/requested user
@@ -97,6 +103,15 @@ public interface UserRESTServiceAccess extends Appframeable{
      * @return true in case of success
      */
     public boolean sendUpdatePasswordEmail(long id);
+
+    /**
+     * Updates user email and sends email for verification
+     * @param userId to be set
+     * @param user object contains an email
+     * @return true in case of success
+     * @throws SystemException in case of token expiration or any issue on the application
+     */
+    public boolean updateEmailAndExecuteActionEmailVerify(long userId, SystemUser user, boolean emailVerify) throws SystemException;
 
     /**
      * Deletes the requested user from the db
@@ -118,4 +133,23 @@ public interface UserRESTServiceAccess extends Appframeable{
      * @throws SystemException in case of token expiration or any issue on the application
      */
     public boolean refreshToken() throws SystemException;
+
+    /**
+     * Changes user password
+     * @param sub OpenId user identifier (subject)
+     * @param change pojo/bean containing credential information (Not plain text, data encoded on base64)
+     * @return true if changing process is concluded with success.
+     * @throws SystemException in case of any issue regarding communication with User endpoint
+     */
+    boolean updatePassword(String sub, SystemUserPasswordChanging change) throws SystemException;
+
+    boolean processingLock(long id, boolean processingLock);
+
+    /**
+    * Checks if the user is locked
+     * @param id of the user to be deleted
+     * @return true if user is locked
+     * @throws SystemException
+     */
+    boolean isProcessingLocked(long id) throws SystemException;
 }

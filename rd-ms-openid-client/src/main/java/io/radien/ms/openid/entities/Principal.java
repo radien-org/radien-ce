@@ -32,9 +32,12 @@ public class Principal implements SystemUser {
     private String firstname;
     private String lastname;
     private String sub;
+    private String mobileNumber;
     private Date terminationDate;
     private boolean enabled;
     private boolean delegatedCreation;
+
+    private boolean processingLocked;
 
     private Date createDate;
     private Date lastUpdate;
@@ -59,6 +62,7 @@ public class Principal implements SystemUser {
         this.sub = p.getSub();
         this.terminationDate = p.getTerminationDate();
         this.enabled = p.enabled;
+        this.processingLocked = p.isProcessingLocked();
         this.setCreateDate(p.getCreateDate());
         this.setCreateUser(p.getCreateUser());
         this.setLastUpdateUser(p.getLastUpdateUser());
@@ -129,6 +133,22 @@ public class Principal implements SystemUser {
      */
     public void setUserEmail(String userEmail) {
         this.userEmail = userEmail;
+    }
+
+    /**
+     * User mobile number getter method
+     * @return the user mobile number
+     */
+    public String getMobileNumber() {
+        return mobileNumber;
+    }
+
+    /**
+     * User mobile number setter method
+     * @param mobileNumber to be set
+     */
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
     }
 
     /**
@@ -211,6 +231,26 @@ public class Principal implements SystemUser {
      */
     public void setDelegatedCreation(boolean delegatedCreation) {
         this.delegatedCreation = delegatedCreation;
+    }
+
+    /**
+     * System user is processing locked getter
+     *
+     * @return System user delegated creation
+     */
+    @Override
+    public boolean isProcessingLocked() {
+        return processingLocked;
+    }
+
+    /**
+     * System user processing locked setter
+     *
+     * @param processingLocked to be set
+     */
+    @Override
+    public void setProcessingLocked(boolean processingLocked) {
+        this.processingLocked = processingLocked;
     }
 
     /**

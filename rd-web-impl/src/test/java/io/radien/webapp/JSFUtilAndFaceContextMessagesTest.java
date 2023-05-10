@@ -19,7 +19,8 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.Flash;
 
-import org.powermock.api.mockito.PowerMockito;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -32,17 +33,17 @@ import static org.mockito.Mockito.when;
  * @author Rajesh Gavvala
  */
 public abstract class JSFUtilAndFaceContextMessagesTest {
-    FacesContext facesContext;
-
+    protected static FacesContext facesContext;
+    private static MockedStatic<FacesContext> facesContextMockedStatic;
+    private static MockedStatic<JSFUtil> jsfUtilMockedStatic;
     /**
      * This method constructs and handles JSF util and
      * FaceContext messages
      */
-    public final void handleJSFUtilAndFaceContextMessages(){
-        FacesContext facesContext;
+    public final static void handleJSFUtilAndFaceContextMessages(){
 
-        PowerMockito.mockStatic(FacesContext.class);
-        PowerMockito.mockStatic(JSFUtil.class);
+        facesContextMockedStatic = Mockito.mockStatic(FacesContext.class);
+        jsfUtilMockedStatic = Mockito.mockStatic(JSFUtil.class);
 
         facesContext = mock(FacesContext.class);
         when(FacesContext.getCurrentInstance()).thenReturn(facesContext);
@@ -64,9 +65,9 @@ public abstract class JSFUtilAndFaceContextMessagesTest {
      * FaceContext messages
      * Returns mock FacesContext object
      */
-    public final FacesContext getFacesContext(){
-        PowerMockito.mockStatic(FacesContext.class);
-        PowerMockito.mockStatic(JSFUtil.class);
+    public static final FacesContext getFacesContext(){
+        facesContextMockedStatic = Mockito.mockStatic(FacesContext.class);
+        jsfUtilMockedStatic = Mockito.mockStatic(JSFUtil.class);
 
         facesContext = mock(FacesContext.class);
         when(FacesContext.getCurrentInstance()).thenReturn(facesContext);
@@ -83,5 +84,14 @@ public abstract class JSFUtilAndFaceContextMessagesTest {
         when(JSFUtil.getMessage(anyString())).thenAnswer(i -> i.getArguments()[0]);
 
         return facesContext;
+    }
+
+    public static final void destroy(){
+        if(facesContextMockedStatic!=null) {
+            facesContextMockedStatic.close();
+        }
+        if(jsfUtilMockedStatic!=null) {
+            jsfUtilMockedStatic.close();
+        }
     }
 }

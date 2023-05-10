@@ -1,0 +1,13 @@
+[
+  {"tenantName": "Root Tenant", "roleName":"User Administrator"},
+  {"tenantName": "Client Tenant", "roleName":"User Administrator"},
+  {"tenantName": "Sub Tenant", "roleName":"User Administrator"},
+
+  {"tenantName": "Root Tenant", "roleName":"Tenant Administrator"},
+  {"tenantName": "Client Tenant", "roleName":"Tenant Administrator"},
+  {"tenantName": "Sub Tenant", "roleName":"Tenant Administrator"},
+
+  {"tenantName": "Root Tenant", "roleName":"Guest"},
+  {"tenantName": "Client Tenant", "roleName":"Guest"},
+  {"tenantName": "Sub Tenant", "roleName":"Guest"}
+]

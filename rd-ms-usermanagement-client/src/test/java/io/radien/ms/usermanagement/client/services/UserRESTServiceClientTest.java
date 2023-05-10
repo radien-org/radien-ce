@@ -15,15 +15,32 @@
  */
 package io.radien.ms.usermanagement.client.services;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+
+import io.radien.api.model.user.SystemUserPasswordChanging;
+import io.radien.exception.BadRequestException;
+import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+
 import java.net.MalformedURLException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,34 +52,37 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonWriter;
 import javax.json.JsonObject;
+
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 
 import io.radien.api.OAFAccess;
-
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.service.batch.BatchSummary;
 import io.radien.api.service.batch.DataIssue;
+import io.radien.api.OAFProperties;
+import io.radien.api.entity.Page;
 
 import io.radien.exception.NotFoundException;
 import io.radien.exception.TokenExpiredException;
+import io.radien.exception.SystemException;
+
 import io.radien.ms.authz.client.UserClient;
+import io.radien.ms.usermanagement.client.util.UserFactoryUtil;
 import io.radien.ms.usermanagement.client.util.UserModelMapper;
+import io.radien.ms.usermanagement.client.entities.User;
+import io.radien.ms.usermanagement.client.util.ClientServiceUtil;
+
 import org.apache.cxf.bus.extension.ExtensionException;
+
 import org.junit.Before;
 import org.junit.Test;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-
-import io.radien.api.OAFProperties;
-import io.radien.api.entity.Page;
-import io.radien.exception.SystemException;
-import io.radien.ms.usermanagement.client.entities.User;
-import io.radien.ms.usermanagement.client.util.ClientServiceUtil;
-
 /**
  * User REST service client requests and responses test
  * {@link io.radien.ms.usermanagement.client.services.UserRESTServiceClient}
@@ -150,6 +170,36 @@ public class UserRESTServiceClientTest {
     }
 
     /**
+     * Method to re attempt to get a user based on his subject but with token expired
+     * @throws Exception to be thrown in multiple cases
+     */
+    @Test
+    public void testGetUserBySubTokenExpirationReAttempt() throws Exception {
+        String a = "a";
+
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(baos);
+        jsonWriter.writeArray(builder.build());
+        jsonWriter.close();
+
+        InputStream is = new ByteArrayInputStream(baos.toByteArray());
+
+        Response response = Response.ok(is).build();
+
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+
+        when(resourceClient.getUsers(a,null,null,null,true,true))
+                .thenThrow(new TokenExpiredException("teste")).thenReturn(response);
+
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
+        assertNotNull(target.getUserBySub(a));
+    }
+
+    /**
      * Method to attempt to create a user but with token expired
      * @throws Exception to be thrown in multiple cases
      */
@@ -159,11 +209,29 @@ public class UserRESTServiceClientTest {
 
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.save(any())).thenThrow(new TokenExpiredException("teste"));
+        when(resourceClient.create(any(User.class))).thenThrow(new TokenExpiredException("teste"));
 
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
         when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
         target.create(test, false);
+    }
+
+    /**
+     * Method to re attempt to create a user but with token expired
+     * @throws Exception to be thrown in multiple cases
+     */
+    @Test
+    public void testCreateUserTokenExpirationReAttempt() throws Exception {
+        SystemUser test = new User();
+
+        Response response = Response.ok().build();
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.create(any(User.class))).thenThrow(new TokenExpiredException("teste")).thenReturn(response);
+
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
+        assertTrue(target.create(test, false));
     }
 
     /**
@@ -250,7 +318,7 @@ public class UserRESTServiceClientTest {
     public void testGetAll() throws MalformedURLException {
         List<User> list = new ArrayList<>();
         list.add(UserFactory.create("test1", "lastname1",
-                "logon1", "sub", "email", 2L));
+                "logon1", "sub", "email", "951", 2L, false));
         Page<SystemUser> page = new Page<>(list, 1, 1, 1);
 
         JsonObjectBuilder objectBuilder = Json.createObjectBuilder()
@@ -265,10 +333,10 @@ public class UserRESTServiceClientTest {
 
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.getAll(any(), anyInt(), anyInt(), any(), anyBoolean()))
+        when(resourceClient.getAll(any(), any(), any(), any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), anyBoolean(), anyBoolean(), anyBoolean()))
                 .thenReturn(expectedResponse);
 
-        Page<? extends SystemUser> receivedPage = target.getAll(null, 1, 10, null, false);
+        Page<? extends SystemUser> receivedPage = target.getAll(null, null, null, null, null, null, null, null, 1, 10, null, false, false, false);
 
         assertEquals(1, receivedPage.getTotalPages());
         assertEquals(1, receivedPage.getCurrentPage());
@@ -283,7 +351,7 @@ public class UserRESTServiceClientTest {
     public void testGetAllMalformedException() throws MalformedURLException {
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenThrow(new MalformedURLException());
 
-        Page<? extends SystemUser> receivedPage = target.getAll(null, 1, 10, null, false);
+        Page<? extends SystemUser> receivedPage = target.getAll(null, null, null, null, null, null, null, null, 1, 10, null, false, false, false);
 
         assertEquals(0, receivedPage.getTotalPages());
         assertEquals(0, receivedPage.getCurrentPage());
@@ -298,7 +366,7 @@ public class UserRESTServiceClientTest {
     public void testGetAllRefreshTokenExpiration() throws MalformedURLException {
         List<User> list = new ArrayList<>();
         list.add(UserFactory.create("test1", "lastname1",
-                "logon1", "sub",  "email", 2L));
+                "logon1", "sub",  "email", "951", 2L, false));
         Page<SystemUser> page = new Page<>(list, 1, 1, 1);
 
         JsonObjectBuilder objectBuilder = Json.createObjectBuilder()
@@ -313,13 +381,45 @@ public class UserRESTServiceClientTest {
 
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.getAll(any(), anyInt(), anyInt(), any(), anyBoolean()))
+        when(resourceClient.getAll(any(), any(), any(), any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), anyBoolean(), anyBoolean(), anyBoolean()))
                 .thenThrow(new TokenExpiredException());
 
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
         when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
 
-        assertNull(target.getAll(null, 1, 10, null, false));
+        assertNull(target.getAll(null, null, null, null, null, null, null, null, 1, 10, null, false, false, false));
+    }
+
+    /**
+     * Test to re attempt to get all the users with token expired
+     * @throws MalformedURLException in case of wrong url for the user endpoint
+     */
+    @Test
+    public void testGetAllRefreshTokenExpirationReAttempt() throws MalformedURLException {
+        List<User> list = new ArrayList<>();
+        list.add(UserFactory.create("test1", "lastname1",
+                "logon1", "sub",  "email", "951", 2L, false));
+        Page<SystemUser> page = new Page<>(list, 1, 1, 1);
+
+        JsonObjectBuilder objectBuilder = Json.createObjectBuilder()
+                .add("currentPage", page.getCurrentPage())
+                .add("totalResults", page.getTotalResults())
+                .add("totalPages", page.getTotalPages())
+                .add("results", UserModelMapper.map(list));
+
+        JsonObject jsonObject = objectBuilder.build();
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(jsonObject.toString().getBytes());
+        Response expectedResponse = Response.ok(inputStream).build();
+
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.getAll(any(), any(), any(), any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), anyBoolean(), anyBoolean(), anyBoolean()))
+                .thenThrow(new TokenExpiredException()).thenReturn(expectedResponse);
+
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
+
+        assertNotNull(target.getAll(null, null, null, null, null, null, null, null, 1, 10, null, false, false, false));
     }
 
     /**
@@ -328,10 +428,10 @@ public class UserRESTServiceClientTest {
      */
     @Test
     public void testUpdateUserTokenExpiration() throws Exception {
-        SystemUser user = new User();
+        User user = new User(); user.setId(1L);
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.save(any())).thenThrow(new TokenExpiredException("teste"));
+        when(resourceClient.update(user.getId(), user)).thenThrow(new TokenExpiredException("teste"));
 
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
         when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
@@ -399,7 +499,7 @@ public class UserRESTServiceClientTest {
     @Test
     public void testGetUserBySubWithResults() throws Exception {
         String a = "a";
-        User user = UserFactory.create(null, null, "logon", null, null, null);
+        User user = UserFactory.create(null, null, "logon", null, null, null, null, false);
         user.setSub(a);
 
         JsonArrayBuilder builder = Json.createArrayBuilder();
@@ -683,7 +783,7 @@ public class UserRESTServiceClientTest {
     public void testCreate() throws MalformedURLException, SystemException, TokenExpiredException {
         User u = new User();
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.save(u)).thenReturn(Response.ok().build());
+        when(resourceClient.create(u)).thenReturn(Response.ok().build());
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
         assertTrue(target.create(u,true));
     }
@@ -698,7 +798,7 @@ public class UserRESTServiceClientTest {
     public void testCreateFail() throws MalformedURLException, TokenExpiredException, SystemException {
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         User u = new User();
-        when(resourceClient.save(u)).thenReturn(Response.serverError().entity("test error msg").build());
+        when(resourceClient.create(u)).thenReturn(Response.serverError().entity("test error msg").build());
         when(clientServiceUtil.getUserResourceClient(any())).thenReturn(resourceClient);
         assertFalse(target.create(u,true));
     }
@@ -713,7 +813,7 @@ public class UserRESTServiceClientTest {
     public void testCreateProcessingException() throws MalformedURLException, TokenExpiredException, SystemException {
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
         User u = new User();
-        when(resourceClient.save(u)).thenThrow(new ProcessingException(""));
+        when(resourceClient.create(u)).thenThrow(new ProcessingException(""));
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
         target.create(u,true);
     }
@@ -763,6 +863,95 @@ public class UserRESTServiceClientTest {
     }
 
     /**
+     * Test to re attempt to update user password by sending him email but the token is expired
+     * @throws Exception to be thrown in multiple cases
+     */
+    @Test
+    public void testUpdatePasswordEmailTokenExpirationReAttempt() throws Exception {
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        Response response = Response.ok().build();
+        when(resourceClient.sendUpdatePasswordEmail(anyLong())).thenThrow(new TokenExpiredException("test email change password")).thenReturn(response);
+
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
+
+        assertTrue(target.sendUpdatePasswordEmail(2L));
+    }
+
+    /**
+     * Test to validate the initiate resetting email verify
+     * @throws MalformedURLException in case of endpoint url is wrong
+     * @throws TokenExpiredException in case of token expiration
+     */
+    @Test
+    public void testUpdateEmailAndExecuteActionEmailVerify() throws MalformedURLException, TokenExpiredException{
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(resourceClient.updateEmailAndExecuteActionEmailVerify(anyLong(), any(), anyBoolean()))
+                .thenReturn(Response.ok().build());
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+
+        boolean success = false;
+        try {
+            assertTrue(target.updateEmailAndExecuteActionEmailVerify(dummyUser.getId(), dummyUser, true));
+        } catch (Exception e) {
+            success = true;
+        }
+        assertFalse(success);
+    }
+
+    /**
+     *Test to validate the initiate resetting email verify but without success
+     * @throws MalformedURLException in case of endpoint url is wrong
+     * @throws TokenExpiredException in case of token expiration
+     */
+    @Test
+    public void testUpdateEmailAndExecuteActionEmailVerifyFail() throws MalformedURLException, TokenExpiredException, SystemException {
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(resourceClient.updateEmailAndExecuteActionEmailVerify(anyLong(), any(), anyBoolean())).thenReturn(Response.serverError().entity("test msg error").build());
+        when(clientServiceUtil.getUserResourceClient(any())).thenReturn(resourceClient);
+
+        assertFalse(target.updateEmailAndExecuteActionEmailVerify(dummyUser.getId(), dummyUser, true));
+    }
+
+
+
+    /**
+     * Test to attempt to update user email verify by sending him email but the token is expired
+     * @throws Exception to be thrown in multiple cases
+     */
+    @Test(expected = Exception.class)
+    public void testUpdateEmailAndExecuteActionEmailVerifyTokenExpiration() throws Exception {
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.updateEmailAndExecuteActionEmailVerify(anyLong(), any(), anyBoolean()))
+                .thenThrow(new TokenExpiredException("test email verify"));
+
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
+
+        target.updateEmailAndExecuteActionEmailVerify(2L, dummyUser, true);
+    }
+
+    /**
+     * Test to attempt to update user email verify by sending him a email but the token is expired and
+     * trying to attempt to retry after refreshed the token
+     * @throws Exception to be thrown in multiple cases
+     */
+    @Test
+    public void testUpdateEmailAndExecuteActionEmailVerifyTokenExpirationReAttempt() throws Exception {
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        Response response = Response.ok().build();
+        when(resourceClient.updateEmailAndExecuteActionEmailVerify(anyLong(), any(), anyBoolean())).thenThrow(new TokenExpiredException("test email verify")).thenReturn(response);
+
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
+
+        assertTrue(target.updateEmailAndExecuteActionEmailVerify(2L, dummyUser, true));
+    }
+
+    /**
      *Test to validate the delete user but with malformed exception
      * @throws MalformedURLException in case of endpoint url is wrong
      * @throws TokenExpiredException in case of token expiration
@@ -791,14 +980,15 @@ public class UserRESTServiceClientTest {
      */
     @Test
     public void testUpdateUser() throws MalformedURLException, TokenExpiredException{
+        User user = new User(); user.setId(1L);
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.save(dummyUser)).thenReturn(Response.ok().build());
+        when(resourceClient.update(user.getId(), user)).thenReturn(Response.ok().build());
         when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
-        dummyUser.setFirstname("firstname-update");
+        user.setFirstname("firstname-update");
 
         boolean success = false;
         try {
-            assertTrue(target.updateUser(dummyUser));
+            assertTrue(target.updateUser(user));
         } catch (Exception e) {
             success = true;
         }
@@ -812,11 +1002,31 @@ public class UserRESTServiceClientTest {
      */
     @Test
     public void testUpdateUserFail() throws MalformedURLException, TokenExpiredException{
+        User user = new User(); user.setId(1L);
         UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
-        when(resourceClient.save(dummyUser)).thenReturn(Response.serverError().entity("test error msg").build());
+        when(resourceClient.update(user.getId(), user)).thenReturn(Response.serverError().entity("test error msg").build());
         when(clientServiceUtil.getUserResourceClient(any())).thenReturn(resourceClient);
-        dummyUser.setLastname("lastname-updated");
-        assertFalse(target.updateUser(dummyUser));
+        user.setLastname("lastname-updated");
+        assertFalse(target.updateUser(user));
+    }
+
+    /**
+     * Test update with reattempting refresh token
+     * @throws MalformedURLException in case of endpoint url is wrong
+     * @throws TokenExpiredException in case of token expiration
+     */
+    @Test
+    public void testUpdateUserTokenExpirationReAttempt() throws MalformedURLException , TokenExpiredException {
+        User user = new User(); user.setId(1L);
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        Response response = Response.ok().build();
+        when(resourceClient.update(user.getId(), user)).thenThrow(new TokenExpiredException("test update user")).thenReturn(response);
+
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
+
+        assertTrue(target.updateUser(user));
     }
 
     /**
@@ -844,6 +1054,95 @@ public class UserRESTServiceClientTest {
         when(resourceClient.delete(dummyUser.getId())).thenReturn(Response.serverError().entity("test error msg").build());
         when(clientServiceUtil.getUserResourceClient(any())).thenReturn(resourceClient);
         assertFalse(target.deleteUser(1L));
+    }
+
+    /**
+     * Test delete with reattempting refresh token
+     * @throws MalformedURLException in case of endpoint url is wrong
+     * @throws TokenExpiredException in case of token expiration
+     */
+    @Test
+    public void testDeleteUserTokenExpirationReAttempt() throws MalformedURLException , TokenExpiredException {
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        Response response = Response.ok().build();
+        when(resourceClient.delete(anyLong())).thenThrow(new TokenExpiredException("test delete user")).thenReturn(response);
+
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("refreshToken");
+        when(userClient.refreshToken(any())).thenReturn(Response.ok().entity("refreshToken").build());
+
+        assertTrue(target.deleteUser(2000L));
+    }
+
+    /**
+     * Test for method {@link UserRESTServiceClient#updatePassword(String, SystemUserPasswordChanging)}
+     * @throws MalformedURLException in case of endpoint url is wrong
+     * @throws TokenExpiredException in case of token expiration
+     * @throws SystemException in case of any issue with User endpoint
+     */
+    @Test
+    public void testChangeUserPassword() throws MalformedURLException, TokenExpiredException, SystemException {
+        String sub = "12345";
+        UserPasswordChanging passwordChanging = mock(UserPasswordChanging.class);
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(resourceClient.updatePassword(sub, passwordChanging)).thenReturn(Response.ok().build());
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        assertTrue(target.updatePassword(sub, passwordChanging));
+    }
+
+    /**
+     * Test for method {@link UserRESTServiceClient#updatePassword(String, SystemUserPasswordChanging)}
+     * Scenario: Failure due wrong URL
+     * Expected: SystemException
+     * @throws MalformedURLException in case of endpoint url is wrong
+     * @throws TokenExpiredException in case of token expiration
+     * @throws SystemException in case of any issue with User endpoint
+     */
+    @Test(expected = SystemException.class)
+    public void testChangeUserPasswordWithWrongURL() throws MalformedURLException, TokenExpiredException, SystemException {
+        String sub = "12345";
+        UserPasswordChanging passwordChanging = mock(UserPasswordChanging.class);
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(resourceClient.updatePassword(sub, passwordChanging)).thenReturn(Response.ok().build());
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).
+                thenThrow(new MalformedURLException("wrong url"));
+        target.updatePassword(sub, passwordChanging);
+    }
+
+    /**
+     * Test for method {@link UserRESTServiceClient#updatePassword(String, SystemUserPasswordChanging)}
+     * Scenario: Failure due wrong parameters
+     * Expected: SystemException
+     * @throws MalformedURLException in case of endpoint url is wrong
+     * @throws TokenExpiredException in case of token expiration
+     * @throws SystemException in case of any issue with User endpoint
+     */
+    @Test(expected = SystemException.class)
+    public void testChangeUserPasswordBadRequest() throws MalformedURLException, TokenExpiredException, SystemException {
+        String sub = "12345";
+        UserPasswordChanging passwordChanging = mock(UserPasswordChanging.class);
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(resourceClient.updatePassword(sub, passwordChanging)).thenThrow(new BadRequestException("fail"));
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        target.updatePassword(sub, passwordChanging);
+    }
+
+    /**
+     * Test for method {@link UserRESTServiceClient#updatePassword(String, SystemUserPasswordChanging)}
+     * Scenario: Failure (Response not equals 200 family)
+     * Expected: SystemException
+     * @throws MalformedURLException in case of endpoint url is wrong
+     * @throws TokenExpiredException in case of token expiration
+     * @throws SystemException in case of any issue with User endpoint
+     */
+    @Test
+    public void testChangeUserPasswordFail() throws MalformedURLException, TokenExpiredException, SystemException {
+        String sub = "12345";
+        UserPasswordChanging passwordChanging = mock(UserPasswordChanging.class);
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(resourceClient.updatePassword(sub, passwordChanging)).thenReturn(Response.status(300).build());
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        assertFalse(target.updatePassword(sub, passwordChanging));
     }
 
     /**
@@ -939,10 +1238,10 @@ public class UserRESTServiceClientTest {
      */
     @Test
     public void testGetUsersByIdsWithResults() throws MalformedURLException, SystemException {
-        User user1 = UserFactory.create(null, null, "logon1", null, null, null);
+        User user1 = UserFactory.create(null, null, "logon1", null, null,null, null, false);
         user1.setId(1L);
 
-        User user2 = UserFactory.create(null, null, "logon2", null, null, null);
+        User user2 = UserFactory.create(null, null, "logon2", null, null,null, null, false);
         user2.setId(2L);
 
         List<Long> ids = Arrays.asList(user1.getId(), user2.getId());
@@ -1021,7 +1320,7 @@ public class UserRESTServiceClientTest {
      */
     @Test
     public void testGetUsersByIdsByReattempt() throws MalformedURLException, SystemException {
-        User user3 = UserFactory.create(null, null, "logon1", null, null, null);
+        User user3 = UserFactory.create(null, null, "logon1", null, null,null, null, false);
         user3.setId(999L);
 
         List<Long> ids = Collections.singletonList(user3.getId());
@@ -1052,8 +1351,56 @@ public class UserRESTServiceClientTest {
         assertEquals(1, outcome.size());
     }
 
+    @Test
+    public void testGetCurrentUserInSession() throws MalformedURLException, SystemException {
+        User dummyUser = new User();
+        dummyUser.setId(1L);
+        InputStream is = new ByteArrayInputStream(UserModelMapper.map(dummyUser).toString().getBytes());
 
+        Response response = Response.ok(is).build();
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
 
+        when(resourceClient.getUserInSession()).thenReturn(response);
 
+        Optional<SystemUser> osu = target.getCurrentUserInSession();
 
+        assertNotNull(osu);
+        assertTrue(osu.isPresent());
+        assertEquals(osu.get().getId(), dummyUser.getId());
+    }
+
+    @Test (expected = SystemException.class)
+    public void testGetCurrentUserInSessionMalformed() throws MalformedURLException, SystemException {
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenThrow(new MalformedURLException());
+        target.getCurrentUserInSession();
+    }
+
+    @Test
+    public void testProcessingLock() throws MalformedURLException {
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        Response response = Response.ok().build();
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.processingLockChange(anyLong(), anyBoolean())).thenReturn(response);
+        assertTrue(target.processingLock(1, true));
+    }
+
+    @Test
+    public void testProcessingLockMalformed() throws MalformedURLException {
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenThrow(MalformedURLException.class);
+        assertFalse(target.processingLock(1, true));
+    }
+
+    @Test
+    public void testIsProcessingLocked() throws SystemException, MalformedURLException {
+        UserResourceClient resourceClient = Mockito.mock(UserResourceClient.class);
+        boolean processingLock = true;
+        dummyUser.setProcessingLocked(processingLock);
+        JsonObject json = UserFactoryUtil.convertSystemUserToJsonObject(dummyUser);
+        InputStream inputStream = new ByteArrayInputStream(json.toString().getBytes());
+        Response response = Response.ok(inputStream).build();
+        when(clientServiceUtil.getUserResourceClient(getUserManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.getById(dummyUser.getId())).thenReturn(response);
+        assertEquals(processingLock, target.isProcessingLocked(dummyUser.getId()));
+    }
 }

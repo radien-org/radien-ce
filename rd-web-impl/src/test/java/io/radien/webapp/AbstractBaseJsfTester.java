@@ -15,12 +15,16 @@
  */
 package io.radien.webapp;
 
+import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -35,21 +39,37 @@ import static org.mockito.Mockito.when;
  * with (or mock, or emulate) JSF related components like {@link FacesContext},
  * {@link JSFUtil}, {@link ExternalContext} and so on.
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class})
 public abstract class AbstractBaseJsfTester {
 
+
     protected FacesContext facesContext;
+
+    private static MockedStatic<FacesContext> facesContextMockedStatic;
+    private static MockedStatic<JSFUtil> jsfUtilMockedStatic;
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
+    @BeforeClass
+    public static void beforeClass(){
+        facesContextMockedStatic = Mockito.mockStatic(FacesContext.class);
+        jsfUtilMockedStatic = Mockito.mockStatic(JSFUtil.class);
+    }
+    @AfterClass
+    public static final void destroy(){
+        if(facesContextMockedStatic!=null) {
+            facesContextMockedStatic.close();
+        }
+        if(jsfUtilMockedStatic!=null) {
+            jsfUtilMockedStatic.close();
+        }
+    }
 
     /**
      * Method for preparing all the mocks
      */
     @Before
     public void before() {
-        MockitoAnnotations.initMocks(this);
-
-        PowerMockito.mockStatic(FacesContext.class);
-        PowerMockito.mockStatic(JSFUtil.class);
 
         facesContext = mock(FacesContext.class);
         when(FacesContext.getCurrentInstance()).thenReturn(facesContext);

@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>io.radien</groupId>
 		<artifactId>appframe</artifactId>
-		<version>rd-1.0.0-SNAPSHOT</version>
+		<version>rd-0.0.2-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -51,140 +51,25 @@
 		</plugins>
 	</build>
 	<dependencies>
-		<!-- radien modules -->
 		<dependency>
-			<groupId>io.radien</groupId>
-			<artifactId>rd-api</artifactId>
+			<groupId>jakarta.platform</groupId>
+			<artifactId>jakarta.jakartaee-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.radien</groupId>
-			<artifactId>rd-aws-utils</artifactId>
-		</dependency>
-		<!-- Microprofile -->
-		<dependency>
-			<groupId>org.apache.tomee</groupId>
-			<artifactId>javaee-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.eclipse.microprofile/microprofile -->
-		<dependency>
-			<groupId>org.eclipse.microprofile</groupId>
-			<artifactId>microprofile</artifactId>
-			<type>pom</type>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- JCR -->
-		<!-- https://mvnrepository.com/artifact/javax.jcr/jcr -->
-		<dependency>
-			<groupId>javax.jcr</groupId>
-			<artifactId>jcr</artifactId>
-			<version>2.0</version>
-		</dependency>
-
-		<!-- jackrabbig oak -->
-		<!-- https://mvnrepository.com/artifact/org.apache.jackrabbit/oak-core -->
-		<dependency>
-			<groupId>org.apache.jackrabbit</groupId>
-			<artifactId>oak-core</artifactId>
-			<version>1.40.0</version>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>eclipselink</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.jackrabbit</groupId>
-			<artifactId>oak-jcr</artifactId>
-			<version>1.40.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.jackrabbit</groupId>
-			<artifactId>oak-run</artifactId>
-			<version>1.40.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.jackrabbit</groupId>
-			<artifactId>oak-pojosr</artifactId>
-			<version>1.40.0</version>
-		</dependency>
-
-<!-- 
-		<dependency>
-			<groupId>org.apache.jackrabbit</groupId>
-			<artifactId>jackrabbit-jcr-server</artifactId>
-			<version>1.36</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.jackrabbit</groupId>
-			<artifactId>jackrabbit-jcr-servlet</artifactId>
-			<version>1.36</version>
-		</dependency>
-		
-		
-		<dependency>
-			<groupId>org.apache.jackrabbit</groupId>
-			<artifactId>jackrabbit-jcr-rmi</artifactId>
-			<version>${jackrabbit.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.jackrabbit</groupId>
-			<artifactId>oak-lucene</artifactId>
-			<version>${version.jackrabbit.oak}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.jackrabbit</groupId>
-			<artifactId>oak-store-composite</artifactId>
-			<version>${version.jackrabbit.oak}</version>
-		</dependency>
- -->
-		<!-- Mongo DB -->
-		<!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
-		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>mongo-java-driver</artifactId>
-			<version>3.12.7</version>
-		</dependency>
-		<!-- Commons -->
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
+			<groupId>org.apache.openejb</groupId>
+			<artifactId>mbean-annotation-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
-
-
-
-		<!-- -->
-		<!-- EVAL -->
-		<!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
 		<dependency>
-			<groupId>com.googlecode.json-simple</groupId>
-			<artifactId>json-simple</artifactId>
-			<version>1.1.1</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.tika/tika-core -->
-		<dependency>
-			<groupId>org.apache.tika</groupId>
-			<artifactId>tika-core</artifactId>
-			<version>1.26</version>
-		</dependency>
-
-		<!-- -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.johnzon</groupId>
-			<artifactId>johnzon-core</artifactId>
-			<version>1.2.9</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tomee</groupId>
-			<artifactId>openejb-mockito</artifactId>
-			<version>8.0.6</version>
-			<scope>test</scope>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-api</artifactId>
 		</dependency>
 
 		<!-- logging -->
@@ -192,17 +77,43 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
+
+		<!-- test -->
 		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
+			<groupId>org.apache.tomee</groupId>
+			<artifactId>arquillian-openejb-embedded</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-core</artifactId>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-rs-mp-client</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
+		<dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.tomee/openejb-mockito -->
+		<dependency>
+			<groupId>org.apache.tomee</groupId>
+			<artifactId>openejb-mockito</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-authz-client</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-aws-utils</artifactId>
 		</dependency>
 	</dependencies>
 </project>

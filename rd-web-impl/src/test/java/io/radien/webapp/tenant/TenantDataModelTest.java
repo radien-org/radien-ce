@@ -29,16 +29,19 @@ import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.security.UserSession;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
 import javax.faces.application.FacesMessage;
@@ -60,8 +63,6 @@ import static org.mockito.Mockito.*;
  *
  * @author Bruno Gama
  **/
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class})
 public class TenantDataModelTest {
 
     @InjectMocks
@@ -83,12 +84,29 @@ public class TenantDataModelTest {
 
     Tenant tenant;
 
+    private static MockedStatic<FacesContext> facesContextMockedStatic;
+    private static MockedStatic<JSFUtil> jsfUtilMockedStatic;
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
+    @BeforeClass
+    public static void beforeClass(){
+        facesContextMockedStatic = Mockito.mockStatic(FacesContext.class);
+        jsfUtilMockedStatic = Mockito.mockStatic(JSFUtil.class);
+    }
+    @AfterClass
+    public static final void destroy(){
+        if(facesContextMockedStatic!=null) {
+            facesContextMockedStatic.close();
+        }
+        if(jsfUtilMockedStatic!=null) {
+            jsfUtilMockedStatic.close();
+        }
+    }
+
     @Before
     public void before(){
-        MockitoAnnotations.initMocks(this);
-
-        PowerMockito.mockStatic(FacesContext.class);
-        PowerMockito.mockStatic(JSFUtil.class);
 
         facesContext = mock(FacesContext.class);
         when(FacesContext.getCurrentInstance()).thenReturn(facesContext);
@@ -107,7 +125,7 @@ public class TenantDataModelTest {
         tenant = new Tenant();
         tenant.setName("name");
         tenant.setTenantKey("key");
-        tenant.setTenantType(TenantType.ROOT_TENANT);
+        tenant.setTenantType(TenantType.ROOT);
         tenantDataModel.setTenantStartDate(new Date());
         tenantDataModel.setTenantEndDate(new Date());
 
@@ -185,7 +203,7 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name1");
         clientTenant.setTenantKey("key1");
-        clientTenant.setTenantType(TenantType.CLIENT_TENANT);
+        clientTenant.setTenantType(TenantType.CLIENT);
         clientTenant.setClientCity("city1");
         clientTenant.setClientAddress("address1");
         clientTenant.setClientCountry("country1");
@@ -194,12 +212,11 @@ public class TenantDataModelTest {
         clientTenant.setClientZipCode("zipCode1");
 
         ActiveTenant activeTenant = new ActiveTenant();
-        activeTenant.setIsTenantActive(true);
         activeTenant.setTenantId(3L);
 
         List<SystemActiveTenant> activeTenants = new ArrayList<>();
         activeTenants.add(activeTenant);
-        doReturn(activeTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(anyLong(), any(), any(), anyBoolean());
+        doReturn(activeTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(anyLong(), any());
 
         tenantDataModel.save(clientTenant);
 
@@ -216,7 +233,7 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name1");
         clientTenant.setTenantKey("key1");
-        clientTenant.setTenantType(TenantType.CLIENT_TENANT);
+        clientTenant.setTenantType(TenantType.CLIENT);
         clientTenant.setClientCity("city1");
         clientTenant.setClientAddress("address1");
         clientTenant.setClientCountry("country1");
@@ -231,7 +248,7 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name1");
         clientTenant.setTenantKey("key1");
-        clientTenant.setTenantType(TenantType.CLIENT_TENANT);
+        clientTenant.setTenantType(TenantType.CLIENT);
         clientTenant.setClientAddress("address1");
         clientTenant.setClientCountry("country1");
         clientTenant.setClientEmail("email1");
@@ -243,12 +260,11 @@ public class TenantDataModelTest {
 
     private void validateClientTenantCreation(Tenant clientTenant) throws SystemException {
         ActiveTenant activeTenant = new ActiveTenant();
-        activeTenant.setIsTenantActive(true);
         activeTenant.setTenantId(3L);
 
         List<SystemActiveTenant> activeTenants = new ArrayList<>();
         activeTenants.add(activeTenant);
-        doReturn(activeTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(anyLong(), any(), any(), anyBoolean());
+        doReturn(activeTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(anyLong(), any());
 
         assertEquals(DataModelEnum.TENANT_CREATION_PAGE.getValue(), tenantDataModel.save(clientTenant));
     }
@@ -258,7 +274,7 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name1");
         clientTenant.setTenantKey("key1");
-        clientTenant.setTenantType(TenantType.CLIENT_TENANT);
+        clientTenant.setTenantType(TenantType.CLIENT);
         clientTenant.setClientCity("city1");
         clientTenant.setClientAddress("address1");
         clientTenant.setClientEmail("email1");
@@ -273,7 +289,7 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name1");
         clientTenant.setTenantKey("key1");
-        clientTenant.setTenantType(TenantType.CLIENT_TENANT);
+        clientTenant.setTenantType(TenantType.CLIENT);
         clientTenant.setClientCity("city1");
         clientTenant.setClientAddress("address1");
         clientTenant.setClientCountry("country1");
@@ -288,7 +304,7 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name1");
         clientTenant.setTenantKey("key1");
-        clientTenant.setTenantType(TenantType.CLIENT_TENANT);
+        clientTenant.setTenantType(TenantType.CLIENT);
         clientTenant.setClientCity("city1");
         clientTenant.setClientAddress("address1");
         clientTenant.setClientCountry("country1");
@@ -303,7 +319,7 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name1");
         clientTenant.setTenantKey("key1");
-        clientTenant.setTenantType(TenantType.CLIENT_TENANT);
+        clientTenant.setTenantType(TenantType.CLIENT);
         clientTenant.setClientCity("city1");
         clientTenant.setClientCountry("country1");
         clientTenant.setClientEmail("email1");
@@ -318,15 +334,14 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name");
         clientTenant.setTenantKey("key");
-        clientTenant.setTenantType(TenantType.SUB_TENANT);
+        clientTenant.setTenantType(TenantType.SUB);
 
         ActiveTenant activeTenant = new ActiveTenant();
-        activeTenant.setIsTenantActive(true);
         activeTenant.setTenantId(2L);
 
         List<SystemActiveTenant> activeTenants = new ArrayList<>();
         activeTenants.add(activeTenant);
-        doReturn(activeTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(anyLong(), any(), any(), anyBoolean());
+        doReturn(activeTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(anyLong(), anyLong());
 
         assertEquals(DataModelEnum.TENANT_MAIN_PAGE.getValue(), tenantDataModel.save(clientTenant));
     }
@@ -336,14 +351,13 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name");
         clientTenant.setTenantKey("key");
-        clientTenant.setTenantType(TenantType.SUB_TENANT);
+        clientTenant.setTenantType(TenantType.SUB);
 
         ActiveTenant activeTenant = new ActiveTenant();
-        activeTenant.setIsTenantActive(true);
         activeTenant.setTenantId(2L);
 
         doThrow(new SystemException()).when(activeTenantRESTServiceAccess).
-                getActiveTenantByFilter(anyLong(), any(), any(), anyBoolean());
+                getActiveTenantByFilter(anyLong(), any());
 
         assertEquals(DataModelEnum.TENANT_CREATION_PAGE.getValue(), tenantDataModel.save(clientTenant));
     }
@@ -353,15 +367,14 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name");
         clientTenant.setTenantKey("key");
-        clientTenant.setTenantType(TenantType.SUB_TENANT);
+        clientTenant.setTenantType(TenantType.SUB);
 
         ActiveTenant activeTenant = new ActiveTenant();
-        activeTenant.setIsTenantActive(true);
         activeTenant.setTenantId(2L);
 
         List<SystemActiveTenant> activeTenants = new ArrayList<>();
         activeTenants.add(activeTenant);
-        doReturn(activeTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(anyLong(), any(), any(), anyBoolean());
+        doReturn(activeTenants).when(activeTenantRESTServiceAccess).getActiveTenantByFilter(anyLong(), anyLong());
 
         assertEquals(DataModelEnum.TENANT_MAIN_PAGE.getValue(), tenantDataModel.save(clientTenant));
     }
@@ -383,7 +396,7 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name");
         clientTenant.setTenantKey("key");
-        clientTenant.setTenantType(TenantType.CLIENT_TENANT);
+        clientTenant.setTenantType(TenantType.CLIENT);
         clientTenant.setClientCity("city");
         clientTenant.setClientAddress("address");
         clientTenant.setClientCountry("country");
@@ -411,7 +424,7 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name");
         clientTenant.setTenantKey("key");
-        clientTenant.setTenantType(TenantType.CLIENT_TENANT);
+        clientTenant.setTenantType(TenantType.CLIENT);
         clientTenant.setClientCity("city");
         clientTenant.setClientAddress("address");
         clientTenant.setClientCountry("country");
@@ -444,7 +457,7 @@ public class TenantDataModelTest {
         Tenant clientTenant = new Tenant();
         clientTenant.setName("name");
         clientTenant.setTenantKey("key");
-        clientTenant.setTenantType(TenantType.CLIENT_TENANT);
+        clientTenant.setTenantType(TenantType.CLIENT);
         clientTenant.setClientCity("city");
         clientTenant.setClientAddress("address");
         clientTenant.setClientCountry("country");
@@ -500,5 +513,13 @@ public class TenantDataModelTest {
         Date now = new Date();
         tenantDataModel.setTenantEndDate(now);
         assertEquals(now, tenantDataModel.getTenantEndDate());
+    }
+
+    @Test
+    public void testOnRowSelect() {
+        SelectEvent<SystemTenant> event = mock(SelectEvent.class);
+        when(event.getObject()).thenReturn(tenant);
+        tenantDataModel.onRowSelect(event);
+        assertEquals(tenant, tenantDataModel.getSelectedTenant());
     }
 }

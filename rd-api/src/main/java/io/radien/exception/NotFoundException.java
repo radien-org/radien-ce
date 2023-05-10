@@ -15,18 +15,21 @@
  */
 package io.radien.exception;
 
+import io.radien.exception.generic.AbstractRestException;
+import javax.ws.rs.core.Response;
+
 /**
  * Exception to be throw when no record has been found
  *
  * @author Bruno Gama
  */
-public class NotFoundException extends RuntimeException {
+public class NotFoundException extends AbstractRestException {
 
     /**
      * Not Found exception empty constructor
      */
     public NotFoundException() {
-        super();
+        super(Response.Status.NOT_FOUND);
     }
 
     /**
@@ -34,6 +37,6 @@ public class NotFoundException extends RuntimeException {
      * @param message to create the not found exception with
      */
     public NotFoundException(String message) {
-        super(message);
+        super(message, Response.Status.NOT_FOUND);
     }
 }

@@ -20,6 +20,7 @@ import io.radien.api.OAFProperties;
 import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.util.FactoryUtilService;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.UserClient;
@@ -172,13 +173,13 @@ public class ActiveTenantRESTServiceClientTest {
 
         ActiveTenantResourceClient activeTenantResourceClient = Mockito.mock(ActiveTenantResourceClient.class);
 
-        when(activeTenantResourceClient.getAll(null,1, 10, null, false)).thenReturn(response);
+        when(activeTenantResourceClient.getAll(null,null,1, 10, null, false)).thenReturn(response);
 
         when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenReturn(activeTenantResourceClient);
 
         List<? extends SystemActiveTenant> list = new ArrayList<>();
 
-        List<? extends SystemActiveTenant> returnedList = target.getAll(null,1, 10, null, false).getResults();
+        List<? extends SystemActiveTenant> returnedList = target.getAll(null,null,1, 10, null, false).getResults();
 
         assertEquals(list, returnedList);
     }
@@ -191,7 +192,7 @@ public class ActiveTenantRESTServiceClientTest {
     @Test(expected = SystemException.class)
     public void testGetAllException() throws Exception {
         when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenThrow(new MalformedURLException());
-        target.getAll(null,1, 10, null, false);
+        target.getAll(null,null,1, 10, null, false);
     }
 
     /**
@@ -203,13 +204,13 @@ public class ActiveTenantRESTServiceClientTest {
         ActiveTenantResourceClient client = Mockito.mock(ActiveTenantResourceClient.class);
 
         when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenReturn(client);
-        when(client.getAll(anyString(), anyInt(), anyInt(), any(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
+        when(client.getAll(anyLong(), anyLong(), anyInt(), anyInt(), any(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
-        target.getAll("", 1, 10, null, true);
+        target.getAll(1L, 1L, 1, 10, null, true);
     }
 
     /**
@@ -278,8 +279,7 @@ public class ActiveTenantRESTServiceClientTest {
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
-        SystemActiveTenant systemActiveTenant = new ActiveTenant();
-        target.create(systemActiveTenant);
+        target.create(new ActiveTenant());
     }
 
     /**
@@ -430,6 +430,20 @@ public class ActiveTenantRESTServiceClientTest {
 
 
     /**
+    * Tests the access into the db and deletion of a active tenant (by tenant and user) without success,
+    * when a NotFoundException is thrown.
+    * @throws Exception in case of issue
+    */
+    @Test
+    public void testDeleteByTenantAndUserReturnFalseOnNotFoundException() throws Exception {
+        ActiveTenantResourceClient activeTenantResourceClient = Mockito.mock(ActiveTenantResourceClient.class);
+        when(activeTenantResourceClient.delete(2L, 2L)).thenReturn(Response.ok(Boolean.TRUE).build());
+        when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenThrow(NotFoundException.class);
+        assertFalse(target.deleteByTenantAndUser(2L,2L));
+    }
+
+
+    /**
      * Tests the access into the db and update of a active tenant
      * @throws MalformedURLException in case of issue connecting to the client
      * @throws SystemException in case of token expiration or any other issue for the system
@@ -509,8 +523,27 @@ public class ActiveTenantRESTServiceClientTest {
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
-        SystemActiveTenant systemActiveTenant = new ActiveTenant(2L, 2L, 2L, "teste", true);
+        SystemActiveTenant systemActiveTenant = new ActiveTenant(2L, 2L, 2L);
         target.update(systemActiveTenant);
+    }
+    
+    /**
+    * Test to update the active tenant after token exception being throw (ReTry)
+    * @throws Exception in case o token exception
+    */
+    @Test
+    public void testUpdateActiveTenantsAfterTokenExpiration() throws Exception {
+        ActiveTenantResourceClient client = Mockito.mock(ActiveTenantResourceClient.class);
+        
+        when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenReturn(client);
+        when(client.update(anyLong(), any())).thenThrow(new TokenExpiredException("test")).thenReturn(Response.ok().build());
+        
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+        
+        SystemActiveTenant systemActiveTenant = new ActiveTenant(2L, 2L, 2L);
+        assertTrue(target.update(systemActiveTenant));
     }
 
     /**
@@ -603,60 +636,6 @@ public class ActiveTenantRESTServiceClientTest {
      * @throws SystemException in case of token expiration or any other issue for the system
      */
     @Test
-    public void testGetActiveTenantByUserAndTenant() throws MalformedURLException, SystemException {
-        JsonArrayBuilder builder = Json.createArrayBuilder();
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JsonWriter jsonWriter = Json.createWriter(baos);
-        jsonWriter.writeArray(builder.build());
-        jsonWriter.close();
-
-        InputStream is = new ByteArrayInputStream(baos.toByteArray());
-        Response response = Response.ok(is).build();
-        ActiveTenantResourceClient resourceClient = Mockito.mock(ActiveTenantResourceClient.class);
-        when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.getByUserAndTenant(anyLong(), anyLong())).thenReturn(response);
-        List<? extends SystemActiveTenant> list = new ArrayList<>();
-
-        assertEquals(list,target.getActiveTenantByUserAndTenant(100L, 100L));
-    }
-
-    /**
-     * Tests the access into the db and retrieval of a active tenant by searching only by the user id and tenant id
-     * with token exception being throw
-     * @throws Exception in case o token exception
-     */
-    @Test(expected = SystemException.class)
-    public void testGetActiveTenantByUserAndTenantTokenExpiration() throws Exception {
-        ActiveTenantResourceClient resourceClient = Mockito.mock(ActiveTenantResourceClient.class);
-
-        when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.getByUserAndTenant(anyLong(), anyLong())).thenThrow(new TokenExpiredException("test"));
-
-        when(authorizationChecker.getUserClient()).thenReturn(userClient);
-        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
-        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
-
-        target.getActiveTenantByUserAndTenant(2L, 2L);
-    }
-
-    /**
-     * Tests the access into the db and retrieval of a active tenant by searching only by the user id and tenant id
-     * with exception being throw
-     * @throws Exception in case o token exception
-     */
-    @Test(expected = Exception.class)
-    public void testGetActiveTenantByUserAndTenantException() throws Exception {
-        when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenThrow(new ProcessingException("test"));
-        target.getActiveTenantByUserAndTenant(2L, 2L);
-    }
-
-    /**
-     * Tests the access into the db and retrieval of a active tenant by searching only by the user id and tenant id
-     * @throws MalformedURLException in case of issue connecting to the client
-     * @throws SystemException in case of token expiration or any other issue for the system
-     */
-    @Test
     public void testGetActiveTenantByFilter() throws MalformedURLException, SystemException {
         JsonArrayBuilder builder = Json.createArrayBuilder();
 
@@ -669,10 +648,10 @@ public class ActiveTenantRESTServiceClientTest {
         Response response = Response.ok(is).build();
         ActiveTenantResourceClient resourceClient = Mockito.mock(ActiveTenantResourceClient.class);
         when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.get(anyLong(), anyLong(), anyString(), anyBoolean(), anyBoolean())).thenReturn(response);
+        when(resourceClient.get(anyLong(), anyLong(), anyBoolean())).thenReturn(response);
         List<? extends SystemActiveTenant> list = new ArrayList<>();
 
-        assertEquals(list,target.getActiveTenantByFilter(100L, 100L, "test", false));
+        assertEquals(list,target.getActiveTenantByFilter(100L, 100L));
     }
 
     /**
@@ -685,13 +664,13 @@ public class ActiveTenantRESTServiceClientTest {
         ActiveTenantResourceClient resourceClient = Mockito.mock(ActiveTenantResourceClient.class);
 
         when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.get(anyLong(), anyLong(), anyString(), anyBoolean(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
+        when(resourceClient.get(anyLong(), anyLong(), anyBoolean())).thenThrow(new TokenExpiredException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
-        target.getActiveTenantByFilter(2L, 2L, "test", false);
+        target.getActiveTenantByFilter(2L, 2L);
     }
 
     /**
@@ -702,6 +681,6 @@ public class ActiveTenantRESTServiceClientTest {
     @Test(expected = Exception.class)
     public void testGetActiveTenantByFilterException() throws Exception {
         when(clientServiceUtil.getActiveTenantResourceClient(getActiveTenantManagementUrl())).thenThrow(new ProcessingException("test"));
-        target.getActiveTenantByFilter(2L, 2L, "test", false);
+        target.getActiveTenantByFilter(2L, 2L);
     }
 }

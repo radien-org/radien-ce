@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-present radien GmbH & its legal owners. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -10,7 +10,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * See the License for the specific language governing actions and
  * limitations under the License.
  */
 package io.radien.webapp.permission;
@@ -65,8 +65,11 @@ public class PermissionManager extends AbstractManager {
             }
             p.setResourceId(this.selectedResource.getId());
             p.setActionId(this.selectedAction.getId());
-            this.permissionRESTServiceAccess.create(p);
-
+            if (p.getId() == null) {
+                this.permissionRESTServiceAccess.create(p);
+            } else {
+                this.permissionRESTServiceAccess.update(p);
+            }
             handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.SAVE_SUCCESS_MESSAGE.getValue()),
                     JSFUtil.getMessage(DataModelEnum.PERMISSION_MESSAGE.getValue()));
         } catch (Exception e) {

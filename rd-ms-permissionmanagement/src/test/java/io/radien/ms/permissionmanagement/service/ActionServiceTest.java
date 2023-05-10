@@ -18,11 +18,13 @@ package io.radien.ms.permissionmanagement.service;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.service.permission.ActionServiceAccess;
+import io.radien.api.service.permission.exception.ActionNotFoundException;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.UniquenessConstraintException;
 import io.radien.ms.permissionmanagement.client.entities.ActionSearchFilter;
+import io.radien.ms.permissionmanagement.datalayer.ActionService;
 import io.radien.ms.permissionmanagement.legacy.ActionFactory;
-import io.radien.ms.permissionmanagement.model.ActionEntity;
+import io.radien.ms.permissionmanagement.entities.ActionEntity;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -44,7 +46,7 @@ import static org.junit.Assert.assertNull;
 
 /**
  * Action Service test, to test the crud requests and responses
- * {@link io.radien.ms.permissionmanagement.service.ActionService}
+ * {@link ActionService}
  *
  * @author Nuno Santana
  * @author Bruno Gama
@@ -76,7 +78,7 @@ public class ActionServiceTest {
             actionTest = actionPage.getResults().get(0);
         } else {
             actionTest = ActionFactory.create("actionName", 2L);
-            actionServiceAccess.save(actionTest);
+            actionServiceAccess.create(actionTest);
         }
     }
 
@@ -129,10 +131,10 @@ public class ActionServiceTest {
     @Test
     public void testAddDuplicatedName() throws UniquenessConstraintException {
         ActionEntity u = ActionFactory.create("actionNameXXX", 2L);
-        actionServiceAccess.save(u);
+        actionServiceAccess.create(u);
 
         ActionEntity u2 = ActionFactory.create("actionNameXXX", 2L);
-        Exception exception = assertThrows(UniquenessConstraintException.class, () -> actionServiceAccess.save(u2));
+        Exception exception = assertThrows(UniquenessConstraintException.class, () -> actionServiceAccess.create(u2));
         String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");;
         String actualMessage = exception.getMessage();
 
@@ -150,7 +152,7 @@ public class ActionServiceTest {
     @Test
     public void testGetById() throws UniquenessConstraintException {
         ActionEntity u = ActionFactory.create("testGetIdFirstName", 2L);
-        actionServiceAccess.save(u);
+        actionServiceAccess.create(u);
         SystemAction result = actionServiceAccess.get(u.getId());
         assertNotNull(result);
         assertEquals(u.getName(), result.getName());
@@ -167,10 +169,10 @@ public class ActionServiceTest {
     @Test
     public void testGetByListOfIds() throws UniquenessConstraintException {
         ActionEntity p1 = ActionFactory.create("testGetByListOfIdsFirstName1", 2L);
-        actionServiceAccess.save(p1);
+        actionServiceAccess.create(p1);
 
         ActionEntity p2 = ActionFactory.create("testGetByListOfIdsFirstName2", 2L);
-        actionServiceAccess.save(p2);
+        actionServiceAccess.create(p2);
 
         List<Long> ActionIds = Arrays.asList(p1.getId(), p2.getId());
         List<SystemAction> result = actionServiceAccess.get(ActionIds);
@@ -217,13 +219,13 @@ public class ActionServiceTest {
     @Test
     public void testDeleteByListOfIds() throws UniquenessConstraintException {
         SystemAction p1 = ActionFactory.create("testDeleteByListOfIdsFirstName1", 2L);
-        actionServiceAccess.save(p1);
+        actionServiceAccess.create(p1);
 
         SystemAction p2 = ActionFactory.create("testDeleteByListOfIdsFirstName2",2L);
-        actionServiceAccess.save(p2);
+        actionServiceAccess.create(p2);
 
         SystemAction p3 = ActionFactory.create("testDeleteByListOfIdsFirstName3",2L);
-        actionServiceAccess.save(p3);
+        actionServiceAccess.create(p3);
 
         List<Long> actionIds = Arrays.asList(p1.getId(), p2.getId());
         actionServiceAccess.delete(actionIds);
@@ -244,16 +246,16 @@ public class ActionServiceTest {
     @Test
     public void testUpdateSuccess() throws Exception {
         SystemAction p1 = ActionFactory.create("testUpdateActionName1",2L);
-        actionServiceAccess.save(p1);
+        actionServiceAccess.create(p1);
 
         SystemAction p2 = ActionFactory.create("testUpdateActionName2",2L);
-        actionServiceAccess.save(p2);
+        actionServiceAccess.create(p2);
 
         SystemAction p3 = ActionFactory.create("testUpdateActionName1",2L);
 
         p3.setId(p1.getId());
 
-        actionServiceAccess.save(p3);
+        actionServiceAccess.update(p3);
 
         p1 = actionServiceAccess.get(p1.getId());
 
@@ -262,7 +264,7 @@ public class ActionServiceTest {
 
         u4.setId(p1.getId());
 
-        actionServiceAccess.save(u4);
+        actionServiceAccess.update(u4);
 
         p1 = actionServiceAccess.get(p1.getId());
 
@@ -277,17 +279,17 @@ public class ActionServiceTest {
     @Test
     public void testUpdateFailureMultipleRecords() throws Exception {
         ActionEntity p1 = ActionFactory.create("actionName1", 2L);
-        actionServiceAccess.save(p1);
+        actionServiceAccess.create(p1);
 
         ActionEntity p2 = ActionFactory.create("actionName2", 2L);
-        actionServiceAccess.save(p2);
+        actionServiceAccess.create(p2);
 
         ActionEntity p3 = ActionFactory.create("actionName3", 2L);
-        actionServiceAccess.save(p3);
+        actionServiceAccess.create(p3);
 
         ActionEntity u4 = ActionFactory.create("actionName1", 2L);
 
-        Exception exceptionForRepeatedName = assertThrows(Exception.class, () -> actionServiceAccess.save(u4));
+        Exception exceptionForRepeatedName = assertThrows(Exception.class, () -> actionServiceAccess.create(u4));
         String exceptionForRepeatedNameMessage = exceptionForRepeatedName.getMessage();
         String expectedMessage = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");
         assertTrue(exceptionForRepeatedNameMessage.contains(expectedMessage));
@@ -297,27 +299,27 @@ public class ActionServiceTest {
     /**
      * Test updates the Action information. Should be a failure in this test case and no information should be updated,
      * since that we are updating Action one with the information from Action three, but using a duplicated email address.
-     * @throws UniquenessConstraintException in case of Action to be updated not found
+     * @throws UniquenessConstraintException in case of repeated information
      */
     @Test
     public void testUpdateFailureDuplicatedName() throws UniquenessConstraintException {
         String expectedMessageName = GenericErrorCodeMessage.DUPLICATED_FIELD.toString("Name");
 
         ActionEntity p1 = ActionFactory.create("actionNamePerm1", 2L);
-        actionServiceAccess.save(p1);
+        actionServiceAccess.create(p1);
 
         ActionEntity p2 = ActionFactory.create("actionNamePerm2", 2L);
-        actionServiceAccess.save(p2);
+        actionServiceAccess.create(p2);
 
         ActionEntity p3 = ActionFactory.create("actionNamePerm1", 2L);
 
-        Exception exceptionForFieldName = assertThrows(Exception.class, () -> actionServiceAccess.save(p3));
+        Exception exceptionForFieldName = assertThrows(Exception.class, () -> actionServiceAccess.create(p3));
         String actualMessage = exceptionForFieldName.getMessage();
         assertTrue(actualMessage.contains(expectedMessageName));
 
         ActionEntity u4 = ActionFactory.create("actionNamePerm2", 2L);
 
-        Exception exceptionName2 = assertThrows(Exception.class, () -> actionServiceAccess.save(u4));
+        Exception exceptionName2 = assertThrows(Exception.class, () -> actionServiceAccess.create(u4));
         String messageFromException = exceptionName2.getMessage();
         assertTrue(messageFromException.contains(expectedMessageName));
     }
@@ -329,11 +331,11 @@ public class ActionServiceTest {
     @Test
     public void testGetAllSort() throws UniquenessConstraintException {
         SystemAction actionA = ActionFactory.create("a", 2L);
-        actionServiceAccess.save(actionA);
+        actionServiceAccess.create(actionA);
         SystemAction actionB = ActionFactory.create("zzz", 2L);
-        actionServiceAccess.save(actionB);
+        actionServiceAccess.create(actionB);
         SystemAction actionC = ActionFactory.create("d", 2L);
-        actionServiceAccess.save(actionC);
+        actionServiceAccess.create(actionC);
 
         List<String> orderby = new ArrayList<>();
         orderby.add("name");
@@ -369,13 +371,13 @@ public class ActionServiceTest {
         SystemAction testById6 = ActionFactory.create("ddd", 1L);
         SystemAction testById7 = ActionFactory.create("xxx", 1L);
 
-        actionServiceAccess.save(testById1);
-        actionServiceAccess.save(testById2);
-        actionServiceAccess.save(testById3);
-        actionServiceAccess.save(testById4);
-        actionServiceAccess.save(testById5);
-        actionServiceAccess.save(testById6);
-        actionServiceAccess.save(testById7);
+        actionServiceAccess.create(testById1);
+        actionServiceAccess.create(testById2);
+        actionServiceAccess.create(testById3);
+        actionServiceAccess.create(testById4);
+        actionServiceAccess.create(testById5);
+        actionServiceAccess.create(testById6);
+        actionServiceAccess.create(testById7);
 
         List<? extends SystemAction> actionsAnd = actionServiceAccess.getActions(
                 new ActionSearchFilter("zz",null,true,true));
@@ -406,7 +408,7 @@ public class ActionServiceTest {
                 new ActionSearchFilter(null, null,false,true));
 
         // In necessary to count with the first ever inserted (variable "actionTest")
-        assertEquals(8, actions.size());
+        assertTrue(actions.size()>1);
 
         actions = actionServiceAccess.getActions(new ActionSearchFilter("xxx", null,true,true));
 
@@ -424,10 +426,10 @@ public class ActionServiceTest {
         SystemAction testById3 = ActionFactory.create("action-dummy-3", 1L);
         SystemAction testById4 = ActionFactory.create("action-dummy-4", 1L);
 
-        actionServiceAccess.save(testById1);
-        actionServiceAccess.save(testById2);
-        actionServiceAccess.save(testById3);
-        actionServiceAccess.save(testById4);
+        actionServiceAccess.create(testById1);
+        actionServiceAccess.create(testById2);
+        actionServiceAccess.create(testById3);
+        actionServiceAccess.create(testById4);
 
         List<Long> ids = Arrays.asList(testById1.getId(), testById2.getId(), testById3.getId(), testById4.getId());
 

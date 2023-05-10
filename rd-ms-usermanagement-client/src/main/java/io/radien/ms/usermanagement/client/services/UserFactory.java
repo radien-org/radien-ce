@@ -46,10 +46,10 @@ public class UserFactory extends UserFactoryUtil {
      * @param email user email
      * @return a User object to be used
      */
-    public static User create(String firstname, String lastname, String logon, String sub, String email, Long createdUser){
+    public static User create(String firstname, String lastname, String logon, String sub, String email, String mobileNumber, Long createdUser, boolean processingLocked){
         User user = new User();
         user.setEnabled(true);
-        return (User) createUser(user, firstname, lastname, logon, sub, email, createdUser);
+        return (User) createUser(user, firstname, lastname, logon, sub, email, mobileNumber, createdUser, processingLocked);
     }
 
     /**
@@ -63,6 +63,7 @@ public class UserFactory extends UserFactoryUtil {
         Map<String, Object> userMappedValues = convertJsonObject(person);
         Boolean delegatedCreation = FactoryUtilService.getBooleanFromJson(SystemVariables.USER_DELEGATION.getFieldName(),person);
         Boolean enabled = FactoryUtilService.getBooleanFromJson(SystemVariables.USER_ENABLED.getFieldName(),person);
+        Boolean processingLocked = FactoryUtilService.getBooleanFromJson(SystemVariables.PROCESSING_LOCKED.getFieldName(),person);
 
         User user = new User();
         // TODO: Set password protected
@@ -75,13 +76,21 @@ public class UserFactory extends UserFactoryUtil {
         if(delegatedCreation != null){
             user.setDelegatedCreation(delegatedCreation);
         }
+        if (processingLocked == null) {
+            processingLocked = false;
+        }
+
+
+
         return (User) createUser(user,
                 (String) userMappedValues.get( SystemVariables.FIRST_NAME.getFieldName()),
                 (String) userMappedValues.get(SystemVariables.LAST_NAME.getFieldName()),
                 (String) userMappedValues.get(SystemVariables.LOGON.getFieldName()),
                 (String) userMappedValues.get(SystemVariables.SUB.getFieldName()),
                 (String) userMappedValues.get(SystemVariables.USER_EMAIL.getFieldName()),
-                (Long)   userMappedValues.get(SystemVariables.CREATE_USER.getFieldName()));
+                (String) userMappedValues.get(SystemVariables.MOBILE_NUMBER.getFieldName()),
+                (Long)   userMappedValues.get(SystemVariables.CREATE_USER.getFieldName()),
+                processingLocked);
     }
 
     /**

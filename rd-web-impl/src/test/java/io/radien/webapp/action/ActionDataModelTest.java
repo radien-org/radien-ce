@@ -21,24 +21,27 @@ import io.radien.api.service.permission.ActionRESTServiceAccess;
 import io.radien.exception.SystemException;
 import io.radien.ms.permissionmanagement.client.entities.Action;
 import io.radien.webapp.DataModelEnum;
-import io.radien.webapp.JSFUtil;
 import io.radien.webapp.JSFUtilAndFaceContextMessagesTest;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 
+
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+
 import org.primefaces.event.SelectEvent;
+import org.primefaces.model.LazyDataModel;
 
 import static org.junit.Assert.assertEquals;
 
@@ -53,9 +56,11 @@ import static org.mockito.Mockito.when;
  *
  * @author Rajesh Gavvala
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class})
 public class ActionDataModelTest extends JSFUtilAndFaceContextMessagesTest {
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
     @InjectMocks
     private ActionDataModel actionDataModel;
 
@@ -65,20 +70,32 @@ public class ActionDataModelTest extends JSFUtilAndFaceContextMessagesTest {
     @Mock
     private ActiveTenantDataModelManager activeTenantDataModelManager;
 
+    @Mock
+    private LazyDataModel<? extends SystemAction> lazyModel;
+
     SystemAction systemAction;
 
     /**
      * Constructs mock object
      */
+    @BeforeClass
+    public static void beforeClass(){
+        handleJSFUtilAndFaceContextMessages();
+    }
+
+    @AfterClass
+    public static void afterClass(){
+        destroy();
+    }
+
     @Before
     public void before(){
-        MockitoAnnotations.initMocks(this);
-        handleJSFUtilAndFaceContextMessages();
-
         systemAction = new Action();
         systemAction.setId(1L);
         systemAction.setName("testAction");
     }
+
+
 
     @Test
     public void testInit(){
@@ -173,4 +190,6 @@ public class ActionDataModelTest extends JSFUtilAndFaceContextMessagesTest {
         assertEquals(systemAction, actionDataModel.getSelectedAction());
     }
 
+    @Test
+    public void testGetLazyModel() {assertEquals(lazyModel,actionDataModel.getLazyModel());}
 }

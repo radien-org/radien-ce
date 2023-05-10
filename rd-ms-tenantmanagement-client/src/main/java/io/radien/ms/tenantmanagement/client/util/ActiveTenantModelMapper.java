@@ -39,8 +39,9 @@ public class ActiveTenantModelMapper {
 
     /**
      * Maps into a Json Object a active Tenant
+     *
      * @param model active tenant that has the information to be converted
-     * @return a json object created based the active tenant
+     * @return a json object created based on the active tenant
      */
     public static JsonObject map(ActiveTenant model) {
         return ActiveTenantFactory.convertToJsonObject(model);

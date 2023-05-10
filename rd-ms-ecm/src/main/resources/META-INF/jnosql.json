@@ -4,7 +4,7 @@
     "name": "document",
     "provider": "org.jnosql.diana.mongodb.document.MongoDBDocumentConfiguration",
     "settings": {
-      "mongo-server-host-1": "host.docker.internal:8083"
+      "mongo-server-host-1": "${mongo.uri}"
     }
   }
 ]

@@ -15,30 +15,32 @@
  */
 package io.radien.ms.tenantmanagement.client.services;
 
-import io.radien.api.OAFAccess;
-import io.radien.api.OAFProperties;
-import io.radien.api.entity.Page;
-import io.radien.api.model.tenant.SystemActiveTenant;
-import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
-import io.radien.exception.GenericErrorCodeMessage;
-import io.radien.exception.SystemException;
-import io.radien.exception.TokenExpiredException;
-import io.radien.ms.authz.security.AuthorizationChecker;
-import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
-import io.radien.ms.tenantmanagement.client.util.ActiveTenantModelMapper;
-import io.radien.ms.tenantmanagement.client.util.ClientServiceUtil;
+import io.radien.exception.*;
+
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
+
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
+
 import org.apache.cxf.bus.extension.ExtensionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.radien.api.OAFAccess;
+import io.radien.api.OAFProperties;
+import io.radien.api.entity.Page;
+import io.radien.api.model.tenant.SystemActiveTenant;
+import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
+import io.radien.ms.authz.security.AuthorizationChecker;
+import io.radien.ms.tenantmanagement.client.entities.ActiveTenant;
+import io.radien.ms.tenantmanagement.client.util.ActiveTenantModelMapper;
+import io.radien.ms.tenantmanagement.client.util.ClientServiceUtil;
 
 /**
  * Active Tenant REST service requests to the client
@@ -56,46 +58,6 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
 
     @Inject
     private OAFAccess oafAccess;
-
-    /**
-     * Gets requester to get the active tenant in the DB searching for the field Id
-     *
-     * @param userId to be looked after
-     * @param tenantId to be looked after
-     * @return list of active tenant
-     * @throws SystemException in case it founds multiple actions or if URL is malformed
-     */
-    @Override
-    public List<? extends SystemActiveTenant> getActiveTenantByUserAndTenant(Long userId, Long tenantId) throws SystemException {
-        try {
-            return getActiveTenantByUserAndTenantRequester(userId, tenantId);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return getActiveTenantByUserAndTenantRequester(userId, tenantId);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
-    }
-
-    /**
-     * Gets the active tenant in the DB searching for the field Id
-     * @param userId to be looked after
-     * @param tenantId to be looked after
-     * @return list of tenant
-     * @throws SystemException in case it founds multiple actions or if URL is malformed
-     */
-    private List<? extends SystemActiveTenant> getActiveTenantByUserAndTenantRequester(Long userId, Long tenantId) throws SystemException {
-        try {
-            ActiveTenantResourceClient client = clientServiceUtil.getActiveTenantResourceClient(oafAccess.
-                    getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-            Response response = client.getByUserAndTenant(userId, tenantId);
-            return ActiveTenantModelMapper.mapList((InputStream) response.getEntity());
-        }  catch (ExtensionException | ProcessingException | MalformedURLException| ParseException es){
-            throw new SystemException(es.getMessage());
-        }
-    }
 
     /**
      * Gets requester to get the active tenant in the DB searching for the field Id
@@ -122,20 +84,17 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
      * Gets the requester to get the active tenant in the DB searching for the user
      * @param userId to be looked after
      * @param tenantId to be looked after
-     * @param tenantName to be looked after
-     * @param isTenantActive to be looked after
      * @return list of active tenant
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     @Override
-    public List<? extends SystemActiveTenant> getActiveTenantByFilter(Long userId, Long tenantId,
-                                                                      String tenantName, boolean isTenantActive) throws SystemException {
+    public List<? extends SystemActiveTenant> getActiveTenantByFilter(Long userId, Long tenantId) throws SystemException {
         try {
-            return getActiveTenantByFilterRequester(userId, tenantId, tenantName, isTenantActive);
+            return getActiveTenantByFilterRequester(userId, tenantId);
         } catch (TokenExpiredException expiredException) {
             refreshToken();
             try{
-                return getActiveTenantByFilterRequester(userId, tenantId, tenantName, isTenantActive);
+                return getActiveTenantByFilterRequester(userId, tenantId);
             } catch (TokenExpiredException expiredException1){
                 throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
@@ -146,17 +105,14 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
      * Gets the active tenant in the DB searching for the user
      * @param userId to be looked after
      * @param tenantId to be looked after
-     * @param tenantName to be looked after
-     * @param isTenantActive to be looked after
      * @return list of active tenant
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    private List<? extends ActiveTenant> getActiveTenantByFilterRequester(Long userId, Long tenantId,
-                                                                          String tenantName, boolean isTenantActive) throws SystemException {
+    private List<? extends ActiveTenant> getActiveTenantByFilterRequester(Long userId, Long tenantId) throws SystemException {
         try {
             ActiveTenantResourceClient client = clientServiceUtil.getActiveTenantResourceClient(
                     oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-            Response response = client.get(userId, tenantId, tenantName, isTenantActive, true);
+            Response response = client.get(userId, tenantId, true);
             return ActiveTenantModelMapper.mapList((InputStream) response.getEntity());
         }
         catch (ExtensionException | ProcessingException | MalformedURLException | ParseException es ){
@@ -183,7 +139,9 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
 
     /**
      * Gets the requester to get all the active tenants into a pagination mode.
-     * @param search name description for some active tenant (optional)
+     *
+     * @param tenantId tenant identifier (Optional)
+     * @param userId user identifier (Optional)
      * @param pageNo of the requested information. Where the active tenant is.
      * @param pageSize total number of pages returned in the request.
      * @param sortBy sort filter criteria.
@@ -192,26 +150,19 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     @Override
-    public Page<? extends SystemActiveTenant> getAll(String search,
+    public Page<? extends SystemActiveTenant> getAll(Long tenantId,
+                                               Long userId,
                                                int pageNo,
                                                int pageSize,
                                                List<String> sortBy,
                                                boolean isAscending) throws SystemException {
-        try {
-            return getActiveTenantPage(search, pageNo, pageSize, sortBy, isAscending);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return getActiveTenantPage(search, pageNo, pageSize, sortBy, isAscending);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(() -> getActiveTenantPage(tenantId, userId, pageNo, pageSize, sortBy, isAscending));
     }
 
     /**
      * Get all the active tenants into a pagination mode.
-     * @param search name description for some active tenant (optional)
+     * @param tenantId tenant identifier (Optional)
+     * @param userId user identifier (Optional)
      * @param pageNo of the requested information. Where the active tenant is.
      * @param pageSize total number of pages returned in the request.
      * @param sortBy sort filter criteria.
@@ -219,13 +170,13 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
      * @return a page of system active tenants.
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    private Page<ActiveTenant> getActiveTenantPage(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
+    private Page<ActiveTenant> getActiveTenantPage(Long tenantId, Long userId, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
         try {
             ActiveTenantResourceClient client = clientServiceUtil.getActiveTenantResourceClient(oafAccess.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-            Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
+            Response response = client.getAll(tenantId, userId, pageNo, pageSize, sortBy, isAscending);
             return ActiveTenantModelMapper.mapToPage((InputStream) response.getEntity());
-        } catch (ExtensionException | ProcessingException | MalformedURLException e){
+        } catch (ExtensionException | ProcessingException | InternalServerErrorException | MalformedURLException e){
             throw new SystemException(e);
         }
     }
@@ -239,11 +190,11 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
     @Override
     public boolean create(SystemActiveTenant activeTenant) throws SystemException {
         try {
-            return createActiveTenant((ActiveTenant) activeTenant);
+            return createActiveTenant((ActiveTenant)activeTenant);
         } catch (TokenExpiredException expiredException) {
             refreshToken();
             try{
-                return createActiveTenant((ActiveTenant) activeTenant);
+                return createActiveTenant((ActiveTenant)activeTenant);
             } catch (TokenExpiredException expiredException1){
                 throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
@@ -357,15 +308,12 @@ public class ActiveTenantRESTServiceClient extends AuthorizationChecker implemen
             ActiveTenantResourceClient client = clientServiceUtil.getActiveTenantResourceClient(oafAccess.
                     getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
             Response response = client.delete(tenant, user);
-            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-                return response.readEntity(Boolean.class);
-            }
-            String issue = response.readEntity(String.class);
-            log.error(issue);
-            return false;
-        }
-        catch (MalformedURLException | ExtensionException | ProcessingException e) {
+            return response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL;
+        }catch (MalformedURLException | ExtensionException | ProcessingException e) {
             throw new SystemException(e);
+        } catch (NotFoundException e) {
+            log.error(e.getMessage());
+            return false;
         }
     }
 

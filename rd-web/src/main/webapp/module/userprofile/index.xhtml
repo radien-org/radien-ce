@@ -6,10 +6,12 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 template="/WEB-INF/templates/tpl_oaf.xhtml">
+	<f:metadata>
+		<f:viewAction action="#{userProfileManager.init()}"/>
+	</f:metadata>
     <ui:define name="content">
 		<link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
 		<h:form id="userProfileManager" styleClass="tableContainer">
-			<b:growl id="message" showDetail="true" allowDismiss="true" delay="0"/>
 			<b:container>
 				<b:row>
 					<h:panelGroup layout="block" styleClass="headerInformation">
@@ -17,23 +19,27 @@
 						<hr />
 					</h:panelGroup>
 				</b:row>
-
 				<b:tabView activeIndex="#{userProfileManager.tabIndex}">
 					<b:tab title="#{msg.basicInformation}">
 						<b:container>
 							<b:row><h1/></b:row>
 							<b:panelGrid colSpans="2,10">
 								<h:outputLabel for="userFirstName" value="#{msg.firstname}"/>
-								<b:inputText id="userFirstName" value="#{userProfileManager.clonedLogInUser.firstname}" span="6"/>
+								<b:inputText id="userFirstName" value="#{userProfileManager.clonedLogInUser.firstname}"
+											 disabled="#{userProfileManager.clonedLogInUser.processingLocked}" span="6"/>
 
 								<h:outputLabel for="userLastName" value="#{msg.lastname}"/>
-								<b:inputText id="userLastName" value="#{userProfileManager.clonedLogInUser.lastname}" span="6"/>
+								<b:inputText id="userLastName" value="#{userProfileManager.clonedLogInUser.lastname}"
+											 disabled="#{userProfileManager.clonedLogInUser.processingLocked}" span="6"/>
 
 								<h:outputLabel value="#{msg.rd_user_logon}"/>
-								<b:inputText id="userLogon" value="#{userProfileManager.clonedLogInUser.logon}" disabled="true" span="6"/>
+								<b:inputText id="userLogon" value="#{userProfileManager.clonedLogInUser.logon}" disabled="#{userProfileManager.clonedLogInUser.processingLocked}" span="6"/>
 
 								<h:outputLabel value="#{msg.email}"/>
-								<b:inputText id="userEmail" value="#{userProfileManager.clonedLogInUser.userEmail}" disabled="true" span="6"/>
+								<h:panelGroup>
+									<b:inputText id="userEmail" styleClass="userEmail" value="#{userProfileManager.clonedLogInUser.userEmail}" disabled="#{!userProfileManager.emailControlEnabled || userProfileManager.clonedLogInUser.processingLocked}" span="6"/>
+									<h:commandLink value="#{msg.rd_user_email_update}" action="#{userProfileManager.emailControlToggle()}" update="@form" rendered="#{!userProfileManager.emailControlEnabled and !userProfileManager.clonedLogInUser.processingLocked}"/>
+								</h:panelGroup>
 
 								<h:outputLabel value="#{msg.sub}"/>
 								<b:inputText id="userSub" value="#{userProfileManager.clonedLogInUser.sub}" disabled="true" span="6"/>
@@ -45,10 +51,39 @@
 											 immediate="true"
 											 action="#{userProfileManager.getHomeGui}"/>
 
+							<b:button id="changePassword" onclick="$('.changePwdDialog').modal('show')"
+									  value="#{msg.change_password}" tooltip="#{msg.change_password}"
+									  iconAwesome="fa-key" disabled="#{userProfileManager.clonedLogInUser.processingLocked}"/>
+
 							<b:button id="updateUserProfile"
 									  onclick="$('.formValidationModalUserProfileUpdate').modal('show')"
 									  value="#{msg.save}" tooltip="#{msg.rd_user_profile_update}"
-									  iconAwesome="fa-save"/>
+									  iconAwesome="fa-save" disabled="#{userProfileManager.clonedLogInUser.processingLocked}"/>
+
+							<b:commandButton id="requestData"
+									  value="#{msg.request_data}" tooltip="#{msg.request_data}"
+									  action="${userProfileManager.sendDataRequestOptIn}"
+									  iconAwesome="fa-file-circle-info"/>
+
+							<b:button id="deleteMyUser"
+									  value="#{msg.delete_my_user}" tooltip="#{msg.delete_my_user}"
+									  onclick="$('.formValidationModalUserProfileDeletion').modal('show')"
+									  disabled="#{userProfileManager.clonedLogInUser.processingLocked}"
+							/>
+
+							<b:button id="lockMyUserFromProcessing"
+									  rendered="#{!(userProfileManager.clonedLogInUser.processingLocked)}"
+									  value="#{msg.lock_my_user_from_processing}" tooltip="#{msg.lock_my_user_from_processing}"
+									  onclick="$('.formValidationModalUserLockProcessing').modal('show')"
+									  />
+
+							<b:button id="UnlockMyUserForProcessing"
+									  rendered="#{userProfileManager.clonedLogInUser.processingLocked}"
+									  value="#{msg.unlock_my_user_for_processing}" tooltip="#{msg.unlock_my_user_for_processing}"
+									  onclick="$('.formValidationModalUserUnlockProcessing').modal('show')"
+									  />
+
+
 							<b:modal id="model"
 									 title="#{msg.confirmation}"
 									 styleClass="formValidationModalUserProfileUpdate"
@@ -60,10 +95,61 @@
 													 type="reset"
 													 onclick="{ $('.formValidationModalUserProfileUpdate').modal('hide') } "/>
 									<b:commandButton value="#{msg.yes}" look="warning"
-													 action="#{userProfileManager.updateProfile(userProfileManager.clonedLogInUser)}"
+													 action="#{userProfileManager.updateProfile(userProfileManager.clonedLogInUser, true)}"
 													 oncomplete="{ $('.formValidationModalUserProfileUpdate').modal('hide') } "/>
 								</f:facet>
 							</b:modal>
+
+
+							<!-- START profile deletion modal-->
+							<b:modal id="model_profile_deletion"
+									 title="#{msg.confirmation}"
+									 styleClass="formValidationModalUserProfileDeletion"
+									 closable="false"
+									 close-on-escape="false" backdrop="false">
+								<p>#{msg.userProfileDeletionConfirmation}</p>
+								<f:facet name="footer">
+									<b:commandButton value="#{msg.returnButton}"
+													 type="reset"
+													 onclick="{ $('.formValidationModalUserProfileDeletion').modal('hide') } "/>
+									<b:commandButton value="#{msg.yes}" look="warning"
+													 action="#{userProfileManager.deleteUserListener()}"
+													 oncomplete="{ $('.formValidationModalUserProfileDeletion').modal('hide') } "/>
+								</f:facet>
+							</b:modal>
+							<!-- END profile deletion modal-->
+
+							<!-- START profile processing locking modal-->
+							<b:modal id="model_lock_profile_processing"
+									 title="#{msg.confirmation}"
+									 styleClass="formValidationModalUserLockProcessing"
+									 closable="false"
+									 close-on-escape="false" backdrop="false">
+								<p>#{msg.userLockProcessingConfirmation}</p>
+								<f:facet name="footer">
+									<b:commandButton value="#{msg.returnButton}"
+													 type="reset"
+													 onclick="{ $('.formValidationModalUserLockProcessing').modal('hide') } "/>
+									<b:commandButton value="#{msg.yes}" look="warning"
+													 action="#{userProfileManager.lockUserProcessing()}"
+													 oncomplete="{ $('.formValidationModalUserLockProcessing').modal('hide') } "/>
+								</f:facet>
+							</b:modal>
+							<!-- END profile processing locking modal-->
+
+							<!-- START profile processing unlock modal-->
+							<b:modal id="model_unlock_profile_processing"
+									 title="#{msg.unlock_my_user_for_processing}"
+									 styleClass="formValidationModalUserUnlockProcessing"
+									 closable="false"
+									 close-on-escape="false" backdrop="false">
+								<p>#{msg.userUnlockProcessingInformation}</p>
+								<f:facet name="footer">
+									<b:commandButton value="#{msg.confirm}" look="warning"
+													 oncomplete="{ $('.formValidationModalUserUnlockProcessing').modal('hide') } "/>
+								</f:facet>
+							</b:modal>
+							<!-- END profile processing locking modal-->
 
 						</b:container>
 					</b:tab>
@@ -79,7 +165,7 @@
 												 value="#{userProfileManager.assignedTenants}">
 										<b:dataTableColumn value="#{tenantRef.id}" label="#{msg.id}"/>
 										<b:dataTableColumn value="#{tenantRef.name}" label="#{msg.name}"/>
-										<b:dataTableColumn value="#{tenantRef.tenantType.name}" label="#{msg.type}"/>
+										<b:dataTableColumn value="#{tenantRef.tenantType.description}" label="#{msg.type}"/>
 									</b:dataTable>
 								</b:row>
 								<b:row><h1/></b:row>
@@ -96,7 +182,8 @@
 										  value="#{msg.dissociate}"
 										  tooltip="#{msg.dissociate} #{msg.rd_user} #{msg.rd_tenant}"
 										  iconAwesome="fa-ban"
-										  onclick="$('.formValidationModalDeleteTenantFromUserProfile').modal('show')"/>
+										  onclick="$('.formValidationModalDeleteTenantFromUserProfile').modal('show')"
+										  disabled="#{userProfileManager.clonedLogInUser.processingLocked}"/>
 
 								<b:modal id="modalDissociation"
 										 title="#{msg.confirmation}"
@@ -118,5 +205,47 @@
 				</b:tabView>
 			</b:container>
 		</h:form>
-    </ui:define>
+
+		<!-- Change password Form -->
+		<b:modal title="#{msg.change_password}" styleClass="changePwdDialog"
+				 closable="true" closeOnEscape="true">
+			<b:form>
+				<b:panelGrid colSpans="2,10">
+
+					<f:event listener="#{userProfileManager.validateComparePasswords}" type="postValidate" />
+
+					<!-- Old Password -->
+					<b:inputSecret id="oldPassword"
+								   label="#{msg.actual_password}"
+								   required="true"
+								   requiredMessage="#{msg.actual_password_mandatory}"
+								   value="#{userProfileManager.changing.oldPassword}"/>
+
+					<!-- New Password -->
+					<b:inputSecret id="newPassword"
+								   label="#{msg.new_password}"
+								   required="true"
+								   requiredMessage="#{msg.new_password_mandatory}"
+								   value="#{userProfileManager.changing.newPassword}"/>
+
+					<!-- Confirm New Password -->
+					<b:inputSecret id="confirmNewPassword"
+								   label="#{msg.confirm_new_password}"
+								   required="true"
+								   requiredMessage="#{msg.confirm_new_password_mandatory}"
+								   value="#{userProfileManager.confirmationInfo}"/>
+
+				</b:panelGrid>
+				<b:button value="#{msg.cancel}"
+								 onclick="{ $('.changePwdDialog').modal('hide') } "/>
+
+				<b:commandButton update="@form sys-messages"
+								 dismiss="modal"
+								 value="#{msg.confirm}"
+								 action="#{userProfileManager.changePasswordListener}"
+								 oncomplete="if(!validationFailed &amp;&amp; !bfHasError) { $('.changePwdDialog').modal('hide') } "/>
+				<b:fetchBeanInfos />
+			</b:form>
+		</b:modal>
+	</ui:define>
 </ui:composition>

@@ -41,6 +41,7 @@ public enum DataModelEnum {
     UPDATE_ERROR_MESSAGE("rd_update_error"),
     SELECT_RECORD_FIRST("rd_select_record_first"),
     DELETE_SUCCESS("rd_delete_success"),
+    PROCESSINGLOCKED_BLOCKS_ACTION("rd_processingLocked_blocks_action"),
     ERROR_SELECT_RECORD_TO_DELETE("rd_delete_select_record_first"),
     DELETE_ERROR("rd_delete_error"),
     ACTIVE_TENANT_HAS_BEEN_REMOVED("rd_removed_active_tenant"),
@@ -75,6 +76,7 @@ public enum DataModelEnum {
     PERMISSION_MESSAGE("rd_permission"),
     PERMISSIONS_MESSAGE("rd_permissions"),
     PERMISSION_NOT_FOUND_MESSAGE("rd_permission_not_found"),
+    PERMISSION_NOT_FOUND_FOR_ACTION_RESOURCE_MESSAGE("rd_permission_not_found_for_action_resource"),
 
     /**
      * Role Management
@@ -99,12 +101,18 @@ public enum DataModelEnum {
     USER_NOT_FOUND_MESSAGE("rd_user_not_found"),
     USER_SEND_UPDATE_PASSWORD_EMAIL_SUCCESS("rd_send_update_password_email_success"),
     USER_SEND_UPDATE_PASSWORD_EMAIL_ERROR("rd_send_update_password_email_error"),
+    USER_CHANGE_PASSWORD_SUCCESS("rd_change_password_successfully"),
+    USER_CHANGE_PASSWORD_UNSUCCESSFUL("rd_change_password_unsuccessfully"),
+    USER_CHANGE_PASSWORD_NO_MATCHES("rd_change_password_no_match"),
+    USER_CHANGE_PASSWORD_ACTUAL_PASSWORD_INVALID("actual_password_invalid"),
+    USER_RESET_PASSWORD_CONFIRM_MESSAGE("userResetPasswordConfirmation"),
     USER_PATH("pretty:user"),
     PRETTY_USER("pretty:user"),
     USERS_PATH("pretty:users"),
     USERS_DISPATCH_PATH("/module/users"),
     USERS_ROLES_PATH("pretty:userRoles"),
     USER_DELETE_PATH("pretty:userDelete"),
+    USER_EMAIL_UPDATE("pretty:userEmailUpdate"),
     USER_UN_ASSIGN_PATH("pretty:userUnAssign"),
     USER_ASSIGNING_TENANT_ASSOCIATION_PATH("pretty:userTenantAssociation"),
     USER_ASSIGNING_TENANT_SUCCESS("rd_tenant_association_creation_success"),
@@ -112,6 +120,8 @@ public enum DataModelEnum {
     USERS_PROFILE_PATH("pretty:userProfile"),
     SENT_UPDATE_PASSWORD_EMAIL_SUCCESS("rd_send_update_password_email_success"),
     SENT_UPDATE_PASSWORD_EMAIL_ERROR("rd_send_update_password_email_error"),
+    SENT_UPDATED_EMAIL_VERIFY_SUCCESS("rd_send_updated_email_verify_success"),
+    SENT_UPDATED_EMAIL_VERIFY_ERROR("rd_send_updated_email_verify_error"),
 
     /**
      * Tenant Role

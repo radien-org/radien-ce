@@ -13,275 +13,204 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.radien.ms.permissionmanagement.service;
 
 import io.radien.api.entity.Page;
-import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemPermission;
-import io.radien.api.model.permission.SystemResource;
-import io.radien.api.service.permission.ActionServiceAccess;
+import io.radien.api.model.permission.SystemPermissionSearchFilter;
 import io.radien.api.service.permission.PermissionServiceAccess;
-import io.radien.api.service.permission.ResourceServiceAccess;
-import io.radien.exception.PermissionNotFoundException;
+import io.radien.api.service.permission.exception.PermissionIllegalArgumentException;
+import io.radien.api.service.permission.exception.PermissionNotFoundException;
+import io.radien.exception.BadRequestException;
 import io.radien.exception.UniquenessConstraintException;
+import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.ms.permissionmanagement.client.entities.PermissionSearchFilter;
-import io.radien.ms.permissionmanagement.model.ActionEntity;
-import io.radien.ms.permissionmanagement.client.entities.AssociationStatus;
-import io.radien.ms.permissionmanagement.model.PermissionEntity;
-import io.radien.ms.permissionmanagement.model.ResourceEntity;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import javax.ejb.embeddable.EJBContainer;
-import javax.naming.Context;
-import javax.naming.NamingException;
+import io.radien.ms.permissionmanagement.entities.PermissionEntity;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import org.junit.Rule;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
-/**
- * @author Bruno Gama
- */
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 public class PermissionBusinessServiceTest {
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+    @InjectMocks
+    public PermissionBusinessService businessService;
+    @Mock
+    public PermissionServiceAccess permissionService;
 
-    static PermissionServiceAccess permissionServiceAccess;
-    static ActionServiceAccess actionServiceAccess;
-    static ResourceServiceAccess resourceServiceAccess;
-    static PermissionBusinessService permissionBusinessService;
-
-    static SystemPermission permission;
-    static SystemAction action;
-    static SystemResource resource;
-
-    static EJBContainer container;
-
-    @BeforeClass
-    public static void PermissionBusinessServiceTest() throws NamingException {
-        Properties p = new Properties();
-        p.put("openejb.deployments.classpath.include",".*permission.*");
-        p.put("openejb.deployments.classpath.exclude",".*client.*");
-        container = EJBContainer.createEJBContainer(p);
-        final Context context = container.getContext();
-
-        permissionServiceAccess = (PermissionServiceAccess)
-                context.lookup("java:global/rd-ms-permissionmanagement//PermissionService");
-        actionServiceAccess = (ActionServiceAccess)
-                context.lookup("java:global/rd-ms-permissionmanagement//ActionService");
-        resourceServiceAccess = (ResourceServiceAccess)
-                context.lookup("java:global/rd-ms-permissionmanagement//ResourceService");
-        permissionBusinessService = (PermissionBusinessService)
-                context.lookup("java:global/rd-ms-permissionmanagement//PermissionBusinessService");
+    @Test
+    public void testGet() {
+        when(permissionService.get(anyLong())).thenReturn(new PermissionEntity());
+        assertNotNull(businessService.get(1L));
     }
 
-    @Before
-    public void inject() throws NamingException {
-        container.getContext().bind("inject", this);
-    }
-
-    @AfterClass
-    public static void stop() {
-        if (container != null) {
-            container.close();
-        }
-    }
-
-    @After
-    public void tear() {
-
-        Page<SystemPermission> pagePermissions = permissionServiceAccess.getAll(null, 1, 1000, null, true);
-
-        if (pagePermissions.getResults().size() > 0) {
-            permissionServiceAccess.delete(pagePermissions.getResults().stream().map(p -> p.getId()).collect(Collectors.toList()));
-        }
-
-        Page<SystemAction> pageActions = actionServiceAccess.getAll(null, 1, 1000, null, true);
-
-        if (pageActions.getResults().size() > 0) {
-            actionServiceAccess.delete(pageActions.getResults().stream().map(a -> a.getId()).collect(Collectors.toList()));
-        }
-
-        Page<SystemResource> pageResources = resourceServiceAccess.getAll(null, 1, 1000, null, true);
-
-        if (pageResources.getResults().size() > 0) {
-            resourceServiceAccess.delete(pageResources.getResults().stream().map(r -> r.getId()).collect(Collectors.toList()));
-        }
+    @Test(expected = PermissionNotFoundException.class)
+    public void testGetNotFound() {
+        when(permissionService.get(anyLong())).thenReturn(null);
+        businessService.get(1L);
     }
 
     @Test
-    public void testAssociation() throws UniquenessConstraintException, PermissionNotFoundException {
-        resource = new ResourceEntity();
-        resource.setName("userTestAssociation");
-        resourceServiceAccess.save(resource);
+    public void testGetList() {
+        when(permissionService.get(anyList())).thenReturn(Collections.singletonList(new PermissionEntity()));
+        assertNotNull(businessService.get(Collections.singletonList(1L)));
+    }
 
-        action = new ActionEntity();
-        action.setName("remove-userTestAssociation");
-        actionServiceAccess.save(action);
+    @Test(expected = BadRequestException.class)
+    public void testGetListBadRequest() {
+        businessService.get(new ArrayList<>());
+    }
 
-        permission = new PermissionEntity();
-        permission.setName("removing-assetTestAssociation");
-        permissionServiceAccess.save(permission);
-
-        SystemPermission sp = permissionServiceAccess.get(permission.getId());
-        Assert.assertNull(sp.getActionId());
-
-        AssociationStatus associationStatus = this.permissionBusinessService.associate(sp.getId(), action.getId(), resource.getId());
-        Assert.assertTrue(associationStatus.isOK());
-
-        SystemPermission sp2 = permissionServiceAccess.get(permission.getId());
-        Assert.assertNotNull(sp2.getActionId());
-        Assert.assertNotNull(sp2.getResourceId());
+    @Test(expected = PermissionNotFoundException.class)
+    public void testGetListNotFound() {
+        when(permissionService.get(anyList())).thenReturn(new ArrayList<>());
+        businessService.get(Collections.singletonList(1L));
     }
 
     @Test
-    public void testDissociation() throws UniquenessConstraintException {
-        resource = new ResourceEntity();
-        resource.setName("userTestDissociation");
-        resourceServiceAccess.save(resource);
-
-        action = new ActionEntity();
-        action.setName("remove-userTestDissociation");
-        actionServiceAccess.save(action);
-
-        permission = new PermissionEntity();
-        permission.setName("removing-assetTestDissociation");
-        permissionServiceAccess.save(permission);
-
-        PermissionEntity perm = new PermissionEntity();
-        perm.setName("adding-user");
-        perm.setActionId(action.getId());
-        perm.setResourceId(resource.getId());
-        permissionServiceAccess.save(perm);
-
-        List<? extends SystemPermission> list = permissionServiceAccess.getPermissions(
-                new PermissionSearchFilter("adding-user", action.getId(), null, null,true, false));
-
-        SystemPermission sp = list.get(0);
-        Assert.assertNotNull(sp.getActionId());
-
-        AssociationStatus associationStatus = this.permissionBusinessService.dissociation(perm.getId());
-        Assert.assertTrue(associationStatus.isOK());
-
-        list = permissionServiceAccess.getPermissions(
-                new PermissionSearchFilter("adding-user", null, null,null,true, false));
-
-        SystemPermission sp2 = list.get(0);
-        Assert.assertNull(sp2.getActionId());
-        Assert.assertNull(sp2.getResourceId());
+    public void testGetAll() {
+        Page<SystemPermission> resultPage = new Page<>(new ArrayList<>(), 1, 1, 1);
+        when(permissionService.getAll(anyString(), anyInt(), anyInt(), anyList(), anyBoolean()))
+                .thenReturn(resultPage);
+        assertEquals(resultPage, businessService.getAll("", 1, 1, new ArrayList<>(), false));
     }
 
     @Test
-    public void testAssociatingNotExistentPermission() throws UniquenessConstraintException {
-        resource = new ResourceEntity();
-        resource.setName("userTestAssociatingNotExistentPermission");
-        resourceServiceAccess.save(resource);
-
-        action = new ActionEntity();
-        action.setName("remove-userTestAssociatingNotExistentPermission");
-        actionServiceAccess.save(action);
-
-        permission = new PermissionEntity();
-        permission.setName("removing-assetTestAssociatingNotExistentPermission");
-        permissionServiceAccess.save(permission);
-
-        AssociationStatus associationStatus =
-                this.permissionBusinessService.associate(100000L, action.getId(), resource.getId());
-        Assert.assertFalse(associationStatus.isOK());
-        Assert.assertTrue(associationStatus.getMessage().contains("Permission not found"));
+    public void testGetFiltered() {
+        List<SystemPermission> resultList = Arrays.asList(new PermissionEntity(), new PermissionEntity());
+        when(permissionService.getPermissions(any(SystemPermissionSearchFilter.class)))
+                .thenReturn(resultList);
+        assertEquals(resultList, businessService.getFiltered(new PermissionSearchFilter()));
     }
 
     @Test
-    public void testAssociatingNotExistentAction() throws UniquenessConstraintException {
-        resource = new ResourceEntity();
-        resource.setName("userTestAssociatingNotExistentAction");
-        resourceServiceAccess.save(resource);
+    public void testGetIdByActionAndResource() throws PermissionIllegalArgumentException {
+        when(permissionService.getIdByActionAndResource(anyString(), anyString()))
+                .thenReturn(Optional.of(1L));
+        assertEquals(Long.valueOf(1), businessService.getIdByActionAndResource("", ""));
+    }
 
-        action = new ActionEntity();
-        action.setName("remove-userTestAssociatingNotExistentAction");
-        actionServiceAccess.save(action);
+    @Test(expected = PermissionNotFoundException.class)
+    public void testGetIdByActionAndResourceNotFound() throws PermissionIllegalArgumentException {
+        when(permissionService.getIdByActionAndResource(anyString(), anyString()))
+                .thenReturn(Optional.empty());
+        businessService.getIdByActionAndResource("", "");
+    }
 
-        permission = new PermissionEntity();
-        permission.setName("removing-assetTestAssociatingNotExistentAction");
-        permissionServiceAccess.save(permission);
-
-        AssociationStatus associationStatus =
-                this.permissionBusinessService.associate(permission.getId(), 111111L, resource.getId());
-        Assert.assertFalse(associationStatus.isOK());
-        Assert.assertTrue(associationStatus.getMessage().contains("Action not found"));
+    @Test(expected = BadRequestException.class)
+    public void testGetIdByActionAndResourceBadRequest() throws PermissionIllegalArgumentException {
+        when(permissionService.getIdByActionAndResource(anyString(), anyString()))
+                .thenThrow(new PermissionIllegalArgumentException("error"));
+        businessService.getIdByActionAndResource("", "");
     }
 
     @Test
-    public void testAssociatingNotExistentResource() throws UniquenessConstraintException {
-        resource = new ResourceEntity();
-        resource.setName("userTestAssociatingNotExistentResource");
-        resourceServiceAccess.save(resource);
+    public void testCreate() throws UniquenessConstraintException {
+        businessService.create(new Permission());
+        verify(permissionService).create(any());
+    }
 
-        action = new ActionEntity();
-        action.setName("remove-userTestAssociatingNotExistentResource");
-        actionServiceAccess.save(action);
-
-        permission = new PermissionEntity();
-        permission.setName("removing-assetTestAssociatingNotExistentResource");
-        permissionServiceAccess.save(permission);
-
-        AssociationStatus associationStatus =
-                this.permissionBusinessService.associate(permission.getId(), action.getId(), 11111L);
-        Assert.assertFalse(associationStatus.isOK());
-        Assert.assertTrue(associationStatus.getMessage().contains("Resource not found"));
+    @Test(expected = BadRequestException.class)
+    public void testCreateDuplicate() throws UniquenessConstraintException {
+        doThrow(new UniquenessConstraintException("error"))
+                .when(permissionService).create(any());
+        businessService.create(new Permission());
     }
 
     @Test
-    public void testAssociatingWithNullAsPermissionId() throws UniquenessConstraintException {
-        AssociationStatus associationStatus =
-                this.permissionBusinessService.associate(null, null, null);
-        Assert.assertFalse(associationStatus.isOK());
-        Assert.assertTrue(associationStatus.getMessage().contains("Permission Id not informed"));
+    public void testUpdate() throws UniquenessConstraintException {
+        businessService.update(2L, new Permission());
+        verify(permissionService).update(any());
+    }
+
+    @Test(expected = BadRequestException.class)
+    public void testUpdateDuplicate() throws UniquenessConstraintException {
+        doThrow(new UniquenessConstraintException("error"))
+                .when(permissionService).update(any());
+        businessService.update(2L, new Permission());
     }
 
     @Test
-    public void testAssociatingWithNullAsActionId() throws UniquenessConstraintException {
-        AssociationStatus associationStatus =
-                this.permissionBusinessService.associate(1L, null, null);
-        Assert.assertFalse(associationStatus.isOK());
-        Assert.assertTrue(associationStatus.getMessage().contains("Action Id not informed"));
+    public void testDelete() {
+        when(permissionService.delete(anyLong())).thenReturn(true);
+        businessService.delete(1L);
+        verify(permissionService).delete(1L);
+    }
+
+    @Test(expected = PermissionNotFoundException.class)
+    public void testDeleteNotFound() {
+        when(permissionService.delete(anyLong())).thenReturn(false);
+        businessService.delete(1L);
     }
 
     @Test
-    public void testAssociatingWithNullAsResourceId() throws UniquenessConstraintException {
-        resource = new ResourceEntity();
-        resource.setName("user");
-        resourceServiceAccess.save(resource);
+    public void testDeleteList() {
+        when(permissionService.delete(anyList())).thenReturn(true);
+        businessService.delete(Collections.singletonList(1L));
+        verify(permissionService).delete(anyList());
+    }
 
-        action = new ActionEntity();
-        action.setName("remove-user");
-        actionServiceAccess.save(action);
-
-        permission = new PermissionEntity();
-        permission.setName("removing-asset");
-        permissionServiceAccess.save(permission);
-
-        AssociationStatus associationStatus =
-                this.permissionBusinessService.associate(1L, 2L, null);
-        Assert.assertFalse(associationStatus.isOK());
-        Assert.assertTrue(associationStatus.getMessage().contains("Resource Id not informed"));
+    @Test(expected = PermissionNotFoundException.class)
+    public void testDeleteListNotFound() {
+        when(permissionService.delete(anyList())).thenReturn(false);
+        businessService.delete(Collections.singletonList(1L));
     }
 
     @Test
-    public void testDissociatingNotExistentPermission() throws UniquenessConstraintException {
-        AssociationStatus associationStatus =
-                this.permissionBusinessService.dissociation(100000L);
-        Assert.assertFalse(associationStatus.isOK());
-        Assert.assertTrue(associationStatus.getMessage().contains("Permission not found"));
+    public void testExists() {
+        when(permissionService.exists(anyLong(), anyString())).thenReturn(true);
+        businessService.exists(1L, "");
+        verify(permissionService).exists(1L, "");
+    }
+
+    @Test(expected = BadRequestException.class)
+    public void testExistsBadRequest() {
+        businessService.exists(null, null);
     }
 
     @Test
-    public void testDissociatingWithNullAsPermissionId() throws UniquenessConstraintException {
-        AssociationStatus associationStatus =
-                this.permissionBusinessService.dissociation(null);
-        Assert.assertFalse(associationStatus.isOK());
-        Assert.assertTrue(associationStatus.getMessage().contains("Permission Id not informed"));
+    public void testGetPermissionByActionNameAndResourceName() {
+        when(permissionService.getPermissionByActionAndResourceNames(anyString(), anyString()))
+                .thenReturn(new PermissionEntity());
+        assertNotNull(businessService.getPermissionByActionNameAndResourceName("name", "name"));
+    }
+
+    @Test(expected = PermissionNotFoundException.class)
+    public void testGetPermissionByActionNameAndResourceNameNotFound() {
+        when(permissionService.getPermissionByActionAndResourceNames(anyString(), anyString()))
+                .thenReturn(null);
+        businessService.getPermissionByActionNameAndResourceName("name", "name");
+    }
+
+    @Test(expected = BadRequestException.class)
+    public void testGetPermissionByActionNameAndResourceNameBadRequest() {
+        businessService.getPermissionByActionNameAndResourceName("", "name");
+    }
+
+    @Test
+    public void testCount() {
+        when(permissionService.getTotalRecordsCount()).thenReturn(10L);
+        assertEquals(10L, businessService.getCount());
     }
 }

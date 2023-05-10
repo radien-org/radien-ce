@@ -42,7 +42,7 @@ public class TenantSearchFilter extends SearchFilterCriteria implements SystemTe
     public TenantSearchFilter(String name, String type, Collection<Long> ids, boolean isExact, boolean isLogicalConjunction) {
         super(isExact, isLogicalConjunction);
         this.name = name;
-        this.tenantType = TenantType.getByName(type);
+        this.tenantType = TenantType.getByDescription(type);
         this.ids = ids;
     }
 

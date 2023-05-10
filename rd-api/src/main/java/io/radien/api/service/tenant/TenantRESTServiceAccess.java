@@ -17,8 +17,10 @@ package io.radien.api.service.tenant;
 
 import io.radien.api.entity.Page;
 import io.radien.api.model.tenant.SystemTenant;
+import io.radien.api.model.tenant.SystemTenantType;
 import io.radien.exception.SystemException;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,11 +65,11 @@ public interface TenantRESTServiceAccess {
      * @return a page of system tenants
      * @throws SystemException in case of token expiration or any issue on the application
      */
-    public Page<? extends SystemTenant> getAll(String search,
-                                               int pageNo,
-                                               int pageSize,
-                                               List<String> sortBy,
-                                               boolean isAscending) throws SystemException;
+    public Page<? extends SystemTenant> getAll(Collection<Long> ids, String name, String tenantKey, SystemTenantType tenantType,
+                                                String clientAddress, String clientZipCode, String clientCity,
+                                                String clientCountry, String clientPhoneNumber, String clientEmail,
+                                                Long parentId, int pageNo, int pageSize, List<String> sortBy, boolean isAscending,
+                                                boolean isExact, boolean isLogicalConjunction) throws SystemException;
 
     /**
      * Creates given tenant

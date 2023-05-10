@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.radien</groupId>
 		<artifactId>appframe</artifactId>
-	  <version>rd-1.0.0-SNAPSHOT</version>
+	  <version>rd-0.0.2-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -55,6 +55,10 @@
 		</plugins>
 	</build>
 	<dependencies>
+            <dependency>
+                <groupId>io.radien</groupId>
+                <artifactId>rd-ms-doctypemanagement-client</artifactId>
+            </dependency>
 		<dependency>
 			<groupId>io.radien</groupId>
 			<artifactId>rd-web-api</artifactId>
@@ -132,6 +136,12 @@
 		<dependency>
 			<groupId>org.primefaces.extensions</groupId>
 			<artifactId>primefaces-extensions</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>cn.apiclub.tool</groupId>
+			<artifactId>simplecaptcha</artifactId>
+			<version>1.2.2</version>
 		</dependency>
 	</dependencies>
 </project>

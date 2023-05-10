@@ -1,0 +1,24 @@
+{
+  "themes":[
+    {
+      "name":"radien",
+      "types":[
+        "account",
+        "admin",
+        "email",
+        "login",
+        "welcome"
+      ]
+    },
+    {
+      "name":"protec",
+      "types":[
+        "account",
+        "admin",
+        "email",
+        "login",
+        "welcome"
+      ]
+    }
+  ]
+}

@@ -150,10 +150,12 @@ public class TenantRoleAssociationManager extends AbstractManager {
         try {
             tenantRole.setTenantId(tenant.getId());
             tenantRole.setRoleId(role.getId());
-            tenantRoleRESTServiceAccess.save(tenantRole);
             if (tenantRole.getId() == null) {
+                tenantRoleRESTServiceAccess.create(tenantRole);
                 tenantRole.setId(tenantRoleUtil.getTenantRoleId(tenant.getId(), role.getId()));
                 tenantRoleAssociationCreated = true;
+            } else {
+                tenantRoleRESTServiceAccess.update(tenantRole);
             }
             this.prepareUserDataTable();
             handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(SAVE_SUCCESS_MESSAGE.getValue()),
@@ -236,7 +238,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
     @ActiveTenantMandatory
     public List<? extends SystemPermission> calculatePermissions() {
         try {
-            this.assignedPermissions = tenantRoleRESTServiceAccess.
+            this.assignedPermissions = tenantRolePermissionRESTServiceAccess.
                     getPermissions(tenant.getId(), role.getId(), null);
             return assignedPermissions;
         } catch (Exception e) {
@@ -255,8 +257,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             this.lazyModel = new LazyTenantRoleUserDataModel(tenantRoleUserRESTServiceAccess,
                     userRESTServiceAccess);
         }
-        this.lazyModel.setTenantId(tenant != null ? tenant.getId() : null);
-        this.lazyModel.setRoleId(role != null ? role.getId() : null);
+        this.lazyModel.setTenantRoleId(tenantRole.getId());
     }
 
     /**
@@ -320,7 +321,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
             if (!tenantRoleRESTServiceAccess.exists(tenant.getId(), role.getId())) {
                 SystemTenantRole tr = TenantRoleFactory.create(tenant.getId(), role.getId(),
                         webAuthorizationChecker.getCurrentUserId());
-                tenantRoleRESTServiceAccess.save(tr);
+                tenantRoleRESTServiceAccess.create(tr);
             }
             TenantRoleUser tenantRoleUser = new TenantRoleUser();
             tenantRoleUser.setTenantRoleId(tenantRoleUtil.getTenantRoleId(tenant.getId(), role.getId()));
@@ -644,7 +645,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
     public List<SystemTenant> getTenants() {
         try {
             Page pagedInformation =
-                    tenantRESTServiceAccess.getAll(null, 1, 30, null, true);
+                    tenantRESTServiceAccess.getAll(null,null,null,null,null,null,null,null,null,null,null, 1, 30, null, true, true, true);
             return pagedInformation.getResults();
         }
         catch (Exception e) {
@@ -661,7 +662,7 @@ public class TenantRoleAssociationManager extends AbstractManager {
     @ActiveTenantMandatory
     public List<? extends SystemTenant> getTenantsFromCurrentUser() {
         try {
-            return this.tenantRoleRESTServiceAccess.getTenants(this.webAuthorizationChecker.
+            return this.tenantRoleUserRESTServiceAccess.getTenants(this.webAuthorizationChecker.
                     getCurrentUserId(), null);
         }
         catch(Exception e) {

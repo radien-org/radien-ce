@@ -1,0 +1,18 @@
+[
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "I18N", "actionName": "Create" },
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "I18N", "actionName": "Read" },
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "I18N", "actionName": "Update" },
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "I18N", "actionName": "Delete" },
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "DocumentTypeManagement", "actionName": "Create" },
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "DocumentTypeManagement", "actionName": "Read" },
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "DocumentTypeManagement", "actionName": "Update" },
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "DocumentTypeManagement", "actionName": "Delete" },
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "PropertyDefinitionManagement", "actionName": "Create" },
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "PropertyDefinitionManagement", "actionName": "Read" },
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "PropertyDefinitionManagement", "actionName": "Update" },
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "PropertyDefinitionManagement", "actionName": "Delete" },
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "MixinDefinitionManagement", "actionName": "Create" },
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "MixinDefinitionManagement", "actionName": "Read" },
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "MixinDefinitionManagement", "actionName": "Update" },
+  {"tenantName": "Root Tenant", "roleName":"System Administrator", "resourceName": "MixinDefinitionManagement", "actionName": "Delete" }
+]

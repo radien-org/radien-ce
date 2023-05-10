@@ -48,6 +48,10 @@
 		<pattern value="/module/users/userUnAssign" />
 		<view-id value="/module/users/userUnAssign.oaf" />
 	</url-mapping>
+	<url-mapping id="userEmailUpdate">
+		<pattern value="/module/users/userEmailUpdate" />
+		<view-id value="/module/users/userEmailUpdate.oaf" />
+	</url-mapping>
 
 	<!-- Rolesmanagement -->
 	<url-mapping id="roles">
@@ -96,16 +100,7 @@
 		<view-id value="/module/permission/resource.oaf" />
 	</url-mapping>
 
-	<!-- Contractsmanagement -->
-	<url-mapping id="contracts">
-		<pattern value="/module/contracts" />
-		<view-id value="/module/contracts/contracts.oaf" />
-	</url-mapping>
-	<url-mapping id="contract">
-		<pattern value="/module/contract" />
-		<view-id value="/module/contract/contract.oaf" />
-	</url-mapping>
-
+	<!-- Tenant Management -->
 	<url-mapping id="tenants">
 		<pattern value="/module/tenants" />
 		<view-id value="/module/tenants/tenants.oaf" />
@@ -119,24 +114,53 @@
 		<view-id value="/module/tenant/tenantDetails.oaf" />
 	</url-mapping>
 
-	<url-mapping id="content_public">
-		<pattern
-			value="/public/content/display/#{contentViewManager.viewId}" />
-		<view-id value="/public/content.oaf" />
+	<!-- Property Management -->
+	<url-mapping id="properties">
+		<pattern value="/module/properties" />
+		<view-id value="/module/i18n/propertyList.oaf" />
 	</url-mapping>
+	<url-mapping id="newProperty">
+		<pattern value="/module/property" />
+		<view-id value="/module/i18n/property.oaf" />
+	</url-mapping>
+
 	<url-mapping id="captcha">
 		<pattern value="/public/captcha" />
 		<view-id value="/captcha" />
 	</url-mapping>
-	<url-mapping id="index">
-		<pattern value="/public/#{index : contentViewManager.viewId}" />
-		<view-id value="/public/index.oaf" />
-	</url-mapping>
 
-	<url-mapping id="content">
-		<pattern
-			value="/module/content/display/#{contentViewManager.viewId}" />
-		<view-id value="/module/content.oaf" />
+<!-- DocTypeManagement service -->
+    <url-mapping id="propertyDefinitions">
+        <pattern value="/module/propertyDefinition" />
+        <view-id value="/module/doctypemanagement/propertydefinition/propertyDefinitions.oaf" />
+    </url-mapping>
+    <url-mapping id="propertyDefinitionCreate">
+        <pattern value="/module/propertyDefinition/create" />
+        <view-id value="/module/doctypemanagement/propertydefinition/propertyDefinitionCreate.oaf" />
+    </url-mapping>
+    <url-mapping id="propertyDefinitionEdit">
+        <pattern value="/module/propertyDefinition/edit" />
+        <view-id value="/module/doctypemanagement/propertydefinition/propertyDefinitionEdit.oaf" />
+    </url-mapping>
+    <url-mapping id="mixinDefinitions">
+        <pattern value="/module/mixinDefinition" />
+        <view-id value="/module/doctypemanagement/mixindefinition/mixinDefinitions.oaf" />
+    </url-mapping>
+    <url-mapping id="mixinDefinitionCreate">
+        <pattern value="/module/mixinDefinition/create" />
+        <view-id value="/module/doctypemanagement/mixindefinition/mixinDefinitionCreate.oaf" />
+    </url-mapping>
+    <url-mapping id="mixinDefinitionEdit">
+        <pattern value="/module/mixinDefinition/edit" />
+        <view-id value="/module/doctypemanagement/mixindefinition/mixinDefinitionEdit.oaf" />
+    </url-mapping>
+	<!-- Gamification Jobshop 2022-->
+	<url-mapping id="wheel">
+		<pattern value="/module/jobshop/wheel" />
+		<view-id value="/module/jobshop/wheel.oaf" />
 	</url-mapping>
-
+	<url-mapping id="wheel">
+		<pattern value="/module/jobshop/studentForm" />
+		<view-id value="/module/jobshop/studentForm.oaf" />
+	</url-mapping>
 </pretty-config>

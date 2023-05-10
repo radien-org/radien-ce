@@ -36,9 +36,8 @@ public interface MailServiceAccess extends ServiceAccess {
 	/**
 	 * Mail service send email message
 	 * @param mailMessage to be sent
-	 * @throws Exception in case of any issue while attempting sending the email
 	 */
-	void send(Mail mailMessage) throws Exception;
+	void send(Mail mailMessage);
 
 	/**
 	 * Send email asynchronous to receivers
@@ -71,6 +70,15 @@ public interface MailServiceAccess extends ServiceAccess {
 
 	/**
 	 * Mail service creation constructor
+	 * @param tO whom should the email be sent
+	 * @param template to be used
+	 * @return email object to be sent
+	 */
+	Mail create(String tO, SystemMailTemplate template);
+
+
+	/**
+	 * Mail service creation constructor
 	 * @param from should the email be sent
 	 * @param tO whom the email should be sent
 	 * @param subject of the email
@@ -78,7 +86,7 @@ public interface MailServiceAccess extends ServiceAccess {
 	 * @param contentType of the email
 	 * @return email object to be sent
 	 */
-	Mail create(String from, String tO, String subject, String body, MailContentType contentType);
+	Mail create(String from, String tO, String subject, String logoHtml, String body, MailContentType contentType);
 
 	/**
 	 * Mail service creation constructor
@@ -89,7 +97,7 @@ public interface MailServiceAccess extends ServiceAccess {
 	 * @param contentType of the email
 	 * @return email object to be sent
 	 */
-	Mail create(String from, List<String> tO, String subject, String body, MailContentType contentType);
+	Mail create(String from, List<String> tO, String subject, String logoHtml, String body, MailContentType contentType);
 
 	/**
 	 * Mail service creation constructor
@@ -103,6 +111,6 @@ public interface MailServiceAccess extends ServiceAccess {
 	 * @param bCC to be sent to
 	 * @return email object to be sent
 	 */
-	Mail create(String from, List<String> tO, String subject, String body, MailContentType contentType,
+	Mail create(String from, List<String> tO, String subject, String logoHtml, String body, MailContentType contentType,
 				Map<String, RemoteInputStream> attachments, List<String> cC, List<String> bCC);
 }

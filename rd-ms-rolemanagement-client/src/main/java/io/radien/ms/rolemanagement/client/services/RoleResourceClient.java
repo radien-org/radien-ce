@@ -17,6 +17,7 @@ package io.radien.ms.rolemanagement.client.services;
 
 import io.radien.ms.rolemanagement.client.entities.GlobalHeaders;
 import io.radien.ms.rolemanagement.client.entities.Role;
+import javax.ws.rs.PUT;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
 import javax.validation.constraints.NotNull;
@@ -102,26 +103,25 @@ public interface RoleResourceClient {
     public Response delete(@NotNull @PathParam("id") long id);
 
     /**
-     * Inserts the given role information, wither creates a new record or updated one already existent one, depending
-     * if the given role has an id or not.
+     * Inserts the given role information
      *
-     * @param role information to be update or created.
+     * @param role information to be created.
+     * @return 200 code message if success, 400 code message if there are duplicated fields that can not be,
+     * 500 code message if there is any error.
+     */
+    @POST
+    public Response create(Role role);
+
+    /**
+     * Updates the given role information
+     *
+     * @param role information to be update
      * @return 200 code message if success, 400 code message if there are duplicated fields that can not be,
      * 404 if role is not found, 500 code message if there is any error.
      */
-    @POST
-    public Response save(Role role);
-
-    /**
-     * Validates if specific requested role exists
-     * @param id to be searched
-     * @param name to be searched
-     * @return 200 status code message if it exists or 500 in case of any issue
-     */
-    @GET
-    @Path("/exists")
-    public Response exists(@QueryParam("id") Long id,
-                           @QueryParam("name") String name);
+    @PUT
+    @Path("/{id}")
+    public Response update(@NotNull @PathParam("id") long id, Role role);
 
     /**
      * Will calculate how many records are existent in the db
@@ -130,5 +130,4 @@ public interface RoleResourceClient {
     @GET
     @Path("/countRecords")
     public Response getTotalRecordsCount();
-
 }

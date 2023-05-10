@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>io.radien</groupId>
 		<artifactId>appframe</artifactId>
-	  	<version>rd-1.0.0-SNAPSHOT</version>
+	  	<version>rd-0.0.2-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -16,10 +16,12 @@
 	<url>http://www.radien.io</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<version.tomee-maven-plugin>8.0.6</version.tomee-maven-plugin>
+		<version.tomee-maven-plugin>8.0.9</version.tomee-maven-plugin>
+		<version.jackson-core>2.7.3</version.jackson-core>
+		<version.jackson-databind>2.7.3</version.jackson-databind>
 	</properties>
 	<build>
-		<finalName>rd-ms-ecm</finalName>
+		<finalName>cms</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -43,16 +45,6 @@
 				<artifactId>tomee-maven-plugin</artifactId>
 				<version>${version.tomee-maven-plugin}</version>
 			</plugin>
-
-			<!-- <plugin> <groupId>org.apache.openjpa</groupId> <artifactId>openjpa-maven-plugin</artifactId> 
-				<version>3.1.2</version> <executions> <execution> <id>enhancer</id> <phase>process-classes</phase> 
-				<goals> <goal>enhance</goal> </goals> </execution> </executions> <dependencies> 
-				<dependency> <groupId>org.apache.openjpa</groupId> <artifactId>openjpa</artifactId> 
-				<version>3.1.2</version> </dependency> </dependencies> <configuration> <includes>**/entities/*.class</includes> 
-				<excludes>**/entities/XML*.class</excludes> <addDefaultConstructor>true</addDefaultConstructor> 
-				<enforcePropertyRestrictions>true</enforcePropertyRestrictions> </configuration> 
-				</plugin> -->
-
 		</plugins>
 	</build>
 	<profiles>
@@ -101,7 +93,15 @@
 		<dependency>
 			<groupId>io.radien</groupId>
 			<artifactId>rd-aws-utils</artifactId>
-	  <version>${project.parent.version}</version>
+	  		<version>${project.parent.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-config-lib</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-openid</artifactId>
 		</dependency>
 		<!-- Microprofile -->
 		<dependency>
@@ -119,12 +119,15 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongo-java-driver</artifactId>
+		</dependency>
 		<!-- JCR -->
 		<!-- https://mvnrepository.com/artifact/javax.jcr/jcr -->
 		<dependency>
 			<groupId>javax.jcr</groupId>
 			<artifactId>jcr</artifactId>
-			<version>2.0</version>
 		</dependency>
 
 		<!-- jackrabbig oak -->
@@ -132,88 +135,31 @@
 		<dependency>
 			<groupId>org.apache.jackrabbit</groupId>
 			<artifactId>oak-core</artifactId>
-			<version>1.40.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.jackrabbit</groupId>
 			<artifactId>oak-jcr</artifactId>
-			<version>1.40.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.jackrabbit</groupId>
 			<artifactId>oak-run</artifactId>
-			<version>1.40.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.mongodb</groupId>
+					<artifactId>mongo-java-driver</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.jackrabbit</groupId>
 			<artifactId>oak-pojosr</artifactId>
-			<version>1.40.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.jackrabbit</groupId>
 			<artifactId>jackrabbit-jcr-commons</artifactId>
-			<version>2.12.1</version>
 			<scope>compile</scope>
 		</dependency>
 
-<!-- 
-		<dependency>
-			<groupId>org.apache.jackrabbit</groupId>
-			<artifactId>jackrabbit-jcr-server</artifactId>
-			<version>1.36</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.jackrabbit</groupId>
-			<artifactId>jackrabbit-jcr-servlet</artifactId>
-			<version>1.36</version>
-		</dependency>
-		
-		
-		<dependency>
-			<groupId>org.apache.jackrabbit</groupId>
-			<artifactId>jackrabbit-jcr-rmi</artifactId>
-			<version>${jackrabbit.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.jackrabbit</groupId>
-			<artifactId>oak-lucene</artifactId>
-			<version>${version.jackrabbit.oak}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.jackrabbit</groupId>
-			<artifactId>oak-store-composite</artifactId>
-			<version>${version.jackrabbit.oak}</version>
-		</dependency>
- -->
-		<!-- Mongo DB -->
-		<!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
-		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>mongo-java-driver</artifactId>
-			<version>3.12.7</version>
-		</dependency>
-		<!--JNoSQL Dependencies -->
-		<!-- https://mvnrepository.com/artifact/org.jnosql/jnosql-parent -->
-		<dependency>
-			<groupId>org.jnosql.diana</groupId>
-			<artifactId>diana-document</artifactId>
-			<version>0.0.9</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jnosql.diana</groupId>
-			<artifactId>mongodb-driver</artifactId>
-			<version>0.0.9</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jnosql.artemis</groupId>
-			<artifactId>artemis-configuration</artifactId>
-			<version>0.0.9</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jnosql.artemis</groupId>
-			<artifactId>artemis-document</artifactId>
-			<version>0.0.9</version>
-		</dependency>
 		<!-- Commons -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -224,42 +170,39 @@
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
 
-
-
-		<!-- -->
-		<!-- EVAL -->
 		<!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
-			<version>1.1.1</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.tika/tika-core -->
-		<dependency>
-			<groupId>org.apache.tika</groupId>
-			<artifactId>tika-core</artifactId>
-			<version>1.26</version>
 		</dependency>
 
-		<!-- -->
+		<!-- Test -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.johnzon</groupId>
-			<artifactId>johnzon-core</artifactId>
-			<version>1.2.9</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.tomee</groupId>
 			<artifactId>openejb-mockito</artifactId>
-			<version>8.0.6</version>
-			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.mockito</groupId>
+					<artifactId>mockito-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
-
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-inline</artifactId>
+			<version>${version.mockito.inline}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.geronimo.config</groupId>
+			<artifactId>geronimo-config-impl</artifactId>
+			<version>1.2.2</version>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- logging -->
 		<dependency>
@@ -277,11 +220,6 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.reflections</groupId>
-			<artifactId>reflections</artifactId>
-			<version>0.9.12</version>
 		</dependency>
 	</dependencies>
 </project>

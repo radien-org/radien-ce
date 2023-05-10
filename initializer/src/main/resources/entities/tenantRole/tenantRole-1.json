@@ -1,0 +1,4 @@
+[
+{"tenantName": "Client Tenant", "roleName":"System Administrator"},
+{"tenantName": "Sub Tenant", "roleName":"System Administrator"}
+]

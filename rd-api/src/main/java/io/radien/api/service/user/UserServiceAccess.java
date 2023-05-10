@@ -15,6 +15,8 @@
  */
 package io.radien.api.service.user;
 
+import io.radien.api.model.user.SystemPagedUserSearchFilter;
+import io.radien.exception.SystemException;
 import java.util.Collection;
 import java.util.List;
 
@@ -46,7 +48,7 @@ public interface UserServiceAccess extends ServiceAccess {
      * @return the user object
      * @throws UserNotFoundException in case no user is found with the given id
      */
-    public SystemUser get(Long userId) throws UserNotFoundException;
+    public SystemUser get(Long userId);
 
     /**
      * Requests a list of users based on a list of user id's
@@ -64,15 +66,22 @@ public interface UserServiceAccess extends ServiceAccess {
      * @param isAscending if in case of true the records will come in ascending sorted
      * @return a page of requested users
      */
-    public Page<SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
+    public Page<SystemUser> getAll(SystemPagedUserSearchFilter filter, int pageNo, int pageSize, List<String> sortBy, boolean isAscending);
 
     /**
-     * Saves/Updates the requested information into the db
-     * @param user information to be stored
-     * @throws UserNotFoundException in case of update and the user is not found
-     * @throws UniquenessConstraintException in case of save and the record already exists or has duplicated fields
+     * CREATE a User association
+     * @param user information to be created
+     * @throws UniquenessConstraintException in case of duplicated fields or records
      */
-    public void save(SystemUser user) throws UserNotFoundException, UniquenessConstraintException;
+    void create(SystemUser user) throws UniquenessConstraintException;
+
+    /**
+     * UPDATE a User association
+     * @param user to be updated
+     * @throws UniquenessConstraintException in case of duplicated fields or records
+     * @throws UserNotFoundException in case of not existing a User for an id
+     */
+    void update(SystemUser user) throws UniquenessConstraintException, SystemException;
 
     /**
      * Deletes a requested user based on the received id
@@ -106,4 +115,5 @@ public interface UserServiceAccess extends ServiceAccess {
      */
     public BatchSummary create(List<? extends SystemUser> users);
 
+    Long count();
 }

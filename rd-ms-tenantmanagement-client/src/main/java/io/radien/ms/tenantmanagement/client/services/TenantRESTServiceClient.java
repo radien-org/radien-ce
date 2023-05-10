@@ -18,19 +18,24 @@ package io.radien.ms.tenantmanagement.client.services;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
+import io.radien.api.model.tenant.SystemPagedTenantSearchFilter;
 import io.radien.api.model.tenant.SystemTenant;
+import io.radien.api.model.tenant.SystemTenantType;
 import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.InternalServerErrorException;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
-import io.radien.ms.tenantmanagement.client.exceptions.InternalServerErrorException;
+import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.ms.tenantmanagement.client.util.ClientServiceUtil;
 import io.radien.ms.tenantmanagement.client.util.TenantModelMapper;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import javax.enterprise.context.RequestScoped;
@@ -183,17 +188,19 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     @Override
-    public Page<? extends SystemTenant> getAll(String search,
-                                               int pageNo,
-                                               int pageSize,
-                                               List<String> sortBy,
-                                               boolean isAscending) throws SystemException {
+    public Page<? extends SystemTenant> getAll(Collection<Long> ids, String name, String tenantKey, SystemTenantType tenantType,
+                                               String clientAddress, String clientZipCode, String clientCity,
+                                               String clientCountry, String clientPhoneNumber, String clientEmail,
+                                               Long parentId, int pageNo, int pageSize, List<String> sortBy, boolean isAscending,
+                                               boolean isExact, boolean isLogicalConjunction) throws SystemException {
         try {
-            return getTenantPage(search, pageNo, pageSize, sortBy, isAscending);
+            return getTenantPage(ids, name, tenantKey, tenantType, clientAddress, clientZipCode, clientCity, clientCountry, clientPhoneNumber,
+                    clientEmail, parentId, pageNo, pageSize, sortBy, isAscending, isExact, isLogicalConjunction);
         } catch (TokenExpiredException expiredException) {
             refreshToken();
             try{
-                return getTenantPage(search, pageNo, pageSize, sortBy, isAscending);
+                return getTenantPage(ids, name, tenantKey, tenantType, clientAddress, clientZipCode, clientCity, clientCountry, clientPhoneNumber,
+                        clientEmail, parentId, pageNo, pageSize, sortBy, isAscending, isExact, isLogicalConjunction);
             } catch (TokenExpiredException expiredException1){
                 throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
             }
@@ -210,10 +217,15 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
      * @return a page of system tenants.
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
-    private Page<Tenant> getTenantPage(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws SystemException {
+    private Page<Tenant> getTenantPage(Collection<Long> ids, String name, String tenantKey, SystemTenantType tenantType,
+                                       String clientAddress, String clientZipCode, String clientCity,
+                                       String clientCountry, String clientPhoneNumber, String clientEmail,
+                                       Long parentId, int pageNo, int pageSize, List<String> sortBy, boolean isAscending,
+                                       boolean isExact, boolean isLogicalConjunction) throws SystemException {
         try {
             TenantResourceClient client = clientServiceUtil.getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-            Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
+            Response response = client.getAll(ids, name, tenantKey, (TenantType) tenantType, clientAddress, clientZipCode, clientCity, clientCountry,
+                    clientPhoneNumber, clientEmail, parentId, pageNo, pageSize, sortBy, isAscending, isExact, isLogicalConjunction);
             return TenantModelMapper.mapToPage((InputStream) response.getEntity());
         } catch (ExtensionException | ProcessingException | MalformedURLException e){
             throw new SystemException(e);
@@ -412,16 +424,7 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
      */
     @Override
     public boolean isTenantExistent(Long tenantId) throws SystemException {
-        try {
-            return isTenantExistentRequester(tenantId);
-        } catch (TokenExpiredException expiredException) {
-            refreshToken();
-            try{
-                return isTenantExistentRequester(tenantId);
-            } catch (TokenExpiredException expiredException1){
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(this::isTenantExistentRequester, tenantId);
     }
 
     /**
@@ -431,23 +434,32 @@ public class TenantRESTServiceClient extends AuthorizationChecker implements Ten
      * @throws SystemException in case it founds multiple actions or if URL is malformed
      */
     private boolean isTenantExistentRequester(Long tenantId) throws SystemException {
-        TenantResourceClient client;
-        try {
-            client = clientServiceUtil.
-                    getTenantResourceClient(oafAccess.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
-        } catch(MalformedURLException e) {
-            throw new SystemException(e.getMessage());
+        TenantResourceClient client = getTenantResourceClient();
+        try (Response response = client.exists(tenantId)){
+            return response.getStatusInfo().getStatusCode() == Response.Status.NO_CONTENT.getStatusCode();
         }
-
-        try {
-            Response response = client.exists(tenantId);
-            if(response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
-                return response.readEntity(Boolean.class);
+        catch (NotFoundException nf) {
+            if (log.isDebugEnabled()) {
+                log.debug("Tenant not found for id {}", tenantId);
             }
-        } catch(ProcessingException e) {
+            return false;
+        }
+        catch(ProcessingException | InternalServerErrorException e) {
             throw new SystemException(e.getMessage());
         }
-        return false;
     }
 
+    /**
+     * Programmatically (via RestClientBuilder) creates an instance of a Tenant Rest Client
+     * @return Instance of {@link TenantResourceClient} (Rest client)
+     * @throws SystemException in case of any issue regarding url
+     */
+    private TenantResourceClient getTenantResourceClient() throws SystemException {
+        try {
+            return clientServiceUtil.getTenantResourceClient(oafAccess.getProperty
+                    (OAFProperties.SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT));
+        } catch (MalformedURLException m) {
+            throw new SystemException(m);
+        }
+    }
 }

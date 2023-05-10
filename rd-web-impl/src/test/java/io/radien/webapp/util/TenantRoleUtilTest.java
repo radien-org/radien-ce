@@ -18,15 +18,14 @@ package io.radien.webapp.util;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
-import io.radien.exception.TenantRoleIllegalArgumentException;
+import io.radien.api.model.tenantrole.exception.TenantRoleIllegalArgumentException;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.powermock.modules.junit4.PowerMockRunner;
+
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -35,7 +34,6 @@ import static org.mockito.Mockito.when;
  * Class that aggregates UnitTest cases for {@link TenantRoleUtil} manager
  * @author Newton Carvalho
  */
-@RunWith(PowerMockRunner.class)
 public class TenantRoleUtilTest {
 
     @InjectMocks

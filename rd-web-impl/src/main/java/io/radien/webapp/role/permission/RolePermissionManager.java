@@ -84,7 +84,7 @@ public class RolePermissionManager extends AbstractManager implements Serializab
      * @param rowToggleSystemRole SystemRole object
      * @throws SystemException if any error
      */
-    public void onRowExpand(ToggleEvent rowToggleSystemRole) throws SystemException {
+    public void onRowExpand(ToggleEvent rowToggleSystemRole) {
         try{
             systemRole = (SystemRole) rowToggleSystemRole.getData();
             if(systemRole != null){
@@ -102,13 +102,13 @@ public class RolePermissionManager extends AbstractManager implements Serializab
      * that corresponds to the active user tenant
      * @throws SystemException is thrown when error occurs
      */
-    public void loadRolePermissions(SystemRole systemRole) throws SystemException {
+    public void loadRolePermissions(SystemRole systemRole) {
         if (getSystemActiveTenant() == null) {
             handleMessage(FacesMessage.SEVERITY_ERROR, JSFUtil.getMessage(DataModelEnum.TRP_NO_ACTIVE_TENANT.getValue()));
             return;
         }
         try{
-            systemPermissionsIdsList = tenantRoleRESTServiceAccess.getPermissions(
+            systemPermissionsIdsList = tenantRolePermissionRESTServiceAccess.getPermissions(
                     getSystemActiveTenant().getTenantId(), systemRole.getId(), null).stream().
                     map(SystemPermission::getId).collect(Collectors.toList());
 
@@ -188,7 +188,7 @@ public class RolePermissionManager extends AbstractManager implements Serializab
                     if (!tenantRoleRESTServiceAccess.exists(getSystemActiveTenant().getTenantId(), systemRole.getId())) {
                         SystemTenantRole str = TenantRoleFactory.create(getSystemActiveTenant().getTenantId(),
                                 systemRole.getId(), getSystemActiveTenant().getUserId());
-                        tenantRoleRESTServiceAccess.save(str);
+                        tenantRoleRESTServiceAccess.create(str);
                     }
                     TenantRolePermission tenantRolePermission = new TenantRolePermission();
                     tenantRolePermission.setTenantRoleId(tenantRoleUtil.getTenantRoleId(getSystemActiveTenant().getTenantId(),

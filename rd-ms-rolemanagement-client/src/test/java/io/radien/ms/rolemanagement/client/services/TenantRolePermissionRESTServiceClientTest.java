@@ -18,19 +18,28 @@ package io.radien.ms.rolemanagement.client.services;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
+import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.model.tenantrole.SystemTenantRolePermission;
 import io.radien.api.security.TokensPlaceHolder;
+import io.radien.api.util.FactoryUtilService;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.UserClient;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.rolemanagement.client.entities.TenantRolePermission;
-import io.radien.ms.rolemanagement.client.exception.InternalServerErrorException;
+import io.radien.exception.InternalServerErrorException;
 import io.radien.ms.rolemanagement.client.util.ClientServiceUtil;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.util.List;
+import java.util.Optional;
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonWriter;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 import org.junit.Before;
@@ -308,7 +317,7 @@ public class TenantRolePermissionRESTServiceClientTest {
      * @throws SystemException in case of any communication issue
      */
     @Test
-    public void testGetPermissions() throws MalformedURLException, SystemException{
+    public void testGetAll() throws MalformedURLException, SystemException{
         String results = "[{\"id\": 1, \"tenantRoleId\": 2, \"permissionId\":3}, " +
                 "{\"id\": 1, \"tenantRoleId\": 2, \"permissionId\": 4}, " +
                 "{\"id\": 1, \"tenantRoleId\": 2, \"permissionId\": 10}]";
@@ -320,11 +329,11 @@ public class TenantRolePermissionRESTServiceClientTest {
         Response response = Response.ok(is).build();
         TenantRolePermissionResourceClient client = Mockito.mock(TenantRolePermissionResourceClient.class);
 
-        when(client.getAll(2L, 3L, 1, 3)).thenReturn(response);
+        when(client.getAll(2L, 3L, 1, 3, null, false)).thenReturn(response);
         when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).
                 thenReturn(client);
 
-        Page<? extends SystemTenantRolePermission> result = target.getPermissions(2L, 3L, 1, 3);
+        Page<? extends SystemTenantRolePermission> result = target.getAll(2L, 3L, 1, 3, null, false);
         assertNotNull(result);
         assertEquals(1, result.getTotalPages());
         assertEquals(3,result.getResults().size());
@@ -337,12 +346,12 @@ public class TenantRolePermissionRESTServiceClientTest {
      * @throws SystemException in case of any communication issue
      */
     @Test(expected = SystemException.class)
-    public void testGetPermissionsTokenExpiration() throws MalformedURLException, SystemException {
+    public void testGetAllTokenExpiration() throws MalformedURLException, SystemException {
         TenantRolePermissionResourceClient client = Mockito.mock(TenantRolePermissionResourceClient.class);
 
         // Simulates JWT expire even on the reattempt
         when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.getAll(33L, 44L, 1, 2)).
+        when(client.getAll(33L, 44L, 1, 2, null, false)).
                 thenThrow(new TokenExpiredException("test")).
                 thenThrow(new TokenExpiredException("test"));
 
@@ -350,7 +359,7 @@ public class TenantRolePermissionRESTServiceClientTest {
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
-        target.getPermissions(33L, 44L, 1, 2);
+        target.getAll(33L, 44L, 1, 2, null, false);
     }
 
     /**
@@ -361,16 +370,380 @@ public class TenantRolePermissionRESTServiceClientTest {
      * @throws SystemException in case of any communication issue
      */
     @Test(expected = SystemException.class)
-    public void testGetPermissionsException() throws MalformedURLException, SystemException {
+    public void testGetAllException() throws MalformedURLException, SystemException {
         TenantRolePermissionResourceClient client = Mockito.mock(TenantRolePermissionResourceClient.class);
 
         when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).thenReturn(client);
-        when(client.getAll(33L, 44L, 1, 2)).thenThrow(new InternalServerErrorException("test"));
+        when(client.getAll(33L, 44L, 1, 2, null, false)).thenThrow(new InternalServerErrorException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
         when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
 
-        target.getPermissions(33L, 44L, 1, 2);
+        target.getAll(33L, 44L, 1, 2, null, false);
     }
+
+    /**
+     * Test for method that retrieves TenantRolePermission associations
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testGetTenantRolePermissions() throws MalformedURLException, SystemException{
+        String results = "[{\"id\": 1, \"tenantRoleId\": 2, \"permissionId\":3}, " +
+                "{\"id\": 1, \"tenantRoleId\": 2, \"permissionId\": 4}, " +
+                "{\"id\": 1, \"tenantRoleId\": 2, \"permissionId\": 10}]";
+
+        InputStream is = new ByteArrayInputStream(results.getBytes());
+        Response response = Response.ok(is).build();
+        TenantRolePermissionResourceClient client = Mockito.mock(TenantRolePermissionResourceClient.class);
+
+        when(client.getSpecific(2L, 3L, false)).thenReturn(response);
+        when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).
+                thenReturn(client);
+
+        List<? extends SystemTenantRolePermission> result = target.getTenantRolePermissions(
+                2L, 3L, false);
+        assertNotNull(result);
+        assertEquals(3, result.size());
+    }
+
+    /**
+     * Test for method that retrieves TenantRolePermission associations,
+     * but taking in consideration a scenario where JasonWeb token expires
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetTenantRolePermissionsTokenExpiration() throws MalformedURLException, SystemException {
+        TenantRolePermissionResourceClient client = Mockito.mock(TenantRolePermissionResourceClient.class);
+
+        // Simulates JWT expire even on the reattempt
+        when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(client.getSpecific(33L, 44L, false)).
+                thenThrow(new TokenExpiredException("test")).
+                thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getTenantRolePermissions(33L, 44L, false);
+    }
+
+    /**
+     * Test for method that retrieves TenantRolePermission associations,
+     * but taking in consideration a scenario where error occurs in the middle of processing
+     * (Backend error)
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetTenantRolePermissionsException() throws MalformedURLException, SystemException {
+        TenantRolePermissionResourceClient client = Mockito.mock(TenantRolePermissionResourceClient.class);
+
+        when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(client.getSpecific(33L, 44L, false)).
+                thenThrow(new InternalServerErrorException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getTenantRolePermissions(33L, 44L, false);
+    }
+
+    /**
+     * Test for method that retrieves TenantRolePermission associations,
+     * but taking in consideration a scenario where error occurs in the middle of processing
+     * (Backend error)
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetTenantRolePermissionsMalformedURLException() throws MalformedURLException, SystemException {
+        when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).
+                thenThrow(new MalformedURLException("invalid url"));
+        target.getTenantRolePermissions(33L, 44L, false);
+    }
+
+    /**
+     * Test the updating of a TenantRolePermission but with token expiration
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testUpdateTenantRolePermissionTokenExpiration() throws MalformedURLException, SystemException {
+        TenantRolePermissionResourceClient client = Mockito.mock(TenantRolePermissionResourceClient.class);
+
+        long id = 1L;
+        TenantRolePermission tenantRolePermission = mock(TenantRolePermission.class);
+        when(tenantRolePermission.getId()).thenReturn(id);
+        when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(client.update(id, tenantRolePermission)).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.update(tenantRolePermission);
+    }
+
+    /**
+     * Test the updating of a TenantRolePermission but with exception to be throw
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testUpdateTenantRolePermissionWithException() throws MalformedURLException, SystemException {
+        TenantRolePermissionResourceClient client = Mockito.mock(TenantRolePermissionResourceClient.class);
+
+        TenantRolePermission tenantRolePermission = mock(TenantRolePermission.class);
+        when(tenantRolePermission.getId()).thenReturn(1L);
+        when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(client.update(tenantRolePermission.getId(), tenantRolePermission)).thenThrow(new ProcessingException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.update(tenantRolePermission);
+    }
+
+    /**
+     * Test the updating for a previously created TenantRolePermission
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testUpdateTenantRolePermission() throws MalformedURLException, SystemException {
+        TenantRolePermissionResourceClient client = Mockito.mock(TenantRolePermissionResourceClient.class);
+        TenantRolePermission tenantRolePermission = mock(TenantRolePermission.class);
+        long id = 1L;
+        when(tenantRolePermission.getId()).thenReturn(id);
+        when(client.update(id, tenantRolePermission)).
+                thenReturn(Response.ok().build()).
+                thenReturn(Response.status(300).build());
+
+        when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).
+                thenReturn(client);
+
+        Boolean result = target.update(tenantRolePermission);
+        assertNotNull(result);
+        assertTrue(result);
+
+        result = target.update(tenantRolePermission);
+        assertNotNull(result);
+        assertFalse(result);
+    }
+
+
+    /**
+     * Test the get tenant role permission by a given specific id
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testGetTenantRolePermissionById() throws MalformedURLException, SystemException {
+
+        SystemTenantRolePermission trp = new TenantRolePermission();
+        trp.setId(1L); trp.setTenantRoleId(2L); trp.setPermissionId(3L);
+
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        FactoryUtilService.addValueLong(builder, "id", trp.getId());
+        FactoryUtilService.addValueLong(builder, "tenantRoleId", trp.getTenantRoleId());
+        FactoryUtilService.addValueLong(builder, "permissionId", trp.getPermissionId());
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(stream);
+        jsonWriter.writeObject(builder.build());
+        jsonWriter.close();
+
+        InputStream is = new ByteArrayInputStream(stream.toByteArray());
+        Response response = Response.ok(is).build();
+        TenantRolePermissionResourceClient client = Mockito.mock(TenantRolePermissionResourceClient.class);
+
+        long tenantRolePermissionId = 1L;
+        when(client.getById(tenantRolePermissionId)).thenReturn(response);
+        when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).
+                thenReturn(client);
+
+        Optional<SystemTenantRolePermission> result = target.
+                getTenantRolePermissionById(tenantRolePermissionId);
+
+        assertNotNull(result);
+        assertTrue(result.isPresent());
+        assertEquals(result.get().getId(), trp.getId());
+    }
+
+    /**
+     * Test the get association of a tenant role permission by id but this time with status not ok
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testGetTenantRolePermissionByIdWithStatusNeqOK() throws MalformedURLException, SystemException {
+
+        Response response = Response.status(300).build();
+        TenantRolePermissionResourceClient client = mock(TenantRolePermissionResourceClient.class);
+
+        long tenantRolePermissionId = 1l;
+
+        when(client.getById(tenantRolePermissionId)).thenReturn(response);
+        when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).
+                thenReturn(client);
+
+        Optional<SystemTenantRolePermission> result = target.
+                getTenantRolePermissionById(tenantRolePermissionId);
+
+        assertNotNull(result);
+        assertFalse(result.isPresent());
+    }
+
+    /**
+     * Test the get association of a tenant role permission by id but this time with
+     * explicit status NOT FOUND
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testGetTenantRolePermissionNotFound() throws MalformedURLException, SystemException {
+
+        TenantRolePermissionResourceClient client = mock(TenantRolePermissionResourceClient.class);
+
+        long tenantRolePermissionId = 1l;
+
+        when(client.getById(tenantRolePermissionId)).thenThrow(new NotFoundException());
+        when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).
+                thenReturn(client);
+
+        Optional<SystemTenantRolePermission> result = target.
+                getTenantRolePermissionById(tenantRolePermissionId);
+
+        assertNotNull(result);
+        assertFalse(result.isPresent());
+    }
+
+    /**
+     * Test the get tenant role permission by id but with token expiration
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetTenantRolePermissionByIdTokenExpiration() throws MalformedURLException, SystemException {
+        TenantRolePermissionResourceClient client = Mockito.mock(TenantRolePermissionResourceClient.class);
+
+        when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(client.getById(1L)).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getTenantRolePermissionById(1L);
+    }
+
+    /**
+     * Test the behaviour of getting the tenant role permission by id but with exception
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetTenantRoleByIdException() throws MalformedURLException, SystemException {
+        TenantRolePermissionResourceClient client = mock(TenantRolePermissionResourceClient.class);
+
+        when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(client.getById(1L)).thenThrow(new ProcessingException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getTenantRolePermissionById(1L);
+    }
+
+    /**
+     * Test to get permission for tenant Role associations
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testGetAssignedPermissions() throws MalformedURLException, SystemException {
+
+        String jsonArray = "[{\"id\": 1}, {\"id\": 2}]";
+        InputStream is = new ByteArrayInputStream(jsonArray.getBytes());
+        Response response = Response.ok(is).build();
+        TenantRolePermissionResourceClient client = Mockito.mock(TenantRolePermissionResourceClient.class);
+
+        when(client.getPermissions(1L, 2L, 3L)).thenReturn(response);
+        when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).
+                thenReturn(client);
+
+        List<? extends SystemPermission> result = target.getPermissions(1L, 2L, 3L);
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+    }
+
+    /**
+     * Test to get permission for tenant Role associations but with token expired
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetAssignedPermissionsTokenExpiration() throws MalformedURLException, SystemException {
+        TenantRolePermissionResourceClient client = Mockito.mock(TenantRolePermissionResourceClient.class);
+
+        when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(client.getPermissions(1L, 2L, 3L)).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getPermissions(1L, 2L, 3L);
+    }
+
+    /**
+     * Test to get permission for tenant Role associations but after token expiration (Retry schema)
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test
+    public void testGetAssignedPermissionsAfterTokenExpiration() throws MalformedURLException, SystemException {
+        TenantRolePermissionResourceClient client = Mockito.mock(TenantRolePermissionResourceClient.class);
+
+        String jsonArray = "[{\"id\": 1}, {\"id\": 2}]";
+        InputStream is = new ByteArrayInputStream(jsonArray.getBytes());
+        Response response = Response.ok(is).build();
+
+        when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(client.getPermissions(1L, 2L, 3L)).thenThrow(new TokenExpiredException("test")).
+                thenReturn(response);
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        assertNotNull(target.getPermissions(1L, 2L, 3L));
+    }
+
+    /**
+     * Test to get permission for tenant Role associations  but with exception being throw
+     * @throws MalformedURLException for url informed incorrectly
+     * @throws SystemException in case of any communication issue
+     */
+    @Test(expected = SystemException.class)
+    public void testGetAssignedPermissionsException() throws MalformedURLException, SystemException {
+        TenantRolePermissionResourceClient client = Mockito.mock(TenantRolePermissionResourceClient.class);
+
+        when(roleServiceUtil.getTenantRolePermissionResourceClient(getRoleManagementUrl())).thenReturn(client);
+        when(client.getPermissions(1L, 2L, 3L)).thenThrow(new ProcessingException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+        target.getPermissions(1L, 2L, 3L);
+    }
+
 }

@@ -19,7 +19,6 @@ import org.junit.Test;
 
 import java.util.Date;
 
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
@@ -104,6 +103,17 @@ public class PrincipalTest {
     public void setUserEmail() {
         principal.setUserEmail("testEmailSetter@testEmailSetter.pt");
         assertEquals("testEmailSetter@testEmailSetter.pt", principal.getUserEmail());
+    }
+
+    @Test
+    public void getMobileNumber(){
+        principal.setMobileNumber("+351111111111");
+        assertEquals("+351111111111", principal.getMobileNumber());}
+
+    @Test
+    public void setMobileNumber() {
+        principal.setMobileNumber("+351111111111");
+        assertEquals("+351111111111", principal.getMobileNumber());
     }
 
     @Test

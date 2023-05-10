@@ -69,7 +69,7 @@ public class LazyTenantDataModelTest {
     @Test
     public void testGetData() throws SystemException {
         doReturn(new Page<SystemTenant>(systemTenants, 1, 1, 1))
-                .when(service).getAll(null,1, 1, null, true);
+                .when(service).getAll(null,null,null,null,null,null,null,null,null,null,null,1, 1, null, true, true, true);
 
         assertNull(lazyTenantDataModel.getData(0, 1, sortBy, filterBy));
     }

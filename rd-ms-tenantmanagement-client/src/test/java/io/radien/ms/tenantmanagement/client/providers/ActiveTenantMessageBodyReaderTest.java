@@ -66,15 +66,19 @@ public class ActiveTenantMessageBodyReaderTest extends TestCase {
     public void testReadFromException() {
         String result = "{\"" +
                 "id\":null," +
-                "\"userId\": 2," +
-                "\"tenantId\": 2," +
-                "\"tenantName\": \"test\"," +
+                "\"createUser\":\"null\"," +
+                "\"tenantName\": test," +
                 "\"isTenantActive\": true" +
                 "}";
-        ActiveTenantMessageBodyReader target = new ActiveTenantMessageBodyReader();
-        InputStream in = new ByteArrayInputStream(result.getBytes());
+        boolean success = false;
+        try {
+            ActiveTenantMessageBodyReader target = new ActiveTenantMessageBodyReader();
+            InputStream in = new ByteArrayInputStream(result.getBytes());
 
-        ActiveTenant activeTenant = target.readFrom(null,null,null,null,null, in);
-        assertNotNull(activeTenant);
+            ActiveTenant activeTenant = target.readFrom(null, null, null, null, null, in);
+        } catch (Exception e){
+            success = true;
+        }
+        assertTrue(success);
     }
 }

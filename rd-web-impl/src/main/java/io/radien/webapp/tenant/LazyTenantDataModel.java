@@ -40,7 +40,7 @@ public class LazyTenantDataModel extends LazyAbstractDataModel<SystemTenant> {
 
     @Override
     public Page<? extends SystemTenant> getData(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) throws SystemException {
-        return service.getAll(null,(offset/pageSize) + 1, pageSize, null, false);
+        return service.getAll(null,null,null,null,null,null,null,null,null,null,null,(offset/pageSize) + 1, pageSize, null, false, true, true);
     }
 
 }

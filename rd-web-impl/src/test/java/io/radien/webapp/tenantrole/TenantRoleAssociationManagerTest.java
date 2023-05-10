@@ -48,16 +48,21 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.Flash;
+
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.primefaces.event.SelectEvent;
 
 import static org.junit.Assert.assertEquals;
@@ -79,8 +84,6 @@ import static org.mockito.Mockito.when;
  * Class that aggregates UnitTest cases for TenantRoleAssociationManager
  * @author Newton Carvalho
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class})
 public class TenantRoleAssociationManagerTest {
 
     @InjectMocks
@@ -115,15 +118,32 @@ public class TenantRoleAssociationManagerTest {
 
     private FacesContext facesContext;
 
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
+    private static MockedStatic<FacesContext> facesContextMockedStatic;
+    private static MockedStatic<JSFUtil> jsfUtilMockedStatic;
+
+    @BeforeClass
+    public static void beforeClass(){
+        facesContextMockedStatic = Mockito.mockStatic(FacesContext.class);
+        jsfUtilMockedStatic = Mockito.mockStatic(JSFUtil.class);
+    }
+    @AfterClass
+    public static final void destroy(){
+        if(facesContextMockedStatic!=null) {
+            facesContextMockedStatic.close();
+        }
+        if(jsfUtilMockedStatic!=null) {
+            jsfUtilMockedStatic.close();
+        }
+    }
     /**
      * Method variables preparation
      */
     @Before
     public void before(){
-        MockitoAnnotations.initMocks(this);
-
-        PowerMockito.mockStatic(FacesContext.class);
-        PowerMockito.mockStatic(JSFUtil.class);
 
         facesContext = mock(FacesContext.class);
         when(FacesContext.getCurrentInstance()).thenReturn(facesContext);
@@ -156,7 +176,7 @@ public class TenantRoleAssociationManagerTest {
 
         doReturn(Boolean.FALSE).when(tenantRoleRESTServiceAccess).
                 exists(tenant.getId(), role.getId());
-        doReturn(Boolean.TRUE).when(tenantRoleRESTServiceAccess).save(any());
+        doReturn(Boolean.TRUE).when(tenantRoleRESTServiceAccess).create(any());
 
         when(tenantRoleRESTServiceAccess.getIdByTenantRole(
                 tenantRoleAssociationManager.getTenant().getId(),
@@ -206,6 +226,42 @@ public class TenantRoleAssociationManagerTest {
         assertEquals(tenantRoleAssociationManager.getTabIndex(), new Long(0L));
     }
 
+
+    /**
+     * Test for method associateTenantRole
+     * This method crates the first association predicted in the graph (The association
+     * between a Tenant and a Role). If the process finishes successfully
+     * is expected a rd_save_success FacesMessage.
+     */
+    @Test
+    public void testAssociateTenantRoleUpdateCase() throws Exception {
+        SystemTenant tenant = new Tenant(); tenant.setId(1L);
+        SystemRole role = new Role(); role.setId(2L);
+        SystemTenantRole tenantRole = new TenantRole();
+        tenantRole.setId(11111L);
+
+        tenantRoleAssociationManager.setRole(role);
+        tenantRoleAssociationManager.setTenant(tenant);
+        tenantRoleAssociationManager.setTenantRole(tenantRole);
+
+        when(tenantRoleRESTServiceAccess.getIdByTenantRole(
+                tenantRoleAssociationManager.getTenant().getId(),
+                tenantRoleAssociationManager.getRole().getId())).
+                thenReturn(Optional.of(1L));
+        tenantRoleAssociationManager.setTenantRoleUtil(tenantRoleUtil);
+        tenantRoleAssociationManager.associateTenantRole();
+
+        assertTrue(tenantRoleAssociationManager.isExistsTenantRoleCreated());
+
+        ArgumentCaptor<FacesMessage> facesMessageCaptor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(nullable(String.class), facesMessageCaptor.capture());
+
+        FacesMessage captured = facesMessageCaptor.getValue();
+        assertEquals(FacesMessage.SEVERITY_INFO, captured.getSeverity());
+        assertEquals(DataModelEnum.SAVE_SUCCESS_MESSAGE.getValue(), captured.getSummary());
+        assertEquals(tenantRoleAssociationManager.getTabIndex(), new Long(0L));
+    }
+
     /**
      * Test for method associateTenantRole, but for this case
      * an exception occurs during the saving process of
@@ -216,7 +272,7 @@ public class TenantRoleAssociationManagerTest {
         tenantRoleAssociationManager.setRole(new Role());
         tenantRoleAssociationManager.setTenant(new Tenant());
         tenantRoleAssociationManager.setTenantRole(new TenantRole());
-        when(tenantRoleRESTServiceAccess.save(any(TenantRole.class))).
+        when(tenantRoleRESTServiceAccess.create(any(TenantRole.class))).
                     thenThrow(new RuntimeException("Error during save process"));
         tenantRoleAssociationManager.associateTenantRole();
 
@@ -246,7 +302,7 @@ public class TenantRoleAssociationManagerTest {
         doThrow(new RuntimeException("Error checking exists")).when(tenantRoleRESTServiceAccess).
                 exists(tenant.getId(), role.getId());
 
-        doReturn(Boolean.TRUE).when(tenantRoleRESTServiceAccess).save(any());
+        doReturn(Boolean.TRUE).when(tenantRoleRESTServiceAccess).create(any());
         doReturn(Boolean.TRUE).when(tenantRoleUserRESTServiceAccess).assignUser(any());
 
         String urlMapping = tenantRoleAssociationManager.associateUser(userId);
@@ -396,13 +452,13 @@ public class TenantRoleAssociationManagerTest {
         Long currentUserId = 1L;
         List<SystemTenant> expectedTenants = new ArrayList<>();
 
-        SystemTenant tenant = new Tenant(); tenant.setId(1L); tenant.setTenantType(TenantType.ROOT_TENANT);
+        SystemTenant tenant = new Tenant(); tenant.setId(1L); tenant.setTenantType(TenantType.ROOT);
         expectedTenants.add(tenant);
-        tenant = new Tenant(); tenant.setId(2L); tenant.setTenantType(TenantType.CLIENT_TENANT);
+        tenant = new Tenant(); tenant.setId(2L); tenant.setTenantType(TenantType.CLIENT);
         expectedTenants.add(tenant);
 
         doReturn(currentUserId).when(this.webAuthorizationChecker).getCurrentUserId();
-        doReturn(expectedTenants).when(this.tenantRoleRESTServiceAccess).getTenants(currentUserId, null);
+        doReturn(expectedTenants).when(this.tenantRoleUserRESTServiceAccess).getTenants(currentUserId, null);
 
         List<? extends SystemTenant> outcome = this.tenantRoleAssociationManager.getTenantsFromCurrentUser();
         assertEquals(expectedTenants, outcome);
@@ -420,7 +476,7 @@ public class TenantRoleAssociationManagerTest {
                 doReturn(currentUserId).when(this.webAuthorizationChecker).getCurrentUserId();
 
         doThrow(new SystemException("error retrieving tenant")).
-                when(this.tenantRoleRESTServiceAccess).getTenants(currentUserId, null);
+                when(this.tenantRoleUserRESTServiceAccess).getTenants(currentUserId, null);
 
         List<? extends SystemTenant> outcome = this.tenantRoleAssociationManager.getTenantsFromCurrentUser();
         assertNotNull(outcome);
@@ -487,7 +543,7 @@ public class TenantRoleAssociationManagerTest {
                 thenReturn(Optional.of(expectedRole));
         when(tenantRESTServiceAccess.getTenantById(tenantRoleToBeEdited.getTenantId())).
                 thenReturn(Optional.of(expectedTenant));
-        when(tenantRoleRESTServiceAccess.getPermissions(expectedTenant.getId(),
+        when(tenantRolePermissionRESTServiceAccess.getPermissions(expectedTenant.getId(),
                 expectedRole.getId(), null)).then(i -> expectedAssociatedPermissions);
 
         String returnUriMappingId = this.tenantRoleAssociationManager.
@@ -601,7 +657,7 @@ public class TenantRoleAssociationManagerTest {
                 thenReturn(Optional.of(expectedTenant));
 
         Exception e = new RuntimeException("Error retrieving assigned Permissions");
-        when(tenantRoleRESTServiceAccess.getPermissions(expectedTenant.getId(),
+        when(tenantRolePermissionRESTServiceAccess.getPermissions(expectedTenant.getId(),
                 expectedRole.getId(), null)).
                 thenThrow(e);
 
@@ -641,7 +697,7 @@ public class TenantRoleAssociationManagerTest {
         expectedAssociatedPermissions.add(permission);
         when(tenantRolePermissionRESTServiceAccess.assignPermission(any())).
                 then(i -> Boolean.TRUE);
-        when(tenantRoleRESTServiceAccess.getPermissions(tenant.getId(),
+        when(tenantRolePermissionRESTServiceAccess.getPermissions(tenant.getId(),
                 role.getId(), null)).then(i -> expectedAssociatedPermissions);
 
         String returnUriMappingId = tenantRoleAssociationManager.assignPermission();
@@ -992,7 +1048,7 @@ public class TenantRoleAssociationManagerTest {
      */
     @Test
     public void testUnAssignUser() throws SystemException {
-        when(activeTenantDataModelManager.getActiveTenant()).thenReturn(new ActiveTenant(2L, 2L, 2L, "test", true));
+        when(activeTenantDataModelManager.getActiveTenant()).thenReturn(new ActiveTenant(2L, 2L, 2L));
         SystemRole role = new Role(); role.setId(2L);
         SystemTenant tenant = new Tenant(); tenant.setId(1L);
         SystemUser userToBeDissociated = new User(); userToBeDissociated.setId(3L);
@@ -1062,7 +1118,7 @@ public class TenantRoleAssociationManagerTest {
      */
     @Test
     public void testUnAssignUserWithException() throws SystemException {
-        when(activeTenantDataModelManager.getActiveTenant()).thenReturn(new ActiveTenant(2L, 2L, 2L, "test", true));
+        when(activeTenantDataModelManager.getActiveTenant()).thenReturn(new ActiveTenant(2L, 2L, 2L));
         SystemRole role = new Role(); role.setId(2L);
         SystemTenant tenant = new Tenant(); tenant.setId(1L);
         SystemUser user = new User(); user.setId(3L);

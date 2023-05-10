@@ -18,8 +18,8 @@ package io.radien.ms.permissionmanagement.legacy;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.model.permission.SystemPermission;
 import io.radien.api.util.FactoryUtilService;
-import io.radien.ms.permissionmanagement.model.ActionEntity;
-import io.radien.ms.permissionmanagement.model.PermissionEntity;
+import io.radien.ms.permissionmanagement.entities.ActionEntity;
+import io.radien.ms.permissionmanagement.entities.PermissionEntity;
 
 import javax.enterprise.context.RequestScoped;
 import javax.json.Json;

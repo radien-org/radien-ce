@@ -1,0 +1,76 @@
+/*
+ * Copyright (c) 2006-present radien GmbH & its legal owners. All rights reserved.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.radien.webapp.doctypemanagement.propertydefinition;
+
+import io.radien.api.entity.Page;
+import io.radien.api.model.docmanagement.propertydefinition.SystemPropertyDefinition;
+import io.radien.api.service.docmanagement.propertydefinition.PropertyDefinitionRESTServiceAccess;
+import io.radien.exception.SystemException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import org.primefaces.model.FilterMeta;
+import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.SortMeta;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class PropertyDefinitionDataModel extends LazyDataModel<SystemPropertyDefinition> {
+    private static final Logger log = LoggerFactory.getLogger( PropertyDefinitionDataModel.class);
+
+    private List<? extends SystemPropertyDefinition> datasource;
+    private final PropertyDefinitionRESTServiceAccess propertyDefinitionService;
+
+    public PropertyDefinitionDataModel(PropertyDefinitionRESTServiceAccess propertyDefinitionService) {
+        this.propertyDefinitionService = propertyDefinitionService;
+        this.datasource = new ArrayList<>();
+    }
+
+    @Override
+    public SystemPropertyDefinition getRowData(String rowKey) {
+        for (SystemPropertyDefinition propertyDefinition : datasource) {
+            if (propertyDefinition.getId() == Integer.parseInt(rowKey)) {
+                return propertyDefinition;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String getRowKey(SystemPropertyDefinition propertyDefinition) {
+        return String.valueOf(propertyDefinition.getId());
+    }
+
+
+    @Override
+    public List<SystemPropertyDefinition> load(int offset, int pageSize, Map<String, SortMeta> sortBy, Map<String, FilterMeta> filterBy) {
+        long rowCount = 0L;
+        try {
+            Page<? extends SystemPropertyDefinition> page = propertyDefinitionService.getAll(null,(offset/pageSize)+1,pageSize,null,true);
+            datasource = page.getResults();
+
+            rowCount = page.getTotalResults();
+        } catch (SystemException e) {
+            log.error(e.getMessage(),e);
+        }
+
+        setRowCount(Math.toIntExact(rowCount));
+
+        return new ArrayList<>(datasource);
+    }
+
+}

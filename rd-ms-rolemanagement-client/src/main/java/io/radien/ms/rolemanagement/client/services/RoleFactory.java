@@ -25,8 +25,6 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -76,26 +74,18 @@ public class RoleFactory {
         String name = FactoryUtilService.getStringFromJson("name", jsonRole);
         String description = FactoryUtilService.getStringFromJson("description", jsonRole);
         Long createUser = FactoryUtilService.getLongFromJson("createUser", jsonRole);
-        String terminationDateAsString = FactoryUtilService.getStringFromJson("terminationDate", jsonRole);
 
         Role role = new Role();
         role.setId(id);
         role.setName(name);
         role.setDescription(description);
-        if (terminationDateAsString != null) {
-            try {
-                role.setTerminationDate(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(terminationDateAsString));
-            } catch (ParseException e) {
-                throw new RuntimeException("Error parsing terminationDate", e);
-            }
-        }
         role.setCreateUser(createUser);
         role.setCreateDate(new Date());
         role.setLastUpdate(new Date());
 
         log.info("Client will begin to create a new Role object with the specific values received in the json" +
-                " ID: {}, Name: {}, Description: {}, Termination Date: {}, Created User: {}", id, name,
-                description, role.getTerminationDate(), createUser);
+                " ID: {}, Name: {}, Description: {}, Created User: {}", id, name,
+                description, createUser);
 
         return role;
     }
@@ -114,12 +104,10 @@ public class RoleFactory {
         FactoryUtilService.addValue(builder, "description", role.getDescription());
         FactoryUtilService.addValueLong(builder, "createUser", role.getCreateUser());
         FactoryUtilService.addValueLong(builder, "lastUpdateUser", role.getLastUpdateUser());
-        if (role.getTerminationDate() != null) {
-            FactoryUtilService.addValue(builder, "terminationDate", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(role.getTerminationDate()));
-        }
+
         log.info("Will begin to create a new json object with the specific values received in the give role" +
-                " ID: {}, Name: {}, Description: {}, Termination Date: {}, Created User: {}", role.getId(), role.getName(),
-                role.getDescription(), role.getTerminationDate(), role.getCreateUser());
+                " ID: {}, Name: {}, Description: {}, Created User: {}", role.getId(), role.getName(),
+                role.getDescription(), role.getCreateUser());
 
         return builder.build();
     }

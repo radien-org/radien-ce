@@ -52,18 +52,23 @@ public class UserFactoryUtil implements Serializable {
      * @param sub user sub
      * @param email user email
      * @param createdUser user createUser
+     * @param processingLocked user createUser
      * @return user object
      */
-    public static SystemUser createUser(SystemUser user, String firstname, String lastname, String logon, String sub, String email, Long createdUser){
+    public static SystemUser createUser(SystemUser user, String firstname, String lastname, String logon, String sub,
+                                        String email, String mobileNumber, Long createdUser, boolean processingLocked){
         user.setFirstname(firstname);
         user.setLastname(lastname);
         user.setLogon(logon);
         user.setSub(sub);
+        user.setMobileNumber(mobileNumber);
         user.setCreateUser(createdUser);
         Date now = new Date();
         user.setLastUpdate(now);
         user.setCreateDate(now);
         user.setUserEmail(email);
+        user.setProcessingLocked(processingLocked);
+
         return user;
     }
 
@@ -79,9 +84,11 @@ public class UserFactoryUtil implements Serializable {
         systemUserMapValues.put(SystemVariables.FIRST_NAME.getFieldName(), FactoryUtilService.getStringFromJson(SystemVariables.FIRST_NAME.getFieldName(), jsonSystemUserObject));
         systemUserMapValues.put(SystemVariables.LAST_NAME.getFieldName(), FactoryUtilService.getStringFromJson(SystemVariables.LAST_NAME.getFieldName(), jsonSystemUserObject));
         systemUserMapValues.put(SystemVariables.LOGON.getFieldName(), FactoryUtilService.getStringFromJson(SystemVariables.LOGON.getFieldName(), jsonSystemUserObject));
+        systemUserMapValues.put(SystemVariables.MOBILE_NUMBER.getFieldName(), FactoryUtilService.getStringFromJson(SystemVariables.MOBILE_NUMBER.getFieldName(), jsonSystemUserObject));
         systemUserMapValues.put(SystemVariables.USER_EMAIL.getFieldName(), FactoryUtilService.getStringFromJson(SystemVariables.USER_EMAIL.getFieldName(), jsonSystemUserObject));
         systemUserMapValues.put(SystemVariables.CREATE_USER.getFieldName(), FactoryUtilService.getLongFromJson(SystemVariables.CREATE_USER.getFieldName(), jsonSystemUserObject));
         systemUserMapValues.put(SystemVariables.SUB.getFieldName(), FactoryUtilService.getStringFromJson(SystemVariables.SUB.getFieldName(), jsonSystemUserObject));
+        systemUserMapValues.put(SystemVariables.PROCESSING_LOCKED.getFieldName(), FactoryUtilService.getBooleanFromJson(SystemVariables.PROCESSING_LOCKED.getFieldName(),jsonSystemUserObject ));
         return systemUserMapValues;
     }
 
@@ -102,8 +109,11 @@ public class UserFactoryUtil implements Serializable {
         FactoryUtilService.addValue(builder, SystemVariables.SUB.getFieldName(), systemUser.getSub());
         FactoryUtilService.addValue(builder, SystemVariables.FIRST_NAME.getFieldName(), systemUser.getFirstname());
         FactoryUtilService.addValue(builder, SystemVariables.LAST_NAME.getFieldName(), systemUser.getLastname());
+        FactoryUtilService.addValue(builder, SystemVariables.MOBILE_NUMBER.getFieldName(), systemUser.getMobileNumber());
         FactoryUtilService.addValueBoolean(builder, SystemVariables.USER_DELEGATION.getFieldName(), systemUser.isDelegatedCreation());
         FactoryUtilService.addValueBoolean(builder, SystemVariables.USER_ENABLED.getFieldName(), systemUser.isEnabled());
+        FactoryUtilService.addValueBoolean(builder, SystemVariables.PROCESSING_LOCKED.getFieldName(), systemUser.isProcessingLocked());
+
         return  builder.build();
     }
 

@@ -58,7 +58,7 @@ public abstract class AbstractLocaleManager implements LocaleManagerAccess {
 		try {
 			requestLocale = FacesContext.getCurrentInstance().getExternalContext().getRequestLocale();
 		} catch (Exception e) {
-			log.warn("Locale Manager could not get browser locale, using Locale.ENGLISH");
+			log.warn("Locale Manager could not get browser locale, using Locale.ENGLISH",e);
 			requestLocale = Locale.ENGLISH;
 		}
 

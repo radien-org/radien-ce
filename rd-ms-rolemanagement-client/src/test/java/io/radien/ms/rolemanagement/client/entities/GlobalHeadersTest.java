@@ -22,10 +22,14 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 
+import java.lang.reflect.Field;
+
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -51,5 +55,12 @@ public class GlobalHeadersTest extends TestCase {
         MultivaluedMap<String, String> outgoingHeaders = new MultivaluedHashMap<>();
         MultivaluedMap<String, String> result = target.update(incomingHeaders,outgoingHeaders);
         assertEquals("Bearer Batata",result.getFirst("Authorization"));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testUpdateNoInjection(){
+        MultivaluedMap<String, String> incomingHeaders = new MultivaluedHashMap<>();
+        MultivaluedMap<String, String> outgoingHeaders = new MultivaluedHashMap<>();
+        MultivaluedMap<String, String> result = target.update(incomingHeaders,outgoingHeaders);
     }
 }

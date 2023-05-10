@@ -16,14 +16,19 @@
 package io.radien.webapp.role;
 
 import io.radien.api.model.role.SystemRole;
+import io.radien.api.model.tenant.SystemActiveTenant;
+import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.service.role.RoleRESTServiceAccess;
+import io.radien.api.service.tenant.TenantRESTServiceAccess;
 import io.radien.ms.rolemanagement.client.entities.Role;
+import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.activeTenant.ActiveTenantMandatory;
-import io.radien.webapp.resource.LazyResourcesDataModel;
+import io.radien.webapp.authz.WebAuthorizationChecker;
+import java.util.Optional;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
 
@@ -35,6 +40,13 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import java.io.Serializable;
 
+import static io.radien.api.service.permission.SystemActionsEnum.ACTION_CREATE;
+import static io.radien.api.service.permission.SystemActionsEnum.ACTION_DELETE;
+import static io.radien.api.service.permission.SystemActionsEnum.ACTION_READ;
+import static io.radien.api.service.permission.SystemActionsEnum.ACTION_UPDATE;
+import static io.radien.api.service.permission.SystemResourcesEnum.ROLES;
+import static io.radien.api.service.permission.SystemResourcesEnum.TENANT_ROLE_PERMISSION;
+
 /**
  * Role Interface Data Model. Class responsible for managing and maintaining
  * the data between the front end and backend for the tenant tables.
@@ -44,6 +56,8 @@ import java.io.Serializable;
 @Model
 @SessionScoped
 public class RoleDataModel extends AbstractManager implements Serializable {
+
+    private static final long serialVersionUID = 2904302597399343262L;
 
     @Inject
     private RoleRESTServiceAccess service;
@@ -56,6 +70,18 @@ public class RoleDataModel extends AbstractManager implements Serializable {
     private SystemRole selectedRole;
 
     private SystemRole role = new Role();
+
+    @Inject
+    private WebAuthorizationChecker webAuthorizationChecker;
+
+    @Inject
+    private TenantRESTServiceAccess tenantRESTServiceAccess;
+
+    private boolean allowedReadRole = false;
+    private boolean allowedCreateRole = false;
+    private boolean allowedUpdateRole = false;
+    private boolean allowedDeleteRole = false;
+    private boolean allowedAssociateRolePermission = false;
 
     /**
      * Initialization of the tenant data tables and models
@@ -70,6 +96,40 @@ public class RoleDataModel extends AbstractManager implements Serializable {
             }
         } catch (Exception e) {
             handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.ROLE_MESSAGE.getValue()));
+        }
+    }
+
+    /**
+     * Calculate permissions if user under Root Tenant (as active tenant)
+     */
+    public void calculatePermissionsOnRootActiveTenant() {
+        SystemActiveTenant activeTenant = activeTenantDataModelManager.getActiveTenant();
+        if (activeTenant != null) {
+            try {
+                Optional<SystemTenant> opt = tenantRESTServiceAccess.getTenantById(activeTenant.getTenantId());
+                if (opt.isPresent()) {
+                    SystemTenant currTenant = opt.get();
+                    if (TenantType.ROOT.equals(currTenant.getTenantType())) {
+                        allowedReadRole = webAuthorizationChecker.hasPermissionAccess(ROLES.getResourceName(),
+                                ACTION_READ.getActionName(), currTenant.getId());
+                        allowedCreateRole = webAuthorizationChecker.hasPermissionAccess(ROLES.getResourceName(),
+                                ACTION_CREATE.getActionName(), currTenant.getId());
+                        allowedUpdateRole = webAuthorizationChecker.hasPermissionAccess(ROLES.getResourceName(),
+                                ACTION_UPDATE.getActionName(), currTenant.getId());
+                        allowedDeleteRole = webAuthorizationChecker.hasPermissionAccess(ROLES.getResourceName(),
+                                ACTION_DELETE.getActionName(), currTenant.getId());
+                        boolean deleteTenantRolePermission = webAuthorizationChecker.hasPermissionAccess(TENANT_ROLE_PERMISSION.getResourceName(),
+                                ACTION_DELETE.getActionName(), currTenant.getId());
+                        boolean createTenantRolePermission = webAuthorizationChecker.hasPermissionAccess(TENANT_ROLE_PERMISSION.getResourceName(),
+                                ACTION_CREATE.getActionName(), currTenant.getId());
+                        allowedAssociateRolePermission = deleteTenantRolePermission && createTenantRolePermission;
+                    }
+                }
+            }
+            catch (Exception e) {
+                handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()),
+                        JSFUtil.getMessage(DataModelEnum.USER_RD_ROOT_TENANT_ROLE_ADMINISTRATOR_ACCESS_ERROR.getValue()));
+            }
         }
     }
 
@@ -90,7 +150,11 @@ public class RoleDataModel extends AbstractManager implements Serializable {
     @ActiveTenantMandatory
     public String save(SystemRole systemRoleToSave) {
         try {
-            this.service.create(systemRoleToSave);
+            if (systemRoleToSave.getId() == null) {
+                this.service.create(systemRoleToSave);
+            } else {
+                this.service.update(systemRoleToSave);
+            }
             handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.SAVE_SUCCESS_MESSAGE.getValue()),
                     JSFUtil.getMessage(DataModelEnum.ROLE_MESSAGE.getValue()));
             role = new Role();
@@ -250,5 +314,85 @@ public class RoleDataModel extends AbstractManager implements Serializable {
         this.selectedRole = event.getObject();
         FacesMessage msg = new FacesMessage(JSFUtil.getMessage(DataModelEnum.ROLE_SELECTED.getValue()), String.valueOf(event.getObject().getId()));
         FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+
+    /**
+     * Getter method for property which indicates if is allowed to read role
+     * @return true if is allowed to read, otherwise false
+     */
+    public boolean isAllowedReadRole() {
+        return allowedReadRole;
+    }
+
+    /**
+     * Setter method for property which indicates if is allowed to read role
+     * @param allowedReadRole true if is allowed to read, otherwise false
+     */
+    public void setAllowedReadRole(boolean allowedReadRole) {
+        this.allowedReadRole = allowedReadRole;
+    }
+
+    /**
+     * Getter method for property which indicates if is allowed to create role
+     * @return true if is allowed to create, otherwise false
+     */
+    public boolean isAllowedCreateRole() {
+        return allowedCreateRole;
+    }
+
+    /**
+     * Setter method for property which indicates if is allowed to create role
+     * @param allowedCreateRole  true if is allowed to create, otherwise false
+     */
+    public void setAllowedCreateRole(boolean allowedCreateRole) {
+        this.allowedCreateRole = allowedCreateRole;
+    }
+
+    /**
+     * Getter method for property which indicates if is allowed to update role
+     * @return true if is allowed to update, otherwise false
+     */
+    public boolean isAllowedUpdateRole() {
+        return allowedUpdateRole;
+    }
+
+    /**
+     * Setter method for property which indicates if is allowed to update role
+     * @param allowedUpdateRole true if is allowed to update, otherwise false
+     */
+    public void setAllowedUpdateRole(boolean allowedUpdateRole) {
+        this.allowedUpdateRole = allowedUpdateRole;
+    }
+
+    /**
+     * Getter method for property which indicates if is allowed to delete role
+     * @return true if is allowed to delete, otherwise false
+     */
+    public boolean isAllowedDeleteRole() {
+        return allowedDeleteRole;
+    }
+
+    /**
+     * Setter method for property which indicates if is allowed to delete role
+     * @param allowedDeleteRole true if is allowed to delete, otherwise false
+     */
+    public void setAllowedDeleteRole(boolean allowedDeleteRole) {
+        this.allowedDeleteRole = allowedDeleteRole;
+    }
+
+    /**
+     * Getter method for property which indicates if is allowed to associate role and permission
+     * @return true if is allowed to associate role and permission, otherwise false
+     */
+    public boolean isAllowedAssociateRolePermission() {
+        return allowedAssociateRolePermission;
+    }
+
+    /**
+     * Setter method for property which indicates if is allowed to associate role and permission
+     * @param allowedAssociateRolePermission true if is allowed to associate role and permission, otherwise false
+     */
+    public void setAllowedAssociateRolePermission(boolean allowedAssociateRolePermission) {
+        this.allowedAssociateRolePermission = allowedAssociateRolePermission;
     }
 }

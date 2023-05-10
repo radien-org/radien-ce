@@ -68,7 +68,6 @@ public enum OAFProperties implements SystemProperties{
     SYS_PERSISTENCE_UNIT_CUSTOM2("system.persistence.unit.custom2"),
     SYS_DATASOURCE_CUSTOM2("system.sql.datasource.custom2"),
 
-    SYS_AUTHENTICATION_ENABLED("authentication.enabled"),
     SYS_AUTHENTICATION_CHECK_TERMDATE("authentication.check.termdate.enabled"),
 
     SYS_AUTHENTICATION_OIDC_ENABLED("authentication.oidc.enabled"),
@@ -77,8 +76,6 @@ public enum OAFProperties implements SystemProperties{
     SYS_AUTHENTICATION_LOGOUT_REDIRECT_URL_ENABLED("authentication.logout.redirect.url.enabled"),
     SYS_AUTHENTICATION_LOGOUT_REDIRECT_URL("authentication.logout.redirect.url"),
 
-    SYS_USER_CONTEXT_REQUIRED("oaf.user.context.mandatory"),
-    SYS_USER_CONTEXT_DEFAULT_PUBLIC_CONTEXT("oaf.user.context.default-public-context"),
     SYSTEM_CONFIGURATION_CAPTCHA_ENABLED("system.configuration.captcha.enabled"),
     SYSTEM_CONFIGURATION_CAPTCHA("system.configuration.captcha"),
 
@@ -94,8 +91,6 @@ public enum OAFProperties implements SystemProperties{
     MODULE_SAML_ENABLED("system.module.saml.enabled"),
 
     SYSTEM_CMS_REPO_CONF_DIR("org.apache.jackrabbit.repository.conf"),
-    SYSTEM_CMS_REPO_HOME_DIR("system.jcr.home"),
-    CMS_MS_URL("cms.ms.url"),
 
     SCHEDULER_MS_URL("scheduler.ms.url"),
     SCHEDULER_MS_URL_REGISTER("scheduler.ms.url.register"),
@@ -114,32 +109,20 @@ public enum OAFProperties implements SystemProperties{
     PLUGIN_INITIALIZER_READ_TIMEOUT("plugin.initializer.read.timeout"),
 
     SYSTEM_MS_ENDPOINT_USERMANAGEMENT("system.ms.endpoint.usermanagement"),
-
     SYSTEM_MS_ENDPOINT_TENANTMANAGEMENT("system.ms.endpoint.tenantmanagement"),
-
+    SYSTEM_MS_ENDPOINT_TICKETMANAGEMENT("system.ms.endpoint.ticketmanagement"),
     SYSTEM_MS_ENDPOINT_PERMISSIONMANAGEMENT("system.ms.endpoint.permissionmanagement"),
-
     SYSTEM_MS_ENDPOINT_ROLEMANAGEMENT("system.ms.endpoint.rolemanagement"),
     SYSTEM_MS_ENDPOINT_ECM("system.ms.endpoint.ecm"),
+    SYSTEM_MS_ENDPOINT_DOCTYPEMANAGEMENT("system.ms.endpoint.doctypemanagement"),
+    SYSTEM_MS_ENDPOINT_NOTIFICATIONMANAGEMENT("system.ms.endpoint.notificationmanagement"),
 
-	SYSTEM_MS_SECRET_ECM("system.ms.secret.ecm"),
-	SYSTEM_MS_CONFIG_SUPPORTED_LANG_ECM("system.supported.languages"),
-    SYSTEM_MS_CONFIG_DEFAULT_LANG_ECM("system.default.language"),
+    SYSTEM_MS_SECRET_ECM("system.ms.secret.ecm"),
 
     AUTH_LOGOUT_URI("auth.logoutUri"),
 
-    OAF_NODE_TYPES("jcr/oafnodetypes.cnd"),
-    SYSTEM_CMS_CFG_NODE_ROOT("system.jcr.node.root"),
-    SYSTEM_CMS_CFG_NODE_HTML("system.jcr.node.html"),
-    SYSTEM_CMS_CFG_NODE_NEWS_FEED("system.jcr.node.newsfeed"),
-    SYSTEM_CMS_CFG_NODE_NOTIFICATION("system.jcr.node.notifications"),
-    SYSTEM_CMS_CFG_NODE_DOCS("system.jcr.node.documents"),
-    SYSTEM_CMS_CFG_NODE_IMAGE("system.jcr.node.images"),
-    SYSTEM_CMS_CFG_NODE_IFRAME("system.jcr.node.iframe"),
-    SYSTEM_DMS_CFG_AUTO_CREATE_FOLDERS("system.jcr.document.autocreate.folder.names"),
-    SYSTEM_CMS_CFG_NODE_APP_INFO("system.jcr.node.appinfo"),
-    SYSTEM_CMS_CFG_NODE_STATIC_CONTENT("system.jcr.node.staticcontent"),
-    SYSTEM_CMS_CFG_NODE_TAG("system.jcr.node.tag");
+    LOGIN_HOOK_ACTIVE("login_hook_active"),
+    RADIEN_ENV("RADIEN_ENV");
 
     private String propKey;
 
@@ -158,5 +141,14 @@ public enum OAFProperties implements SystemProperties{
     @Override
     public String propKey() {
         return propKey;
+    }
+
+    public static OAFProperties valueOfKey(String key) {
+        for (OAFProperties oafProperty : OAFProperties.values()) {
+            if(oafProperty.propKey().equals(key)){
+                return oafProperty;
+            }
+        }
+        throw new IllegalArgumentException("No enum constant with value " + key);
     }
 }

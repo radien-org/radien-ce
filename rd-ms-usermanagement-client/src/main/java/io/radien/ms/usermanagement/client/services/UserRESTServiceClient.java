@@ -15,15 +15,19 @@
  */
 package io.radien.ms.usermanagement.client.services;
 
+import io.radien.api.model.user.SystemUserPasswordChanging;
+import io.radien.exception.BadRequestException;
 import io.radien.exception.GenericErrorCodeMessage;
+import io.radien.exception.InternalServerErrorException;
+import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
+import io.radien.ms.usermanagement.client.util.UserModelMapper;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import javax.ejb.Stateless;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
 import javax.ws.rs.ProcessingException;
@@ -37,7 +41,6 @@ import io.radien.exception.NotFoundException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.usermanagement.client.UserResponseExceptionMapper;
-import io.radien.ms.usermanagement.client.util.UserModelMapper;
 import org.apache.cxf.bus.extension.ExtensionException;
 
 import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
@@ -126,7 +129,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
      * @throws SystemException in case of token expiration or any issue on the application
      */
     @Override
-    public List<? extends SystemUser> getUsersByIds(List<Long> ids) throws SystemException {
+    public List<? extends SystemUser> getUsersByIds(Collection<Long> ids) throws SystemException {
         try {
             return getSystemUsers(ids);
         } catch (TokenExpiredException tokenExpiredException) {
@@ -169,8 +172,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
             return Optional.of(UserModelMapper.map((InputStream) client.getById(id).getEntity()));
-        }
-        catch (NotFoundException n) {
+        } catch (NotFoundException n) {
             return Optional.empty();
         }
         catch (ExtensionException | ProcessingException | MalformedURLException e) {
@@ -185,7 +187,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
      * @throws SystemException in case of any communication issue
      * @throws TokenExpiredException in case of JWT token expiration
      */
-    private List<? extends SystemUser> getSystemUsers(List<Long> ids) throws SystemException, TokenExpiredException {
+    private List<? extends SystemUser> getSystemUsers(Collection<Long> ids) throws SystemException, TokenExpiredException {
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
             Response response = client.getUsers(null, null, null, ids, true, true);
@@ -242,6 +244,21 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         }
     }
 
+    public Optional<SystemUser> getCurrentUserInSession() throws SystemException {
+        return get(() -> {
+            try {
+                UserResourceClient client = clientServiceUtil.getUserResourceClient(getOAF().getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+                Response response = client.getUserInSession();
+                if(response.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL)) {
+                    return Optional.of(UserModelMapper.map((InputStream) response.getEntity()));
+                }
+                return Optional.empty();
+            } catch (MalformedURLException e) {
+                throw new SystemException(e);
+            }
+        });
+    }
+
     /**
      * Creates given user
      * @param user to be created
@@ -249,16 +266,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
      * @throws SystemException in case it founds multiple users or if URL is malformed
      */
     public boolean create(SystemUser user, boolean skipKeycloak) throws SystemException {
-        try {
-            return createUser(user, skipKeycloak);
-        } catch (TokenExpiredException e) {
-            refreshToken();
-            try {
-                return createUser(user, skipKeycloak);
-            } catch (TokenExpiredException tokenExpiredException) {
-                throw new SystemException(GenericErrorCodeMessage.EXPIRED_ACCESS_TOKEN.toString());
-            }
-        }
+        return get(this::createUser, user, skipKeycloak);
     }
 
     /**
@@ -279,7 +287,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         if (skipKeycloak) {
             user.setDelegatedCreation(true);
         }
-        try (Response response = client.save((User) user)) {
+        try (Response response = client.create((User) user)) {
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
@@ -301,15 +309,17 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
      * @return a page of all the requested system users
      */
     @Override
-    public Page<? extends SystemUser> getAll(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) {
+    public Page<? extends SystemUser> getAll(String sub, String email, String logon, String firstName, String lastName,
+                                             Boolean enabled, Boolean processingLocked, Collection<Long> ids, int pageNo, int pageSize, List<String> sortBy,
+                                             boolean isAscending, boolean isExact, boolean isLogicalConjunction) {
         Page<User> pageUsers = null;
         try {
-            pageUsers = getPageUsers(search, pageNo, pageSize, sortBy, isAscending);
+            pageUsers = getPageUsers(sub, email, logon, firstName, lastName, enabled, processingLocked, ids, pageNo, pageSize, sortBy, isAscending, isExact, isLogicalConjunction);
         } catch (TokenExpiredException e) {
 
             try {
                 refreshToken();
-                pageUsers = getPageUsers(search, pageNo, pageSize, sortBy, isAscending);
+                pageUsers = getPageUsers(sub, email, logon, firstName, lastName, enabled, processingLocked, ids, pageNo, pageSize, sortBy, isAscending, isExact, isLogicalConjunction);
             } catch (SystemException | TokenExpiredException tokenExpiredException) {
                 log.error(tokenExpiredException.getMessage(), tokenExpiredException);
             }
@@ -327,12 +337,14 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
      * @return a page of all the requested system users
      * @throws TokenExpiredException in case of any issue while attempting communication with the client side
      */
-    private Page<User> getPageUsers(String search, int pageNo, int pageSize, List<String> sortBy, boolean isAscending) throws TokenExpiredException {
+    private Page<User> getPageUsers(String sub, String email, String logon, String firstName, String lastName,
+                                    Boolean enabled, Boolean processingLocked, Collection<Long> ids, int pageNo, int pageSize, List<String> sortBy,
+                                    boolean isAscending, boolean isExact, boolean isLogicalConjunction) throws TokenExpiredException {
         Page<User> page = new Page<>();
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
             //WEB APPLICATION EXCEPTION jax rs
-            Response response = client.getAll(search, pageNo, pageSize, sortBy, isAscending);
+            Response response = client.getAll(sub, email, logon, firstName, lastName, enabled, processingLocked, ids, pageNo, pageSize, sortBy, isAscending, isExact, isLogicalConjunction);
 
             page = UserModelMapper.mapToPage((InputStream) response.getEntity());
 
@@ -373,6 +385,39 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
             Response response = client.sendUpdatePasswordEmail(id);
+            if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+                return true;
+            } else {
+                logErrorEnabledResponse(response);
+            }
+        } catch (MalformedURLException e) {
+            log.error(e.getMessage(), e);
+        }
+        return false;
+    }
+
+    /**
+     * Send the update user email to the active/requested user
+     * @param userId of the user to update and execute action email verify
+     * @param user having an update an email attribute
+     * @return true in case of success
+     * @throws SystemException in case of token expiration or any issue on the application
+     */
+    @Override
+    public boolean updateEmailAndExecuteActionEmailVerify(long userId, SystemUser user, boolean emailVerify) throws SystemException {
+        return get(this::updateUserEmailAndVerify, userId, user, emailVerify);
+    }
+
+    /**
+     * Method for the request to update the user email and sends a verification email
+     * @param userId userId of the user to update and execute action email verify
+     * @param user having an update an email attribute
+     * @return true in case of success
+     */
+    private boolean updateUserEmailAndVerify(long userId, SystemUser user, boolean emailVerify) {
+        try {
+            UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+            Response response = client.updateEmailAndExecuteActionEmailVerify(userId, (User) user, emailVerify);
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
@@ -455,7 +500,7 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
     private boolean updateUser(User user) throws TokenExpiredException {
         try {
             UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
-            Response response = client.save(user);
+            Response response = client.update(user.getId(), user);
             if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                 return true;
             } else {
@@ -465,6 +510,74 @@ public class UserRESTServiceClient extends AuthorizationChecker implements UserR
             log.error(e.getMessage(), e);
         }
         return false;
+    }
+
+    public boolean processingLock(long id, boolean processingLock){
+        try {
+            UserResourceClient client = clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+            Response response = client.processingLockChange(id, processingLock);
+            return response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL;
+        } catch (MalformedURLException e) {
+            log.error(e.getMessage(), e);
+        }
+        return false;
+    }
+
+
+    /**
+     * Changes user password (Invokes the core method counterpart and handles TokenExpiration error)
+     * @param sub OpenId user identifier (subject)
+     * @param change pojo/bean containing credential information (Not plain text, data encoded on base64)
+     * @return true if changing process is concluded with success.
+     * @throws SystemException in case of any issue regarding communication with User endpoint
+     */
+    public boolean updatePassword(String sub, SystemUserPasswordChanging change) throws SystemException {
+        return get(this::updatePasswordCore, sub, change);
+    }
+
+    /**
+     *
+     * @param id
+     * @return the if the user processing is locked
+     * @throws SystemException in case it founds multiple users or if URL is malformed
+     */
+    @Override
+    public boolean isProcessingLocked(long id) throws SystemException {
+        Optional<SystemUser> user = getUserById(id);
+        return user.isPresent() && user.get().isProcessingLocked();
+    }
+
+    /**
+     * Main method invoked that changes user password
+     * @param sub OpenId user identifier (subject)
+     * @param change pojo/bean containing credential information (Not plain text, data encoded on base64)
+     * @return true if changing process is concluded with success.
+     * @throws SystemException in case of any issue regarding communication with User endpoint
+     */
+    private boolean updatePasswordCore(String sub, SystemUserPasswordChanging change) throws SystemException {
+        UserResourceClient userResourceClient = getUserResourceClient();
+        try (Response response = userResourceClient.updatePassword(sub, (UserPasswordChanging) change)) {
+            return response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL;
+        }
+        catch (ExtensionException | ProcessingException | BadRequestException |
+                InternalServerErrorException e) {
+            throw new SystemException(e);
+        }
+    }
+
+    /**
+     * Assemblies a {@link UserResourceClient} instance via Rest Client Builder,
+     * using as parameter the URL referred by {@link OAFProperties#SYSTEM_MS_ENDPOINT_USERMANAGEMENT}
+     * @return Rest Client instance for USer endpoint
+     * @throws SystemException thrown in case of invalid URL
+     */
+    private UserResourceClient getUserResourceClient() throws SystemException {
+        try {
+            return clientServiceUtil.getUserResourceClient(oaf.getProperty(OAFProperties.
+                    SYSTEM_MS_ENDPOINT_USERMANAGEMENT));
+        } catch (MalformedURLException e) {
+            throw new SystemException(e);
+        }
     }
 
     /**

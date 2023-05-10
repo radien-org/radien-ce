@@ -53,6 +53,8 @@ public enum GenericErrorCodeMessage {
     ERROR_METHOD_INTERCEPTION("G14", "error.method.interception", "Exception during method interception: %s"),
     INIT_CONNECTION_TIME_REBOOT("G15", "init.connection.time.reboot", "Connection was opened {0} since last reboot {1}"),
     ENTITY_ID_NULL("G16", "entity.id.null", "{0} id was null. Skipped"),
+    INVALID_VALUE_FOR_PARAMETER("G17", "invalid.value.for.parameter", "Invalid value for parameter %s"),
+    BAD_REQUEST("G18", "invalid.request", "Invalid Request"),
 
     /**
      * Tenant Business Error Code Messages
@@ -98,6 +100,11 @@ public enum GenericErrorCodeMessage {
     HAVE_NULL_PARAMS_TENANT_USER_ROLES("TUR2","have.null.params.tenant.user.roles","Tenant User Role(s) have null parameters: %s"),
 
     /**
+     * Tenant Role Permission
+     */
+    TENANT_ROLE_PERMISSION_MISSING_PARAMETER("TRP1", "error.tenant.role.permission.missing.parameter", "Missing mandatory parameter %s"),
+
+    /**
      * Tenant User Error Code Messages
      */
     INFO_TENANT_AND_USER_ID("TU1", "info.tenant.user", "User and Tenant id's are mandatory"),
@@ -110,7 +117,19 @@ public enum GenericErrorCodeMessage {
             "Insufficient params to perform delete. Is necessary at least tenant or user id"),
     ACTIVE_TENANT_ERROR_VALIDATING("AC2", "error.validating.active.tenant",
             "Error checking active tenants"),
+    ACTIVE_TENANT_ERROR_MISSING_CORE_PARAMETERS("AC3", "error.insufficient.params", "Insufficient params to perform operation. Is necessary at least tenant or user id"),
 
+    /**
+     * Ticket Business Error Code Messages
+     */
+    TICKET_FIELD_NOT_PROVIDED("TT1", "error.ticket.field.not.provided", "Ticket %s was not provided."),
+    TICKET_TYPE_NOT_FOUND("TT2", "error.ticket.type.not.found", "No ticket type found"),
+    ERROR_RETRIEVING_TICKETS("TT3", "error.ticket.find.tickets", "There was an error while trying to retrieve the tickets list"),
+    ERROR_RETRIEVING_PROVIDED_TICKET("TT4", "error.ticket.find.ticket", "There was an error while trying to retrieve the ticket %s"),
+    ERROR_DELETING_TICKET("TT5", "error.ticket.delete.ticket", "There was an error while trying to delete the ticket %s"),
+    ERROR_UPDATING_TICKET("TT6", "error.ticket.update.ticket", "There was an error while trying to update the ticket %s"),
+    ERROR_CREATING_TICKET("TT7", "error.ticket.create.ticket", "There was an error while trying to create the ticket %s"),
+    ERROR_CHANGING_DATA("TT8", "error.ticket.change", "There was an error while trying to execute the ticket %s"),
     /**
      * Permission Business Error Code Messages
      */
@@ -131,6 +150,7 @@ public enum GenericErrorCodeMessage {
      * User Business Error Code Messages
      */
     USER_FIELD_MANDATORY("U1", "error.user.field.mandatory", "User %s is mandatory."),
+    USER_CHANGE_PASS_INCONSISTENT_VALUES("U2", "error.change.pass.inconsistent.values", "Inconsistent values for Password"),
 
     /**
      * Role Business Error Code Messages
@@ -143,7 +163,39 @@ public enum GenericErrorCodeMessage {
     EXPIRED_ACCESS_TOKEN("SYS1", "error.expired.token", "Unable to recover expiredToken."),
     GENERIC_ERROR("SYS2", "error.generic.error", "Generic Error."),
     AUTHORIZATION_ERROR("SYS3", "error.authorization.checker", "Error checking authorization"),
-    NO_CURRENT_USER_AVAILABLE("SYS4", "error.no.current.user.available", "No current user available");
+    NO_CURRENT_USER_AVAILABLE("SYS4", "error.no.current.user.available", "No current user available"),
+
+    /**
+     * KeyCloak Error Code Messages
+     */
+    ERROR_SEND_UPDATE_PASSWORD_EMAIL("KYC1", "error.send.password.email", "Unable to send update password email"),
+    ERROR_SEND_UPDATE_EMAIL_VERIFY("KYC2", "error.send.update.email.verify", "Unable to send update email and email verify attribute"),
+    ERROR_SEND_EXECUTE_ACTION_EMAIL_VERIFY("KYC3", "error.send.execute.action.email.verify", "Unable to send verification email for an updated email "),
+    ERROR_CHANGE_PASSWORD("KYC4", "error.change.password", "Unable to change password. Status: %s. Description: %s"),
+    ERROR_INVALID_CREDENTIALS("KYC5", "error.invalid.credentials", "Invalid Credentials"),
+
+    /**
+     * CMS Error Code Messages
+     */
+    REPOSITORY_NOT_AVAILABLE("CMS1", "error.cms.repository.not.available", "JCR not available"),
+    NOT_FOUND_VIEWID_LANGUAGE("CMS2", "error.cms.not.found.viewid.language", "Could not find content for viewID and language %s - %s"),
+    ERROR_RETRIEVING_FOLDER_CONTENTS("CMS3", "error.cms.retrieve.folder.contents", "Unable to retrieve folder contents"),
+    ERROR_INVALID_CMS_FILTER_OBJECT("CMS4", "error.cms.invalid.filter", "Please provide a valid filter object"),
+    ERROR_DELETE_VIEWID_LANGUAGE("CMS5", "error.cms.delete.viewid.language", "Could not delete documents by viewId and Language %s - %s"),
+    ERROR_DELETE_PATH("CMS6", "error.cms.delete.path", "Could not delete documents by path %s"),
+    ERROR_GET_FILE_CONTENT("CMS7", "error.cms.file.content", "Error getting file content by path %s"),
+    ERROR_GET_OR_CREATE_DOCUMENTS_PATH("CMS8", "error.cms.documents.get.create.path", "Error getting or creating documents path"),
+    ERROR_SAVING_CONTENT("CMS8", "error.cms.content.saving", "Error saving enterprise content"),
+    ERROR_RETRIEVING_RESULT("CMS9", "error.cms.retrieve.result", "Result not retrieved correctly from CMS System. Please check CMS logs for the error message"),
+    ERROR_DELETING_VERSION("CMS10", "error.cms.delete.version", "Could not delete version %s of %s"),
+    ERROR_RETRIEVING_TRANSLATION("I18N1", "error.i18n.retrieve.translation", "Could not retrieve translation %s for %s"),
+    ERROR_SAVING_I18N_PROPERTY("I18N2", "error.i18n.save.property", "Could not save I18N Property"),
+    ERROR_RETRIEVING_I18N_PROPERTY("I18N3", "error.i18n.retrieve.property", "Could not retrieve I18N Property %s"),
+    ERROR_RETRIEVING_I18N_APPLICATION_PROPERTIES("I18N4", "error.i18n.retrieve.application.properties", "Could not retrieve I18N Properties for %s"),
+    ERROR_DELETING_I18N_PROPERTIES("I18N5", "error.i18n.delete.properties", "Could not delete I18N Properties"),
+    ERROR_DELETING_I18N_APPLICATION_PROPERTIES("I18N6", "error.i18n.delete.application.properties", "Could not delete I18N Properties for application %s");
+
+
 
     private final String code;
     private final String key;
@@ -169,7 +221,7 @@ public enum GenericErrorCodeMessage {
     @Override
     public String toString() {
         return "{" +
-                "\"code\":" + code +
+                "\"code\":\"" + code + "\"" +
                 ", \"key\":\"" + key + "\"" +
                 ", \"message\":\"" + fallBackMessage + "\"" +
                 "}";
@@ -182,9 +234,25 @@ public enum GenericErrorCodeMessage {
     public String toString(String... args) {
         String message = String.format(fallBackMessage, args);
         return "{" +
-                "\"code\":" + code +
+                "\"code\":\"" + code + "\"" +
                 ", \"key\":\"" + key + "\"" +
                 ", \"message\":\"" + message + "\"" +
                 "}";
+    }
+
+    /**
+     * Getter for property code
+     * @return String that corresponds to the property code
+     */
+    public String getCode() {
+        return code;
+    }
+
+    /**
+     * Getter for property key
+     * @return String that corresponds to the property key
+     */
+    public String getKey() {
+        return key;
     }
 }

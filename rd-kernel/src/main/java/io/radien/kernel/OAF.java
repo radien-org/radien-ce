@@ -181,6 +181,7 @@ public abstract class OAF implements OAFAccess {
 
         loadPropertiesFromCatalinaLocation(SYSTEM_EXT_CONFIG_FILE, SystemMessages.KERNEL_PROPERTIES_ERROR.message());
         loadSupportedLocales();
+        systemProperties.putAll(System.getenv());
     }
 
     /**
@@ -316,6 +317,11 @@ public abstract class OAF implements OAFAccess {
         return getProperty(cfg.propKey());
     }
 
+    @Override
+    public String getProperty(SystemProperties cfg,String defaultValue) {
+        return getProperty(cfg.propKey(), defaultValue);
+    }
+
     /**
      * Returns the property value based on its identifying key
      *
@@ -324,13 +330,26 @@ public abstract class OAF implements OAFAccess {
      */
     protected String getProperty(String propKey) {
         String codeInfo = null;
+        codeInfo = getString(propKey, codeInfo);
+
+        if (codeInfo == null) {
+            String newKey = propKey.replaceAll("[^a-zA-Z0-9_]+","_");
+            codeInfo = getString(newKey, codeInfo);
+            if (codeInfo == null) {
+                codeInfo = getString(newKey.toUpperCase(), codeInfo);
+                if (codeInfo == null) {
+                    return SystemMessages.KERNEL_PROPERTY_UNAVAILABLE.message() + propKey;
+                }
+            }
+        }
+        return codeInfo;
+    }
+
+    private String getString(String propKey, String codeInfo) {
         try {
             codeInfo = systemProperties.getProperty(propKey);
         } catch (Exception e) {
             log.error("{}: {}", SystemMessages.KERNEL_PROPERTY_UNAVAILABLE.message(), propKey, e);
-        }
-        if (codeInfo == null) {
-            return SystemMessages.KERNEL_PROPERTY_UNAVAILABLE.message() + propKey;
         }
         return codeInfo;
     }
@@ -346,11 +365,7 @@ public abstract class OAF implements OAFAccess {
     protected String getProperty(String propKey, String defaultValue) {
         String codeInfo = defaultValue;
         if (StringUtils.isNotEmpty(propKey)) {
-            try {
-                codeInfo = systemProperties.getProperty(propKey);
-            } catch (Exception e) {
-                log.error("{}: {}", SystemMessages.KERNEL_PROPERTY_UNAVAILABLE.message(), propKey, e);
-            }
+            codeInfo = getString(propKey, codeInfo);
             if (codeInfo == null) {
                 return defaultValue;
             }

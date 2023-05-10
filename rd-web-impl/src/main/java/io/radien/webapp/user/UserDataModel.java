@@ -15,35 +15,43 @@
  */
 package io.radien.webapp.user;
 
+import io.radien.api.model.tenant.SystemActiveTenant;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
+import io.radien.api.service.permission.SystemActionsEnum;
+import io.radien.api.service.permission.SystemResourcesEnum;
+import io.radien.api.service.tenant.ActiveTenantRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
 import io.radien.api.service.user.UserRESTServiceAccess;
+
 import io.radien.exception.SystemException;
-import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import io.radien.ms.usermanagement.client.entities.User;
+
 import io.radien.webapp.AbstractManager;
 import io.radien.webapp.DataModelEnum;
 import io.radien.webapp.JSFUtil;
 import io.radien.webapp.activeTenant.ActiveTenantDataModelManager;
 import io.radien.webapp.activeTenant.ActiveTenantMandatory;
 import io.radien.webapp.authz.WebAuthorizationChecker;
-import io.radien.webapp.tenantrole.LazyTenantRoleUserDataModel;
 import io.radien.webapp.tenantrole.LazyTenantingUserDataModel;
+
 import java.io.Serializable;
+import java.text.MessageFormat;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.LazyDataModel;
-
 /**
- * @author Rajesh Gavvala
+ * Class manages Users data grid
  */
 @Model
 @SessionScoped
@@ -64,36 +72,58 @@ public class UserDataModel extends AbstractManager implements Serializable {
 
     @Inject
     private ActiveTenantDataModelManager activeTenantDataModelManager;
+    
+    @Inject
+    private ActiveTenantRESTServiceAccess activeTenantRESTServiceAccess;
 
     private LazyDataModel<? extends SystemUser> lazyUserDataModel;
 
     private SystemUser selectedUser;
+    private SystemUser updateEmail = new User();
     private SystemUser userForTenantAssociation;
     private SystemUser user = new User();
 
-    private boolean hasUserAdministratorRoleAccess = false;
-    private boolean hasTenantAdministratorRoleAccess = false;
+    private boolean allowedReadUser = false;
+    private boolean allowedUpdateUser = false;
+    private boolean allowedDeleteUser = false;
+    private boolean allowedCreateUser = false;
 
+    private boolean allowedAssociateTenantAndUser = false;
+    private boolean allowedToResetPassword = false;
+    private boolean allowedToUpdateUserEmail = false;
+    
     /**
      * Post construction method for user management page
-     * @throws SystemException SystemException is thrown by the common language runtime when errors occur
      * that are nonfatal and recoverable by user programs.
      */
     @PostConstruct
     public void init() {
         try {
             if(activeTenantDataModelManager.isTenantActive()) {
-                if (!hasUserAdministratorRoleAccess) {
-                    hasUserAdministratorRoleAccess = webAuthorizationChecker.hasUserAdministratorRoleAccess();
+                if (!allowedReadUser) {
+                    allowedReadUser = webAuthorizationChecker.hasPermissionAccess(SystemResourcesEnum.USER.getResourceName(), SystemActionsEnum.ACTION_READ.getActionName(), null);
                 }
-                if (!hasTenantAdministratorRoleAccess) {
-                    hasTenantAdministratorRoleAccess = webAuthorizationChecker.hasTenantAdministratorRoleAccess();
+                if (!allowedUpdateUser) {
+                    allowedUpdateUser = webAuthorizationChecker.hasPermissionAccess(SystemResourcesEnum.USER.getResourceName(), SystemActionsEnum.ACTION_UPDATE.getActionName(), null);
+                }
+                if (!allowedDeleteUser) {
+                    allowedDeleteUser = webAuthorizationChecker.hasPermissionAccess(SystemResourcesEnum.USER.getResourceName(), SystemActionsEnum.ACTION_DELETE.getActionName(), null);
+                }
+                if (!allowedCreateUser) {
+                    allowedCreateUser = webAuthorizationChecker.hasPermissionAccess(SystemResourcesEnum.USER.getResourceName(), SystemActionsEnum.ACTION_CREATE.getActionName(), null);
+                }
+                if (!allowedAssociateTenantAndUser) {
+                    allowedAssociateTenantAndUser = webAuthorizationChecker.hasPermissionAccess(SystemResourcesEnum.TENANT_ROLE_USER.getResourceName(),
+                            SystemActionsEnum.ACTION_CREATE.getActionName(), null);
                 }
 
-                if (hasUserAdministratorRoleAccess) {
+                Long tenantId = getCurrentActiveTenantId();
+                allowedToResetPassword = webAuthorizationChecker.hasPermissionToResetPassword(tenantId);
+
+                allowedToUpdateUserEmail = webAuthorizationChecker.hasPermissionToUpdateUserEmail(tenantId);
+
+                if (allowedReadUser) {
                     // Must retrieve user compatible with the Active Tenant
-                    Long tenantId = activeTenantDataModelManager.getActiveTenant() != null ?
-                            activeTenantDataModelManager.getActiveTenant().getTenantId() : null;
                     lazyUserDataModel = new LazyTenantingUserDataModel(tenantRoleUserRESTServiceAccess,
                             service);
                     ((LazyTenantingUserDataModel) lazyUserDataModel).setTenantId(tenantId);
@@ -108,12 +138,21 @@ public class UserDataModel extends AbstractManager implements Serializable {
     }
 
     /**
+     * Retrieve the active tenant id for the current user
+     * @return long value that corresponds to the tenant id
+     */
+    protected Long getCurrentActiveTenantId() {
+        SystemActiveTenant activeTenant = activeTenantDataModelManager.getActiveTenant();
+        return activeTenant != null ? activeTenant.getTenantId() : null;
+    }
+
+    /**
      * When reloading the user management page
      * @throws SystemException SystemException is thrown by the common language runtime when errors occur
      * that are nonfatal and recoverable by user programs.
      */
     @ActiveTenantMandatory
-    public void onload() throws SystemException {
+    public void onload() {
         init();
     }
 
@@ -159,7 +198,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * Sets a user with a given user object information
      * @param user object to be set
      */
-    public void setUser(SystemUser user) { this.user = user; }
+    public void setUser(SystemUser user) { this.user = user;}
 
     /**
      * Retrieves the active User Rest Service Access information
@@ -178,27 +217,53 @@ public class UserDataModel extends AbstractManager implements Serializable {
     }
 
     /**
-     * Method to update a given user information that have been edited
-     * @param updateUser new user information to be saved
+     * Getter method for the flag property that indicates if the current user has grant
+     * to reset a password or not
+     * @return true for positive case, otherwise false
+     */
+    public boolean isAllowedToResetPassword() {
+        return allowedToResetPassword;
+    }
+
+    /**
+     * Setter method for the flag property that indicates if the current user has grant
+     * to reset a password or not
+     * @param allowedToResetPassword boolean value that if express the user has permission or not to reset password
+     */
+    public void setAllowedToResetPassword(boolean allowedToResetPassword) {
+        this.allowedToResetPassword = allowedToResetPassword;
+    }
+
+    /**
+     * Method to save (create or update) a given user information that have been edited
+     * @param saveUser new user information to be saved (create or update)
      */
     @ActiveTenantMandatory
-    public void updateUser(SystemUser updateUser){
+    public boolean saveUser(SystemUser saveUser, boolean checkForProcessingLocked){
         try{
-            if(updateUser != null){
-                if (updateUser.getId() == null) {
-                    updateUser.setCreateUser(userSessionEnabled.getUserId());
+            if(saveUser != null){
+                if (!checkForProcessingLocked || !saveUser.isProcessingLocked()) {
+                    if (saveUser.getId() == null) {
+                        saveUser.setCreateUser(userSessionEnabled.getUserId());
+                        service.create(saveUser, saveUser.isDelegatedCreation());
+                    } else {
+                        saveUser.setLastUpdateUser(userSessionEnabled.getUserId());
+                        service.updateUser(saveUser);
+                    }
+                    handleMessage(FacesMessage.SEVERITY_INFO,
+                            saveUser.getId() == null ? JSFUtil.getMessage(DataModelEnum.SAVE_SUCCESS_MESSAGE.getValue()) :
+                                    JSFUtil.getMessage(DataModelEnum.EDIT_SUCCESS.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
+                    return true;
                 } else {
-                    updateUser.setLastUpdateUser(userSessionEnabled.getUserId());
+                    
+                    handleMessage(FacesMessage.SEVERITY_ERROR, JSFUtil.getMessage(DataModelEnum.PROCESSINGLOCKED_BLOCKS_ACTION.getValue()));
                 }
-                service.updateUser(updateUser);
-                handleMessage(FacesMessage.SEVERITY_INFO,
-                        updateUser.getId() == null ? JSFUtil.getMessage(DataModelEnum.SAVE_SUCCESS_MESSAGE.getValue()) :
-                        JSFUtil.getMessage(DataModelEnum.EDIT_SUCCESS.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
             }
         }catch (Exception e){
-            handleError(e, updateUser.getId() == null ? JSFUtil.getMessage(DataModelEnum.SAVE_ERROR_MESSAGE.getValue()) :
+            handleError(e, saveUser.getId() == null ? JSFUtil.getMessage(DataModelEnum.SAVE_ERROR_MESSAGE.getValue()) :
                     JSFUtil.getMessage(DataModelEnum.EDIT_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
         }
+        return false;
     }
 
     /**
@@ -207,13 +272,34 @@ public class UserDataModel extends AbstractManager implements Serializable {
     @ActiveTenantMandatory
     public void deleteUser(){
         try{
-            if(selectedUser != null){
-                service.deleteUser(selectedUser.getId());
-                handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.DELETE_SUCCESS.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
+            if(selectedUser != null) {
+                if (!selectedUser.isProcessingLocked()) {
+                    Long userId = selectedUser.getId();
+                    service.deleteUser(userId);
+
+                    List<? extends SystemTenantRoleUser> tenantRolesUser = tenantRoleUserRESTServiceAccess.getTenantRoleUsers(null, userId, false);
+                    for (SystemTenantRoleUser systemTenantRoleUser : tenantRolesUser) {
+                        tenantRoleUserRESTServiceAccess.delete(systemTenantRoleUser.getTenantRoleId());
+                    }
+
+                    List<? extends SystemActiveTenant> activeTenants = activeTenantRESTServiceAccess.getActiveTenantByFilter(userId, null);
+                    for (SystemActiveTenant systemActiveTenant : activeTenants) {
+                        activeTenantRESTServiceAccess.delete(systemActiveTenant.getId());
+                    }
+
+                    handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.DELETE_SUCCESS.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
+                }else {
+                    handleMessage(FacesMessage.SEVERITY_ERROR, JSFUtil.getMessage(DataModelEnum.PROCESSINGLOCKED_BLOCKS_ACTION.getValue()), "");
+                }
             }
         }catch (Exception e){
             handleError(e, JSFUtil.getMessage(DataModelEnum.DELETE_ERROR.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
         }
+    }
+
+    public void changeProcessingLocked(SystemUser saveUser){
+        saveUser.setProcessingLocked(!saveUser.isProcessingLocked());
+        saveUser(saveUser, false);
     }
 
     /**
@@ -229,6 +315,17 @@ public class UserDataModel extends AbstractManager implements Serializable {
         }catch (Exception e){
             handleError(e, JSFUtil.getMessage(DataModelEnum.SENT_UPDATE_PASSWORD_EMAIL_ERROR.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
         }
+    }
+
+    /**
+     * Assemblies a message to be shown in the frontend when an administrator
+     * requests to reset the password of a selected user
+     * @return message to be shown
+     */
+    public String getResetPasswordMessage() {
+        String userLogin = selectedUser != null? selectedUser.getLogon() : "";
+        return MessageFormat.format(JSFUtil.getMessage(DataModelEnum.USER_RESET_PASSWORD_CONFIRM_MESSAGE.getValue()),
+                userLogin);
     }
 
     /**
@@ -249,7 +346,9 @@ public class UserDataModel extends AbstractManager implements Serializable {
      */
     @ActiveTenantMandatory
     public String deleteRecord() {
-        if (selectedUser != null) {
+        if (checkProcessingLocked()) {
+            handleMessage(FacesMessage.SEVERITY_ERROR, JSFUtil.getMessage(DataModelEnum.PROCESSINGLOCKED_BLOCKS_ACTION.getValue()));
+        } else if (selectedUser != null) {
             return DataModelEnum.USER_DELETE_PATH.getValue();
         }
         return DataModelEnum.USERS_PATH.getValue();
@@ -272,7 +371,9 @@ public class UserDataModel extends AbstractManager implements Serializable {
      */
     @ActiveTenantMandatory
     public String userProfile() {
-        if(selectedUser != null) {
+        if (checkProcessingLocked()) {
+            handleMessage(FacesMessage.SEVERITY_ERROR, JSFUtil.getMessage(DataModelEnum.PROCESSINGLOCKED_BLOCKS_ACTION.getValue()));
+        } else if(selectedUser != null) {
             return DataModelEnum.USERS_PROFILE_PATH.getValue();
         }
         return DataModelEnum.USERS_PATH.getValue();
@@ -284,13 +385,12 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @return users HTML page
      */
     public String userRoles() {
-        try {
-            if(selectedUser != null) {
-                return DataModelEnum.USERS_ROLES_PATH.getValue();
-            }
-        } catch(Exception e) {
-            handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()),
-                    JSFUtil.getMessage(DataModelEnum.USERS_MESSAGE.getValue()));
+
+        if (checkProcessingLocked()) {
+            handleMessage(FacesMessage.SEVERITY_ERROR, JSFUtil.getMessage(DataModelEnum.PROCESSINGLOCKED_BLOCKS_ACTION.getValue()));
+        } else if (selectedUser != null) {
+            return DataModelEnum.USERS_ROLES_PATH.getValue();
+
         }
         return DataModelEnum.USERS_PATH.getValue();
     }
@@ -301,7 +401,9 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @return users HTML page
      */
     public String userUnAssign() {
-        if (selectedUser != null) {
+        if (checkProcessingLocked()) {
+            handleMessage(FacesMessage.SEVERITY_ERROR, JSFUtil.getMessage(DataModelEnum.PROCESSINGLOCKED_BLOCKS_ACTION.getValue()));
+        } else if (selectedUser != null) {
             return DataModelEnum.USER_UN_ASSIGN_PATH.getValue();
         }
         return DataModelEnum.USERS_PATH.getValue();
@@ -333,7 +435,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * Check if the tenant association process is allowed to be started from
      * the following perspective:
      * <ul>
-     *     <li>Current logged user has the right roles (the one who will start/trigger the process)</li>
+     *     <li>Current logged user has the right permission (ex: to associate an user to one tenant)</li>
      *     <li>There is a user available to be associated with a Tenant (i.e a newly created user
      *     or a previously selected one from the data grid)</li>
      * </ul>
@@ -342,7 +444,7 @@ public class UserDataModel extends AbstractManager implements Serializable {
     @ActiveTenantMandatory
     public boolean isTenantAssociationProcessAllowed() {
         try {
-            if (!hasTenantAdministratorRoleAccess) {
+            if (!allowedAssociateTenantAndUser) {
                 return false;
             }
             this.userForTenantAssociation = findUserToAssociate();
@@ -379,40 +481,61 @@ public class UserDataModel extends AbstractManager implements Serializable {
      * @return url mapping that refers Tenant association screen
      */
     public String prepareTenantAssociation() {
-        return DataModelEnum.USER_ASSIGNING_TENANT_ASSOCIATION_PATH.getValue();
+        if (checkProcessingLocked()) {
+            handleMessage(FacesMessage.SEVERITY_ERROR, JSFUtil.getMessage(DataModelEnum.PROCESSINGLOCKED_BLOCKS_ACTION.getValue()));
+            JSFUtil.addErrorMessage(DataModelEnum.PROCESSINGLOCKED_BLOCKS_ACTION.getValue());
+            return DataModelEnum.USER_PATH.getValue();
+        }  else {
+            return DataModelEnum.USER_ASSIGNING_TENANT_ASSOCIATION_PATH.getValue();
+        }
+    }
+
+    public boolean isAllowedReadUser() {
+        return allowedReadUser;
+    }
+
+    public void setAllowedReadUser(boolean allowedReadUser) {
+        this.allowedReadUser = allowedReadUser;
+    }
+
+    public boolean isAllowedUpdateUser() {
+        return allowedUpdateUser;
+    }
+
+    public void setAllowedUpdateUser(boolean allowedUpdateUser) {
+        this.allowedUpdateUser = allowedUpdateUser;
+    }
+
+    public boolean isAllowedDeleteUser() {
+        return allowedDeleteUser;
+    }
+
+    public void setAllowedDeleteUser(boolean allowedDeleteUser) {
+        this.allowedDeleteUser = allowedDeleteUser;
+    }
+
+    public boolean isAllowedCreateUser() {
+        return allowedCreateUser;
+    }
+
+    public void setAllowedCreateUser(boolean allowedCreateUser) {
+        this.allowedCreateUser = allowedCreateUser;
     }
 
     /**
-     * Validates if current user has System Administrator or User Administrator roles
-     * @return true in case of so
-     */
-    public boolean getHasUserAdministratorRoleAccess() {
-        return hasUserAdministratorRoleAccess;
-    }
-
-    /**
-     * Sets if current user has System Administrator or User Administrator roles
-     */
-    public void setHasUserAdministratorRoleAccess(boolean hasUserAdministratorRoleAccess) {
-        this.hasUserAdministratorRoleAccess = hasUserAdministratorRoleAccess;
-    }
-
-    /**
-     * Flag indicating if current user has System Administrator or any other Tenant Administration role
+     * Flag indicating if current user has permission to associate another user to one tenant
      * @return true if such condition is affirmative, false otherwise
      */
-    public boolean isHasTenantAdministratorRoleAccess() {
-        return hasTenantAdministratorRoleAccess;
-    }
+    public boolean isAllowedAssociateTenantAndUser() { return allowedAssociateTenantAndUser; }
 
     /**
-     * Sets a flag indicating if the current user has System Administrator or
-     * any other Tenant Administration role
-     * @param hasTenantAdministratorRoleAccess boolean value to be set
+     * Sets a flag indicating if the current user has permission to associate another user to one tenant
+     * @param allowedAssociateTenantAndUser boolean value to be set
      */
-    public void setHasTenantAdministratorRoleAccess(boolean hasTenantAdministratorRoleAccess) {
-        this.hasTenantAdministratorRoleAccess = hasTenantAdministratorRoleAccess;
+    public void setAllowedAssociateTenantAndUser(boolean allowedAssociateTenantAndUser) {
+        this.allowedAssociateTenantAndUser = allowedAssociateTenantAndUser;
     }
+
 
     /**
      * Getter that refers tne User for whom will be applied the association with a tenant and a role
@@ -430,5 +553,72 @@ public class UserDataModel extends AbstractManager implements Serializable {
         this.userForTenantAssociation = userForTenantAssociation;
     }
 
+    /**
+     * Redirects to user userEmailUpdate
+     * page when it invokes
+     * @return users page
+     */
+    public String userEmailUpdate() {
+        if (selectedUser != null) {
+            return DataModelEnum.USER_EMAIL_UPDATE.getValue();
+        }
+        return DataModelEnum.USERS_PATH.getValue();
+    }
+
+    /**
+     * Updates email and sends verification email for a user
+     */
+    public String updateUserEmailAndExecuteActionEmailVerify(){
+        try{
+            if(selectedUser.getId() != null && updateEmail.getUserEmail() != null){
+                service.updateEmailAndExecuteActionEmailVerify(selectedUser.getId(), updateEmail, true);
+                handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.SENT_UPDATED_EMAIL_VERIFY_SUCCESS.getValue()),
+                        JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
+                onload();
+                returnToDataTableRecords();
+            }
+        }catch (Exception e){
+            handleError(e, JSFUtil.getMessage(DataModelEnum.SENT_UPDATED_EMAIL_VERIFY_ERROR.getValue()), JSFUtil.getMessage(DataModelEnum.USER_MESSAGE.getValue()));
+        }
+        return DataModelEnum.USERS_PATH.getValue();
+    }
+
+    /**
+     * Getter method for the flag property that indicates if the current user
+     * has grant to update email
+     * @return true for positive case, otherwise false
+     */
+    public boolean isAllowedToUpdateUserEmail() {
+        return allowedToUpdateUserEmail;
+    }
+
+    /**
+     * Setter method for the flag property that indicates if the current user has grant
+     * to reset a update email or not
+     * @param allowedToUpdateUserEmail boolean value that if express the user has permission or not to reset password
+     */
+    public void setAllowedToUpdateUserEmail(boolean allowedToUpdateUserEmail) {
+        this.allowedToUpdateUserEmail = allowedToUpdateUserEmail;
+    }
+
+    /**
+     * Getter method for the user which has email attribute
+     * @return User containing update email info
+     */
+    public SystemUser getUpdateEmail() {
+        return updateEmail;
+    }
+
+    /**
+     * Setter method for the user which has only emailed attribute
+     * @param updateEmail info
+     */
+    public void setUpdateEmail(SystemUser updateEmail) {
+        this.updateEmail = updateEmail;
+    }
+
+    public boolean checkProcessingLocked() {
+        return (selectedUser != null && selectedUser.isProcessingLocked() || selectedUser == null && user.isProcessingLocked());
+    }
 
 }

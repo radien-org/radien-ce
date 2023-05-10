@@ -1,0 +1,6 @@
+[
+  { "name":  "I18N"},
+  { "name":  "DocumentTypeManagement"},
+  { "name":  "PropertyDefinitionManagement"},
+  { "name":  "MixinDefinitionManagement"}
+]

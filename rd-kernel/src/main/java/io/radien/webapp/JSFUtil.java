@@ -86,7 +86,7 @@ public class JSFUtil {
 			log.error("Null External Context");
 			return Optional.empty();
 		}
-		return Optional.of(externalContext.getRequestParameterMap()
+		return Optional.ofNullable(externalContext.getRequestParameterMap()
 				.get(attribute));
 	}
 
@@ -176,6 +176,12 @@ public class JSFUtil {
 		Object request = context.getExternalContext().getRequest();
 		assert request instanceof HttpServletRequest;
 		return (HttpServletRequest) request;
+	}
+
+	public static HttpServletResponse getResponse(FacesContext context) {
+		Object response = context.getExternalContext().getResponse();
+		assert response instanceof HttpServletResponse;
+		return (HttpServletResponse) response;
 	}
 
 	/**
@@ -290,7 +296,7 @@ public class JSFUtil {
 		addMessage(severity, title, message);
 	}
 
-
-
-
+	public static void redirect(String destination){
+		getFacesContext().getApplication().getNavigationHandler().handleNavigation(JSFUtil.getFacesContext(), null, destination);
+	}
 }

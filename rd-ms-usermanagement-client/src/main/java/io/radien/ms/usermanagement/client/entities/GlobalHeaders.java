@@ -57,7 +57,9 @@ public class GlobalHeaders implements ClientHeadersFactory {
     @Override
     public MultivaluedMap<String, String> update(MultivaluedMap<String, String> incomingHeaders, MultivaluedMap<String, String> outgoingHeaders) {
         //TODO: Understand why standard injection is not working
-        tokensPlaceHolder =  CDI.current().select(TokensPlaceHolder.class).get();
+        if(tokensPlaceHolder == null) {
+            tokensPlaceHolder = CDI.current().select(TokensPlaceHolder.class).get();
+        }
         MultivaluedMap<String, String> result = new MultivaluedHashMap<>();
 
         if(tokensPlaceHolder.getAccessToken() != null) {
