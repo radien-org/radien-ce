@@ -17,7 +17,6 @@ package io.radien.webapp.i18n;
 
 import io.radien.webapp.AbstractLocaleManager;
 import io.radien.webapp.JSFUtil;
-import io.radien.webapp.JSFUtilAndFaceContextMessagesTest;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -33,30 +32,35 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.ValueChangeEvent;
+
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 /**
  * Class that aggregates UnitTest cases for LocaleManager
  *
  * @author Rajesh Gavvala
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class})
+
 public class LocaleManagerTest {
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
     @InjectMocks
     LocaleManager localeManager;
 
@@ -76,10 +80,36 @@ public class LocaleManagerTest {
     List<String> defaultLocalList = new ArrayList<>();
     Map<String, Locale> defaultLocalList1 = new HashMap<>();
 
+    private static MockedStatic<FacesContext> facesContextMockedStatic;
+    private static MockedStatic<JSFUtil> jsfUtilMockedStatic;
+
+    @BeforeClass
+    public static void beforeClass(){
+        facesContextMockedStatic = Mockito.mockStatic(FacesContext.class);
+        jsfUtilMockedStatic = Mockito.mockStatic(JSFUtil.class);
+    }
+
+    @AfterClass
+    public static void afterClass(){
+        if(facesContextMockedStatic!=null) {
+            facesContextMockedStatic.close();
+        }
+        if(jsfUtilMockedStatic!=null) {
+            jsfUtilMockedStatic.close();
+        }
+    }
+
     @Before
     public void before() {
-        MockitoAnnotations.initMocks(this);
 
+        context = mock(FacesContext.class);
+        when(FacesContext.getCurrentInstance()).thenReturn(context);
+
+        ExternalContext externalContext = mock(ExternalContext.class);
+        when(context.getExternalContext()).thenReturn(externalContext);
+
+        when(JSFUtil.getFacesContext()).thenReturn(context);
+        when(JSFUtil.getExternalContext()).thenReturn(externalContext);
 
         defaultLocalList.add("en");
         defaultLocalList.add("new_language");
@@ -97,9 +127,14 @@ public class LocaleManagerTest {
         localeManager.languageChanged(valueChangeEvent);
     }
 
-    @Test(expected = ExceptionInInitializerError.class)
+    @Test(expected = NullPointerException.class)
     public void timeZoneChangedListener_getClientOffset_exception_test() {
-        when( Objects.requireNonNull( JSFUtil.getExternalContext()).getRequestLocale()).thenReturn(Locale.forLanguageTag("en-US"));
+        when(Objects.requireNonNull(JSFUtil.getExternalContext()).getRequestLocale()).thenReturn(Locale.forLanguageTag("en-US"));
+
+        UIViewRoot uiViewRoot = Mockito.mock(UIViewRoot.class);
+        when(context.getViewRoot()).thenReturn(uiViewRoot);
+
+        localeManager.setClientTzOffset(null);
         localeManager.timezoneChangedListener(ajaxBehaviorEvent);
     }
 

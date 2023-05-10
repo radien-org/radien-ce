@@ -1,0 +1,12 @@
+[
+{ "name": "Permission Administrator", "description": "The Role for Permission Management Testing purposes!"},
+{ "name": "Role Administrator", "description": "The Role for Role Management Testing purposes!"},
+{ "name": "User Administrator", "description": "The Role for User Management Testing purposes!"},
+{ "name": "Tenant Administrator", "description": "The Role for Tenant Management Testing purposes!"},
+{ "name": "Client Tenant Administrator", "description": "The Role for the Client Tenant administrators!"},
+{ "name": "Sub Tenant Administrator", "description": "The Role for the Sub Tenant administrators!"},
+{ "name": "Guest", "description": "The Role for Guests!"},
+{ "name": "Approver", "description": "The Role for users that only approve data!"},
+{ "name": "Author", "description": "The Role for users that only create data!"},
+{ "name": "Publisher", "description": "The Role for the publishers!"}
+]

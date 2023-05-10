@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>io.radien</groupId>
 		<artifactId>appframe</artifactId>
-	  	<version>rd-1.0.0-SNAPSHOT</version>
+	  	<version>rd-0.0.2-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -39,16 +39,6 @@
 				<artifactId>tomee-maven-plugin</artifactId>
 				<version>${version.tomee-maven-plugin}</version>
 			</plugin>
-
-			<!-- <plugin> <groupId>org.apache.openjpa</groupId> <artifactId>openjpa-maven-plugin</artifactId> 
-				<version>3.1.2</version> <executions> <execution> <id>enhancer</id> <phase>process-classes</phase> 
-				<goals> <goal>enhance</goal> </goals> </execution> </executions> <dependencies> 
-				<dependency> <groupId>org.apache.openjpa</groupId> <artifactId>openjpa</artifactId> 
-				<version>3.1.2</version> </dependency> </dependencies> <configuration> <includes>**/entities/*.class</includes> 
-				<excludes>**/entities/XML*.class</excludes> <addDefaultConstructor>true</addDefaultConstructor> 
-				<enforcePropertyRestrictions>true</enforcePropertyRestrictions> </configuration> 
-				</plugin> -->
-
 		</plugins>
 	</build>
 	<profiles>
@@ -104,6 +94,14 @@
 		<dependency>
 			<groupId>io.radien</groupId>
 			<artifactId>rd-ms-config-lib</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-notificationmanagement-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.radien</groupId>
+			<artifactId>rd-ms-ecm-client</artifactId>
 		</dependency>
 
 		<!-- Microprofile -->
@@ -163,14 +161,23 @@
 		<dependency>
 			<groupId>org.apache.johnzon</groupId>
 			<artifactId>johnzon-core</artifactId>
-			<version>1.2.10</version>
 			<scope>test</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.tomee/openejb-mockito -->
 		<dependency>
 			<groupId>org.apache.tomee</groupId>
 			<artifactId>openejb-mockito</artifactId>
-			<version>8.0.6</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.mockito</groupId>
+					<artifactId>mockito-core</artifactId>
+				</exclusion>
+			</exclusions>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-inline</artifactId>
 			<scope>test</scope>
 		</dependency>
 
@@ -183,7 +190,7 @@
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-admin-client</artifactId>
-			<version>14.0.0</version>
+			<version>16.1.1</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.jboss.resteasy</groupId>
@@ -206,20 +213,14 @@
 		<dependency>
 			<groupId>org.apache.geronimo.config</groupId>
 			<artifactId>geronimo-config-impl</artifactId>
-			<version>1.2.1</version>
+			<version>1.2.2</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-module-junit4</artifactId>
-			<version>2.0.9</version>
-			<scope>test</scope>
+			<groupId>com.konghq</groupId>
+			<artifactId>unirest-java</artifactId>
+			<classifier>standalone</classifier>
 		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-api-mockito2</artifactId>
-			<version>2.0.9</version>
-			<scope>test</scope>
-		</dependency>
+
 	</dependencies>
 </project>

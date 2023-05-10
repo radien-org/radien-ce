@@ -33,7 +33,7 @@ import io.radien.ms.tenantmanagement.client.entities.TenantType;
 import io.radien.ms.tenantmanagement.client.services.TenantFactory;
 import io.radien.webapp.LazyAbstractDataModel;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,7 +125,7 @@ public class LazyTenantRoleAssociationDataModelTest {
         List<SystemTenant> tenants = new ArrayList<>();
         ids.forEach(id -> {
             SystemTenant tenant = TenantFactory.create(String.valueOf(id), String.valueOf(id),
-                    TenantType.SUB_TENANT, null, null, null,
+                    TenantType.SUB, null, null, null,
                     null, null, null, null,
                     null, null, null, null);
             tenant.setId(id);
@@ -155,7 +155,7 @@ public class LazyTenantRoleAssociationDataModelTest {
         List<Long> ids = LongStream.rangeClosed(1, pageSize)
                 .boxed().collect(Collectors.toList());
 
-        when(service.getAll(pageNo+1, pageSize)).then(i -> setupMockedPage(pageSize));
+        when(service.getAll(null,null,pageNo+1, pageSize,null,false)).then(i -> setupMockedPage(pageSize));
         when(roleService.getRolesByIds(ids)).then(i -> setupMockedRoleList(ids));
         when(tenantService.getTenantsByIds(ids)).then(i -> setupMockedTenantList(ids));
 
@@ -210,8 +210,8 @@ public class LazyTenantRoleAssociationDataModelTest {
         lazyDataModelLogger.addAppender(listAppender);
 
         // Mocking the processing
-        List<Long> ids = Arrays.asList(1L);
-        when(service.getAll(pageNo+1, pageSize)).then(i -> setupMockedPage(pageSize));
+        List<Long> ids = Collections.singletonList(1L);
+        when(service.getAll(null,null,pageNo+1, pageSize,null,false)).then(i -> setupMockedPage(pageSize));
         when(tenantService.getTenantsByIds(ids)).then(i -> setupMockedTenantList(ids));
         when(roleService.getRolesByIds(ids)).thenThrow(new SystemException(msgError));
 

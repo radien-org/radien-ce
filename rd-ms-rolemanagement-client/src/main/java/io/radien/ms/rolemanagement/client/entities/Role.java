@@ -35,9 +35,6 @@ public class Role extends AbstractRoleModel implements SystemRole {
     private String name;
     private String description;
 
-    @JsonbDateFormat(value = "yyyy-MM-dd'T'HH:mm:ssZZ")
-    private Date terminationDate;
-
     /**
      * Role empty constructor
      */
@@ -51,7 +48,6 @@ public class Role extends AbstractRoleModel implements SystemRole {
         this.id=role.getId();
         this.name=role.getName();
         this.description=role.getDescription();
-        this.terminationDate = role.getTerminationDate();
         this.setCreateDate(role.getCreateDate());
         this.setCreateUser(role.getCreateUser());
         this.setLastUpdateUser(role.getLastUpdateUser());
@@ -103,20 +99,5 @@ public class Role extends AbstractRoleModel implements SystemRole {
      */
     public void setDescription(String description) {
         this.description=description;
-    }
-
-    /**
-     * Role termination date getter
-     * @return role termination date
-     */
-    public Date getTerminationDate() {
-        return terminationDate;
-    }
-
-    /**
-     * Role termination date setter
-     */
-    public void setTerminationDate(Date terminationDate) {
-        this.terminationDate = terminationDate;
     }
 }

@@ -65,6 +65,14 @@ public interface ActionRESTServiceAccess extends Appframeable {
     public boolean create(SystemAction action) throws SystemException;
 
     /**
+     * Update given action
+     * @param action to be updated
+     * @return true if action has been updated with success or false if not
+     * @throws SystemException in case of token expiration or any issue on the application
+     */
+    public boolean update(SystemAction action) throws SystemException;
+
+    /**
      * Deletes given action
      * @param actionId to be deleted
      * @return true if action has been deleted with success or false if not

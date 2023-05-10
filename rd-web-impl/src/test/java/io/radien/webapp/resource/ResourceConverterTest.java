@@ -22,25 +22,24 @@ import io.radien.api.service.permission.ResourceRESTServiceAccess;
 
 import io.radien.ms.permissionmanagement.client.entities.Resource;
 
-import io.radien.webapp.JSFUtil;
 import io.radien.webapp.JSFUtilAndFaceContextMessagesTest;
 
 import java.util.Optional;
 
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.ConverterException;
 
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -52,8 +51,6 @@ import static org.mockito.Mockito.doReturn;
  *
  * @author Rajesh Gavvala
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class})
 public class ResourceConverterTest extends JSFUtilAndFaceContextMessagesTest {
 
     @InjectMocks
@@ -62,21 +59,29 @@ public class ResourceConverterTest extends JSFUtilAndFaceContextMessagesTest {
     @Mock
     private ResourceRESTServiceAccess resourceRESTServiceAccess;
 
-    FacesContext facesContext;
+   static FacesContext facesContext;
 
     SystemResource systemResource;
     Optional<SystemResource> optionalSystemResource;
 
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
+    @BeforeClass
+    public static void beforeClass(){
+        facesContext = getFacesContext();
+    }
+
+    @AfterClass
+    public static void afterClass(){
+        destroy();
+    }
 
     /**
      * Constructs mock object
      */
     @Before
     public void before(){
-        MockitoAnnotations.initMocks(this);
-
-        facesContext = getFacesContext();
-
         systemResource = new Resource();
         systemResource.setName("testResource");
 

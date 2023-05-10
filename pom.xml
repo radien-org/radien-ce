@@ -6,7 +6,7 @@
 	<packaging>pom</packaging>
 	<name>radien - an open appframe - ${project.version}</name>
 	<description>radien - an open app frame</description>
-	<version>rd-1.0.0-SNAPSHOT</version>
+	<version>rd-0.0.2-SNAPSHOT</version>
 	<modules>
 		<module>rd-api</module>
 		<module>rd-persistence</module>
@@ -30,8 +30,16 @@
 		<module>rd-ms-rolemanagement</module>
 		<module>rd-ms-rolemanagement-client</module>
 		<module>rd-ms-config-lib</module>
-
-  </modules>
+		<module>rd-ms-email-lib</module>
+		<module>rd-ms-ticketmanagement</module>
+		<module>rd-ms-ticketmanagement-client</module>
+        <module>rd-ms-doctypemanagement</module>
+        <module>rd-ms-doctypemanagement-client</module>
+        <module>rd-ms-notificationmanagement</module>
+        <module>rd-ms-notificationmanagement-client</module>
+        <module>rd-ms-keycloak-themes</module>
+    	<module>rd-lambda-notificationmanagement</module>
+  	</modules>
 	<properties>
 
 		<!-- SonarQube Properties -->
@@ -46,12 +54,12 @@
 
 		<!-- Maven Plugins -->
 		<version.maven-eclipse-plugin>2.10</version.maven-eclipse-plugin>
-		<version.maven-compiler-plugin>3.8.1</version.maven-compiler-plugin>
+		<version.maven-compiler-plugin>3.10.1</version.maven-compiler-plugin>
 		<version.maven-jar-plugin>3.2.0</version.maven-jar-plugin>
-		<version.maven-war-plugin>3.3.1</version.maven-war-plugin>
-		<version.maven-surefire-plugin>2.22.0</version.maven-surefire-plugin>
+		<version.maven-war-plugin>3.3.2</version.maven-war-plugin>
+		<version.maven-surefire-plugin>2.22.2</version.maven-surefire-plugin>
 
-		<version.tomee-maven-plugin>8.0.6</version.tomee-maven-plugin>
+		<version.tomee-maven-plugin>8.0.9</version.tomee-maven-plugin>
 
 		<!-- Jakarta EE -->
 		<version.jakarta.jakartaee-api>8.0.0</version.jakarta.jakartaee-api>
@@ -60,58 +68,74 @@
 		<version.javaee-api>8.0-5</version.javaee-api>
 
 		<!-- JSF -->
-		<version.jakarta.faces-api>2.3.2</version.jakarta.faces-api>
+		<version.jakarta.faces-api>3.0.0</version.jakarta.faces-api>
 		<version.tomee-mojarra>8.0.5</version.tomee-mojarra>
 		<version.bootsfaces>1.5.0</version.bootsfaces>
-		<version.omnifaces>3.8.1</version.omnifaces>
+		<version.omnifaces>3.13</version.omnifaces>
 
 		<!-- prettyfaces -->
-		<version.rewrite-config-prettyfaces>3.4.4.Final</version.rewrite-config-prettyfaces>
-		<version.rewrite-servlet>3.4.4.Final</version.rewrite-servlet>
+		<version.rewrite-config-prettyfaces>3.5.1.Final</version.rewrite-config-prettyfaces>
+		<version.rewrite-servlet>3.5.1.Final</version.rewrite-servlet>
 
 		<!-- Eclipselink -->
-		<version.eclipselink>2.7.7</version.eclipselink>
+		<version.eclipselink>2.7.10</version.eclipselink>
 
 		<!-- DB -->
-		<version.hsqldb>2.5.1</version.hsqldb>
+		<version.hsqldb>2.5.2</version.hsqldb>
+		<version.mongodb-driver>3.12.10</version.mongodb-driver>
+
+		<!-- Jackrabbit -->
+		<version.jcr>2.0</version.jcr>
+		<version.oak>1.42.0</version.oak>
+		<version.jackrabbit>2.21.9</version.jackrabbit>
 
 		<!-- Microprofile -->
 		<version.microprofile>3.3</version.microprofile>
 
 		<!-- CXF Core -->
-		<version.cxf-rt-rs-mp-client>3.4.3</version.cxf-rt-rs-mp-client>
-
+		<version.cxf-rt-rs-mp-client>3.5.0</version.cxf-rt-rs-mp-client>
 
 		<!-- Logging -->
-		<version.slf4j-api>1.7.30</version.slf4j-api>
-		<version.jcl-over-slf4j>1.7.30</version.jcl-over-slf4j>
-		<version.logback-classic>1.2.3</version.logback-classic>
-		<version.logback-core>1.2.3</version.logback-core>
+		<version.slf4j-api>1.7.32</version.slf4j-api>
+		<version.jcl-over-slf4j>1.7.35</version.jcl-over-slf4j>
+		<version.logback-classic>1.2.10</version.logback-classic>
+		<version.logback-core>1.2.10</version.logback-core>
 
 		<!-- Commons -->
-		<version.commons-lang3>3.11</version.commons-lang3>
+		<version.commons-lang3>3.12.0</version.commons-lang3>
 		<version.httpclient>4.5.13</version.httpclient>
 
 		<!-- Jackson xml -->
-		<version.jackson-core>2.12.0</version.jackson-core>
+		<version.jackson-core>2.13.1</version.jackson-core>
+		<version.jackson-databind>2.13.2.1</version.jackson-databind>
 
 		<!-- mail -->
 		<version.rmiio>2.1.2</version.rmiio>
 
 		<!-- Security -->
-		<version.jwks-rsa>0.15.0</version.jwks-rsa>
+		<version.jwks-rsa>0.20.1</version.jwks-rsa>
+
+		<!-- Templating -->
+		<version.antlr.st4>4.3.1</version.antlr.st4>
+
+		<!-- JSON -->
+		<version.json.simple>1.1.1</version.json.simple>
 
 		<!-- test -->
-		<version.arquillian-openejb-embedded>8.0.5</version.arquillian-openejb-embedded>
+		<version.arquillian-openejb-embedded>8.0.9</version.arquillian-openejb-embedded>
 		<version.junit>4.13.1</version.junit>
-		<version.junit.jupiter>5.7.1</version.junit.jupiter>
+		<version.junit.jupiter>5.8.2</version.junit.jupiter>
 		<version.mock.jupiter>5.7.1</version.mock.jupiter>
-		<version.mockito.core>2.23.0</version.mockito.core>
-		<version.powermock.core>2.0.9</version.powermock.core>
+		<version.mockito.inline>4.3.1</version.mockito.inline>
+		<version.jersey.common>2.22.2</version.jersey.common>
+		<version.johnzon.core>1.2.16</version.johnzon.core>
+		<version.openejb-mockito>8.0.9</version.openejb-mockito>
+		<version.johnzon.jsonb>1.2.16</version.johnzon.jsonb>
+		<version.embeded.mongo>3.3.1</version.embeded.mongo>
 
 		<!-- primeface -->
 		<version.primefaces>10.0.0</version.primefaces>
-		<version.primefaces.ext>10.0.0</version.primefaces.ext>
+		<version.primefaces.ext>11.0.1</version.primefaces.ext>
 
 		<!-- Props -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -123,13 +147,34 @@
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.language>java</sonar.language>
 		<sonar.java.binaries>${project.basedir}/target/classes</sonar.java.binaries>
+
+		<!-- PlantUML -->
+		<version.com.github.jeluard>7940</version.com.github.jeluard>
+		<version.net.sourceforge.plantuml>7976</version.net.sourceforge.plantuml>
+
+		<version.unirest>3.13.6</version.unirest>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
+            <dependency>
+                <groupId>io.radien</groupId>
+                <artifactId>rd-ms-doctypemanagement-client</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
 			<!-- radien modules -->
 			<dependency>
 				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-keycloak-themes</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
 				<artifactId>rd-api</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-email-lib</artifactId>
 				<version>${project.parent.version}</version>
 			</dependency>
 			<dependency>
@@ -189,12 +234,22 @@
 			</dependency>
 			<dependency>
 				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-ticketmanagement-client</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
 				<artifactId>rd-ms-permissionmanagement-client</artifactId>
 				<version>${project.parent.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.radien</groupId>
 				<artifactId>rd-ms-rolemanagement-client</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.radien</groupId>
+				<artifactId>rd-ms-notificationmanagement-client</artifactId>
 				<version>${project.parent.version}</version>
 			</dependency>
 			<dependency>
@@ -234,6 +289,7 @@
 
 
 			<!-- JSF -->
+
 			<!-- https://mvnrepository.com/artifact/jakarta.faces/jakarta.faces-api -->
 			<dependency>
 				<groupId>jakarta.faces</groupId>
@@ -241,20 +297,20 @@
 				<version>${version.jakarta.faces-api}</version>
 				<scope>provided</scope>
 			</dependency>
+
 			<!-- https://mvnrepository.com/artifact/net.bootsfaces/bootsfaces -->
 			<dependency>
 				<groupId>net.bootsfaces</groupId>
 				<artifactId>bootsfaces</artifactId>
 				<version>${version.bootsfaces}</version>
 			</dependency>
+
 			<!-- https://mvnrepository.com/artifact/org.omnifaces/omnifaces -->
 			<dependency>
 				<groupId>org.omnifaces</groupId>
 				<artifactId>omnifaces</artifactId>
 				<version>${version.omnifaces}</version>
 			</dependency>
-
-
 
 			<!-- https://mvnrepository.com/artifact/org.apache.tomee/tomee-mojarra -->
 			<dependency>
@@ -330,7 +386,7 @@
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
-				<version>${version.jackson-core}</version>
+				<version>${version.jackson-databind}</version>
 			</dependency>
 
 			<!-- Mail -->
@@ -348,6 +404,21 @@
 				<groupId>com.auth0</groupId>
 				<artifactId>jwks-rsa</artifactId>
 				<version>${version.jwks-rsa}</version>
+			</dependency>
+
+			<!-- Templating -->
+			<!-- https://mvnrepository.com/artifact/org.antlr/ST4 -->
+			<dependency>
+				<groupId>org.antlr</groupId>
+				<artifactId>ST4</artifactId>
+				<version>${version.antlr.st4}</version>
+			</dependency>
+
+			<!-- JSON -->
+			<dependency>
+				<groupId>com.googlecode.json-simple</groupId>
+				<artifactId>json-simple</artifactId>
+				<version>${version.json.simple}</version>
 			</dependency>
 
 			<!-- Logging -->
@@ -395,6 +466,21 @@
 				<scope>test</scope>
 			</dependency>
 
+			<!-- https://mvnrepository.com/artifact/org.apache.johnzon/johnzon-core -->
+			<dependency>
+				<groupId>org.apache.johnzon</groupId>
+				<artifactId>johnzon-core</artifactId>
+				<version>${version.johnzon.core}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/com.github.jeluard/maven-plantuml-plugin -->
+			<dependency>
+				<groupId>com.github.jeluard</groupId>
+				<artifactId>maven-plantuml-plugin</artifactId>
+				<version>${version.version.com.github.jeluard}</version>
+			</dependency>
+
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter-engine</artifactId>
@@ -402,11 +488,52 @@
 				<scope>test</scope>
 			</dependency>
 
+			<!-- Mongo DB -->
+			<!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
+			<dependency>
+				<groupId>org.mongodb</groupId>
+				<artifactId>mongo-java-driver</artifactId>
+				<version>${version.mongodb-driver}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.hsqldb</groupId>
 				<artifactId>hsqldb</artifactId>
 				<version>${version.hsqldb}</version>
 			</dependency>
+
+			<!--Jackrabbit -->
+			<dependency>
+				<groupId>javax.jcr</groupId>
+				<artifactId>jcr</artifactId>
+				<version>${version.jcr}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.jackrabbit</groupId>
+				<artifactId>oak-core</artifactId>
+				<version>${version.oak}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.jackrabbit</groupId>
+				<artifactId>oak-jcr</artifactId>
+				<version>${version.oak}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.jackrabbit</groupId>
+				<artifactId>oak-run</artifactId>
+				<version>${version.oak}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.jackrabbit</groupId>
+				<artifactId>oak-pojosr</artifactId>
+				<version>${version.oak}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.jackrabbit</groupId>
+				<artifactId>jackrabbit-jcr-commons</artifactId>
+				<version>${version.jackrabbit}</version>
+				<scope>compile</scope>
+			</dependency>
+
 
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
@@ -425,29 +552,36 @@
 				<artifactId>primefaces-extensions</artifactId>
 				<version>${version.primefaces.ext}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>org.mockito</groupId>
-				<artifactId>mockito-core</artifactId>
-				<version>${version.mockito.core}</version>
+				<artifactId>mockito-inline</artifactId>
+				<version>${version.mockito.inline}</version>
 				<scope>test</scope>
 			</dependency>
-
 			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-module-junit4</artifactId>
-				<version>${version.powermock.core}</version>
+				<groupId>org.glassfish.jersey.core</groupId>
+				<artifactId>jersey-common</artifactId>
+				<version>${version.jersey.common}</version>
 				<scope>test</scope>
 			</dependency>
-
 			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-api-mockito2</artifactId>
-				<version>${version.powermock.core}</version>
+				<groupId>org.apache.tomee</groupId>
+				<artifactId>openejb-mockito</artifactId>
+				<version>${version.openejb-mockito}</version>
 				<scope>test</scope>
 			</dependency>
-
-
+			<dependency>
+				<groupId>org.apache.johnzon</groupId>
+				<artifactId>johnzon-jsonb</artifactId>
+				<scope>test</scope>
+				<version>${version.johnzon.jsonb}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.konghq</groupId>
+				<artifactId>unirest-java</artifactId>
+				<version>${version.unirest}</version>
+				<classifier>standalone</classifier>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<build>
@@ -465,7 +599,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.6</version>
+				<version>0.8.7</version>
 				<executions>
 					<execution>
 						<id>prepare-agent</id>

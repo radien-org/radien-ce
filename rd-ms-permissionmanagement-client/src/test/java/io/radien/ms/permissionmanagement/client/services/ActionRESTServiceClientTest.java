@@ -20,6 +20,7 @@ import io.radien.api.OAFProperties;
 import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemAction;
 import io.radien.api.security.TokensPlaceHolder;
+import io.radien.exception.NotFoundException;
 import io.radien.exception.SystemException;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.authz.client.UserClient;
@@ -246,7 +247,7 @@ public class ActionRESTServiceClientTest {
     @Test
     public void testCreate() throws MalformedURLException, SystemException {
         ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
-        when(resourceClient.save(any())).thenReturn(Response.ok().build());
+        when(resourceClient.create(any())).thenReturn(Response.ok().build());
         when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
         assertTrue(target.create(new Action()));
     }
@@ -259,7 +260,7 @@ public class ActionRESTServiceClientTest {
     @Test
     public void testCreateFail() throws MalformedURLException, SystemException {
         ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
-        when(resourceClient.save(any())).thenReturn(Response.serverError().entity("test error msg").build());
+        when(resourceClient.create(any())).thenReturn(Response.serverError().entity("test error msg").build());
         when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
         assertFalse(target.create(new Action()));
     }
@@ -272,9 +273,67 @@ public class ActionRESTServiceClientTest {
     @Test(expected = SystemException.class)
     public void testCreateProcessingException() throws MalformedURLException, SystemException {
         ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
-        when(resourceClient.save(any())).thenThrow(new ProcessingException(""));
+        when(resourceClient.create(any())).thenThrow(new ProcessingException(""));
         when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
         target.create(new Action());
+    }
+
+    /**
+     * Test to attempt to update a action
+     * @throws MalformedURLException in case of malformed URL for the endpoint communication
+     * @throws SystemException in case of token expiration
+     */
+    @Test
+    public void testUpdate() throws MalformedURLException, SystemException {
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
+        Action action = new Action(); action.setId(111L);
+        when(resourceClient.update(action.getId(), action)).thenReturn(Response.ok().build());
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
+        assertTrue(target.update(action));
+    }
+
+    /**
+     * Test to attempt to update a action but without success
+     * @throws MalformedURLException in case of malformed URL for the endpoint communication
+     * @throws SystemException in case of token expiration
+     */
+    @Test
+    public void testUpdateFail() throws MalformedURLException, SystemException {
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
+        Action action = new Action(); action.setId(111L);
+        when(resourceClient.update(action.getId(), action)).thenReturn(Response.status(300).entity("test").build());
+        when(clientServiceUtil.getActionResourceClient(any())).thenReturn(resourceClient);
+        assertFalse(target.update(action));
+    }
+
+
+    /**
+     * Test to attempt to update a action but without success due processing fail (Acton not found)
+     * @throws MalformedURLException in case of malformed URL for the endpoint communication
+     * @throws SystemException in case of token expiration
+     */
+    @Test(expected = SystemException.class)
+    public void testUpdateNotFoundFail() throws MalformedURLException, SystemException {
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
+        Action action = new Action(); action.setId(111L);
+        when(resourceClient.update(action.getId(), action)).thenThrow(new NotFoundException());
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
+        target.update(action);
+    }
+
+
+    /**
+     * Test to update a action but we are faced with a processing exception
+     * @throws MalformedURLException in case of malformed URL for the endpoint communication
+     * @throws SystemException in case of token expiration
+     */
+    @Test(expected = SystemException.class)
+    public void testUpdateProcessingException() throws MalformedURLException, SystemException {
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
+        Action action = new Action(); action.setId(111L);
+        when(resourceClient.update(action.getId(), action)).thenThrow(new ProcessingException(""));
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
+        target.update(action);
     }
 
     /**
@@ -454,7 +513,7 @@ public class ActionRESTServiceClientTest {
         ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
 
         when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
-        when(resourceClient.save(any())).thenThrow(new TokenExpiredException("test"));
+        when(resourceClient.create(any())).thenThrow(new TokenExpiredException("test"));
 
         when(authorizationChecker.getUserClient()).thenReturn(userClient);
         when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
@@ -463,6 +522,76 @@ public class ActionRESTServiceClientTest {
 
         SystemAction systemAction = ActionFactory.create("name", 2L);
         target.create(systemAction);
+    }
+
+
+    /**
+     * Test to create action after jwt token expired (ReTry)
+     * @throws MalformedURLException in case of wrong URL when attempting to connect with endpoint
+     * @throws SystemException in case of any communication/processing issue with action rest api
+     */
+    @Test
+    public void testCreateAfterTokenExpiration() throws MalformedURLException, SystemException {
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
+
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.create(any())).thenThrow(new TokenExpiredException("test")).
+                thenReturn(Response.ok().build());
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+
+        SystemAction systemAction = ActionFactory.create("name", 2L);
+        assertTrue(target.create(systemAction));
+    }
+
+
+    /**
+     * Test to update actions but with token expired
+     * @throws MalformedURLException in case of wrong URL when attempting to connect with endpoint
+     * @throws SystemException in case of token expired
+     */
+    @Test(expected = SystemException.class)
+    public void testUpdateTokenExpiration() throws MalformedURLException, SystemException {
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
+
+        when(clientServiceUtil.getActionResourceClient(any())).thenReturn(resourceClient);
+        when(resourceClient.update(anyLong(), any())).thenThrow(new TokenExpiredException("test"));
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+
+        SystemAction systemAction = ActionFactory.create("name", 2L);
+        systemAction.setId(1L);
+        target.update(systemAction);
+    }
+
+
+    /**
+     * Test to update action after jwt token expired (ReTry)
+     * @throws MalformedURLException in case of wrong URL when attempting to connect with endpoint
+     * @throws SystemException in case of any communication/processing issue with action rest api
+     */
+    @Test
+    public void testUpdateAfterTokenExpiration() throws MalformedURLException, SystemException {
+        ActionResourceClient resourceClient = Mockito.mock(ActionResourceClient.class);
+
+        when(clientServiceUtil.getActionResourceClient(getActionManagementUrl())).thenReturn(resourceClient);
+        when(resourceClient.update(anyLong(), any())).thenThrow(new TokenExpiredException("test")).
+                thenReturn(Response.ok().build());
+
+        when(authorizationChecker.getUserClient()).thenReturn(userClient);
+        when(tokensPlaceHolder.getRefreshToken()).thenReturn("test");
+        when(userClient.refreshToken(anyString())).thenReturn(Response.ok().entity("test").build());
+
+
+        SystemAction systemAction = ActionFactory.create("name", 2L);
+        systemAction.setId(2L);
+        assertTrue(target.update(systemAction));
     }
 
     @Test

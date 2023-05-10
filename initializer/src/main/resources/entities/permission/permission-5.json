@@ -1,0 +1,23 @@
+[
+  { "name": "I18N Properties - Create", "resourceName": "I18N", "actionName": "Create" },
+  { "name": "I18N Properties - Read", "resourceName": "I18N", "actionName": "Read" },
+  { "name": "I18N Properties - Update", "resourceName": "I18N", "actionName": "Update" },
+  { "name": "I18N Properties - Delete", "resourceName": "I18N", "actionName": "Delete" },
+  { "name": "I18N Properties - All", "resourceName": "I18N", "actionName": "All" },
+  { "name": "Document Type Management - Create", "resourceName": "DocumentTypeManagement", "actionName": "Create" },
+  { "name": "Document Type Management - Read", "resourceName": "DocumentTypeManagement", "actionName": "Read" },
+  { "name": "Document Type Management - Update", "resourceName": "DocumentTypeManagement", "actionName": "Update" },
+  { "name": "Document Type Management - Delete", "resourceName": "DocumentTypeManagement", "actionName": "Delete" },
+  { "name": "Document Type Management - All", "resourceName": "DocumentTypeManagement", "actionName": "All" },
+  { "name": "Property Definition Management - Create", "resourceName": "PropertyDefinitionManagement", "actionName": "Create" },
+  { "name": "Property Definition Management - Read", "resourceName": "PropertyDefinitionManagement", "actionName": "Read" },
+  { "name": "Property Definition Management - Update", "resourceName": "PropertyDefinitionManagement", "actionName": "Update" },
+  { "name": "Property Definition Management - Delete", "resourceName": "PropertyDefinitionManagement", "actionName": "Delete" },
+  { "name": "Property Definition Management - All", "resourceName": "PropertyDefinitionManagement", "actionName": "All" },
+  { "name": "Mixin Definition Management - Create", "resourceName": "MixinDefinitionManagement", "actionName": "Create" },
+  { "name": "Mixin Definition Management - Read", "resourceName": "MixinDefinitionManagement", "actionName": "Read" },
+  { "name": "Mixin Definition Management - Update", "resourceName": "MixinDefinitionManagement", "actionName": "Update" },
+  { "name": "Mixin Definition Management - Delete", "resourceName": "MixinDefinitionManagement", "actionName": "Delete" },
+  { "name": "Mixin Definition Management - All", "resourceName": "MixinDefinitionManagement", "actionName": "All" }
+]
+

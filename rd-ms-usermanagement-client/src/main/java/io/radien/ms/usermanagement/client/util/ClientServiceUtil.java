@@ -18,11 +18,11 @@ package io.radien.ms.usermanagement.client.util;
 import io.radien.exception.TokenExpiredException;
 import io.radien.ms.usermanagement.client.UserResponseExceptionMapper;
 import io.radien.ms.usermanagement.client.providers.UserMessageBodyWriter;
+import io.radien.ms.usermanagement.client.services.JobshopResourceClient;
 import io.radien.ms.usermanagement.client.services.UserResourceClient;
 import javax.enterprise.context.RequestScoped;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
-import javax.ejb.Stateless;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -49,5 +49,13 @@ public class ClientServiceUtil {
                 .register(UserResponseExceptionMapper.class)
                 .register(UserMessageBodyWriter.class)
                 .build(UserResourceClient.class);
+    }
+
+    public JobshopResourceClient getStudentIdentityResourceClient(String urlStr) throws MalformedURLException , TokenExpiredException {
+        URL url = new URL(urlStr);
+        return RestClientBuilder.
+                newBuilder()
+                .baseUrl(url)
+                .build(JobshopResourceClient.class);
     }
 }

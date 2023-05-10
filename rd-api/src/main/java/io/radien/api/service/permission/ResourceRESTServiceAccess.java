@@ -62,9 +62,19 @@ public interface ResourceRESTServiceAccess extends Appframeable {
      * Creates given resource
      * @param resource to be created
      * @return true if resource has been created with success or false if not
-     * @throws SystemException in case of URL specification
+     * @throws SystemException in case of any communication/processing issue
+     * regarding Resource Rest API
      */
     public boolean create(SystemResource resource) throws SystemException;
+
+    /**
+     * Updates a given resource
+     * @param resource to be updated
+     * @return true if resource has been updated with success or false if not
+     * @throws SystemException in case of any communication/processing issue
+     * regarding Resource Rest API
+     */
+    public boolean update(SystemResource resource) throws SystemException;
 
     /**
      * Deletes given resource

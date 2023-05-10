@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-present radien GmbH & its legal owners. All rights reserved.
+ * Copyright (c) 2021-present radien GmbH. All rights reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package io.radien.ms.ecm.jcr;
 
@@ -56,9 +57,6 @@ public @RequestScoped class JCRSessionProducer implements Serializable {
 		} finally {
 			if (!error) {
 				initCount++;
-				log.debug("{} |ACTION: -createJCRSession | INITCOUNT: {}", this, initCount);
-			} else {
-				log.error("{} | ACTION: -createJCRSession FAILED!", this.getClass());
 			}
 		}
 		return null;

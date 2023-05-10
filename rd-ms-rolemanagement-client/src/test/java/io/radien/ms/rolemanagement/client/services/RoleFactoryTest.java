@@ -26,9 +26,7 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 /**
  * @author Bruno Gama
@@ -42,8 +40,6 @@ public class RoleFactoryTest extends TestCase {
         role.setName("nameValue");
         role.setDescription("descriptionValue");
         role.setCreateUser(2L);
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        role.setTerminationDate(format.parse("2021-04-30T12:00:00"));
     }
 
     @Test
@@ -63,7 +59,6 @@ public class RoleFactoryTest extends TestCase {
         builder.add("name", "nameValue");
         builder.add("description", "descriptionValue");
         builder.add("createUser", 2L);
-        builder.add("terminationDate", "2021-04-30T12:00:00+0100");
 
         json = builder.build();
         Role newJsonRole = RoleFactory.convert(json);
@@ -71,7 +66,6 @@ public class RoleFactoryTest extends TestCase {
         assertEquals(role.getName(), newJsonRole.getName());
         assertEquals(role.getDescription(), newJsonRole.getDescription());
         assertEquals(role.getCreateUser(), newJsonRole.getCreateUser());
-        assertEquals(role.getTerminationDate(), newJsonRole.getTerminationDate());
     }
 
     @Test
@@ -84,30 +78,10 @@ public class RoleFactoryTest extends TestCase {
         builder.add("description", "descriptionValue");
         builder.add("createUser", 2L);
         builder.addNull("lastUpdateUser");
-        builder.add("terminationDate", "2021-04-30T12:00:00");
 
         json = builder.build();
 
         assertEquals(json.toString(), constructedNewJson.toString());
-    }
-
-    @Test
-    public void testConvertWithFailure() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-        builder.addNull("id");
-        builder.add("name", "nameValue");
-        builder.add("description", "descriptionValue");
-        builder.add("createUser", 2L);
-        builder.addNull("lastUpdateUser");
-        builder.add("terminationDate", "Wed 2021-04-30");
-
-        boolean foundException = false;
-        try {
-            RoleFactory.convert(builder.build());
-        } catch (Exception e) {
-            foundException = true;
-        }
-        assertTrue(foundException);
     }
 
     @Test

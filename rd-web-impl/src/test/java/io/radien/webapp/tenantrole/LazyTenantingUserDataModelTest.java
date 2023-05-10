@@ -94,7 +94,7 @@ public class LazyTenantingUserDataModelTest {
         ids.forEach(id -> {
             String valueAsString = String.valueOf(id);
             SystemUser user = UserFactory.create(valueAsString, valueAsString, valueAsString,
-                        valueAsString, valueAsString, null);
+                        valueAsString, valueAsString, valueAsString, null, false);
             user.setId(id);
             users.add(user);
         });
@@ -152,7 +152,7 @@ public class LazyTenantingUserDataModelTest {
      */
     @Test
     public void testGetRowData() {
-        User user = UserFactory.create("test","test","test", "test", "", null);
+        User user = UserFactory.create("test","test","test", "test", "", "951", null, false);
         user.setId(111L);
 
         String rowKey = String.valueOf(user.getId());

@@ -27,17 +27,22 @@ import io.radien.ms.permissionmanagement.client.entities.Permission;
 import io.radien.ms.rolemanagement.client.entities.Role;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
 import io.radien.webapp.JSFUtil;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
@@ -61,8 +66,6 @@ import static org.mockito.Mockito.verify;
  * Class that aggregates UnitTest cases for EntityFilterUtil manager
  * @author Newton Carvalho
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class})
 public class EntityFilterUtilTest {
 
     @InjectMocks
@@ -79,12 +82,29 @@ public class EntityFilterUtilTest {
 
     FacesContext facesContext;
 
+    private static MockedStatic<FacesContext> facesContextMockedStatic;
+    private static MockedStatic<JSFUtil> jsfUtilMockedStatic;
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
+    @BeforeClass
+    public static void beforeClass(){
+        facesContextMockedStatic = Mockito.mockStatic(FacesContext.class);
+        jsfUtilMockedStatic = Mockito.mockStatic(JSFUtil.class);
+    }
+    @AfterClass
+    public static final void destroy(){
+        if(facesContextMockedStatic!=null) {
+            facesContextMockedStatic.close();
+        }
+        if(jsfUtilMockedStatic!=null) {
+            jsfUtilMockedStatic.close();
+        }
+    }
+
     @Before
     public void before(){
-        MockitoAnnotations.initMocks(this);
-
-        PowerMockito.mockStatic(FacesContext.class);
-        PowerMockito.mockStatic(JSFUtil.class);
 
         facesContext = mock(FacesContext.class);
         when(FacesContext.getCurrentInstance()).thenReturn(facesContext);
@@ -116,8 +136,9 @@ public class EntityFilterUtilTest {
 
         String filter = "sub%";
 
-        when(tenantRESTServiceAccess.getAll(filter,
-                1, 100, null, false)).then(i -> page);
+        when(tenantRESTServiceAccess.getAll(null, filter,
+                null,null,null,null,null,null,null,null,null,
+                1, 100, null, false, true, true)).then(i -> page);
 
         List<? extends SystemTenant> output = target.filterTenantsByName("sub");
         assertNotNull(output);
@@ -135,8 +156,9 @@ public class EntityFilterUtilTest {
     public void testFilterTenantsByNameWithException() throws SystemException {
         String filterName = "sub%";
         Exception e = new RuntimeException("Error retrieving tenants");
-        when(tenantRESTServiceAccess.getAll(filterName, 1, 100, null,
-                false)).thenThrow(e);
+        when(tenantRESTServiceAccess.getAll(null, filterName,
+                null,null,null,null,null,null,null,null,null,1, 100, null,
+                false, true, true)).thenThrow(e);
 
         List<? extends SystemTenant> output = target.filterTenantsByName(filterName);
         assertNotNull(output);

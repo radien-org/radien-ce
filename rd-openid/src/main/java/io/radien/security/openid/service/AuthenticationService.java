@@ -18,7 +18,7 @@ package io.radien.security.openid.service;
 import java.util.Date;
 
 import io.radien.api.model.user.SystemUser;
-import org.springframework.security.core.userdetails.UserDetails;
+import io.radien.security.openid.model.UserDetails;
 
 import io.radien.exception.AccountExpiredException;
 import io.radien.exception.AccountNotValidException;

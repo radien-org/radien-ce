@@ -15,13 +15,17 @@
  */
 package io.radien.ms.usermanagement.service;
 
+import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
-import io.radien.ms.usermanagement.config.KeycloakEmailActions;
 
+
+import io.radien.ms.usermanagement.config.KeycloakEmailActions;
 import kong.unirest.Headers;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 
+
+import kong.unirest.UnirestParsingException;
 import org.keycloak.representations.idm.UserRepresentation;
 
 import org.slf4j.Logger;
@@ -31,30 +35,38 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 /**
- * Keycloak client side configuration contructor class
+ * Keycloak client side configuration constructor class
  *
  * @author Nuno Santana
  */
 public class KeycloakClient {
+    private static final Logger log = LoggerFactory.getLogger(KeycloakClient.class);
+
     private static final String REFRESH_TOKEN="refresh_token";
     private static final String CLIENT_ID="client_id";
     private static final String GRANT_TYPE="grant_type";
-    private static final Logger log = LoggerFactory.getLogger(KeycloakClient.class);
+    private static final String CLIENT_SECRET="client_secret";
+    private static final String PASSWORD = "password";
+    private static final String USERNAME = "username";
+    private static final String JSON_BODY_AS_STRING = "{\"value\": \"%s\",\"type\": \"password\"}";
 
     private HashMap<String, String> result;
     private String idpUrl;
     private String clientId;
-    private String username;
-    private String password;
+    private String clientSecret;
     private String tokenPath;
     private String userPath;
     private String radienClientId;
     private String radienSecret;
     private String radienTokenPath;
+    private String environment;
 
     /**
      * Keycloak client empty constructor
@@ -94,22 +106,12 @@ public class KeycloakClient {
     }
 
     /**
-     * Keycloak username setter with getter
-     * @param username to be set and/or updated
+     * Keycloak client secret setter with getter
+     * @param clientSecret to be set and/or updated
      * @return the current client username
      */
-    public KeycloakClient username(String username) {
-        this.username = username;
-        return this;
-    }
-
-    /**
-     * Keycloak password setter with getter
-     * @param password to be set and/or updated
-     * @return the current client password
-     */
-    public KeycloakClient password(String password) {
-        this.password = password;
+    public KeycloakClient clientSecret(String clientSecret) {
+        this.clientSecret = clientSecret;
         return this;
     }
 
@@ -154,6 +156,16 @@ public class KeycloakClient {
     }
 
     /**
+     * Used to skip self signed certificates on LOCAL env
+     * @param environment to be set and/or updated
+     * @return the current client radien token path
+     */
+    public KeycloakClient environment(String environment) {
+        this.environment = environment;
+        return this;
+    }
+
+    /**
      * Keycloak access token getter
      * @return the current active and request access token
      */
@@ -171,24 +183,76 @@ public class KeycloakClient {
 
     /**
      * Keycloak login process and field filler
-     * @return http response hash map with all the login fields
      * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
      */
-    public Map<String, String> login() throws RemoteResourceException {
+    public void login() {
+        if(environment.equalsIgnoreCase("LOCAL")){
+            Unirest.config().verifySsl(false);
+        }
+
         HttpResponse<?> response = Unirest.post(idpUrl + tokenPath)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED)
                 .field(CLIENT_ID, clientId)
                 //.field("redirect_uri", "https://localhost:8443/web/login")
-                .field(GRANT_TYPE, "password")
-                .field("username", username)
-                .field("password", password)
+                .field(GRANT_TYPE, "client_credentials")
+                .field(CLIENT_SECRET, clientSecret)
                 .asObject(HashMap.class);
         if (response.isSuccess()) {
             result = (HashMap<String, String>) response.getBody();
-            return result;
         } else {
-            //TODO: improve Error handling
-            throw new RemoteResourceException("Error on login");
+            throw new RemoteResourceException("Error on login", Response.Status.fromStatusCode(response.getStatus()));
+        }
+    }
+
+    /**
+     * Validate credentials against KeyCloak
+     * @param username user logon
+     * @param password user pass
+     * @return true if the combination matches, otherwise return false
+     */
+    public boolean validateCredentials(String username, String password) {
+        String url = this.idpUrl + this.radienTokenPath;
+        HttpResponse<?> response = Unirest.post(url)
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .field(CLIENT_ID, this.radienClientId)
+                .field(CLIENT_SECRET,this.radienSecret)
+                .field(GRANT_TYPE, PASSWORD)
+                .field(USERNAME, username)
+                .field(PASSWORD, password)
+                .asObject(HashMap.class);
+        if (response.isSuccess()) {
+            return true;
+        }
+
+        Optional<UnirestParsingException> parsingError = response.getParsingError();
+        parsingError.ifPresent(e -> log.error("Error Message: {}", e.getMessage()));
+        if (response.getBody() != null) {
+            log.error("Error body {}", response.getBody());
+        }
+        return false;
+    }
+
+    /**
+     * Change user password on keycloak
+     * @param subject User identifier on KeyCloak
+     * @param newPassword New password value
+     * @throws RemoteResourceException in case of any issue regarding KeyCloak communication
+     */
+    public void changePassword(String subject, String newPassword) {
+        String url = this.idpUrl + this.userPath + "/" + subject + "/reset-password";
+        String body = String.format(JSON_BODY_AS_STRING, newPassword);
+
+        HttpResponse<String> response = Unirest.put(url)
+                .header(HttpHeaders.AUTHORIZATION, getAuthorization())
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .body(body)
+                .asObject(String.class);
+
+        if (!response.isSuccess()) {
+            throw new RemoteResourceException(
+                    GenericErrorCodeMessage.ERROR_CHANGE_PASSWORD.toString(response.getStatusText(), response.getBody()),
+                    Response.Status.fromStatusCode(response.getStatus())
+            );
         }
     }
 
@@ -198,13 +262,12 @@ public class KeycloakClient {
      * @return the created user subject
      * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
      */
-    public String createUser(UserRepresentation userRepresentation) throws RemoteResourceException {
+    public String createUser(UserRepresentation userRepresentation) {
         HttpResponse<String> response = Unirest.post(idpUrl + userPath)
                 .header(HttpHeaders.AUTHORIZATION, getAuthorization())
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                 .body(userRepresentation)
                 .asObject(String.class);
-
 
         if (response.isSuccess()) {
             Headers headers = response.getHeaders();
@@ -220,10 +283,10 @@ public class KeycloakClient {
             log.error("Status:{}, Body:{}", response.getStatus(), response.getBody());
             if(Response.Status.CONFLICT.getStatusCode() == response.getStatus ()){
                 String message = "User may already exist in Keycloak";
-                throw new RemoteResourceException(message);
+                throw new RemoteResourceException(message, Response.Status.CONFLICT);
             }
         }
-        throw new RemoteResourceException("Unable to create User in keycloak");
+        throw new RemoteResourceException("Unable to create User in keycloak", Response.Status.fromStatusCode(response.getStatus()));
     }
 
     /**
@@ -231,7 +294,7 @@ public class KeycloakClient {
      * @param sub of the user to be found
      * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
      */
-    public void sendUpdatePasswordEmail(String sub) throws RemoteResourceException {
+    public void sendUpdatePasswordEmail(String sub) {
         HttpResponse<String> response = Unirest.put(idpUrl + userPath + "/" + sub + "/execute-actions-email")
                 .header(HttpHeaders.AUTHORIZATION, getAuthorization())
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
@@ -239,7 +302,10 @@ public class KeycloakClient {
                 .asObject(String.class);
         if (!response.isSuccess()) {
             log.error("status {},body {}",response.getStatus(),response.getBody());
-            throw new RemoteResourceException("Unable to send update password email");
+            throw new RemoteResourceException(
+                    GenericErrorCodeMessage.ERROR_SEND_UPDATE_PASSWORD_EMAIL.toString(),
+                    Response.Status.fromStatusCode(response.getStatus())
+            );
         }
     }
 
@@ -248,14 +314,19 @@ public class KeycloakClient {
      * @param sub subject of the user to be deleted
      * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
      */
-    public void deleteUser(String sub) throws RemoteResourceException {
-        HttpResponse<String> response = Unirest.delete(idpUrl + userPath + "/" + sub)
+    public void deleteUser(String sub) {
+        HttpResponse<HashMap> response = Unirest.delete(idpUrl + userPath + "/" + sub)
                 .header(HttpHeaders.AUTHORIZATION, getAuthorization())
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .asObject(String.class);
+                .asObject(HashMap.class);
         if (!response.isSuccess()) {
-            log.error(response.getBody());
-            throw new RemoteResourceException("Unable to delete User");
+
+            if(response.getStatus()==404 && "User not found".equalsIgnoreCase((String)response.getBody().get("error")) ){
+                log.error("User not found on keycloak with subject id. Delete continues");
+            }else {
+                log.error(response.getBody().toString());
+                throw new RemoteResourceException("Unable to delete User", Response.Status.fromStatusCode(response.getStatus()));
+            }
         }
     }
 
@@ -263,7 +334,7 @@ public class KeycloakClient {
      * Keycloak refresh active access token
      * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
      */
-    public void refreshToken() throws RemoteResourceException {
+    public void refreshToken() {
         HttpResponse<?> response = Unirest.post(idpUrl + tokenPath)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED)
                 .field(CLIENT_ID, clientId)
@@ -273,8 +344,7 @@ public class KeycloakClient {
         if (response.isSuccess()) {
             result = (HashMap<String, String>) response.getBody();
         } else {
-            //TODO: improve Error handling
-            throw new RemoteResourceException("Unable to refresh token");
+            throw new RemoteResourceException("Unable to refresh token", Response.Status.fromStatusCode(response.getStatus()));
         }
     }
 
@@ -284,11 +354,11 @@ public class KeycloakClient {
      * @return new access token
      * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
      */
-    public String refreshToken(String refreshToken) throws RemoteResourceException {
+    public String refreshToken(String refreshToken) {
         HttpResponse<?> response = Unirest.post(idpUrl + radienTokenPath)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED)
                 .field(CLIENT_ID, radienClientId)
-                .field("client_secret", radienSecret)
+                .field(CLIENT_SECRET, radienSecret)
                 .field(GRANT_TYPE, REFRESH_TOKEN)
                 .field(REFRESH_TOKEN, refreshToken)
                 .asObject(HashMap.class);
@@ -296,13 +366,12 @@ public class KeycloakClient {
             result = (HashMap<String, String>) response.getBody();
             return result.get("access_token");
         } else {
-            //TODO: improve Error handling
-            //  error_description=Token is not active, error=invalid_grant
-            if(response.getBody()!= null) {
+            if(response.getBody() != null) {
                 String msg = response.getBody().toString();
                 log.error(msg);
+                log.error(refreshToken);
             }
-            throw new RemoteResourceException("Unable to refresh token");
+            throw new RemoteResourceException("Unable to refresh token", Response.Status.fromStatusCode(response.getStatus()));
         }
     }
 
@@ -312,14 +381,83 @@ public class KeycloakClient {
      * @param userRepresentation information to be added or updated
      * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
      */
-    public void updateUser(String sub,UserRepresentation userRepresentation) throws RemoteResourceException {
+    public void updateUser(String sub,UserRepresentation userRepresentation) {
         HttpResponse<String> response = Unirest.put(idpUrl + userPath + "/" + sub)
                 .header(HttpHeaders.AUTHORIZATION, getAuthorization())
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                 .body(userRepresentation)
                 .asString();
         if(!response.isSuccess()){
-            throw new RemoteResourceException("Unable to update user");
+            throw new RemoteResourceException("Unable to update user", Response.Status.fromStatusCode(response.getStatus()));
+        }
+    }
+
+    /**
+     * Keycloak updates specific and requested user email and emailVerified object
+     * @param sub of the user information to be updated
+     * @param userRepresentation information to be added or updated
+     * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+     */
+    public void updateEmailAndExecuteActionEmailVerify(String sub, UserRepresentation userRepresentation) {
+        HttpResponse<String> response = Unirest.put(idpUrl + userPath + "/" + sub)
+                .header(HttpHeaders.AUTHORIZATION, getAuthorization())
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .body(userRepresentation)
+                .asString();
+        if(!response.isSuccess()){
+            throw new RemoteResourceException(
+                    GenericErrorCodeMessage.ERROR_SEND_UPDATE_EMAIL_VERIFY.toString(),
+                    Response.Status.fromStatusCode(response.getStatus())
+            );
+        }
+    }
+
+    /**
+     * Method to send a new updated email for the verification of the requested user that will be found via his subject
+     * @param sub of the user to be found
+     * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+     */
+    public void sendUpdatedEmailToVerify(String sub) {
+        HttpResponse<String> response = Unirest.put(idpUrl + userPath + "/" + sub + "/execute-actions-email")
+                .header(HttpHeaders.AUTHORIZATION, getAuthorization())
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .body("[\"" + KeycloakEmailActions.VERIFY_EMAIL+ "\"]")
+                .asObject(String.class);
+        if (!response.isSuccess()) {
+            log.error( "status {},body {}", response.getStatus(), response.getBody() );
+            throw new RemoteResourceException(
+                    GenericErrorCodeMessage.ERROR_SEND_EXECUTE_ACTION_EMAIL_VERIFY.toString(),
+                    Response.Status.fromStatusCode(response.getStatus())
+            );
+        }
+    }
+
+    /**
+     * Keycloak method to get user
+     * @param email of the user sub we want to retrieve
+     * @throws RemoteResourceException exceptions that may occur during the execution of a remote method call.
+     */
+    public Optional<String> getSubFromEmail(String email) {
+        HttpResponse<ArrayList> response = Unirest.get(idpUrl + userPath + "?email=" + email)
+                .header(HttpHeaders.AUTHORIZATION, getAuthorization())
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .asObject(ArrayList.class);
+        if (response.isSuccess()) {
+            List<Map<String, Object>> results = (List<Map<String, Object>>) response.getBody();
+            if(results.isEmpty()){
+                return Optional.empty();
+            }
+            if(results.size()>1){
+                log.error("Invalid number of results for Sub");
+                return Optional.empty();
+            }
+            return Optional.ofNullable((String)results.get(0).get("id"));
+        }else {
+            if(response.getBody()!= null) {
+                String msg = response.getBody().toString();
+                log.error(msg);
+            }
+            throw new RemoteResourceException("Unable to get Sub From Email", Response.Status.fromStatusCode(response.getStatus()));
         }
     }
 

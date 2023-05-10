@@ -35,7 +35,7 @@
 								 label="#{msg.type}" select2="true" update="@parent" process="@form">
 					<f:selectItem itemLabel="#{msg.rd_tenant_remind_select_tenant_type}" itemValue="#{null}"/>
 					<f:selectItems value="#{tenantDataModel.tenantTypes}" var="#{msg.rd_tenantType}"
-								   itemValue="#{tenantType}" itemLabel="#{tenantType.name}"/>
+								   itemValue="#{tenantType}" itemLabel="#{tenantType.description}"/>
 				</b:selectOneMenu>
 
 				<b:row id="#{msg.rd_clientInformations}" rendered="#{tenantDataModel.tenant.tenantType == 'CLIENT_TENANT'}">

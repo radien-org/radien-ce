@@ -38,11 +38,11 @@ public interface SystemTenantType {
      * System tenant type name getter
      * @return system tenant type name
      */
-    public String getName();
+    public String getDescription();
 
     /**
      * System tenant type name setter
-     * @param name to be set
+     * @param description to be set
      */
-    public void setName(String name);
+    public void setDescription(String description);
 }

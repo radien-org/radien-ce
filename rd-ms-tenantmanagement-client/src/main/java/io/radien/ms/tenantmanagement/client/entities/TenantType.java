@@ -25,22 +25,22 @@ import java.util.Arrays;
  */
 public enum TenantType implements SystemTenantType {
 
-    ROOT_TENANT(1L, "ROOT"),
-    CLIENT_TENANT(2L, "CLIENT"),
-    SUB_TENANT(3L, "SUB");
+    ROOT(1L, "Root"),
+    CLIENT(2L, "Client"),
+    SUB(3L, "Sub");
 
     /**
      * Tenant type constructor
      * @param id of the tenant type enum
-     * @param name of the tenant type enum
+     * @param description of the tenant type enum
      */
-    private TenantType(Long id, String name) {
+    private TenantType(Long id, String description) {
         setId(id);
-        setName(name);
+        setDescription(description);
     }
 
     private Long id;
-    private String name;
+    private String description;
 
     /**
      * Tenant type id getter
@@ -65,27 +65,27 @@ public enum TenantType implements SystemTenantType {
      * @return the tenant type name
      */
     @Override
-    public String getName() {
-        return this.name;
+    public String getDescription() {
+        return this.description;
     }
 
     /**
      * Tenant type name setter
-     * @param name to be set
+     * @param description to be set
      */
     @Override
-    public void setName(String name) {
-        this.name = name;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     /**
      * Method to retrieve the correct tenant type by a given specified name
-     * @param name of the tenant tye to be retrieved
+     * @param description of the tenant tye to be retrieved
      * @return the requested tenant type
      */
-    public static TenantType getByName(String name) {
+    public static TenantType getByDescription(String description) {
         return Arrays.stream(TenantType.values()).
-                filter(a -> a.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+                filter(a -> a.getDescription().equalsIgnoreCase(description)).findFirst().orElse(null);
     }
 
     /**
@@ -111,7 +111,7 @@ public enum TenantType implements SystemTenantType {
     public String toString() {
         return "{" +
                 "\"id\":" + id +
-                ", \"name\":\"" + name + "\"" +
+                ", \"description\":\"" + description + "\"" +
                 "}";
     }
 }

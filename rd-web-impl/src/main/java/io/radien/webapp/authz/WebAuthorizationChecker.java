@@ -17,11 +17,14 @@ package io.radien.webapp.authz;
 
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.UserSessionEnabled;
-import io.radien.api.service.role.SystemRolesEnum;
+import io.radien.api.service.permission.PermissionRESTServiceAccess;
 import io.radien.exception.GenericErrorCodeMessage;
 import io.radien.exception.SystemException;
 import io.radien.ms.authz.security.AuthorizationChecker;
 import io.radien.ms.openid.service.PrincipalFactory;
+import java.util.Optional;
+
+import io.radien.webapp.JSFUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,8 +32,9 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
+
+import static io.radien.api.service.permission.SystemPermissionsEnum.THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE;
+import static io.radien.api.service.permission.SystemPermissionsEnum.THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE;
 
 /**
  * Web Authorization checker validator
@@ -39,18 +43,22 @@ import java.util.List;
 @Named("authzChecker")
 public class WebAuthorizationChecker extends AuthorizationChecker {
 
+    private static final long serialVersionUID = -2440821831002121277L;
     @Inject
     HttpServletRequest servletRequest;
 
     @Inject
     UserSessionEnabled userSession;
 
+    @Inject
+    PermissionRESTServiceAccess permissionRESTServiceAccess;
+
     @Override
     public HttpServletRequest getServletRequest() {
         return this.servletRequest;
     }
 
-    private Logger log = LoggerFactory.getLogger(WebAuthorizationChecker.class);
+    private final transient Logger log = LoggerFactory.getLogger(WebAuthorizationChecker.class);
 
     /**
      * Will get the active user id
@@ -73,6 +81,10 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
                 userSession.getUserLastName(), userSession.getPreferredUserName(),
                 userSession.getUserIdSubject(), userSession.getEmail(), null);
     }
+    @Override
+    protected boolean isLoggedIn(){
+        return userSession.isActive();
+    }
 
     /**
      * Validates if current active user for a given tenant has a specific given role
@@ -92,16 +104,31 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
     }
 
     /**
-     * Validates if the current user has any of the multiple correct roles given
-     * System Administrator or User Administrator
-     * @return true if user has one of those
+     * Check if user has access to a permission specified by the combination of params
+     * resource and an action.
+     * @param resource resource name
+     * @param action action name
+     * @param tenant tenant id (Optional)
+     * @return true if the current logged user has grant to the permission, otherwise false
      */
-    public boolean hasUserAdministratorRoleAccess() {
+    public boolean hasPermissionAccess(String resource, String action, Long tenant) {
         try {
-            List<String> roleNames = new ArrayList<>();
-            roleNames.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
-            roleNames.add(SystemRolesEnum.USER_ADMINISTRATOR.getRoleName());
-            return super.hasGrantMultipleRoles(roleNames);
+            if(!isLoggedIn()){
+                log.error("Checking if has permission without being logged in");
+                return false;
+            }
+            boolean result = false;
+            Optional<Long> idForAction = permissionRESTServiceAccess.getIdByResourceAndAction(resource, action);
+            Optional<Long> idForAll = permissionRESTServiceAccess.getIdByResourceAndAction(resource, "ALL");
+
+            if (idForAction.isPresent()) {
+                 result = hasGrant(idForAction.get(), tenant);
+            }
+            if(!result && idForAll.isPresent()) {
+                result = hasGrant(idForAll.get(), tenant);
+            }
+            log.info("Permission {} for resource {} and action {}", result ? "found" : "not found", resource, action);
+            return result;
         }
         catch (Exception e) {
             log.error(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
@@ -110,23 +137,47 @@ public class WebAuthorizationChecker extends AuthorizationChecker {
     }
 
     /**
-     * Verifies if the current logged user has relevant roles to perform actions
-     * regarding tenant administration. It includes System Administrator, Tenant Administrator
-     * Client Tenant Administrator and Sub Tenant Administrator
-     * @return true if user has some of these roles, otherwise false
+     * Check if the current logged user has permission to reset password for any user
+     * @param tenant check the permission under a particular tenant (Optional Parameter)
+     * @return true if the current logged user has grant to do that, otherwise false
      */
-    public boolean hasTenantAdministratorRoleAccess() {
-        try {
-            List<String> roleNames = new ArrayList<>();
-            roleNames.add(SystemRolesEnum.SYSTEM_ADMINISTRATOR.getRoleName());
-            roleNames.add(SystemRolesEnum.TENANT_ADMINISTRATOR.getRoleName());
-            roleNames.add(SystemRolesEnum.CLIENT_TENANT_ADMINISTRATOR.getRoleName());
-            roleNames.add(SystemRolesEnum.SUB_TENANT_ADMINISTRATOR.getRoleName());
-            return super.hasGrantMultipleRoles(roleNames);
-        }
-        catch (Exception e) {
-            log.error(GenericErrorCodeMessage.AUTHORIZATION_ERROR.toString(), e);
-            return false;
-        }
+    public boolean hasPermissionToResetPassword(Long tenant) {
+        return hasPermissionAccess(THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.getResource().getResourceName(),
+                THIRD_PARTY_PASSWORD_MANAGEMENT_UPDATE.getAction().getActionName(), tenant);
     }
+
+    /**
+     * Check if the current logged user has permission to update email for any user
+     * @param tenant check the permission under a particular tenant (Optional Parameter)
+     * @return true if the current logged user has grant to do that, otherwise false
+     */
+    public boolean hasPermissionToUpdateUserEmail(Long tenant) {
+        return hasPermissionAccess(THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE.getResource().getResourceName(),
+                THIRD_PARTY_EMAIL_MANAGEMENT_UPDATE.getAction().getActionName(), tenant);
+    }
+
+    /**
+     * Redirects the user if its not logged or if the user doesn't have permission
+     * @param resource for check of the permission
+     * @param action for check of the permission
+     * @param tenant check the permission under a particular tenant (Optional Parameter)
+     * @param prettyDestination destination of redirection
+     * @return true if redirection occurs, otherwise false
+     */
+    public boolean redirectOnMissingPermission(String resource,String action,Long tenant,String prettyDestination){
+
+        if(!userSession.isActive()) {
+            log.error("Going to redirect Not Active");
+            JSFUtil.redirect(prettyDestination);
+            return true;
+        }
+        if(!hasPermissionAccess(resource, action, tenant)){
+            log.error("Missing Permission Resource:{} Action:{} Tenant:{}",resource,action,tenant);
+            JSFUtil.addErrorMessage("You dont have permission to access the requested page.");
+            JSFUtil.redirect(prettyDestination);
+            return true;
+        }
+        return false;
+    }
+
 }

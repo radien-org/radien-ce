@@ -140,6 +140,18 @@ public interface EnterpriseContent extends Model, Comparable<EnterpriseContent> 
     void setAuthor(String author);
 
     /**
+     * ECM last edit date date getter
+     * @return the ecm last edit date
+     */
+    Date getLastEditDate();
+
+    /**
+     * ECM last edit date setter
+     * @param lastEditDate to be set
+     */
+    void setLastEditDate(Date lastEditDate);
+
+    /**
      * Checks if ECM is still active
      * @return true in case ecm is still active
      */
@@ -259,80 +271,7 @@ public interface EnterpriseContent extends Model, Comparable<EnterpriseContent> 
      */
     void setPermissions(String permissions);
 
-    /**
-     * 
-     * TODO: why has this been placed in a separate interface
-     */
+    boolean getExternalPublic();
 
-    /**
-     * Checks if ECM is versional
-     * @return true if ecm is verional
-     */
-    boolean isVersionable();
-
-    /**
-     * ECM versional setter
-     * @param versionable to be set
-     */
-    void setVersionable(boolean versionable);
-
-    /**
-     * ECM version comment getter
-     * @return the ecm version comment
-     */
-    String getVersionComment();
-
-    /**
-     * ECM version comment setter
-     * @param versionComment to be set
-     */
-    void setVersionComment(String versionComment);
-
-    /**
-     * ECM valid date getter
-     * @return the ecm valid date
-     */
-    Date getValidDate();
-
-    /**
-     * ECM valid date setter
-     * @param validDate to be set
-     */
-    void setValidDate(Date validDate);
-
-    /**
-     * ECM version getter
-     * @return the ecm version
-     */
-    SystemContentVersion getVersion();
-
-    /**
-     * ECM version setter
-     * @param version to be set
-     */
-    void setVersion(SystemContentVersion version);
-
-    /**
-     * ECM versional name getter
-     * @return the ecm versional name
-     */
-    String getVersionableName();
-
-    /**
-     * ECM versional name setter
-     * @param name to be set
-     */
-    void setVersionableName(String name);
-
-    /**
-     * Is ECM to be update on launch getter
-     * @return true if ecm is to be updated on launch
-     */
-    boolean isUpdateOnLaunch();
-
-    /**
-     * ECM update on launch setter
-     * @param updateOnLaunch to be set
-     */
-    void setUpdateOnLaunch(boolean updateOnLaunch);
+    void setExternalPublic(boolean externalPublic);
 }

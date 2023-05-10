@@ -15,6 +15,8 @@
  */
 package io.radien.ms.usermanagement.client.services;
 
+import io.radien.ms.usermanagement.client.entities.UserPasswordChanging;
+import java.util.Collection;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
@@ -22,7 +24,9 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -46,6 +50,10 @@ import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 @RegisterClientHeaders(GlobalHeaders.class)
 public interface UserResourceClient {
 
+    @GET()
+    @Path(value = "session")
+    Response getUserInSession();
+
     /**
      * Will request the service to retrieve all the users into a paginated response.
      *
@@ -57,12 +65,20 @@ public interface UserResourceClient {
      * @return Ok message if it has success. Returns error 500 Code to the user in case of resource is not existent.
      */
     @GET
-    public Response getAll(//@Context HttpSession session, @Context UriInfo uriInfo,
-                           @QueryParam("search") String search,
+    Response getAll(@QueryParam("sub") String sub,
+                           @QueryParam("userEmail") String email,
+                           @QueryParam("logon") String logon,
+                           @QueryParam("firstName") String firstName,
+                           @QueryParam("lastName") String lastName,
+                           @QueryParam("enabled") Boolean enabled,
+                           @QueryParam("processingLocked") Boolean processingLocked,
+                           @QueryParam("ids") Collection<Long> ids,
                            @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
                            @DefaultValue("10") @QueryParam("pageSize") int pageSize,
                            @QueryParam("sortBy") List<String> sortBy,
-                           @DefaultValue("true") @QueryParam("asc") boolean isAscending);
+                           @DefaultValue("true") @QueryParam("asc") boolean isAscending,
+                           @DefaultValue("true") @QueryParam("isExact") boolean isExact,
+                           @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
     /**
      * Retrieves multiple users into a response in base of a search filter criteria
@@ -76,10 +92,10 @@ public interface UserResourceClient {
      */
     @GET
     @Path("find")
-    public Response getUsers(@QueryParam("sub") String sub,
+    Response getUsers(@QueryParam("sub") String sub,
                              @QueryParam("userEmail") String email,
                              @QueryParam("logon") String logon,
-                             @QueryParam("ids") List<Long> ids,
+                             @QueryParam("ids") Collection<Long> ids,
                              @DefaultValue("true") @QueryParam("isExact") boolean isExact,
                              @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
@@ -90,7 +106,7 @@ public interface UserResourceClient {
      */
     @GET
     @Path("/sub/{sub}")
-    public Response getUserIdBySub(@PathParam("sub") String sub);
+    Response getUserIdBySub(@PathParam("sub") String sub);
 
     /**
      * Returns JSON message with the specific required information search by the user ID.
@@ -99,7 +115,7 @@ public interface UserResourceClient {
      */
     @GET
     @Path("/{id}")
-    public Response getById(@PathParam("id") Long id);
+    Response getById(@PathParam("id") Long id);
 
     /**
      * Deletes requested user from the DB
@@ -108,16 +124,32 @@ public interface UserResourceClient {
      */
     @DELETE
     @Path("/{id}")
-    public Response delete(@NotNull @PathParam("id") long id);
+    Response delete(@NotNull @PathParam("id") long id);
 
     /**
-     * Save user to the DB.
+     * Creates user into the DB.
      *
      * @param user to be added
      * @return Ok message if it has success. Returns error 400 Code to the user in case of invalid request.
      */
     @POST
-    public Response save(User user);
+    Response create(io.radien.ms.usermanagement.client.entities.User user);
+
+    /**
+     * Updates user into the DB.
+     *
+     * @param user to be added
+     * @return Ok message if it has success. Returns error 400 Code to the user in case of invalid request.
+     * Return error 404 Code to the user in case of invalid id (No User found to update)
+     */
+    @PUT
+    @Path("/{id}")
+    Response update(@PathParam("id") long id, io.radien.ms.usermanagement.client.entities.User user);
+
+    @PUT
+    @Path("lock")
+    Response processingLockChange(@QueryParam("id") long id, @QueryParam("processingLock") boolean processingLock);
+
 
     /**
      * Adds multiple users into the DB.
@@ -132,7 +164,7 @@ public interface UserResourceClient {
      */
     @POST
     @Path("/multipleCreation")
-    public Response create(List<User> userList);
+    Response create(List<User> userList);
 
     /**
      * Will send the updated password via email to the user in case of success will return a 200 code message
@@ -141,7 +173,18 @@ public interface UserResourceClient {
      */
     @POST
     @Path("/{id}/sendUpdatePasswordEmail")
-    public Response sendUpdatePasswordEmail(@NotNull @PathParam("id") long id);
+    Response sendUpdatePasswordEmail(@NotNull @PathParam("id") long id);
+
+    /**
+     * Will updated email and also send email to verify to the user in case of success will return a 204 code message
+     * @param id that identifies the user
+     * @param user information to be updated
+     * @return ok in case the email has been sent with the refreshed password
+     */
+    @PATCH
+    @Path("/{id}")
+    Response updateEmailAndExecuteActionEmailVerify(@PathParam("id") long id, User user,
+                                                           @DefaultValue("true") @QueryParam("emailVerify") boolean emailVerify);
 
     /**
      * Will update the refresh token, to update the access of the specific user
@@ -150,6 +193,16 @@ public interface UserResourceClient {
      */
     @POST
     @Path("/refresh")
-    public Response refreshToken(String refreshToken);
+    Response refreshToken(String refreshToken);
 
+    /**
+     * Endpoint to change user password
+     * @param sub OpenId user identifier (subject)
+     * @param change pojo/bean containing credential information (Not plain text, data encoded on base64)
+     * @return OK if changing process is concluded with success. Status 400 in case of any
+     * business logic inconsistency found. Return error 500 in case of technical issues
+     */
+    @PATCH
+    @Path("/{sub}/passCredential")
+    Response updatePassword(@PathParam("sub") String sub, UserPasswordChanging change);
 }

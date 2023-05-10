@@ -1,0 +1,4 @@
+io.radien.spi.themes.providers.validation.CaptchaValidator
+io.radien.spi.themes.providers.validation.MobileNumberValidator
+io.radien.spi.themes.providers.validation.TermsAndConditionsValidator
+io.radien.spi.themes.providers.validation.LegalDataValidator

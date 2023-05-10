@@ -84,9 +84,13 @@ public interface RoleRESTServiceAccess extends Appframeable{
     public boolean create(SystemRole role) throws SystemException;
 
     /**
-     * Will calculate how many records are existent in the db
-     * @return the count of existent roles.
+     * Updates given role
+     * @param role to be updated
+     * @return true if role has been updated with success or false if not
+     * @throws SystemException in case of URL specification
      */
+    public boolean update(SystemRole role) throws SystemException;
+
     /**
      * Will calculate how many records are existent in the db
      * @return the count of existent roles.

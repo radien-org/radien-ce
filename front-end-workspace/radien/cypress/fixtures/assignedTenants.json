@@ -1,0 +1,16 @@
+{
+    "results": [
+      {
+        "id": 1,
+        "name": "TEST",
+        "tenantKey": "TEST",
+        "tenantType": "ROOT"
+      },
+      {
+        "id": 2,
+        "name": "TEST 1",
+        "tenantKey": "TEST 1",
+        "tenantType": "CLIENT"
+      }
+    ]
+}

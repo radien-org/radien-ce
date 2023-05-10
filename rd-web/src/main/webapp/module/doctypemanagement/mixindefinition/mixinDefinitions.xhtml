@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright (c) 2006-present radien GmbH & its legal owners. All rights reserved.
+  - <p>
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  - <p>
+  - http://www.apache.org/licenses/LICENSE-2.0
+  - <p>
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:b="http://bootsfaces.net/ui"
+				xmlns:f="http://xmlns.jcp.org/jsf/core"
+				xmlns:h="http://xmlns.jcp.org/jsf/html"
+				xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+				xmlns:c="http://java.sun.com/jsp/jstl/core"
+				template="/WEB-INF/templates/tpl_oaf.xhtml">
+	<f:metadata>
+		<f:viewAction action="#{mixinDefinitionManager.onload}"/>
+		<f:viewAction action="#{authzChecker.redirectOnMissingPermission('MixinDefinitionManagement', 'Read', null, 'pretty:index')}"/>
+	</f:metadata>
+
+	<ui:define name="content" bootsFacesDecorator="true">
+		<link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
+		<h:form id="mixinDefinitionManagementTableDiv" styleClass="tableContainer">
+			<b:row>
+				<h:panelGroup layout="block" styleClass="headerInformation">
+					<h1><h:outputText value="#{msg.rd_mixinDefinition} "/></h1>
+					<hr />
+				</h:panelGroup>
+			</b:row>
+
+			<p:dataTable id="dataTable" value="#{mixinDefinitionManager.dataModel}"
+						 var="mixinDefinition"
+						 widgetVar="jcrmixintypeDataTable"
+						 rowKey="#{mixinDefinition.id}"
+						 lazy="true"
+						 emptyMessage="#{msg.rd_mixinDefinition_no_records}"
+						 paginator="true" rows="10"
+						 paginatorPosition="bottom"
+						 paginatorTemplate="{CurrentPageReport} {PreviousPageLink} {PageLinks} {NextPageLink} {RowsPerPageDropdown}"
+						 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+						 rowsPerPageTemplate="5,10,20,50"
+						 styleClass = "tableDesign"
+						 selectionMode="single"
+						 selection="#{mixinDefinitionManager.selectedMixinDefinition}">
+
+				<p:ajax event="rowSelect"
+						listener="#{mixinDefinitionManager.onRowSelect}"
+						update="@form:mixinDefinitionManagementTableDiv"
+						oncomplete="$('.formValidationModalClass').modal('show')"/>
+
+				<f:facet name="header">
+					<div class="text-right">
+						<b:commandButton value="#{msg.rd_mixinDefinition_add}"
+										 action="#{mixinDefinitionManager.createMixinDefinitionRedirectURL}"
+										 iconAwesome="fa-cube"
+										 tooltip="#{msg.rd_mixinDefinition_add_info}"
+										 iconAlign="center"/>
+
+						<b:dropButton value="#{msg.rd_mixinDefinition_actions}"
+									  drop="down">
+							<b:navCommandLink value="#{msg.rd_mixinDefinition_edit}"
+											 tooltip="#{msg.rd_mixinDefinition_select_record_info}"
+											 iconAwesome="fa-edit"
+											 action="#{mixinDefinitionManager.editMixinDefinitionRedirectURL}"/>
+
+							<b:navCommandLink onclick="$('.formValidationModalMixinDefinitionDelete').modal('show')"
+											  value="#{msg.rd_mixinDefinition_delete}"
+											  rendered="#{authzChecker.hasPermissionAccess('MixinDefinitionManagement','Delete',null)}"
+											  icon="trash"/>
+						</b:dropButton>
+
+						<b:commandButton id="refresh" value="#{msg.rd_mixinDefinition_refresh}"
+										 tooltip="#{msg.rd_mixinDefinition_refresh_info}"
+										 ajax="false"
+										 iconAwesome="fa-refresh"
+										 icon-spin="true"
+										 actionListener="#{mixinDefinitionManager.onload}"
+										 immediate="true" update="@form:mixinDefinitionManagementTableDiv"
+										 auto-update="true"/>
+					</div>
+				</f:facet>
+
+				<p:column headerText="#{msg.id}" sortBy="#{mixinDefinition.id}">
+					<h:outputText value="#{mixinDefinition.id}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.name}" sortBy="#{mixinDefinition.name}">
+					<h:outputText value="#{mixinDefinition.name}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.rd_mixinDefinition_namespace}" sortBy="#{mixinDefinition.namespace}">
+					<h:outputText value="#{mixinDefinition.namespace}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.rd_mixinDefinition_properties}" sortBy="#{mixinDefinition.properties}">
+					<h:outputText value="#{mixinDefinitionManager.getPropertyDefinitionNamesAsString(mixinDefinition)}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.rd_mixinDefinition_abstract}" sortBy="#{mixinDefinition.abstrakt}">
+					<h:outputText value="#{mixinDefinition.abstrakt}"/>
+				</p:column>
+
+				<p:column headerText="#{msg.rd_mixinDefinition_queryable}" sortBy="#{mixinDefinition.queryable}">
+					<h:outputText value="#{mixinDefinition.queryable}"/>
+				</p:column>
+
+			</p:dataTable>
+
+			<b:modal id="model"
+					 title="#{msg.confirmation}"
+					 styleClass="formValidationModalMixinDefinitionDelete"
+					 closable="false"
+					 close-on-escape="false"
+					 backdrop="false">
+				<c:choose>
+					<c:when test="#{mixinDefinitionManager.selectedMixinDefinition != null}">
+						<p>#{msg.rd_mixinDefinition_delete_record_info}</p>
+					</c:when>
+					<c:otherwise>
+						<p>#{msg.rd_mixinDefinition_no_selection}</p>
+					</c:otherwise>
+				</c:choose>
+				<f:facet name="footer">
+					<b:commandButton value="#{mixinDefinitionManager.selectedMixinDefinition != null ?
+												msg.no : msg.cancel}"
+									 onclick="{ $('.formValidationModalMixinDefinitionDelete').modal('hide') } "/>
+					<b:commandButton value="#{msg.yes}" look="warning"
+									 actionListener="#{mixinDefinitionManager.deleteMixinDefinition(mixinDefinitionManager.selectedMixinDefinition)}"
+									 action="#{mixinDefinitionManager.returnToMixinDefinitionsRedirectURL}"
+									 oncomplete="{ $('.formValidationModalMixinDefinitionDelete').modal('hide') } "
+									 rendered="#{mixinDefinitionManager.selectedMixinDefinition != null}"/>
+				</f:facet>
+			</b:modal>
+		</h:form>
+	</ui:define>
+</ui:composition>

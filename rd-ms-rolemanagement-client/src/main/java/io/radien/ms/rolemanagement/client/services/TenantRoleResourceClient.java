@@ -18,20 +18,21 @@ package io.radien.ms.rolemanagement.client.services;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.ms.rolemanagement.client.entities.GlobalHeaders;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
-import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
-
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import java.util.List;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
+import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
 /**
  * Tenant Role REST requests and services
@@ -45,18 +46,25 @@ public interface TenantRoleResourceClient {
 
     /**
      * Retrieves TenantRole association using pagination approach
+     * @param tenantId tenant identifier (Optional)
+     * @param roleId role identifier (Optional)
      * @param pageNo page number
      * @param pageSize page size
+     * @param sortBy criteria field to be sorted
+     * @param isAscending boolean value to show the values ascending or descending way
      * @return In case of successful operation returns OK (http status 200)
      * and a Page containing TenantRole associations (Chunk/Portion compatible
      * with parameter Page number and Page size).<br>
      * Otherwise, in case of operational error, returns Internal Server Error (500)
      */
     @GET
-    @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAll(@DefaultValue("1")  @QueryParam("pageNo") int pageNo,
-                           @DefaultValue("10") @QueryParam("pageSize") int pageSize);
+    public Response getAll(@QueryParam("tenantId") Long tenantId,
+                           @QueryParam("roleId") Long roleId,
+                           @DefaultValue("1")@QueryParam("pageNo") int pageNo,
+                           @DefaultValue("10") @QueryParam("pageSize") int pageSize,
+                           @QueryParam("sortBy") List<String> sortBy,
+                           @DefaultValue("true") @QueryParam("asc") boolean isAscending);
 
     /**
      * Retrieves TenantRole associations that met the following parameter
@@ -118,53 +126,33 @@ public interface TenantRoleResourceClient {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response save(TenantRole tenantRole);
+    public Response create(TenantRole tenantRole);
+
+    /**
+     * Update a TenantRole association
+     * @param id id related to the TenantRole that is going to be updated
+     * @param tenantRole bean that corresponds to TenantRole association to be created
+     * @return 200 code message if success, 400 in case of duplication (association already
+     * existing with the same parameter) or absence of information (tenant or role not existing),
+     * 404 if the there is not TenantRole for the informed Id,
+     * 500 code message if there is any error.
+     */
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/{id}")
+    public Response update(@PathParam("id") Long id, TenantRole tenantRole);
 
     /**
      * Check if a Tenant role association exists
      * @param tenantId Tenant Identifier
      * @param roleId Role identifier
-     * @return Response OK containing true (if association exists), false otherwise.
+     * @return Responds with 204 http status if association exists, 404 (NOT FOUND) otherwise.
      * Response 500 in case of any other error.
      */
-    @GET
-    @Path("/exists/tenant/{tenantId}/role/{roleId}")
+    @HEAD
+    @Path("/{tenantId}/{roleId}")
     Response exists(@PathParam("tenantId") Long tenantId,
                     @PathParam("roleId") Long roleId);
-
-    /**
-     * Retrieves the Permissions that exists for a Tenant Role Association (Optionally taking in account user)
-     * @param tenantId Tenant identifier (Mandatory)
-     * @param roleId Role identifier (Mandatory)
-     * @param userId User identifier (Optional)
-     * @return Response OK with List containing permissions. Response 500 in case of any other error.
-     */
-    @GET
-    @Path("/permissions/tenant/{tenantId}/role/{roleId}")
-    Response getPermissions(@PathParam("tenantId") Long tenantId,
-                           @PathParam("roleId") Long roleId,
-                           @QueryParam("userId") Long userId);
-
-    /**
-     * Retrieves the existent Tenants for a User (Optionally for a specific role)
-     * @param userId User identifier
-     * @param roleId Role identifier (Optional)
-     * @return Response OK with List containing tenants. Response 500 in case of any other error.
-     */
-    @GET
-    @Path("/tenants/user/{userId}")
-    Response getTenants(@PathParam("userId") Long userId, @QueryParam("roleId") Long roleId);
-
-    /**
-     * Retrieves the Roles for which a User is associated under a Tenant
-     * @param userId User identifier
-     * @param tenantId Tenant identifier
-     * @return Response OK if operation concludes with success.
-     * Response 500 in case of error
-     */
-    @GET
-    @Path("/rolesUserTenant")
-    Response getRolesForUserTenant(@QueryParam("userId") Long userId, @QueryParam("tenantId") Long tenantId);
 
     /**
      * Check if Role exists for a User (Optionally under a Tenant)
@@ -211,5 +199,16 @@ public interface TenantRoleResourceClient {
     Response isPermissionExistentForUser(@QueryParam("userId") Long userId,
                                          @QueryParam("permissionId") Long permissionId,
                                          @QueryParam("tenantId") Long tenantId);
+
+    /**
+     * Retrieves the Roles for which a User is associated under a Tenant
+     * @param userId User identifier
+     * @param tenantId Tenant identifier
+     * @return Response OK if operation concludes with success.
+     * Response 500 in case of error
+     */
+    @GET
+    @Path("/rolesUserTenant")
+    Response getRolesForUserTenant(@QueryParam("userId") Long userId, @QueryParam("tenantId") Long tenantId);
 
 }

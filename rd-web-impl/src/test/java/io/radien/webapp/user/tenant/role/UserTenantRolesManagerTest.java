@@ -38,17 +38,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
+
+import javax.faces.application.FacesMessage;
 import javax.faces.event.ValueChangeEvent;
+
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -58,17 +63,15 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.*;
+
 /**
  * Class that aggregates UnitTest cases for UserTenantRolesManager
  *
  * @author Rajesh Gavvala
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class})
+
 public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTest {
 
     @InjectMocks
@@ -96,14 +99,24 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
     Set<Long> assignableUserTenantRoles = new HashSet<>();
     Set<Long> unassignedUserTenantRoles = new HashSet<>();
 
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
+    @BeforeClass
+    public static void beforeClass(){
+        handleJSFUtilAndFaceContextMessages();
+    }
+
+    @AfterClass
+    public static void afterClass(){
+        destroy();
+    }
+
     /**
      * Prepares require objects when requires to invoke
      */
     @Before
     public void before(){
-        MockitoAnnotations.initMocks(this);
-
-        handleJSFUtilAndFaceContextMessages();
         initUserTenants();
 
         systemRoles = initSystemRole();
@@ -134,7 +147,7 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
      */
     @Test
     public void testInit() throws SystemException {
-        doReturn(Collections.unmodifiableList(systemTenants)).when(tenantRoleRESTServiceAccess).getTenants(anyLong(), anyLong());
+        doReturn(Collections.unmodifiableList(systemTenants)).when(tenantRoleUserRESTServiceAccess).getTenants(anyLong(), anyLong());
 
         userTenantRolesManager.init();
         userTenantRolesManager.setUserTenants(systemTenants);
@@ -144,10 +157,9 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
     /**
      * Test method selectedChangeTenant()
      * asserts ValueChangeEvent object info values
-     * @throws SystemException if any error
      */
     @Test
-    public void testSelectedChangeTenant() throws SystemException {
+    public void testSelectedChangeTenant() {
         ValueChangeEvent event = mock(ValueChangeEvent.class);
         doReturn(systemTenant).when(event).getNewValue();
 
@@ -164,7 +176,7 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
         userTenantRolesManager.setAssignedRolesForUserTenant(assignedUserTenantRoles);
         assertEquals(assignedUserTenantRoles, userTenantRolesManager.getAssignedRolesForUserTenant());
 
-        doReturn(assignedUserTenantRoles).when(this.tenantRoleRESTServiceAccess).getRolesForUserTenant(anyLong(), anyLong());
+        doReturn(assignedUserTenantRoles).when(this.tenantRoleUserRESTServiceAccess).getRolesForUserTenant(anyLong(), anyLong());
 
         userTenantRolesManager.setAssignedRolesForUserTenant(assignedUserTenantRoles);
         userTenantRolesManager.setIsRoleAssigned(isRoleAssigned);
@@ -184,7 +196,7 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
         userTenantRolesManager.setAssignedRolesForUserTenant(assignedUserTenantRoles);
         assertEquals(assignedUserTenantRoles, userTenantRolesManager.getAssignedRolesForUserTenant());
 
-        doThrow(RuntimeException.class).when(tenantRoleRESTServiceAccess).getRolesForUserTenant(anyLong(), anyLong());
+        doThrow(RuntimeException.class).when(tenantRoleUserRESTServiceAccess).getRolesForUserTenant(anyLong(), anyLong());
 
         userTenantRolesManager.loadUserTenantRoles(systemTenant);
     }
@@ -263,7 +275,7 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
         systemTenantRole.setTenantId(1L);
         systemTenantRole.setRoleId(1L);
 
-        doReturn(true).when(tenantRoleRESTServiceAccess).save(any());
+        doReturn(true).when(tenantRoleRESTServiceAccess).create(any());
         doReturn(true).when(tenantRoleUserRESTServiceAccess).assignUser(any());
         doReturn(Boolean.TRUE).when(tenantRoleUserRESTServiceAccess).unAssignUser(anyLong(), anyCollection(), anyLong());
 
@@ -287,12 +299,29 @@ public class UserTenantRolesManagerTest extends JSFUtilAndFaceContextMessagesTes
         systemTenantRole.setTenantId(1L);
         systemTenantRole.setRoleId(1L);
 
-        doReturn(true).when(tenantRoleRESTServiceAccess).save(any());
+        doReturn(true).when(tenantRoleRESTServiceAccess).create(any());
         doThrow(RuntimeException.class).when(tenantRoleUserRESTServiceAccess).assignUser(any());
         doThrow(RuntimeException.class).when(tenantRoleUserRESTServiceAccess).unAssignUser(anyLong(), anyCollection(), anyLong());
 
         userTenantRolesManager.assignOrUnassignedRolesToUserTenant();
     }
+
+    /**
+     * Test method assignOrUnassignedRolesToUserTenant() if user processing is locked
+     * @throws SystemException if any error
+     */
+    @Test
+    public void testAssignOrUnassignedWhenProcessingIsLocked() throws SystemException {
+        SystemUser user = new User();
+        user.setProcessingLocked(true);
+        when(userDataModel.getSelectedUser()).thenReturn(user);
+
+        userTenantRolesManager.assignOrUnassignedRolesToUserTenant();
+
+        verify(tenantRoleRESTServiceAccess, never()).exists(anyLong(),anyLong());
+        verify(tenantRoleUserRESTServiceAccess, never()).unAssignUser(anyLong(), anyCollection(), anyLong());
+    }
+
 
     /**
      * Test method clearAssignableOrUnAssignedRoles()

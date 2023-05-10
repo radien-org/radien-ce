@@ -16,9 +16,13 @@
 package io.radien.api.service.tenantrole;
 
 import io.radien.api.entity.Page;
+import io.radien.api.model.role.SystemRole;
+import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRoleUser;
 import io.radien.exception.SystemException;
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Rest service client responsible to Deal with TenantRoleUser endpoint
@@ -28,16 +32,19 @@ import java.util.Collection;
 public interface TenantRoleUserRESTServiceAccess {
 
     /**
-     * Under a pagination approach, retrieves the Users associations that currently exist
-     * @param tenantId tenant identifier for a TenantRole (Acting as filter)
-     * @param roleId role identifier for a TenantRole (Acting as filter)
+     * Under a pagination approach, retrieves the Tenant Role Users associations that currently exist
+     * @param tenantRoleId tenant role identifier(Acting as filter)
+     * @param userId user identifier (Acting as filter)
      * @param pageNo page number
      * @param pageSize page size
+     * @param sortBy criteria field to be sorted
+     * @param isAscending boolean value to show the values ascending or descending way
      * @return Page containing TenantRoleUser instances
      * @throws SystemException in case of any error
      */
-    Page<? extends SystemTenantRoleUser> getUsers(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException;
-
+    Page<? extends SystemTenantRoleUser> getAll(Long tenantRoleId, Long userId,
+                                                int pageNo, int pageSize,
+                                                List<String> sortBy, boolean isAscending) throws SystemException;
     /**
      * Under a pagination approach, retrieves the Ids for Users associations that exist
      * for a TenantRole
@@ -51,6 +58,24 @@ public interface TenantRoleUserRESTServiceAccess {
      */
     Page<Long> getUsersIds(Long tenantId, Long roleId, int pageNo, int pageSize) throws SystemException;
 
+    /**
+     * Retrieves TenantRoleUser associations that met the following parameter
+     * @param tenantRoleId TenantRole identifier
+     * @param userId User identifier
+     * @param isLogicalConjunction specifies if the parameters will be unified by AND (true) or OR (false)
+     * @return In case of successful operation returns a Collection containing TenantRole associations.
+     * @throws SystemException in case of Any error
+     */
+    List<? extends SystemTenantRoleUser> getTenantRoleUsers(Long tenantRoleId, Long userId,
+                                                            boolean isLogicalConjunction) throws SystemException;
+
+    /**
+     * Retrieve a Tenant Role User using the id as search parameter.
+     * @param id Tenant Role User id association to guide the search process
+     * @return Optional containing Tenant Role User found.
+     * @throws SystemException in case of any error
+     */
+    Optional<SystemTenantRoleUser> getTenantRoleUserById(Long id) throws SystemException;
 
     /**
      * Assign/associate/add user to a TenantRole domain
@@ -78,4 +103,30 @@ public interface TenantRoleUserRESTServiceAccess {
      * @throws SystemException in case of any error
      */
     Boolean delete(Long tenantRoleUserId) throws SystemException;
+
+    /**
+     * Retrieves the existent Tenants for a User (Optionally for a specific role)
+     * @param userId User identifier
+     * @param roleId Role identifier (Optional)
+     * @return List containing tenants
+     * @throws SystemException in case of any error
+     */
+    List<? extends SystemTenant> getTenants(Long userId, Long roleId) throws SystemException;
+
+    /**
+     * Retrieves the existent Roles for a User that associated Tenant
+     * @param userId User identifier
+     * @param tenantId Tenant identifier
+     * @return List containing roles
+     * @throws SystemException in case of any error
+     */
+    List<? extends SystemRole> getRolesForUserTenant(Long userId, Long tenantId) throws SystemException;
+
+    /**
+     * Updates a TenantRoleUser previously crated (When a user was assigned into a TenantRole)
+     * @param tenantRoleUser association between Tenant, Role and User
+     * @return Boolean indicating if operation was concluded successfully
+     * @throws SystemException in case of any error
+     */
+    Boolean update(SystemTenantRoleUser tenantRoleUser) throws SystemException;
 }

@@ -1,0 +1,11 @@
+{
+  "id": 1,
+  "sub": "sub",
+  "firstname": "Test",
+  "lastname": "User",
+  "userEmail": "example@email.com",
+  "logon": "mock",
+  "mobileNumber": "0",
+  "enabled": true,
+  "delegatedCreation": false
+}

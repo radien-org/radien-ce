@@ -26,23 +26,17 @@ public class ActiveTenantSearchFilter extends SearchFilterCriteria implements Sy
 
     private Long userId;
     private Long tenantId;
-    private String tenantName;
-    private boolean isTenantActive;
 
     /**
      * Active Tenant search filter constructor
      * @param userId of the active tenant to be found
      * @param tenantId of the active tenant to be found
-     * @param tenantName of the active tenant to be found
-     * @param isTenantActive true if the user has the following tenant has active
      * @param isLogicalConjunction true in case search option is and conjunction
      */
-    public ActiveTenantSearchFilter(Long userId, Long tenantId, String tenantName, boolean isTenantActive, boolean isLogicalConjunction) {
+    public ActiveTenantSearchFilter(Long userId, Long tenantId, boolean isLogicalConjunction) {
         super(isLogicalConjunction);
         this.userId = userId;
         this.tenantId = tenantId;
-        this.tenantName = tenantName;
-        this.isTenantActive = isTenantActive;
     }
 
     /**
@@ -79,40 +73,5 @@ public class ActiveTenantSearchFilter extends SearchFilterCriteria implements Sy
     @Override
     public void setTenantId(Long tenantId) {
         this.tenantId = tenantId;
-    }
-
-    /**
-     * System active tenant search filter tenant name getter
-     * @return the system active tenant search filter tenant name
-     */
-    @Override
-    public String getTenantName() {
-        return tenantName;
-    }
-
-    /**
-     * System active tenant search filter tenant name setter
-     * @param tenantName to be set
-     */
-    public void setTenantName(String tenantName) {
-        this.tenantName = tenantName;
-    }
-
-    /**
-     * Active Tenant is tenant active for the user
-     * @return true or false value
-     */
-    @Override
-    public boolean getIsTenantActive() {
-        return isTenantActive;
-    }
-
-    /**
-     * Active Tenant is tenant active for the user
-     * @param isTenantActive to be set and updated
-     */
-    @Override
-    public void setIsTenantActive(boolean isTenantActive) {
-        this.isTenantActive = isTenantActive;
     }
 }

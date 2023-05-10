@@ -17,6 +17,10 @@ package io.radien.ms.tenantmanagement.client.services;
 
 import io.radien.ms.tenantmanagement.client.entities.GlobalHeaders;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
+import io.radien.ms.tenantmanagement.client.entities.TenantType;
+import java.time.LocalDate;
+import java.util.Collection;
+import javax.ws.rs.HEAD;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 
 import javax.validation.constraints.NotNull;
@@ -56,12 +60,23 @@ public interface TenantResourceClient {
      * error.
      */
     @GET
-    @Path("/getAll")
-    public Response getAll(@QueryParam("search") String search,
+    public Response getAll(@QueryParam("id") Collection<Long> id,
+                           @QueryParam("name") String name,
+                           @QueryParam("tenantKey") String tenantKey,
+                           @QueryParam("tenantType") TenantType tenantType,
+                           @QueryParam("clientAddress") String clientAddress,
+                           @QueryParam("clientZipCode") String clientZipCode,
+                           @QueryParam("clientCity") String clientCity,
+                           @QueryParam("clientCountry") String clientCountry,
+                           @QueryParam("clientPhoneNumber") String clientPhoneNumber,
+                           @QueryParam("clientEmail") String clientEmail,
+                           @QueryParam("parentId") Long parentId,
                            @DefaultValue("1")  @QueryParam("pageNo") int pageNo,
                            @DefaultValue("10") @QueryParam("pageSize") int pageSize,
                            @QueryParam("sortBy") List<String> sortBy,
-                           @DefaultValue("true") @QueryParam("asc") boolean isAscending);
+                           @DefaultValue("true") @QueryParam("asc") boolean isAscending,
+                           @DefaultValue("true") @QueryParam("isExact") boolean isExact,
+                           @DefaultValue("true") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
 
     /**
      * Gets a list of requested tenants based on some filtered information
@@ -73,10 +88,20 @@ public interface TenantResourceClient {
      * @return 200 response code in case of success or 500 in case of any issue
      */
     @GET
+    @Path("/find")
     public Response get(@QueryParam("name") String name, @QueryParam("tenantType") String type,
                         @QueryParam("ids") List<Long> ids,
                         @DefaultValue("false") @QueryParam("isExact") boolean isExact,
                         @DefaultValue("false") @QueryParam("isLogicalConjunction") boolean isLogicalConjunction);
+
+    /**
+     * Method to get all the requested tenant children tenants
+     * @param id of the parent tenant
+     * @return a list of all the tenant children
+     */
+    @GET
+    @Path("/{id}/children")
+    public Response getChildren(@PathParam("id") Long id);
 
     /**
      * Gets tenant based on the given id
@@ -102,7 +127,7 @@ public interface TenantResourceClient {
      * @return a response with true or false based on the success or failure of the deletion
      */
     @DELETE
-    @Path("/deleteTenantHierarchy/{id}")
+    @Path("/hierarchy/{id}")
     public Response deleteTenantHierarchy(@NotNull @PathParam("id") long id);
 
     /**
@@ -126,10 +151,11 @@ public interface TenantResourceClient {
     /**
      * Validates if specific requested Tenant exists
      * @param id to be searched
-     * @return response true if it exists
+     * @return response 204 if tenant exists. 404 if do not exist.
+     * 500 in case of any other processing error.
      */
-    @GET
-    @Path("/exists/{id}")
+    @HEAD
+    @Path("/{id}")
     public Response exists(@NotNull @PathParam("id") Long id);
 
 }

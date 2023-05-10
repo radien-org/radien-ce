@@ -19,6 +19,7 @@ import io.radien.api.entity.Page;
 import io.radien.api.model.permission.SystemResource;
 import io.radien.api.model.permission.SystemResourceSearchFilter;
 import io.radien.api.service.ServiceAccess;
+import io.radien.api.service.permission.exception.ResourceNotFoundException;
 import io.radien.exception.UniquenessConstraintException;
 
 import java.util.Collection;
@@ -36,14 +37,14 @@ public interface ResourceServiceAccess extends ServiceAccess {
      * @param resourceId action identifier
      * @return the requested system resource
      */
-    public SystemResource get(Long resourceId);
+    SystemResource get(Long resourceId);
 
     /**
      * Retrieves a collection of Resources by its identifiers
      * @param resourceIds list of identifiers
      * @return a list of requested resources
      */
-    public List<SystemResource> get(List<Long> resourceIds);
+    List<SystemResource> get(List<Long> resourceIds);
 
     /**
      * Fetches all resources
@@ -54,33 +55,41 @@ public interface ResourceServiceAccess extends ServiceAccess {
      * @param isAscending in case of true data will come ascending mode if false descending
      * @return list of resources
      */
-    public Page<SystemResource> getAll(String search, int pageNo, int pageSize,
+    Page<SystemResource> getAll(String search, int pageNo, int pageSize,
                               List<String> sortBy, boolean isAscending);
 
     /**
-     * Save an resource (Create or Update)
-     * @param resource to be stored/saved
+     * Create a resource
+     * @param resource to be created
      * @throws UniquenessConstraintException in case the requested record already exists or has duplicated information
      */
-    public void save(SystemResource resource) throws UniquenessConstraintException;
+    void create(SystemResource resource) throws UniquenessConstraintException;
+
+    /**
+     * Update a resource
+     * @param resource to be updated
+     * @throws ResourceNotFoundException in case of not existent resource
+     * @throws UniquenessConstraintException in case of duplicated information
+     */
+    void update(SystemResource resource) throws ResourceNotFoundException, UniquenessConstraintException;
 
     /**
      * Delete a resource
      * @param resourceId resource identifier
      */
-    public void delete(Long resourceId);
+    boolean delete(Long resourceId);
 
     /**
      * Deletes a set of actions
      * @param resourceIds action identifiers
      */
-    public void delete(Collection<Long> resourceIds);
+    boolean delete(Collection<Long> resourceIds);
 
     /**
      * Retrieve Resources using a search filter
      * @param filter with the fields that should be looked into to find the correct system resource
      * @return a list of system resources
      */
-    public List<? extends SystemResource> getResources(SystemResourceSearchFilter filter);
+    List<SystemResource> getResources(SystemResourceSearchFilter filter);
 
 }

@@ -51,6 +51,18 @@ public interface SystemUser extends Model {
 	public void setUserEmail(String userEmail);
 
 	/**
+	 * System user mobile number getter
+	 * @return System user mobile number
+	 */
+	public String getMobileNumber();
+
+	/**
+	 * System user mobile number setter
+	 * @param mobileNumber to be set
+	 */
+	public void setMobileNumber(String mobileNumber);
+
+	/**
 	 * System user termination date getter
 	 * @return System user termination date
 	 */
@@ -121,5 +133,17 @@ public interface SystemUser extends Model {
 	 * @param delegatedCreation to be set
 	 */
 	public void setDelegatedCreation(boolean delegatedCreation);
+
+	/**
+	 * System user is processing locked getter
+	 * @return System user delegated creation
+	 */
+	public boolean isProcessingLocked();
+
+	/**
+	 * System user processing locked setter
+	 * @param processingLocked to be set
+	 */
+	public void setProcessingLocked(boolean processingLocked);
 
 }

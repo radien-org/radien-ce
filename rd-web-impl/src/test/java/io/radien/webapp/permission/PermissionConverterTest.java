@@ -31,16 +31,18 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.ConverterException;
 
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -52,8 +54,6 @@ import static org.mockito.Mockito.doReturn;
  *
  * @author Rajesh Gavvala
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({JSFUtil.class, FacesContext.class, ExternalContext.class})
 public class PermissionConverterTest extends JSFUtilAndFaceContextMessagesTest {
 
     @InjectMocks
@@ -62,20 +62,31 @@ public class PermissionConverterTest extends JSFUtilAndFaceContextMessagesTest {
     @Mock
     private PermissionRESTServiceAccess permissionRESTServiceAccess;
 
-    FacesContext facesContext;
+    static FacesContext facesContext;
 
     SystemPermission systemPermission;
     Optional<SystemPermission> optionalSystemPermission;
 
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
+
+    @BeforeClass
+    public static void beforeClass(){
+        facesContext = getFacesContext();
+    }
+
+    @AfterClass
+    public static void afterClass(){
+        destroy();
+    }
 
     /**
      * Constructs mock object
      */
     @Before
     public void before(){
-        MockitoAnnotations.initMocks(this);
-
-        facesContext = getFacesContext();
 
         systemPermission = new Permission();
         systemPermission.setName("testPermission");

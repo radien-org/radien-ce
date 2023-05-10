@@ -21,10 +21,13 @@
 					<b:inputText id="userId" value="#{userDataModel.selectedUser.id}" disabled="true" span="6"/>
 
 					<h:outputLabel value="#{msg.firstname}"/>
-					<b:inputText id="userFirstName" value="#{userDataModel.selectedUser.firstname}" required="true" span="6"/>
+					<b:inputText id="userFirstName" value="#{userDataModel.selectedUser.firstname}"
+								 disabled="#{userDataModel.selectedUser.processingLocked}" required="true" span="6"/>
 
 					<h:outputLabel value="#{msg.lastname}"/>
-					<b:inputText id="userLastName" value="#{userDataModel.selectedUser.lastname}" required="true" span="6"/>
+					<b:inputText id="userLastName" value="#{userDataModel.selectedUser.lastname}"
+								 disabled="#{userDataModel.selectedUser.processingLocked}" required="true" span="6"/>
+
 
 					<h:outputLabel value="#{msg.rd_user_logon}"/>
 					<b:inputText id="userLogon" value="#{userDataModel.selectedUser.logon}" disabled="true" span="6"/>
@@ -55,18 +58,38 @@
 								 tooltip="#{msg.saveChanges}"
 								 iconAwesome="fa-save"
 								 rendered="#{userDataModel.selectedUser != null}"
-								 action="#{userDataModel.updateUser(userDataModel.selectedUser)}"/>
+								 action="#{userDataModel.saveUser(userDataModel.selectedUser, true)}"
+								 disabled="#{userDataModel.selectedUser.processingLocked}"/>
+
 				<b:commandButton value="#{msg.save}"
 								 tooltip="#{msg.saveChanges}"
 								 iconAwesome="fa-save"
 								 rendered="#{userDataModel.selectedUser == null}"
-								 action="#{userDataModel.updateUser(userDataModel.user)}"/>
+								 action="#{userDataModel.saveUser(userDataModel.user, true)}"
+								 disabled="#{userDataModel.selectedUser.processingLocked}"/>
 
 				<b:commandButton value="#{msg.associate}"
 								 tooltip="#{msg.rd_tenant_association}"
 								 iconAwesome="fa-cogs"
 								 rendered="#{userDataModel.tenantAssociationProcessAllowed}"
-								 action="#{userDataModel.prepareTenantAssociation}"/>
+								 action="#{userDataModel.prepareTenantAssociation}"
+								 disabled="#{userDataModel.selectedUser.processingLocked}"/>
+
+
+				<b:commandButton
+						  rendered="#{userDataModel.selectedUser != null}"
+						  value="#{userDataModel.selectedUser.processingLocked ? msg.unlock_my_user_for_processing : msg.lock_my_user_from_processing}"
+						  tooltip="#{msg.unlock_my_user_for_processing}"
+						  action="#{userDataModel.changeProcessingLocked(userDataModel.selectedUser)}"
+				/>
+
+				<b:commandButton
+						  rendered="#{userDataModel.selectedUser == null}"
+						  value="#{userDataModel.user.processingLocked ? msg.unlock_my_user_for_processing : msg.lock_my_user_from_processing}"
+						  tooltip="#{msg.unlock_my_user_for_processing}"
+						  action="#{userDataModel.changeProcessingLocked(userDataModel.user)}"
+
+				/>
 
 				<b:commandButton value="#{msg.rd_home_page}"
 								 tooltip="#{msg.returnToUserList}"

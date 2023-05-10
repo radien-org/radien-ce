@@ -16,6 +16,7 @@
 package io.radien.ms.tenantmanagement.entities;
 
 import io.radien.ms.tenantmanagement.client.entities.TenantType;
+import io.radien.ms.tenantmanagement.util.TenantTypeConverter;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -28,7 +29,7 @@ public class TenantTypeConverterTest {
     @Test
     public void convertToDatabaseColumn() {
         TenantTypeConverter converter = new TenantTypeConverter();
-        Long type = converter.convertToDatabaseColumn(TenantType.ROOT_TENANT);
+        Long type = converter.convertToDatabaseColumn(TenantType.ROOT);
 
         assertEquals((Long) 1L, type);
     }
@@ -38,15 +39,15 @@ public class TenantTypeConverterTest {
         TenantTypeConverter converter = new TenantTypeConverter();
         TenantType type = converter.convertToEntityAttribute(2L);
 
-        assertEquals(TenantType.CLIENT_TENANT, type);
+        assertEquals(TenantType.CLIENT, type);
     }
 
     @Test
     public void testToString() {
         TenantTypeConverter converter = new TenantTypeConverter();
         TenantType type = converter.convertToEntityAttribute(2L);
-        String toString = type.toString();
 
-        assertEquals(toString, "{\"id\":" + type.getId() + ", \"name\":\"" + type.getName() + "\"}");
+        assertNotNull(type);
+        assertEquals(TenantType.CLIENT, type);
     }
 }

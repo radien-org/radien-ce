@@ -35,12 +35,14 @@ public abstract class AbstractECMModel extends AbstractModel {
 	protected String htmlContent = "";
 	protected ContentType contentType = ContentType.HTML;
 	protected String author;
+	private Date lastEditDate;
 	protected boolean active = true;
+	protected boolean externalPublic = true;
 	private String permissions = "";
 
 	private String app;
 
-	protected transient byte[] image;
+	protected byte[] image;
 	protected transient byte[] fileStream;
 	protected String mimeType;
 	protected long fileSize;
@@ -50,13 +52,6 @@ public abstract class AbstractECMModel extends AbstractModel {
 	private String imageName;
 	private String jcrPath;
 	private String parentPath;
-
-	private boolean versionable;
-	private String versionComment;
-	private Date validDate;
-	private SystemContentVersion version;
-	private String versionableName;
-	private boolean updateOnLaunch;
 
 	/**
 	 * ECM View Id getter
@@ -176,6 +171,22 @@ public abstract class AbstractECMModel extends AbstractModel {
 	 */
 	public void setAuthor(String author) {
 		this.author = author;
+	}
+
+	/**
+	 * ECM LastEditDate getter
+	 * @return ecm lastEditDate
+	 */
+	public Date getLastEditDate() {
+		return lastEditDate;
+	}
+
+	/**
+	 * ECM LastEditDate setter
+	 * @param lastEditDate to be set
+	 */
+	public void setLastEditDate(Date lastEditDate) {
+		this.lastEditDate = lastEditDate;
 	}
 
 	/**
@@ -370,99 +381,12 @@ public abstract class AbstractECMModel extends AbstractModel {
 		this.permissions = permissions;
 	}
 
-	/**
-	 * Checks if the requested ecm is versional or not
-	 * @return the versional
-	 */
-	public boolean isVersionable() {
-		return versionable;
+	public boolean getExternalPublic() {
+		return externalPublic;
 	}
 
-	/**
-	 * Sets a new version to the active ecm
-	 * @param versionable the versional to set
-	 */
-	public void setVersionable(boolean versionable) {
-		this.versionable = versionable;
+	public void setExternalPublic(boolean externalPublic) {
+		this.externalPublic = externalPublic;
 	}
 
-	/**
-	 * Retrieves ecm version comment
-	 * @return the versionComment
-	 */
-	public String getVersionComment() {
-		return versionComment;
-	}
-
-	/**
-	 * Sets the ecm version comment
-	 * @param versionComment the versionComment to set
-	 */
-	public void setVersionComment(String versionComment) {
-		this.versionComment = versionComment;
-	}
-
-	/**
-	 * Ecm valid date getter
-	 * @return the validDate
-	 */
-	public Date getValidDate() {
-		return validDate;
-	}
-
-	/**
-	 * ECM set valid date
-	 * @param validDate the validDate to set
-	 */
-	public void setValidDate(Date validDate) {
-		this.validDate = validDate;
-	}
-
-	/**
-	 * ECM Version getter
-	 * @return the version
-	 */
-	public SystemContentVersion getVersion() {
-		return version;
-	}
-
-	/**
-	 * ECM version setter
-	 * @param version the version to set
-	 */
-	public void setVersion(SystemContentVersion version) {
-		this.version = version;
-	}
-
-	/**
-	 * ECM Version name getter
-	 * @return the versional Name
-	 */
-	public String getVersionableName() {
-		return versionableName;
-	}
-
-	/**
-	 * ECM Version name setter
-	 * @param versionableName the versional Name to set
-	 */
-	public void setVersionableName(String versionableName) {
-		this.versionableName = versionableName;
-	}
-
-	/**
-	 * ECM validation to update the requested ecm on launch or not
-	 * @return the updateOnLaunch
-	 */
-	public boolean isUpdateOnLaunch() {
-		return updateOnLaunch;
-	}
-
-	/**
-	 * Sets the requested value of the ecm on launch update or not
-	 * @param updateOnLaunch the updateOnLaunch to set
-	 */
-	public void setUpdateOnLaunch(boolean updateOnLaunch) {
-		this.updateOnLaunch = updateOnLaunch;
-	}
 }

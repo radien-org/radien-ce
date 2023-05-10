@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+    font-size: 62.5%;
+}
+
+body {
+    font-size: 1.6rem;
+}
+
+.text-sm {
+    font-size: 1.4rem;
+    line-height: 1.6rem;
+}
+
+.flash-bar--container {
+    position: fixed;
+    top: 5rem;
+    right: 2rem;
+    max-width: 80rem;
+    z-index: 50001;
+}
+
+.notSatisfied{
+    color: red;
+    font-weight: bold;
+}

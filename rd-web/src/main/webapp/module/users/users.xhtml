@@ -14,9 +14,10 @@
 		<link type="text/css" rel="stylesheet" href="#{resource['css/table_list.css']}" />
 		<h:form id="userManagementTableDiv" styleClass="tableContainer">
 			<b:row>
-				<h:panelGroup layout="block" styleClass="headerInformation">
+				<h:panelGroup
+						layout="block"
+						styleClass="headerInformation">
 					<h1><h:outputText value="#{msg.rd_users} "/></h1>
-					<hr />
 				</h:panelGroup>
 			</b:row>
 
@@ -39,41 +40,78 @@
 
 				<f:facet name="header">
 					<div class="text-right">
+						<b:button id="confirm-user-password-reset-button"
+								  onclick="$('.formValidationModalConfirmUserPasswordReset').modal('show')"
+								  value="#{msg.reset_password}"
+								  tooltip="#{msg.reset_password_with_email_warning}"
+								  iconAwesome="fa-key"
+								  rendered="#{userDataModel.allowedToResetPassword}"
+									/>
+						<b:modal id="model"
+								 title="#{msg.confirmation}"
+								 styleClass="formValidationModalConfirmUserPasswordReset"
+								 closable="false"
+								 close-on-escape="false" backdrop="false">
+							<p>#{userDataModel.getResetPasswordMessage()}</p>
+							<f:facet name="footer">
+								<b:commandButton value="#{msg.no}"
+												 tooltip="#{msg.no}"
+												 onclick="{ $('.formValidationModalConfirmUserPasswordReset').modal('hide') } "
+								/>
+								<b:commandButton value="#{msg.yes}" look="warning"
+												 action="#{userDataModel.sendUpdatePasswordEmail}"
+												 oncomplete="{ $('.formValidationModalConfirmUserPasswordReset').modal('hide') } "/>
+							</f:facet>
+						</b:modal>
+
 						<b:commandButton value="#{msg.create}"
 										  tooltip="#{msg.rd_create_new_user}"
 										  iconAwesome="fa-cube"
-										  rendered="#{userDataModel.hasUserAdministratorRoleAccess}"
+										  rendered="#{userDataModel.allowedCreateUser}"
 										  action="#{userDataModel.createRecord}"/>
 
 						<b:dropButton value="#{msg.rd_user_actions}" drop="down">
 							<b:navCommandLink value="#{msg.delete}"
 											  tooltip="#{msg.rd_delete_existent_user_info}"
 											  iconAwesome="fa-trash"
-											  rendered="#{userDataModel.hasUserAdministratorRoleAccess}"
-											  action="#{userDataModel.deleteRecord}"/>
+											  rendered="#{userDataModel.allowedDeleteUser}"
+											  action="#{userDataModel.deleteRecord}"
+											  disabled="#{userDataModel.selectedUser!=null and userDataModel.selectedUser.processingLocked}"/>
 
 							<b:navCommandLink value="#{msg.edit}"
 											 tooltip="#{msg.rd_edit_existent_user_info}"
 											 iconAwesome="fa-edit"
-											 rendered="#{userDataModel.hasUserAdministratorRoleAccess}"
+											 rendered="#{userDataModel.allowedUpdateUser}"
 											 action="#{userDataModel.editRecord}"/>
 
 							<b:navCommandLink value="#{msg.profile}"
 											 tooltip="#{msg.rd_profile_existent_user}"
 											 iconAwesome="fa-user-plus"
-											 action="#{userDataModel.userProfile}"/>
+											 action="#{userDataModel.userProfile}"
+										     disabled="#{userDataModel.selectedUser!=null and userDataModel.selectedUser.processingLocked}"/>
+
+
+							<b:navCommandLink value="#{msg.rd_user_email_update}"
+											  tooltip="#{msg.rd_select_user_email_update}"
+											  iconAwesome="fa-edit"
+											  rendered="#{userDataModel.allowedToUpdateUserEmail}"
+											  action="#{userDataModel.userEmailUpdate}"/>
+
 
 							<b:navCommandLink value="#{msg.rd_role_assignment}"
 											  tooltip="#{msg.rd_select_user_to_assign_unassigned_user_tenant_roles}"
 											  iconAwesome="fa-expand"
 											  action="#{userDataModel.userRoles}"
-											  actionListener="#{userTenantRolesManager.clearAssignableOrUnAssignedRoles}"/>
+											  actionListener="#{userTenantRolesManager.clearAssignableOrUnAssignedRoles}"
+											  disabled="#{userDataModel.selectedUser!=null and userDataModel.selectedUser.processingLocked}"/>
+
 
 							<b:navCommandLink value="#{msg.rd_unAssign}"
 											  tooltip="#{msg.rd_select_unAssign_user_activeTenant}"
 											  iconAwesome="fa-remove"
 											  action="#{userDataModel.userUnAssign}"
-											  actionListener="#{unAssignTenantUser.setTenantUserFieldsAsNull}"/>
+											  actionListener="#{unAssignTenantUser.setTenantUserFieldsAsNull}"
+											  disabled="#{userDataModel.selectedUser!=null and userDataModel.selectedUser.processingLocked}"/>
 
 						</b:dropButton>
 
@@ -104,9 +142,12 @@
 				<p:column headerText="#{msg.email}" sortBy="#{user.userEmail}">
 					<h:outputText value="#{user.userEmail}"/>
 				</p:column>
+
+				<p:column headerText="#{msg.processingLocked}" sortBy="#{user.processingLocked}">
+					<h:outputText value="#{user.processingLocked}"/>
+				</p:column>
 			</p:dataTable>
 
-			<b:growl redisplay="false" showDetail="true" allowDismiss="true" delay="0"/>
 		</h:form>
 	</ui:define>
 </ui:composition>

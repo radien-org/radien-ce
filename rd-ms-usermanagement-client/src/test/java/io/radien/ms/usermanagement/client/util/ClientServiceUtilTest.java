@@ -45,4 +45,15 @@ public class ClientServiceUtilTest {
         }
         assertTrue(valid);
     }
+
+    @Test
+    public void testGetStudentIdentityResourceClient() {
+        boolean valid = true;
+        try {
+            clientServiceUtil.getStudentIdentityResourceClient("http://url.test.pt");
+        } catch (MalformedURLException| TokenExpiredException e) {
+            valid = false;
+        }
+        assertTrue(valid);
+    }
 }

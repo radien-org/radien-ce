@@ -15,25 +15,41 @@
  */
 package io.radien.webapp.security;
 
+import io.radien.api.KeycloakConfigs;
 import io.radien.api.OAFAccess;
 import io.radien.api.OAFProperties;
+import io.radien.api.kernel.messages.SystemMessages;
 import io.radien.api.model.user.SystemUser;
 import io.radien.api.security.TokensPlaceHolder;
 import io.radien.api.security.UserSessionEnabled;
+import io.radien.api.service.LoginHook;
 import io.radien.api.service.user.UserRESTServiceAccess;
 import io.radien.exception.SystemException;
+import io.radien.ms.usermanagement.client.exceptions.RemoteResourceException;
 import io.radien.ms.usermanagement.client.services.UserFactory;
 import io.radien.webapp.JSFUtil;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
+import javax.annotation.Priority;
 import javax.enterprise.context.SessionScoped;
+import javax.enterprise.inject.Alternative;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.CDI;
 import javax.faces.context.ExternalContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
+import org.eclipse.microprofile.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +58,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marco Weiland
  */
-public @Named @SessionScoped class UserSession implements UserSessionEnabled, TokensPlaceHolder {
+@Named
+@Alternative
+@Priority(1)
+@SessionScoped
+public class UserSession implements UserSessionEnabled, TokensPlaceHolder {
 
 	private static final long serialVersionUID = 1198636791261091733L;
 	private static final Logger log = LoggerFactory.getLogger(UserSession.class);
@@ -58,12 +78,23 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	private String accessToken;
 
 	private String refreshToken;
+
+	private String language;
+
+	@Inject
+	private Config config;
+
+	private static final String IDP_LOGOUT_URL_PATTERN = "%s/auth/realms/%s/protocol/openid-connect/logout";
+
 	/**
 	 * Initialization of the user session
 	 */
 	@PostConstruct
 	private void init() {
 		log.info("Session initiated");
+		if(language == null) {
+			language = "de";
+		}
 	}
 
 	/**
@@ -73,12 +104,14 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	 * @param preferredUserName preferred user selected name
 	 * @param givenname user name
 	 * @param familyName user last name
+	 * @param mobileNumber user mobile number
 	 * @param accessToken public access token for authorization purposes
 	 * @param refreshToken private access token for refreshing the public access token
 	 * @throws Exception in case of any issue while performing the login, starting the user session or validating the
 	 * user information
 	 */
-	public void login(String userIdSubject,String email, String preferredUserName, String givenname,String familyName,String accessToken, String refreshToken) throws Exception {
+	public void login(String userIdSubject,String email, String preferredUserName, String givenname, String familyName,
+					  String mobileNumber, String accessToken, String refreshToken) throws Exception {
 		log.info("User session login starting");
 		log.info("user logged in: {}", userIdSubject);
 		//TODO:		refresh access token if needed
@@ -88,11 +121,29 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 			Optional<SystemUser> existingUser = userClientService.getUserBySub(userIdSubject);
 			SystemUser systemUser;
 			if (!existingUser.isPresent()) {
-				systemUser = UserFactory.create(givenname, familyName, preferredUserName, userIdSubject, email, getOAF().getSystemAdminUserId());
+				systemUser = UserFactory.create(givenname, familyName, preferredUserName, userIdSubject, email, mobileNumber, getOAF().getSystemAdminUserId(), false);
 				userClientService.create(systemUser, true);
 				Optional<SystemUser> userBySub = userClientService.getUserBySub(userIdSubject);
 				if(userBySub.isPresent()) {
 					systemUser = userBySub.get();
+				}
+				String loginHook = getOAF().getProperty(OAFProperties.LOGIN_HOOK_ACTIVE);
+				if("true".equalsIgnoreCase(loginHook)){
+					Instance<LoginHook> hooks = CDI.current().select(LoginHook.class);
+					for(LoginHook hook:hooks){
+						int idx = hook.getClass().getSimpleName().indexOf("$");
+						String name;
+						if (idx != -1) {
+							name = hook.getClass().getSimpleName().substring(0, idx);
+						} else {
+							name = hook.getClass().getSimpleName();
+						}
+						String msg = String.format("Starting execution of %s",name);
+						log.info(msg);
+						hook.execute();
+						msg = String.format("Finished execution of %s",name);
+						log.info(msg);
+					}
 				}
 			} else {
 				systemUser = existingUser.get();
@@ -102,9 +153,10 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 			log.error(exception.getMessage());
 		}
 		if (this.user == null){
-			this.user = UserFactory.create(givenname,familyName,preferredUserName, userIdSubject,email,-1L);
+			this.user = UserFactory.create(givenname,familyName,preferredUserName, userIdSubject,email, mobileNumber, -1L, false);
 		}
-
+		String msg = String.format("userId:%d",getUserId());
+		log.info(msg);
 	}
 
 	/**
@@ -154,6 +206,8 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 		return user.getUserEmail();
 	}
 
+
+	public String getMobileNumber() { return user.getMobileNumber(); }
 	/**
 	 * User session prefered user name getter
 	 * @return the preferredUserName
@@ -239,6 +293,10 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	public boolean logout() {
 		if (isActive()) {
 			ExternalContext externalContext = JSFUtil.getExternalContext();
+			if (externalContext == null) {
+				log.error("External context is null");
+				return false;
+			}
 			HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
 			HttpServletResponse response = (HttpServletResponse) externalContext.getResponse();
 			return logout(request, response);
@@ -257,7 +315,8 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 		try {
 			log.info("going to start logout process");
 			request.logout();
-			String logoutUrl = getLogoutURL();
+			request.getSession().invalidate();
+			String logoutUrl = getLogoutURL(request);
 			log.info("going to redirect to the following url {}", logoutUrl);
 			response.sendRedirect(logoutUrl);
 			return true;
@@ -271,23 +330,68 @@ public @Named @SessionScoped class UserSession implements UserSessionEnabled, To
 	 * Retrieve the logout URL
 	 * @return String that represents the logout url
 	 */
-	protected String getLogoutURL() {
-		String keyCloakLogoutURL = oaf.getProperty(OAFProperties.AUTH_LOGOUT_URI);
-		StringBuilder sb = new StringBuilder().
-				append(keyCloakLogoutURL).
-				append("?redirect_uri=").
-				append(getApplicationURL());
-		return sb.toString();
+	protected String getLogoutURL(HttpServletRequest request) {
+		String keyCloakLogoutURL = String.format(IDP_LOGOUT_URL_PATTERN,
+				config.getValue(KeycloakConfigs.IDP_URL.propKey(), String.class),
+				config.getValue(KeycloakConfigs.APP_REALM.propKey(), String.class));
+		return keyCloakLogoutURL + "?redirect_uri=" + getRedirectionURL(request);
+	}
+
+	public Map<String, String> fakeAuth(String token) throws RemoteResourceException {
+		HashMap<String, String> result = null;
+		log.info("Config Token: {}", config.getValue(KeycloakConfigs.TOKEN_PATH.propKey(), String.class));
+		log.info("Token: {}", token);
+		if(config.getValue(KeycloakConfigs.TOKEN_PATH.propKey(), String.class).equals(token)) {
+			HttpResponse<?> response = Unirest.post(config.getValue(KeycloakConfigs.IDP_URL.propKey(), String.class)
+							+ config.getValue(KeycloakConfigs.TOKEN_PATH.propKey(), String.class))
+					.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED)
+					.field("client_id", config.getValue(KeycloakConfigs.ADMIN_CLIENT_ID.propKey(), String.class))
+					.field("grant_type", "client_credentials")
+					.field("client_secret", config.getValue(KeycloakConfigs.ADMIN_CLIENT_SECRET.propKey(), String.class))
+					.asObject(HashMap.class);
+			if (response.isSuccess()) {
+				return (HashMap<String, String>) response.getBody();
+			} else {
+				throw new RemoteResourceException("Error on login");
+			}
+		}
+		return result;
 	}
 
 	/**
-	 * Retrieves the base url (schema + server name + port + context) for the current application
-	 * @return String that represent the context url path
+	 * Retrieves the redirection URL that corresponds for the current application
+	 * (To be used as callback uri regarding the logout process)
+	 * @return String that represent the redirection url path
 	 */
-	protected String getApplicationURL() {
-		String applicationUrl = oaf.getProperty(OAFProperties.SYS_HOSTNAME) +
-				oaf.getProperty(OAFProperties.SYS_APPLICATION_CONTEXT);
+	protected String getRedirectionURL(HttpServletRequest request) {
+		String host = oaf.getProperty(OAFProperties.SYS_HOSTNAME);
+		String context = oaf.getProperty(OAFProperties.SYS_APPLICATION_CONTEXT);
+
+		if (host.startsWith(SystemMessages.KERNEL_PROPERTY_UNAVAILABLE.message())) {
+			log.info("Property {} not defined", OAFProperties.SYS_HOSTNAME);
+			StringBuilder sb = new StringBuilder();
+			sb.append(request.getScheme()).append("://");
+			sb.append(request.getServerName());
+			if (request.getServerName().equals("localhost")) {
+				sb.append(":");
+				sb.append(request.getServerPort());
+			}
+			host = sb.toString();
+		}
+		if (context.startsWith(SystemMessages.KERNEL_PROPERTY_UNAVAILABLE.message())) {
+			log.info("Property {} not defined", OAFProperties.SYS_APPLICATION_CONTEXT);
+			context = request.getContextPath();
+		}
+		String applicationUrl = host + context;
 		log.info("application url {}", applicationUrl);
 		return applicationUrl;
+	}
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
 	}
 }

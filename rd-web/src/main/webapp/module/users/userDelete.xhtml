@@ -53,7 +53,8 @@
 
             <b:button id="delete-user-button"
                       onclick="$('.formValidationModalUserDelete').modal('show')"
-                      value="#{msg.delete}" icon="trash"/>
+                      value="#{msg.delete}" icon="trash"
+                      disabled="#{userDataModel.selectedUser.processingLocked}"/>
             <b:modal id="model"
                      title="#{msg.confirmation}"
                      styleClass="formValidationModalUserDelete"

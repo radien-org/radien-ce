@@ -20,7 +20,6 @@ import io.radien.api.model.tenant.SystemTenant;
 import io.radien.api.model.tenantrole.SystemTenantRole;
 import io.radien.api.service.tenantrole.TenantRoleRESTServiceAccess;
 import io.radien.api.service.tenantrole.TenantRoleUserRESTServiceAccess;
-import io.radien.exception.SystemException;
 import io.radien.ms.rolemanagement.client.entities.TenantRole;
 import io.radien.ms.rolemanagement.client.entities.TenantRoleUser;
 import io.radien.ms.tenantmanagement.client.entities.Tenant;
@@ -87,7 +86,7 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
     @PostConstruct
     public void init() {
         try{
-            userTenants = Collections.unmodifiableList(tenantRoleRESTServiceAccess.getTenants(userDataModel.getSelectedUser().getId(),null));
+            userTenants = Collections.unmodifiableList(tenantRoleUserRESTServiceAccess.getTenants(userDataModel.getSelectedUser().getId(),null));
         } catch(Exception e) {
             handleError(e, JSFUtil.getMessage(DataModelEnum.GENERIC_ERROR_MESSAGE.getValue()), JSFUtil.getMessage(DataModelEnum.TENANT_RD_TENANT.getValue()));
         }
@@ -98,7 +97,7 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
      * roles for the Tenant User
      * @param systemTenant the selected value object
      */
-    public void selectedChangeTenant (ValueChangeEvent systemTenant) throws SystemException {
+    public void selectedChangeTenant (ValueChangeEvent systemTenant) {
         if(systemTenant.getNewValue() != null){
             clearDefaultRolesAssignedMap();
             loadUserTenantRoles((SystemTenant) systemTenant.getNewValue());
@@ -111,7 +110,7 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
      */
     public void loadUserTenantRoles(SystemTenant systemTenant) {
         try{
-            assignedRolesForUserTenant = Collections.unmodifiableList(tenantRoleRESTServiceAccess
+            assignedRolesForUserTenant = Collections.unmodifiableList(tenantRoleUserRESTServiceAccess
                     .getRolesForUserTenant(userDataModel.getSelectedUser().getId(), systemTenant.getId()));
 
             if(!assignedRolesForUserTenant.isEmpty()){
@@ -165,13 +164,17 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
      * and performs assignable/unassailable association among User Tenant Role(s)
      */
     public void assignOrUnassignedRolesToUserTenant() {
-        if(assignableUserTenantRoles != null && !assignableUserTenantRoles.isEmpty()) {
-            doAssignedRolesForUserTenant();
-            handleMessage(FacesMessage.SEVERITY_INFO, JSFUtil.getMessage(DataModelEnum.USER_RD_TENANT_ROLE_ASSIGNED_SUCCESS.getValue()));
-        }
+        if (!userDataModel.getSelectedUser().isProcessingLocked()) {
+            if(assignableUserTenantRoles != null && !assignableUserTenantRoles.isEmpty()) {
+                doAssignedRolesForUserTenant();
+                JSFUtil.addSuccessMessage(DataModelEnum.USER_RD_TENANT_ROLE_ASSIGNED_SUCCESS.getValue());
+            }
 
-        if(unassignedUserTenantRoles != null && !unassignedUserTenantRoles.isEmpty()) {
-            doUnassignedRolesForUserTenant();
+            if(unassignedUserTenantRoles != null && !unassignedUserTenantRoles.isEmpty()) {
+                doUnassignedRolesForUserTenant();
+            }
+        } else {
+            JSFUtil.addErrorMessage(DataModelEnum.PROCESSINGLOCKED_BLOCKS_ACTION.getValue());
         }
         clearAssignableOrUnAssignedRoles();
     }
@@ -192,7 +195,7 @@ public class UserTenantRolesManager extends AbstractManager implements Serializa
                     SystemTenantRole tenantRole = new TenantRole();
                     tenantRole.setTenantId(tenant.getId());
                     tenantRole.setRoleId(systemRoleId);
-                    isTenantRoleSaved = tenantRoleRESTServiceAccess.save(tenantRole);
+                    isTenantRoleSaved = tenantRoleRESTServiceAccess.create(tenantRole);
                 }
 
                 if(isTenantRoleAssociationExists || isTenantRoleSaved){

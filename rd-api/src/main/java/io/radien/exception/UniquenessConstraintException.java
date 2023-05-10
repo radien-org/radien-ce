@@ -20,7 +20,7 @@ package io.radien.exception;
  *
  * @author Bruno Gama
  */
-public class UniquenessConstraintException extends Exception{
+public class UniquenessConstraintException extends Exception {
 	private static final long serialVersionUID = -8576474264329891539L;
 
     /**

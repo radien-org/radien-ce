@@ -49,16 +49,4 @@ public interface SystemRole extends Model {
      * @param description to be set
      */
     public void setDescription(String description);
-
-    /**
-     * System Role termination date getter
-     * @return the system role termination date
-     */
-    public Date getTerminationDate();
-
-    /**
-     * System role termination date setter
-     * @param terminationDate to be set
-     */
-    public void setTerminationDate(Date terminationDate);
 }

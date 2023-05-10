@@ -15,15 +15,13 @@
  */
 package io.radien.api.service.ecm;
 
+import io.radien.api.service.ecm.exception.ContentNotAvailableException;
+import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
+import io.radien.api.service.ecm.model.SystemContentVersion;
 import java.util.List;
-import java.util.Map;
 
-import com.fasterxml.jackson.core.TreeNode;
 
 import io.radien.api.service.ServiceAccess;
-import io.radien.api.service.ecm.exception.ContentRepositoryNotAvailableException;
-import io.radien.api.service.ecm.exception.ElementNotFoundException;
-import io.radien.api.service.ecm.model.ContentType;
 import io.radien.api.service.ecm.model.EnterpriseContent;
 import io.radien.api.service.mail.model.MailType;
 
@@ -80,7 +78,7 @@ public interface ContentServiceAccess extends ServiceAccess {
 	 *
 	 * @param obj the {@link EnterpriseContent} to be persisted
 	 */
-	void save(EnterpriseContent obj);
+	void save(String client, EnterpriseContent obj);
 
 	/**
 	 * Deletes the target enterprise content
@@ -90,20 +88,6 @@ public interface ContentServiceAccess extends ServiceAccess {
 	void delete(EnterpriseContent obj);
 
 	/**
-	 * Retrieves a list of enterprise contents search by his content typ
-	 * @param contentType to be search
-	 * @param language to be search
-	 * @return a list of enterprise contents
-	 */
-	List<EnterpriseContent> getByContentType(ContentType contentType, String language);
-
-	/**
-	 * Enterprise Content document tree model getter
-	 * @return the enterprise content document tree model
-	 */
-	TreeNode getDocumentTreeModel();
-
-	/**
 	 * Gets a list of all the children files existent for a given view id
 	 * @param viewId to be searched
 	 * @return a list of enterprise contents
@@ -111,56 +95,17 @@ public interface ContentServiceAccess extends ServiceAccess {
 	List<EnterpriseContent> getChildrenFiles(String viewId);
 
 	/**
-	 * Retrieves the correct notification id searching for the existent given type and language code
-	 * @param type to be searched
-	 * @param languageCode of the notification
-	 * @return a notification id
-	 */
-	String getNotificationIdByTypeAndLanguage(MailType type, String languageCode);
-
-	/**
-	 * Content application description getter to be found by given parameters
-	 * @param app to be found
-	 * @param language of the app
-	 * @return the app description
-	 */
-	String getAppDesc(String app, String language);
-
-	/**
-	 * Count how many tag names do exist in a given name
-	 * @param name to be counted
-	 * @return the count of tags
-	 */
-	int countByTagName(String name);
-
-	/**
-	 * By a given app and content will return the designated app info
-	 * @param content to be retrieved
-	 * @param app to be searched
-	 * @param language of the app
-	 * @return the app info id
-	 */
-	String getAppInfoId(String content, String app, String language);
-
-	/**
 	 * Tries to load the file present inside a content, if available
 	 * @param jcrPath  the {@link EnterpriseContent} from which the file will load
 	 * @return the new child {@link EnterpriseContent}
-	 * @throws ElementNotFoundException Exception thrown if the element is not found
-	 * @throws ContentRepositoryNotAvailableException Exception thrown if there is an error while querying the jcr
 	 */
-	EnterpriseContent loadFile(String jcrPath) throws ElementNotFoundException, ContentRepositoryNotAvailableException;
-
-	/**
-	 * Content service app description getter
-	 * @param language of the app to be found
-	 * @return a map of app descriptions
-	 */
-	Map<String, String> getAppDescriptions(String language);
+	EnterpriseContent loadFile(String jcrPath);
 
 	/**
 	 * Content service folder contents getter
 	 * @param path to be retrieved
+	 * @throws ContentNotAvailableException given path was not found
+	 * @throws ContentRepositoryNotAvailableException in case JCR Repository is not available or login was not possible
 	 * @return a list of all the contents existent in a given path
 	 */
 	List<EnterpriseContent> getFolderContents(String path);
@@ -172,14 +117,9 @@ public interface ContentServiceAccess extends ServiceAccess {
 	 */
 	List<EnterpriseContent> getContentVersions(String path);
 
-	//TODO: What is this?
-	String getOrCreateDocumentsPath(String path);
+	void deleteVersion(String path, SystemContentVersion version);
 
-	/**
-	 * Attempts to return a content based on its identifier and active flag
-	 * @param viewId the content identifier
-	 * @param activeOnly flag that indicates if the content is active or not
-	 * @return the {@link EnterpriseContent} if it finds it, or else null
-	 */
-	EnterpriseContent getByViewId(String viewId, boolean activeOnly);
+	String getOrCreateDocumentsPath(String client, String path);
+
+	void delete(String path);
 }

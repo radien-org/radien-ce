@@ -34,6 +34,8 @@ public class Folder extends AbstractECMModel implements EnterpriseContent {
 	public Folder(String name) {
 		this.name = name;
 		this.contentType = ContentType.FOLDER;
+		this.active = true;
+		this.system = true;
 	}
 
 	/**

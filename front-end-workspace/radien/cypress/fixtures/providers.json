@@ -1,0 +1,1 @@
+{"keycloak":{"id":"keycloak","name":"Keycloak","type":"oauth","signinUrl":"http://localhost:3000/api/auth/signin/keycloak","callbackUrl":"http://localhost:3000/api/auth/callback/keycloak"}}
