@@ -6,7 +6,7 @@
     <parent>
         <artifactId>appframe</artifactId>
         <groupId>io.radien</groupId>
-        <version>rd-0.0.2-SNAPSHOT</version>
+        <version>rd-1.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
