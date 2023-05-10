@@ -5,7 +5,7 @@
 
     <groupId>io.radien</groupId>
     <artifactId>rd-service-generator-v2</artifactId>
-    <version>rd-0.0.2-SNAPSHOT</version>
+    <version>rd-1.0.1-SNAPSHOT</version>
     <dependencies>
         <dependency>
             <groupId>com.mchange</groupId>

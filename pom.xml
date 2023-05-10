@@ -6,7 +6,7 @@
 	<packaging>pom</packaging>
 	<name>radien - an open appframe - ${project.version}</name>
 	<description>radien - an open app frame</description>
-	<version>rd-0.0.2-SNAPSHOT</version>
+	<version>rd-1.0.1-SNAPSHOT</version>
 	<modules>
 		<module>rd-api</module>
 		<module>rd-persistence</module>
